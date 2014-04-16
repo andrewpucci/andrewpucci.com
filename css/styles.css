@@ -179,6 +179,11 @@ article.artifact .marquee {
 	width: 620px;
 }
 
+article.experience img {
+	width: 250px;
+	padding: 10px;
+}
+
 .content {
 	margin: 0 auto;
 	background-color: rgba(255, 255, 255, 0.75);
