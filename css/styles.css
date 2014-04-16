@@ -166,7 +166,7 @@ article h1 {
 	margin: 1em 0;
 }
 
-article.experience {
+article.artifact {
 	width: 620px;
 	float: right;
 	margin: 0;
@@ -175,7 +175,7 @@ article.experience {
 	background-color: transparent;
 }
 
-article.experience .marquee {
+article.artifact .marquee {
 	width: 620px;
 }
 
