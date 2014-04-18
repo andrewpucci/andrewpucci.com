@@ -142,7 +142,7 @@ article {
 	color: #333;
 }
 
-p, .content li {
+p, article li {
 	font-family: 'Fauna One', serif;
 	font-size: 1.2em;
 	line-height: 1.7em;
@@ -160,74 +160,29 @@ article h1,h2,h3,h4,h5,h6 {
 
 article h1 {
 	margin: 1em 0;
+	max-width: 630px;
 }
 
-article.artifact {
-	width: 620px;
-	float: right;
-	margin: 0;
-	padding: 20px 40px 20px 0;
-	outline: none;
-	background-color: transparent;
-}
-
-article.artifact .marquee {
+article img.marquee {
 	width: 620px;
 }
 
-article.experience img {
-	width: 250px;
-	padding: 10px;
-}
-
-.content {
-	margin: 0 auto;
-	background-color: rgba(255, 255, 255, 0.75);
-	outline: 10px solid rgba(17, 17, 17, .5);
-	width: 900px;
-	margin: 50px auto;
-	color: #333;
-}
-
-.content nav {
+article nav.quick-nav {
 	width: 180px;
-	padding-left: 20px;
-	float: left;
-	font-size: 1.5em;
+	float: right;
+	margin: 1em 0;
+	font-size: 2em;
 }
 
-.content nav ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-
-.content nav {
-	padding-top: 30px;
-}
-
-.content nav a {
+article nav.quick-nav a {
 	width: 30%;
 	display: inline-block;
 	text-align: center;
 	color: #333;
 }
 
-.content nav a:hover {
+article nav.quick-nav a:hover {
 	color: #777;
-}
-
-.content nav img {
-	width: 180px;
-	opacity: 0.4;
-}
-
-.content nav img:hover {
-	opacity: 0.6;
-}
-
-.content nav a.selected img {
-	opacity: 1;
 }
 
 /*clearfix*/
