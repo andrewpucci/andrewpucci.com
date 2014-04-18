@@ -95,19 +95,6 @@ header.vertical nav li:before {
 	width: 36px;
 }
 
-header.horizontal nav a:before {
-	content: "";
-	position: relative;
-	border-style: solid;
-	border-width: 0px 0px 0px 8px;
-	-moz-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
-	-webkit-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
-	-o-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
-	border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
-	left: 12px;
-	top: -31px;
-	height: 8px;
-}
 
 header nav a {
 	background-color: rgba(17, 17, 17, .5);
@@ -123,6 +110,20 @@ header.vertical nav a {
 header.horizontal nav a {
 	padding: 8px 8px 8px 0;
 	margin-right: 10px;
+}
+
+header.horizontal nav a:before {
+	content: "";
+	position: relative;
+	border-style: solid;
+	border-width: 0px 0px 0px 8px;
+	-moz-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
+	-webkit-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
+	-o-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
+	border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
+	left: 12px;
+	top: -31px;
+	height: 8px;
 }
 
 header nav a:hover {
@@ -161,6 +162,11 @@ article h1,h2,h3,h4,h5,h6 {
 article h1 {
 	margin: 1em 0;
 	max-width: 630px;
+}
+
+article.experience img {
+	width: 250px;
+	padding: 10px;
 }
 
 article img.marquee {
