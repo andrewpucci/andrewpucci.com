@@ -1,9 +1,11 @@
 html { 
+	background-color: #688ebd;
 	background: url(../img/background.jpg) no-repeat center center fixed; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
+	min-height: 100%;
 	font-size: 16px;
 }
 
@@ -21,6 +23,7 @@ html {
 
 body {
 	margin: 1rem;
+	min-height: 100%;
 }
 
 header.horizontal {
