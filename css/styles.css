@@ -268,14 +268,14 @@ article img.marquee {
 }
 
 article nav.quick-nav {
-	width: 180px;
+	width: 11.25rem;
 	float: right;
 	margin: 1em 0;
 	font-size: 2em;
 }
 
 article nav.quick-nav a {
-	width: 30%;
+	width: 29%;
 	display: inline-block;
 	text-align: center;
 	color: #333;
