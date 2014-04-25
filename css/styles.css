@@ -28,8 +28,14 @@ body {
 }
 
 header.horizontal {
-	width: 900px;
+	max-width: 900px;
 	margin: auto;
+}
+
+@media only screen and (max-width : 380px) {
+	header.horizontal .social {
+		display: none;
+	}
 }
 
 header h1 {
@@ -81,14 +87,14 @@ header.vertical nav {
 }
 
 header.horizontal nav {
-	font-size: 1.3rem;
+	font-size: 1.2rem;
 	margin-top: -45px;
 	margin-left: 78px;
 }
 
 header.horizontal nav .top-border {
 	background: transparent url(../img/border-horizontal.png) repeat-x right top;
-	width: 24.25rem;
+	width: 22.8rem;
 	padding-top: 40px;
 }
 
@@ -107,11 +113,17 @@ header.horizontal nav a:nth-child(2) {
 	}
 
 	header.horizontal nav .top-border {
-		width: 24.6rem;
+		width: 23.65rem;
 	}
 
 	header.horizontal nav a:nth-child(2) {
 		margin-left: 2rem;
+	}
+}
+
+@media only screen and (max-width : 480px) {
+	header.horizontal nav .top-border {
+		background: transparent;
 	}
 }
 
