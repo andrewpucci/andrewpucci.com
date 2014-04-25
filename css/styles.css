@@ -264,7 +264,7 @@ article h1,h2,h3,h4,h5,h6 {
 }
 
 article img.marquee {
-	width: 620px;
+	width: 100%;
 }
 
 article nav.quick-nav {
