@@ -6,7 +6,7 @@ previous: local-yokel-foods-paper-prototype
 next: bookmooch-social-networking-survey
 ---
 # Young Professionals of Akron Usability Study
-[Young Professionals of Akron Usability Study](/img/ypa-eyetracking.png)
+![Young Professionals of Akron Usability Study](/img/ypa-eyetracking.png)
 
 ## Business Problem
 A small team and I set out to determine if the current organization of the Young Professionals of Akron (YPA) website facilitates easy navigation and the simple completion of common tasks. We also wanted to identify areas for improvement specific to menu options, titles, and actions that may be completed at the YPA website.
