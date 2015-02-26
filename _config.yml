@@ -1,5 +1,5 @@
 timezone: America/New_York
-exclude:  ["*.sublime-project"]
+exclude:  ["*.sublime-project", "*.sublime-workspace"]
 permalink: /blog/:year/:month/:day/:title.html
 
 collections:
