@@ -1,0 +1,49 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{{ page.title }}</title>
+    <meta name="description" content="{{ page.description }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=16">
+    <link rel="apple-touch-icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=152">
+
+    <link rel="stylesheet" href="/css/normalize.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/fonts/foundation-icons.css">
+    <link href='http://fonts.googleapis.com/css?family=Quicksand:400|Fauna+One|Fjalla+One' rel='stylesheet' type='text/css'>
+
+    <script src="/js/vendor/modernizr-2.6.2.min.js"></script>
+  </head>
+  <body>
+    <!--[if lt IE 8]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://outdatedbrowser.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <header class="horizontal">
+      <span class="home"><a href="/"><img src="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=240" alt="Profile picture of Andrew Pucci" height="60" width="60"></a></span>
+      <nav role="navigation">
+        <div class="top-border"></div>
+        <a href="/about" class="selected">About Me</a>
+        <a href="/work/">My Work</a>
+        <a href="http://twitter.com/andrewrpucci" class="social"><i class="fi-social-twitter"></i></a>
+        <a href="http://www.linkedin.com/in/andrewpucci" class="social"><i class="fi-social-linkedin"></i></a>
+      </nav>
+    </header>
+
+    <article>
+    {{ content }}
+    </article>
+
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXXXXX-1');ga('send','pageview');
+    </script>
+  </body>
+</html>
