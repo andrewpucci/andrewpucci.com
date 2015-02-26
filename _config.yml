@@ -1,3 +1,7 @@
 timezone: America/New_York
 exclude:  ["*.sublime-project"]
 permalink: /blog/:year/:month/:day/:title.html
+
+collections:
+  work:
+    output: true
