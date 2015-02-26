@@ -101,27 +101,27 @@ header.horizontal {
     }
 }
 
-header h1 {
+header.home {
     display: inline;
 }
 
-header h1 img {
+header img {
     border-radius: 50%;
 }
 
-header.vertical h1 img {
+header.vertical img {
     border: 0.625rem solid rgba(17, 17, 17, .5);    
     width: 7.5rem;
     height: 7.5rem;
 }
 
-header.horizontal h1 img {
+header.horizontal img {
     border: 0.375rem solid rgba(17, 17, 17, .5);
     width: 3.75rem;
     height: 3.75rem;    
 }
 
-header.horizontal h1 img:hover {
+header.horizontal img:hover {
     border: 0.375rem solid rgba(17, 17, 17, .25);   
 }
 
@@ -340,11 +340,7 @@ article h1,h2,h3,h4,h5,h6 {
     overflow: hidden;
 }
 
-.artifactInner img {
-    width: 100%;
-}
-
-article img.marquee {
+article img {
     width: 100%;
 }
 

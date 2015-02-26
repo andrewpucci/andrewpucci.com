@@ -1,0 +1,7 @@
+timezone: America/New_York
+exclude:  ["*.sublime-project", "*.sublime-workspace"]
+permalink: /blog/:year/:month/:day/:title.html
+
+collections:
+  work:
+    output: true
