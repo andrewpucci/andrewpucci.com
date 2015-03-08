@@ -20,4 +20,4 @@ Local professional community is important to me. I have volunteered on many area
 In my spare time, you can find me biking, traveling, whipping up some homebrew, watching indie films, or learning everything on Coursera.
 
 ## Get in touch!
-<i class="fi-mail"></i> <andrew@andrewpucci.com>
+<i class="icon-mail"></i> <andrew@andrewpucci.com>
