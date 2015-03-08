@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'custom-icons';
-  src: url('../font/custom-icons.eot?19308823');
-  src: url('../font/custom-icons.eot?19308823#iefix') format('embedded-opentype'),
-       url('../font/custom-icons.woff?19308823') format('woff'),
-       url('../font/custom-icons.ttf?19308823') format('truetype'),
-       url('../font/custom-icons.svg?19308823#custom-icons') format('svg');
+  src: url('../font/custom-icons.eot?52571380');
+  src: url('../font/custom-icons.eot?52571380#iefix') format('embedded-opentype'),
+       url('../font/custom-icons.woff?52571380') format('woff'),
+       url('../font/custom-icons.ttf?52571380') format('truetype'),
+       url('../font/custom-icons.svg?52571380#custom-icons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'custom-icons';
-    src: url('../font/custom-icons.svg?19308823#custom-icons') format('svg');
+    src: url('../font/custom-icons.svg?52571380#custom-icons') format('svg');
   }
 }
 */
@@ -58,3 +58,4 @@
 .icon-linkedin:before { content: '\e805'; } /* '' */
 .icon-right:before { content: '\e806'; } /* '' */
 .icon-left:before { content: '\e807'; } /* '' */
+.icon-letterboxd:before { content: '\e808'; } /* '' */
