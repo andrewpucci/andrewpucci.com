@@ -5,3 +5,5 @@ permalink: /blog/:year/:month/:day/:title.html
 collections:
   work:
     output: true
+
+analytics: UA-XXXXXXXX-1
