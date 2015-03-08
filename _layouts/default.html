@@ -22,20 +22,15 @@
       <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://outdatedbrowser.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <header class="horizontal">
-      <span class="home"><a href="/"><img src="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=240" alt="Profile picture of Andrew Pucci" height="60" width="60"></a></span>
-      <nav id="primary-nav" role="navigation">
-        <div class="top-border"></div>
-        <a href="/about">About Me</a>
-        <a href="/work/">My Work</a>
-        <a href="http://twitter.com/andrewrpucci" class="social"><i class="fi-social-twitter"></i></a>
-        <a href="http://www.linkedin.com/in/andrewpucci" class="social"><i class="fi-social-linkedin"></i></a>
-      </nav>
-    </header>
-
-    <article>
-    {{ content }}
-    </article>
+    {% if page.navigation == "horizontal" %}
+      {% include horizontal-nav.html %}
+      <article>
+      {{ content }}
+      </article>
+    {% elsif page.navigation == "vertical" %}
+      {% include vertical-nav.html %}
+    {% else %}
+    {% endif %}
 
     <!-- http://www.cssnewbie.com/using-javascript-to-style-active-navigation-elements/ -->
     <script type="text/javascript">
