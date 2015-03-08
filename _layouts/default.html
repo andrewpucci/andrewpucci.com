@@ -24,9 +24,9 @@
 
     <header class="horizontal">
       <span class="home"><a href="/"><img src="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=240" alt="Profile picture of Andrew Pucci" height="60" width="60"></a></span>
-      <nav role="navigation">
+      <nav id="primary-nav" role="navigation">
         <div class="top-border"></div>
-        <a href="/about" class="selected">About Me</a>
+        <a href="/about">About Me</a>
         <a href="/work/">My Work</a>
         <a href="http://twitter.com/andrewrpucci" class="social"><i class="fi-social-twitter"></i></a>
         <a href="http://www.linkedin.com/in/andrewpucci" class="social"><i class="fi-social-linkedin"></i></a>
@@ -36,6 +36,17 @@
     <article>
     {{ content }}
     </article>
+
+    <script type="text/javascript">
+    (function() {
+      aObj = document.getElementById('primary-nav').getElementsByTagName('a');
+      for(i=0;i<aObj.length;i++) {
+        if(document.location.href.indexOf(aObj[i].href)>=0) {
+          aObj[i].className='selected';
+        }
+      }
+    })();
+    </script>
 
     <script>
       (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
