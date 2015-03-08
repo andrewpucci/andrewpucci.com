@@ -1,5 +1,6 @@
 ---
 layout: default
+navigation: horizontal
 title: My Work - Andrew Pucci
 description: Portfolio of Andrew Pucci's user experience design work.
 ---

@@ -1,5 +1,6 @@
 ---
 layout: work
+navigation: horizontal
 title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
 previous: local-yokel-foods-paper-prototype

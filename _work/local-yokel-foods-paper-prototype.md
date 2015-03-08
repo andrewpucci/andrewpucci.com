@@ -1,5 +1,6 @@
 ---
 layout: work
+navigation: horizontal
 title: Local Yokel Foods Paper Prototype - Andrew Pucci
 description: Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.
 previous: carnation-city-mall-blueprints

@@ -1,5 +1,6 @@
 ---
 layout: work
+navigation: horizontal
 title: Carnation City Mall Blueprints - Andrew Pucci
 description: Portfolio piece showing how blueprints were created for Carnation City Mall.
 previous: revamping-course-registration
