@@ -1,5 +1,6 @@
 ---
 layout: work
+navigation: horizontal
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
 previous: visual-design-of-telerik-analytics

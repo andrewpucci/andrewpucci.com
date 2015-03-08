@@ -1,5 +1,6 @@
 ---
 layout: default
+navigation: horizontal
 title: About Andrew Pucci
 description: User Experience Designer. Kent State IAKM/UXD graduate. President of UXPA Cleveland. Enjoys homebrewing.
 ---
