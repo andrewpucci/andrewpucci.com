@@ -1,5 +1,6 @@
 ---
 layout: work
+navigation: horizontal
 title: Understanding JustCode Users - Andrew Pucci
 description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
 previous: lunchboat-mobile-app-interaction-flow
