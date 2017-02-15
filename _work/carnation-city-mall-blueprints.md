@@ -3,8 +3,8 @@ layout: work
 navigation: horizontal
 title: Carnation City Mall Blueprints - Andrew Pucci
 description: Portfolio piece showing how blueprints were created for Carnation City Mall.
-previous: revamping-course-registration
-next: local-yokel-foods-paper-prototype
+backward: revamping-course-registration
+forward: local-yokel-foods-paper-prototype
 ---
 # Carnation City Mall Blueprints
 ![Carnation City Mall Blueprints](/img/carnation-blueprint.png)
