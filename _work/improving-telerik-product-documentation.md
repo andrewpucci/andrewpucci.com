@@ -3,8 +3,8 @@ layout: work
 navigation: horizontal
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
-previous: visual-design-of-telerik-analytics
-next: lunchboat-mobile-app-interaction-flow
+backward: visual-design-of-telerik-analytics
+forward: lunchboat-mobile-app-interaction-flow
 ---
 # Improving Telerik Product Documentation
 ![Improving Telerik Product Documentation](/img/kendoui-docs.png)
