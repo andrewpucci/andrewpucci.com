@@ -157,7 +157,7 @@ header.horizontal nav {
 
 header.horizontal nav .top-border {
     background: transparent url(../img/border-horizontal.png) repeat-x right top;
-    width: 23.7rem;
+    width: 22.95rem;
     padding-top: 40px;
 }
 
@@ -176,7 +176,7 @@ header.horizontal nav a:nth-child(2) {
     }
 
     header.horizontal nav .top-border {
-        width: 23.65rem;
+        width: 23.45rem;
     }
 
     header.horizontal nav a:nth-child(2) {
@@ -229,13 +229,14 @@ header.vertical nav a {
 }
 
 header.horizontal nav a {
-    padding: 0.5rem 0.5rem 0.5rem 0;
+    position: relative;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     margin-right: 0.625rem;
 }
 
 header.horizontal nav a:before {
     content: "";
-    position: relative;
+    position: absolute;
     border-style: solid;
     border-width: 0px 0px 0px 8px;
     -moz-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
@@ -243,7 +244,7 @@ header.horizontal nav a:before {
     -o-border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
     border-image: url(../img/border-vertical.png) 0 0 0 8 repeat;
     left: 12px;
-    top: -31px;
+    top: -16px;
     height: 8px;
 }
 
