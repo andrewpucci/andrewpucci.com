@@ -288,7 +288,7 @@ article {
 }
 
 p, article li {
-    font-family: 'Fauna One', serif;
+    font-family: 'Alegreya Sans', sans-serif;
     font-size: 1.2rem;
     line-height: 1.7rem;
 }
@@ -298,7 +298,7 @@ p {
 }
 
 article h1,h2,h3,h4,h5,h6 {
-    font-family: 'Fjalla One', sans-serif;
+    font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
     margin: 1.8rem 0 1rem 0;
 }
