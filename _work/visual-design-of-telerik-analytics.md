@@ -3,7 +3,7 @@ layout: work
 navigation: horizontal
 title: Visual Design of Telerik Analytics - Andrew Pucci
 description: Portfolio piece showing the process used to design Telerik Analytics.
-backward: bookmooch-social-networking-survey
+backward: society-of-grownups-website
 forward: improving-telerik-product-documentation
 ---
 # Visual Design of Telerik Analytics
