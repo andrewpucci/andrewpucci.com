@@ -2,22 +2,20 @@
 layout: default
 navigation: horizontal
 title: About Andrew Pucci
-description: User Experience Designer. Kent State IAKM/UXD graduate. President of UXPA Cleveland. Enjoys homebrewing.
+description: Dabbles in human centered design, photography, and travel. Podcast glutton.
 ---
 
 # Hi, I'm Andrew.
 
-As a user experience designer, I've spent much of the past 5+ years helping clients understand how people are using their products and developing designs that increase usability.
+Whether interviewing business analysts to figure out which questions they need answered or designing and running surveys to understand employee engagement, I've always focused on people throughout my career.
 
-Throughout my careeer, I've had the opportunity to work on a [wide variety of projects](/work/) in many different roles ranging from web developer, data modeler, project manager, all the way to UX Team of One.
+I've been responsible for everything from web development to organization design. Having [experience](/work/) as a user experience designer, software engineer, data modeler, and culture architect has given me the ability to understand the needs of all participants in the product workflow.
 
-In 2011, I graduated from the [Information Architecture and Knowledge Management (IAKM)](http://iakm.kent.edu) Master's program at Kent State University. My concentration was in User Experience Design.
+In my work, I highly value the diversity of the people I work with, transparency, honesty, flexibility, life-long learning, balance, and adding value to the world.
 
-Before that, I graduated from [Clarkson University](http://www.clarkson.edu) with a Bachelor's degree in Software Engineering and a minor in Information Technology.
-
-Local professional community is important to me. I have volunteered on many area boards of directors and currently serve as the President of [UXPA Cleveland](http://www.uxpacleveland.org).
-
-In my spare time, you can find me biking, traveling, whipping up some homebrew, watching indie films, or learning everything on Coursera.
+In my spare time, you can find me experimenting with photography, traveling, watching [all the film](https://letterboxd.com/andrewpucci/), or listening to podcasts at 2.2x.
 
 ## Get in touch!
+If you think any of this sounds interesting, I'd love to chat with you. Feel free to send me an email and we'll set something up!
+
 <i class="icon-mail"></i> <andrew@andrewpucci.com>

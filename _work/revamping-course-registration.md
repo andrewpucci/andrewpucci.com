@@ -3,8 +3,8 @@ layout: work
 navigation: horizontal
 title: Revamping Course Registration  - Andrew Pucci
 description: Portfolio piece showing the process used to revamp academic course registration.
-previous: understanding-justcode-users
-next: carnation-city-mall-blueprints
+backward: understanding-justcode-users
+forward: carnation-city-mall-blueprints
 ---
 # Revamping Course Registration
 ![Revamping Course Registration](/img/course-selection.png)
