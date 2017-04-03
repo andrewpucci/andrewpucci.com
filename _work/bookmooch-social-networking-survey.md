@@ -3,8 +3,8 @@ layout: work
 navigation: horizontal
 title: BookMooch Social Networking Survey - Andrew Pucci
 description: Portfolio piece showing how a set of surveys was completed for BookMooch.
-previous: young-professionals-of-akron-usability-study
-next: visual-design-of-telerik-analytics
+backward: young-professionals-of-akron-usability-study
+forward: employee-tool
 ---
 # BookMooch Social Networking Survey
 ![BookMooch Social Networking Survey](/img/bookmooch-survey.png)
