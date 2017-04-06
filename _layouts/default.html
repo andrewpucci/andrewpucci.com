@@ -1,49 +1,56 @@
 <!doctype html>
 <html class="no-js" lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{{ page.title }}</title>
-    <meta name="description" content="{{ page.description }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{{ page.title }}</title>
+        <meta name="description" content="{{ page.description }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=152">
 
-    <link rel="shortcut icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=16">
-    <link rel="apple-touch-icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=152">
+        <link rel="stylesheet" href="css/normalize.min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="/css/custom-icons.css">
+        <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans|Oswald|Quicksand" rel="stylesheet">
 
-    <link rel="stylesheet" href="/css/normalize.min.css">
-    <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/custom-icons.css">
-    <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans|Oswald|Quicksand" rel="stylesheet">
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
 
-    <script src="/js/vendor/modernizr-2.6.2.min.js"></script>
-  </head>
-  <body>
-    <!--[if lt IE 8]>
-      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://outdatedbrowser.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
+        {% if page.navigation == "horizontal" %}
+          {% include horizontal-nav.html %}
+            <article>
+            {{ content }}
+            </article>
+        {% elsif page.navigation == "vertical" %}
+          {% include vertical-nav.html %}
+        {% else %}
+        {% endif %}
 
-    {% if page.navigation == "horizontal" %}
-      {% include horizontal-nav.html %}
-      <article>
-      {{ content }}
-      </article>
-    {% elsif page.navigation == "vertical" %}
-      {% include vertical-nav.html %}
-    {% else %}
-    {% endif %}
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
-    <!-- http://www.cssnewbie.com/using-javascript-to-style-active-navigation-elements/ -->
-    <script type="text/javascript">
-    (function() {
-      aObj = document.getElementById('primary-nav').getElementsByTagName('a');
-      for(i=0;i<aObj.length;i++) {
-        if(document.location.href.indexOf(aObj[i].href)>=0) {
-          aObj[i].className='selected';
-        }
-      }
-    })();
-    </script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
 
-    {% include analytics.html %}
-  </body>
+        <!-- http://www.cssnewbie.com/using-javascript-to-style-active-navigation-elements/ -->
+        <script type="text/javascript">
+        (function() {
+          aObj = document.getElementById('primary-nav').getElementsByTagName('a');
+          for(i=0;i<aObj.length;i++) {
+            if(document.location.href.indexOf(aObj[i].href)>=0) {
+              aObj[i].className='selected';
+            }
+          }
+        })();
+        </script>
+
+        {% include analytics.html %}
+    </body>
 </html>
