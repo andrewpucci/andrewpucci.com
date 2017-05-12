@@ -1,0 +1,65 @@
+- name: employee-tool
+  title: Society of Grownups Employee Tool
+  imgurl: /img/employee-tool.jpg
+  url: /work/employee-tool
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: society-of-grownups-website
+  title: Society of Grownups Website
+  imgurl: /img/grownup-goals.jpg
+  url: /work/society-of-grownups-website
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: visual-design-of-telerik-analytics
+  title: Visual Design of Telerik Analytics
+  imgurl: /img/analytics-design.png
+  url: /work/visual-design-of-telerik-analytics
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: improving-telerik-product-documentation
+  title: Improving Telerik Product Documentation
+  imgurl: /img/kendoui-docs.png
+  url: /work/improving-telerik-product-documentation
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: lunchboat-mobile-app-interaction-flow
+  title: LunchBoat Mobile App Interaction Flow
+  imgurl: /img/lunchboat-interactionflow.png
+  url: /work/lunchboat-mobile-app-interaction-flow
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: understanding-justcode-users
+  title: Understanding JustCode Users
+  imgurl: /img/improving-justcode.png
+  url: /work/society-of-grownups-website
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: revamping-course-registration
+  title: Revamping Course Registration
+  imgurl: /img/course-selection.png
+  url: /work/revamping-course-registration
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: carnation-city-mall-blueprints
+  title: Carnation City Mall Blueprints
+  imgurl: /img/carnation-blueprint.png
+  url: /work/carnation-city-mall-blueprints
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: local-yokel-foods-paper-prototype
+  title: Local Yokel Foods Paper Prototype
+  imgurl: /img/paper-prototype.png
+  url: /work/local-yokel-foods-paper-prototype
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: young-professionals-of-akron-usability-study
+  title: Young Professionals of Akron Usability Study
+  imgurl: /img/ypa-eyetracking.png
+  url: /work/young-professionals-of-akron-usability-study
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
+
+- name: bookmooch-social-networking-survey
+  title: BookMooch Social Networking Survey
+  imgurl: /img/bookmooch-survey.png
+  url: /work/bookmooch-social-networking-survey
+  content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
