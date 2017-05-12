@@ -5,9 +5,9 @@ title: Society of Grownups Website - Andrew Pucci
 description: Portfolio piece showing the design process for the Society of Grownups website.
 backward: employee-tool
 forward: visual-design-of-telerik-analytics
+hero: /img/grownup-goals.jpg
+hero-title: Society of Grownups Website
 ---
-# Society of Grownups Website
-![Society of Grownups Website](/img/grownup-goals.jpg)
 
 ## Business Problem
 [Society of Grownups](https://www.societyofgrownups.com) needed a way to help its customers, affectionately called Grownups, to start thinking about the big goals they might have for their lives. These goals were used to help our financial planners build a useful path forward for each Grownup.

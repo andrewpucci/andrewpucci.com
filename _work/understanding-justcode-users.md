@@ -5,9 +5,9 @@ title: Understanding JustCode Users - Andrew Pucci
 description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
 backward: lunchboat-mobile-app-interaction-flow
 forward: revamping-course-registration
+hero: /img/improving-justcode.png
+hero-title: Understanding JustCode Users
 ---
-# Understanding JustCode Users
-![Understanding JustCode Users](/img/improving-justcode.png)
 
 ## Business Problem
 From talking with the support team, the [JustCode](http://www.telerik.com/products/justcode.aspx) product team had a hunch that they could probably improve some areas of their product. They enlisted me to help them understand what was and was not working for their users.

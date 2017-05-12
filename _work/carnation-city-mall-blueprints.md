@@ -5,9 +5,9 @@ title: Carnation City Mall Blueprints - Andrew Pucci
 description: Portfolio piece showing how blueprints were created for Carnation City Mall.
 backward: revamping-course-registration
 forward: local-yokel-foods-paper-prototype
+hero: /img/carnation-blueprint.png
+hero-title: Carnation City Mall Blueprints
 ---
-# Carnation City Mall Blueprints
-![Carnation City Mall Blueprints](/img/carnation-blueprint.png)
 
 ## Business Problem
 The Carnation City Mall website was not supplying critical information needed by its users. As part of a graduate school  study, my team was assigned to determine how the site could be of better use to their shoppers.

@@ -5,9 +5,9 @@ title: LunchBoat Mobile App Interaction Flow  - Andrew Pucci
 description: Portfolio piece showing the ideation process for the LunchBoat mobile app.
 backward: improving-telerik-product-documentation
 forward: understanding-justcode-users
+hero: /img/lunchboat-interactionflow.png
+hero-title: LunchBoat Mobile App Interaction Flow
 ---
-# LunchBoat Mobile App Interaction Flow
-![LunchBoat Mobile App Interaction Flow](/img/lunchboat-interactionflow.png)
 
 ## Business Problem
 Have you ever gone to lunch, only to realize that your co-worker is already in line a few people ahead of you? In our office, this happened way too often, so we decided to create an app to make it easier to find out what everyone had planned for lunch.
