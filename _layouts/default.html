@@ -36,6 +36,9 @@
             </article>
         {% elsif page.navigation == "vertical" %}
           {% include vertical-nav.html %}
+
+        {% if page.content-type == "front" %}
+          {% include front-page.html %}
         {% else %}
         {% endif %}
 
