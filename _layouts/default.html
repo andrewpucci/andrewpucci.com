@@ -24,7 +24,7 @@
             <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
         <![endif]-->
     </head>
-    <body>
+    <body class="grey lighten-4">
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -49,6 +49,11 @@
         {% else %}
         {% endif %}
 
+        <div class="container">
+          {{ content }}
+          {% else %}
+          {% endif %}
+        </div>
       
       {% include footer.html %}
 
