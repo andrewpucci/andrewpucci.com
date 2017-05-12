@@ -5,9 +5,9 @@ title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
 backward: visual-design-of-telerik-analytics
 forward: lunchboat-mobile-app-interaction-flow
+hero: /img/kendoui-docs.png
+hero-title: Improving Telerik Product Documentation
 ---
-# Improving Telerik Product Documentation
-![Improving Telerik Product Documentation](/img/kendoui-docs.png)
 
 ## Business Problem
 It was discovered that some customers were having trouble finding what they were looking for when using online support tools such as the forums, documentation, and knowledgebases, causing an excessive burden on the support team, who routinely had to answer tickets dealing with material that was already available to the customer. This project was meant to help reduce the menial ticket load of the support staff.

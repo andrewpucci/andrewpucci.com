@@ -5,9 +5,9 @@ title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
 backward: local-yokel-foods-paper-prototype
 forward: bookmooch-social-networking-survey
+hero: /img/ypa-eyetracking.png
+hero-title: Young Professionals of Akron Usability Study
 ---
-# Young Professionals of Akron Usability Study
-![Young Professionals of Akron Usability Study](/img/ypa-eyetracking.png)
 
 ## Business Problem
 A small team and I set out to determine if the current organization of the Young Professionals of Akron (YPA) website facilitates easy navigation and the simple completion of common tasks. We also wanted to identify areas for improvement specific to menu options, titles, and actions that may be completed at the YPA website.
