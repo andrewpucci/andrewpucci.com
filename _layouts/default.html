@@ -3,15 +3,21 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
         <title>{{ page.title }}</title>
         <meta name="description" content="{{ page.description }}">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="apple-touch-icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=152">
 
+<!--
         <link rel="stylesheet" href="/css/normalize.min.css">
         <link rel="stylesheet" href="/css/main.css">
-        <link rel="stylesheet" href="/css/custom-icons.css">
+-->        <link rel="stylesheet" href="/css/custom-icons.css">
         <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans|Oswald|Quicksand" rel="stylesheet">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+        <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 
         <!--[if lt IE 9]>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -52,5 +58,10 @@
         </script>
 
         {% include analytics.html %}
+
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="/js/materialize.js"></script>
+      <script src="/js/init.js"></script>
+
     </body>
 </html>
