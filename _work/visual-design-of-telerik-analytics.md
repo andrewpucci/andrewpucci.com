@@ -1,6 +1,6 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Visual Design of Telerik Analytics - Andrew Pucci
 description: Portfolio piece showing the process used to design Telerik Analytics.
 backward: society-of-grownups-website

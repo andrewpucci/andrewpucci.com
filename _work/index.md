@@ -1,6 +1,6 @@
 ---
 layout: default
-content-type: work
+content-type: collection
 title: My Work - Andrew Pucci
 description: Portfolio of Andrew Pucci's user experience design work.
 ---

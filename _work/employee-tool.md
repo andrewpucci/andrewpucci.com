@@ -1,6 +1,6 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Society of Grownups Employee Tool - Andrew Pucci
 description: Portfolio piece showing how usability studies were conducted to improve an internal tool at Society of Grownups.
 backward: bookmooch-social-networking-survey

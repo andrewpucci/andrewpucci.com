@@ -1,6 +1,6 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: BookMooch Social Networking Survey - Andrew Pucci
 description: Portfolio piece showing how a set of surveys was completed for BookMooch.
 backward: young-professionals-of-akron-usability-study

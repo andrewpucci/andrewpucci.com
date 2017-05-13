@@ -1,6 +1,6 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Society of Grownups Website - Andrew Pucci
 description: Portfolio piece showing the design process for the Society of Grownups website.
 backward: employee-tool
