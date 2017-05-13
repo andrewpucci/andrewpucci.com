@@ -1,6 +1,6 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
 backward: visual-design-of-telerik-analytics
