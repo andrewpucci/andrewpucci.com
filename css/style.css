@@ -6,6 +6,15 @@
  * Made By MaterializeCSS.com
  */
 
+/* Browser upgrade warning from HTML5 Boilerplate */
+.browserupgrade {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+/*------USER DEFINED STYLES-------*/
 
 html { 
     font-size: 16px;
@@ -29,6 +38,36 @@ h1,h2,h3,h4,h5,h6 {
   font-family: 'Oswald', sans-serif;
   text-transform: uppercase;
   margin: 1.8rem 0 1rem 0;
+}
+
+article h1 {
+  font-size: 2.4rem;
+}
+
+article h2 {
+  font-size: 2.0rem;
+}
+
+article h3 {
+  font-size: 1.8rem;
+}
+
+article h4 {
+  font-size: 1.4rem;
+}
+
+article h5 {
+  font-size: 1.2rem;
+}
+
+article h6 {
+  font-size: 1rem;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
 }
 
 nav .brand-logo img {
@@ -110,11 +149,6 @@ p {
   font-size: inherit;
 }
 
-footer.page-footer {
-  margin: 0;
-}
-
-/*------USER DEFINED STYLES-------*/
 #portfolio img {
   width: 100%;
   display: block;
@@ -149,32 +183,7 @@ footer.page-footer {
   /* IE6-9 */
 }
 
-article h1 {
-  font-size: 2.4rem;
+footer.page-footer {
+  margin: 0;
 }
 
-article h2 {
-  font-size: 2.0rem;
-}
-
-article h3 {
-  font-size: 1.8rem;
-}
-
-article h4 {
-  font-size: 1.4rem;
-}
-
-article h5 {
-  font-size: 1.2rem;
-}
-
-article h6 {
-  font-size: 1rem;
-}
-
-.card-title {
-  font-size: 1rem;
-  font-family: 'Oswald', sans-serif;
-  text-transform: uppercase;
-}
