@@ -1,5 +1,5 @@
 - name: employee-tool
-  title: Society of Grownups Employee Tool
+  title: Society of Grownups Employee&nbsp;Tool
   imgurl: /img/employee-tool.jpg
   url: /work/employee-tool
   content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
@@ -11,7 +11,7 @@
   content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
 
 - name: visual-design-of-telerik-analytics
-  title: Visual Design of Telerik Analytics
+  title: Visual Design of Telerik&nbsp;Analytics
   imgurl: /img/analytics-design.png
   url: /work/visual-design-of-telerik-analytics
   content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
@@ -47,7 +47,7 @@
   content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
 
 - name: local-yokel-foods-paper-prototype
-  title: Local Yokel Foods Paper Prototype
+  title: Local Yokel Foods Paper&nbsp;Prototype
   imgurl: /img/paper-prototype.png
   url: /work/local-yokel-foods-paper-prototype
   content: I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.
