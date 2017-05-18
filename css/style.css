@@ -36,12 +36,18 @@ nav .brand-logo img {
   height: 4rem;
 }
 
-nav ul a:hover {
+nav li a:hover {
   background-color: #f06292;
   color: #fff;
 }
 
-.side-nav li > a:hover {
+.side-nav li {
+  color: #444;
+  font-family: 'Quicksand', sans-serif;
+  text-transform: uppercase;
+}
+
+.side-nav li a:hover {
   background-color: #f06292;
   color: #fff;
 }
