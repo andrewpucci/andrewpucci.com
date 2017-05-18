@@ -28,21 +28,23 @@
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <div class="navbar-fixed">
-          <nav class="white" role="navigation">
-            <div class="nav-wrapper container">
-              <a id="logo-container" href="/" class="brand-logo"><img src="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=120" alt="Profile picture of Andrew Pucci"></a>
-              <ul class="right hide-on-med-and-down">
-                {% include nav.html %}
-              </ul>
+        <header>
+          <div class="navbar-fixed">
+            <nav class="white" role="navigation">
+              <div class="nav-wrapper container">
+                <a id="logo-container" href="/" class="brand-logo"><img src="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=120" alt="Profile picture of Andrew Pucci"></a>
+                <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons pink-text text-lighten-2">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                  {% include nav.html %}
+                </ul>
+              </div>
+            </nav>
+          </div>
+          <ul id="nav-mobile" class="side-nav">
+            {% include nav.html %}
+          </ul>
+        </header>
 
-              <ul id="nav-mobile" class="side-nav">
-                {% include nav.html %}
-              </ul>
-              <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons pink-text text-lighten-2">menu</i></a>
-            </div>
-          </nav>
-        </div>
 
         {% if page.content-type == "front" %}
           {% include front-page.html %}
