@@ -172,3 +172,9 @@ article h5 {
 article h6 {
   font-size: 1rem;
 }
+
+.card-title {
+  font-size: 1rem;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+}
