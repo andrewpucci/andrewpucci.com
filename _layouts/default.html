@@ -63,13 +63,15 @@
         {% endif %}
 
         <div class="container">
-          {{ content }}
-          {% if page.content-type == "collection" %}
-            <div id="portfolio" class="row">
-              {% include card.html %}
-            </div>
-          {% else %}
-          {% endif %}
+          <article>
+            {{ content }}
+            {% if page.content-type == "collection" %}
+              <div id="portfolio" class="row">
+                {% include card.html %}
+              </div>
+            {% else %}
+            {% endif %}
+          </article>
         </div>
       
       {% include footer.html %}
