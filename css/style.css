@@ -14,9 +14,9 @@ html {
   font-family: 'Alegreya Sans', sans-serif;
 } 
 
-p, article li {
-    font-size: 1.2rem;
-    line-height: 1.7rem;
+p, article, footer li {
+  font-size: 1.2rem;
+  line-height: 1.7rem;
 }
 
 p {
