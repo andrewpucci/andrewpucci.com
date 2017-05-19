@@ -41,35 +41,34 @@
     </header>
 
 
-        {% if page.content-type == "front" %}
-          {% include front-page.html %}
-        {% elsif page.content-type == "artifact" %}
-          <div id="index-banner" class="parallax-container">
-            <div class="section no-pad-bot">
-              <div class="container">
-                <br><br>
-                <h1 class="header center pink-text text-lighten-2">{{ page.hero-title }}</h1>
-                <br><br>
-              </div>
-            </div>
-            <div class="parallax"><img src="{{ page.hero }}" alt="Unsplashed background img 1"></div>
+    {% if page.content-type == "front" %}
+      {% include front-page.html %}
+    {% elsif page.content-type == "collection" or page.content-type == "artifact" %}
+      {% if page.content-type == "artifact" %}
+        <div id="index-banner" class="parallax-container valign-wrapper artifact">
+          <div class="container">
+            <h1 class="header center white-text">{{ page.hero-title }}</h1>
           </div>
-        {% else %}
-        {% endif %}
-
-        <div class="container">
-          <article>
-            {{ content }}
-            {% if page.content-type == "collection" %}
-              <div id="portfolio" class="row">
-                {% include card.html %}
-              </div>
-            {% else %}
-            {% endif %}
-          </article>
+          <div class="parallax"><img src="{{ page.hero }}" alt="{{ page.hero-title }}"></div>
         </div>
-      
-      {% include footer.html %}
+      {% else %}
+      {% endif %}
+
+      <div class="container">
+        <article>
+          {{ content }}
+          {% if page.content-type == "collection" %}
+            <div id="portfolio" class="row">
+              {% include card.html %}
+            </div>
+          {% else %}
+          {% endif %}
+        </article>
+      </div>
+    {% else %}
+    {% endif %}
+    
+    {% include footer.html %}
 
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="/js/materialize.js"></script>
