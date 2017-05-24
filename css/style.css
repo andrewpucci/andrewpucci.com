@@ -101,6 +101,16 @@ nav .brand-logo {
   text-transform: uppercase;
 }
 
+blockquote {
+  border-left: 5px solid #f06292;
+}
+
+cite img {
+  height: 48px;
+  width: 48px;
+  vertical-align: middle;
+}
+
 .button-collapse {
   color: #26a69a;
 }
