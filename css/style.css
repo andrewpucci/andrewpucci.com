@@ -151,7 +151,7 @@ cite img {
 }
 
 #index-banner.artifact img {
-  filter: grayscale(100%);
+  filter: blur(7px) grayscale(100%);
 }
 
 .icon-block {
