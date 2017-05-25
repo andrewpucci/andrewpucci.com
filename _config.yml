@@ -3,7 +3,7 @@ exclude:  ["*.sublime-project", "*.sublime-workspace"]
 permalink: /blog/:year/:month/:day/:title.html
 
 collections:
-  work:
+  portfolio:
     output: true
 
 analytics: UA-XXXXXXXX-1
