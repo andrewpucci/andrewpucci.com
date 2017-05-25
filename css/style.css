@@ -24,8 +24,13 @@ p {
   line-height: 2rem;
 }
 
-p a {
+p a, cite a {
   color: rgba(231, 106, 162, 1);
+  transition: color .3s ease;
+}
+
+p a:hover, cite a:hover {
+  color: rgba(248, 187, 208, 1);
 }
 
 h1,h2,h3,h4,h5,h6 {
