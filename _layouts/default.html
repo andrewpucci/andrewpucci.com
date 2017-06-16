@@ -44,7 +44,6 @@
     {% if page.content-type == "front" %}
       {% include front-page.html %}
 
-
       <div class="carousel white">
       {% for card in site.data.cards %}
         <div class="carousel-item">
@@ -82,7 +81,11 @@
           {{ content }}
           {% if page.content-type == "collection" %}
             <div class="row">
-              {% include card.html %}
+              {% for card in site.data.cards %}
+                <div class="col s12 m6 xl4">
+                  {% include card.html %}
+                </div>
+              {% endfor %}
             </div>
           {% else %}
           {% endif %}
