@@ -1,20 +1,14 @@
-{% for card in site.data.cards %}
-
-<div class="col s12 m6 xl4">
-    <div class="card">
-        <div class="card-image">
-            <div class="card-image-gradient">
-                <img src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
-            </div>
-            <span class="card-title">{{ card.title }}</span>
+<div class="card">
+    <div class="card-image">
+        <div class="card-image-gradient">
+            <img src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
         </div>
-        <div class="card-content">
-            <p>{{ card.content }}</p>
-        </div>
-        <div class="card-action">
-            <a href="{{ card.url }}">See more</a>
-        </div>
+        <span class="card-title">{{ card.title }}</span>
+    </div>
+    <div class="card-content">
+        <p>{{ card.content }}</p>
+    </div>
+    <div class="card-action">
+        <a href="{{ card.url }}">See more</a>
     </div>
 </div>
-
-{% endfor %}
