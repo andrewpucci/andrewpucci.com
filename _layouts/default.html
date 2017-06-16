@@ -87,6 +87,25 @@
                 </div>
               {% endfor %}
             </div>
+          {% elsif page.content-type == "artifact" %}
+            <div class="row">
+              {% for card in site.data.cards %}
+                {% if card.name == page.backward %} 
+                  <div class="col s12 m6 xl4 offset-xl2">               
+                    {% include card.html %}               
+                  </div>
+                {% else %}
+                {% endif %}
+              {% endfor %}
+              {% for card in site.data.cards %}
+                {% if card.name == page.forward %} 
+                  <div class="col s12 m6 xl4">               
+                    {% include card.html %}               
+                  </div>
+                {% else %}
+                {% endif %}
+              {% endfor %}
+            </div>
           {% else %}
           {% endif %}
         </article>
