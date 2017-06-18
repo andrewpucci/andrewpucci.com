@@ -3,3 +3,5 @@ node_modules/
 _site/
 *.sublime-project
 *.sublime-workspace
+favicon.ico
+.htaccess
