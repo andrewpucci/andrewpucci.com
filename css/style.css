@@ -112,6 +112,12 @@ table caption {
   text-align: left; 
 }
 
+article .material-icons {
+  font-size: 1.2rem;
+  line-height: 1.7rem;
+  vertical-align: top;
+}
+
 nav .brand-logo img {
   height: 3.5rem;
 }
