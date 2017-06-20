@@ -43,28 +43,6 @@
 
     {% if page.content-type == "front" %}
       {% include front-page.html %}
-
-      <div class="carousel white">
-      {% for card in site.data.cards %}
-        <div class="carousel-item">
-          <div class="card">
-              <div class="card-image">
-                  <div class="card-image-gradient">
-                      <img src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
-                  </div>
-                  <span class="card-title">{{ card.title }}</span>
-              </div>
-              <div class="card-content">
-                  <p>{{ card.content }}</p>
-              </div>
-              <div class="card-action">
-                  <a href="{{ card.url }}">See more</a>
-              </div>
-          </div>
-        </div>  
-      {% endfor %}
-      </div>
-
     {% elsif page.content-type == "collection" or page.content-type == "artifact" %}
       {% if page.content-type == "artifact" %}
         <div id="index-banner" class="parallax-container valign-wrapper artifact">
@@ -87,28 +65,33 @@
                 </div>
               {% endfor %}
             </div>
-          {% elsif page.content-type == "artifact" %}
-            <div class="row">
-              {% for card in site.data.cards %}
-                {% if card.name == page.backward %} 
-                  <div class="col s12 m6 xl4 offset-xl2">               
-                    {% include card.html %}               
-                  </div>
-                {% else %}
-                {% endif %}
-              {% endfor %}
-              {% for card in site.data.cards %}
-                {% if card.name == page.forward %} 
-                  <div class="col s12 m6 xl4">               
-                    {% include card.html %}               
-                  </div>
-                {% else %}
-                {% endif %}
-              {% endfor %}
-            </div>
           {% else %}
           {% endif %}
         </article>
+      </div>
+    {% else %}
+    {% endif %}
+
+    {% if page.content-type == "front" or page.content-type == "artifact" %}
+      <div class="carousel white">
+      {% for card in site.data.cards %}
+        <div class="carousel-item">
+          <div class="card">
+              <div class="card-image">
+                  <div class="card-image-gradient">
+                      <img src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
+                  </div>
+                  <span class="card-title">{{ card.title }}</span>
+              </div>
+              <div class="card-content">
+                  <p>{{ card.content }}</p>
+              </div>
+              <div class="card-action">
+                  <a href="{{ card.url }}">See more</a>
+              </div>
+          </div>
+        </div>  
+      {% endfor %}
       </div>
     {% else %}
     {% endif %}
