@@ -1,56 +1,107 @@
 <!doctype html>
 <html class="no-js" lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>{{ page.title }}</title>
-        <meta name="description" content="{{ page.description }}">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="http://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=152">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{{ page.title }}</title>
+    <meta name="description" content="{{ page.description }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="/css/normalize.min.css">
-        <link rel="stylesheet" href="/css/main.css">
-        <link rel="stylesheet" href="/css/custom-icons.css">
-        <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans|Oswald|Quicksand" rel="stylesheet">
+    <link rel="stylesheet" href="/css/custom-icons.css">
+    <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans%7COswald%7CQuicksand" rel="stylesheet">
 
-        <!--[if lt IE 9]>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
-        <![endif]-->
-    </head>
-    <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen"/>
+    <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen"/>
 
-        {% if page.navigation == "horizontal" %}
-          {% include horizontal-nav.html %}
-            <article>
-            {{ content }}
-            </article>
-        {% elsif page.navigation == "vertical" %}
-          {% include vertical-nav.html %}
-        {% else %}
-        {% endif %}
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+    <![endif]-->
+  </head>
+  <body class="grey lighten-4">
+    <!--[if lt IE 8]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <header>
+      <div class="navbar-fixed">
+        <nav class="white">
+          <div class="nav-wrapper container">
+            <a id="logo-container" href="/" class="brand-logo"><img src="https://gravatar.com/avatar/1ca3a88cb9ebe75c008ae39add2bb543?s=120" alt="Profile picture of Andrew Pucci" class="circle"></a>
+            <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons pink-text text-lighten-2">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+              {% include nav.html %}
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <ul id="nav-mobile" class="side-nav">
+        {% include nav.html %}
+      </ul>
+    </header>
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
 
-        <script src="/js/plugins.js"></script>
-        <script src="/js/main.js"></script>
+    {% if page.content-type == "front" %}
+      {% include front-page.html %}
+    {% elsif page.content-type == "collection" or page.content-type == "artifact" %}
+      {% if page.content-type == "artifact" %}
+        <div id="index-banner" class="parallax-container valign-wrapper artifact">
+          <div class="container">
+            <h1 class="header center white-text">{{ page.hero-title }}</h1>
+          </div>
+          <div class="parallax"><img src="{{ page.hero }}" alt="{{ page.hero-title }}"></div>
+        </div>
+      {% else %}
+      {% endif %}
 
-        <!-- http://www.cssnewbie.com/using-javascript-to-style-active-navigation-elements/ -->
-        <script type="text/javascript">
-        (function() {
-          aObj = document.getElementById('primary-nav').getElementsByTagName('a');
-          for(i=0;i<aObj.length;i++) {
-            if(document.location.href.indexOf(aObj[i].href)>=0) {
-              aObj[i].className='selected';
-            }
-          }
-        })();
-        </script>
+      <div class="container">
+        <article>
+          {{ content }}
+          {% if page.content-type == "collection" %}
+            <div class="row">
+              {% for card in site.data.cards %}
+                <div class="col s12 m6 xl4">
+                  {% include card.html %}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+          {% endif %}
+        </article>
+      </div>
+    {% else %}
+    {% endif %}
 
-        {% include analytics.html %}
-    </body>
+    {% if page.content-type == "front" or page.content-type == "artifact" %}
+      <div class="carousel white">
+      {% for card in site.data.cards %}
+        <div class="carousel-item">
+          <div class="card">
+              <div class="card-image">
+                  <div class="card-image-gradient">
+                      <img src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
+                  </div>
+                  <span class="card-title">{{ card.title }}</span>
+              </div>
+              <div class="card-content">
+                  <p>{{ card.content }}</p>
+              </div>
+              <div class="card-action">
+                  <a href="{{ card.url }}">See more</a>
+              </div>
+          </div>
+        </div>  
+      {% endfor %}
+      </div>
+    {% else %}
+    {% endif %}
+    
+    {% include footer.html %}
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="/js/materialize.js"></script>
+    <script src="/js/init.js"></script>
+
+    {% include analytics.html %}
+  </body>
 </html>
