@@ -1,13 +1,13 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Visual Design of Telerik Analytics - Andrew Pucci
 description: Portfolio piece showing the process used to design Telerik Analytics.
 backward: society-of-grownups-website
 forward: improving-telerik-product-documentation
+hero: /img/analytics-design.png
+hero-title: Visual Design of Telerik Analytics
 ---
-# Visual Design of Telerik Analytics
-![Visual Design of Telerik Analytics](/img/analytics-design.png)
 
 ## Business Problem
 When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-acquires-danish-cross-platform-app-analytics-software-maker-eqatec/) in early 2013, it quickly became a goal to replace the existing Silverlight-based web interface with an HTML5 and CSS3 based interface. When I was assigned to the project, I was tasked with updating the interface design to match it with the design of existing Telerik products.
