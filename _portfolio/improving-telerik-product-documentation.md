@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
-backward: visual-design-of-telerik-analytics
-forward: lunchboat-mobile-app-interaction-flow
+name: improving-telerik-product-documentation
 hero: /img/kendoui-docs.png
 hero-title: Improving Telerik Product Documentation
 ---
