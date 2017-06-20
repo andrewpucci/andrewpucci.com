@@ -118,6 +118,12 @@ article .material-icons {
   vertical-align: top;
 }
 
+.center-image
+{
+    margin: 1rem auto;
+    display: block;
+}
+
 nav .brand-logo img {
   height: 3.5rem;
 }
