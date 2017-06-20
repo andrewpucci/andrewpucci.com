@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
-backward: local-yokel-foods-paper-prototype
-forward: bookmooch-social-networking-survey
+name: young-professionals-of-akron-usability-study
 hero: /img/ypa-eyetracking.png
 hero-title: Young Professionals of Akron Usability Study
 ---

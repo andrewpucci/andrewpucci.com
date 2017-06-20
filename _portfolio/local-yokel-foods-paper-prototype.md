@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Local Yokel Foods Paper Prototype - Andrew Pucci
 description: Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.
-backward: carnation-city-mall-blueprints
-forward: young-professionals-of-akron-usability-study
+name: local-yokel-foods-paper-prototype
 hero: /img/paper-prototype.png
 hero-title: Local Yokel Foods Paper Prototype
 ---

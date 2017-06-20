@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Carnation City Mall Blueprints - Andrew Pucci
 description: Portfolio piece showing how blueprints were created for Carnation City Mall.
-backward: revamping-course-registration
-forward: local-yokel-foods-paper-prototype
+name: carnation-city-mall-blueprints
 hero: /img/carnation-blueprint.png
 hero-title: Carnation City Mall Blueprints
 ---

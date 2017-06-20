@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: LunchBoat Mobile App Interaction Flow  - Andrew Pucci
 description: Portfolio piece showing the ideation process for the LunchBoat mobile app.
-backward: improving-telerik-product-documentation
-forward: understanding-justcode-users
+name: lunchboat-mobile-app-interaction-flow
 hero: /img/lunchboat-interactionflow.png
 hero-title: LunchBoat Mobile App Interaction Flow
 ---

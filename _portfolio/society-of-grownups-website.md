@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Society of Grownups Website - Andrew Pucci
 description: Portfolio piece showing the design process for the Society of Grownups website.
-backward: employee-tool
-forward: visual-design-of-telerik-analytics
+name: society-of-grownups-website
 hero: /img/grownup-goals.jpg
 hero-title: Society of Grownups Website
 ---
