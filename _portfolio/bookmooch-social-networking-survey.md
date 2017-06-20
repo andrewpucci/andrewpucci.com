@@ -1,13 +1,13 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: BookMooch Social Networking Survey - Andrew Pucci
 description: Portfolio piece showing how a set of surveys was completed for BookMooch.
 backward: young-professionals-of-akron-usability-study
 forward: employee-tool
+hero: /img/bookmooch-survey.png
+hero-title: BookMooch Social Networking Survey
 ---
-# BookMooch Social Networking Survey
-![BookMooch Social Networking Survey](/img/bookmooch-survey.png)
 
 ## Business Problem
 [BookMooch](http://bookmooch.com/) is a community for exchanging used books; it lets you give away books you no longer need in exchange for books you really want. My team and I worked with the site's creator, John Buckman, to help him identify the sites that BookMoochers frequent, find out how Moochers learn about the different groups on these sites, and determine what takes place on these sites that could instead take place on BookMooch itself.

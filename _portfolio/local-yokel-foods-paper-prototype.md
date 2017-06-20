@@ -1,13 +1,13 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Local Yokel Foods Paper Prototype - Andrew Pucci
 description: Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.
 backward: carnation-city-mall-blueprints
 forward: young-professionals-of-akron-usability-study
+hero: /img/paper-prototype.png
+hero-title: Local Yokel Foods Paper Prototype
 ---
-# Local Yokel Foods Paper Prototype
-![Local Yokel Foods Paper Prototype](/img/paper-prototype.png)
 
 ## Business Problem
 Local Yokel Foods, an online farmer’s market company in Columbus, Ohio offers home delivery of produce from local and organic farmers. Customers can purchase fruits, vegetables, dairy, meat, breads, and specialty products via an online shopping cart and checkout.

@@ -1,13 +1,13 @@
 ---
-layout: work
-navigation: horizontal
+layout: default
+content-type: artifact
 title: Society of Grownups Employee Tool - Andrew Pucci
 description: Portfolio piece showing how usability studies were conducted to improve an internal tool at Society of Grownups.
 backward: bookmooch-social-networking-survey
 forward: society-of-grownups-website
+hero: /img/employee-tool.jpg
+hero-title: Society of Grownups Employee Tool
 ---
-# Society of Grownups Employee Tool
-![Society of Grownups Employee Tool](/img/employee-tool.jpg)
 
 ## Business Problem
 [Society of Grownups](https://www.societyofgrownups.com) opened its doors to the public in October 2014. A team of researchers, designers, and developers built a prototype of a tool to help employees know who was scheduled to visit each day and what the purpose of their visit was. As we had no experience with this business model and no directly comparable model to use as a template, we needed to iterate on the design quickly as we learned what obstacles our employees ran into.
