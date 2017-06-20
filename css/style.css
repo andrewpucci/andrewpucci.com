@@ -63,6 +63,17 @@ article h6 {
   font-size: 1rem;
 }
 
+article ul:not(.browser-default) {
+  list-style-type: initial; 
+  padding-left: 30px; 
+  margin-top: 10px; 
+  margin-bottom: 15px;
+}
+
+article ul:not(.browser-default) li {
+  list-style-type: initial;
+}
+
 .card-title {
   font-size: 1rem;
   font-family: 'Oswald', sans-serif;
