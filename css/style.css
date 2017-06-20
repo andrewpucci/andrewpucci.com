@@ -80,6 +80,38 @@ article ul:not(.browser-default) li {
   text-transform: uppercase;
 }
 
+table { 
+  border-collapse: collapse; 
+  border-spacing: 0; 
+  margin: 1.5em 0; 
+}
+
+tr:nth-child(odd) { 
+  background-color: rgba(59,50,38,0.15); 
+}
+
+th { 
+  font-size: 1em; 
+  vertical-align: middle; 
+  padding: 0.5em 0.75em; 
+  text-align: left; 
+}
+
+tr:first-child th {
+  text-align: center; 
+}
+
+td { 
+  vertical-align: text-top; 
+  text-align: center; 
+  padding: 0.5em 0.75em; 
+}
+
+table caption { 
+  caption-side: bottom; 
+  text-align: left; 
+}
+
 nav .brand-logo img {
   height: 3.5rem;
 }
