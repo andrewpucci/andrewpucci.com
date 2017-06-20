@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Revamping Course Registration  - Andrew Pucci
 description: Portfolio piece showing the process used to revamp academic course registration.
-backward: understanding-justcode-users
-forward: carnation-city-mall-blueprints
+name: revamping-course-registration
 hero: /img/course-selection.png
 hero-title: Revamping Course Registration
 ---

@@ -3,8 +3,7 @@ layout: default
 content-type: artifact
 title: Understanding JustCode Users - Andrew Pucci
 description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
-backward: lunchboat-mobile-app-interaction-flow
-forward: revamping-course-registration
+name: understanding-justcode-users
 hero: /img/improving-justcode.png
 hero-title: Understanding JustCode Users
 ---
