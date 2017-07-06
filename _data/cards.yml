@@ -1,3 +1,9 @@
+- name: redesigning-telerik-analytics
+  title: Redesiging Telerik&nbsp;Analytics
+  imgurl: /img/analytics-design.png
+  url: /portfolio/redesigning-telerik-analytics
+  content: Powerful real-time application analytics to grow user engagement, improve user experience, and navigate product growth.
+
 - name: employee-tool
   title: Society of Grownups Employee&nbsp;Tool
   imgurl: /img/employee-tool.jpg
@@ -9,12 +15,6 @@
   imgurl: /img/grownup-goals.jpg
   url: /portfolio/society-of-grownups-website
   content: The Webby Awards-winning website used by Society&nbsp;of&nbsp;Grownups customers to understand their financial goals.
-
-- name: visual-design-of-telerik-analytics
-  title: Visual Design of Telerik&nbsp;Analytics
-  imgurl: /img/analytics-design.png
-  url: /portfolio/visual-design-of-telerik-analytics
-  content: Powerful real-time application analytics to grow user engagement, improve user experience, and navigate product growth.
 
 - name: improving-telerik-product-documentation
   title: Improving Telerik Product Documentation
