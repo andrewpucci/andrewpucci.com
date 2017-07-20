@@ -34,6 +34,23 @@ However, as the project evolved, our effort was expanded to introduce Telerik An
 * Balsamiq 
 * Camtasia 
 * Skype
+<div class="carousel carousel-slider">
+    <a class="carousel-item" href="#one!"><img src="/img/CustomDashboards-01-CreateFirstDashboard.png"></a>
+    <a class="carousel-item" href="#two!"><img src="/img/CustomDashboards-02-CreateDashboardModal.png"></a>
+    <a class="carousel-item" href="#three!"><img src="/img/CustomDashboards-03-StartEditing.png"></a>
+    <a class="carousel-item" href="#four!"><img src="/img/CustomDashboards-04-SelectFeatures.png"></a>
+    <a class="carousel-item" href="#five!"><img src="/img/CustomDashboards-05-DragToGroup.png"></a>
+    <a class="carousel-item" href="#six!"><img src="/img/CustomDashboards-06-DragOnTarget.png"></a>
+    <a class="carousel-item" href="#seven!"><img src="/img/CustomDashboards-07-HoverOverFeature.png"></a>
+    <a class="carousel-item" href="#eight!"><img src="/img/CustomDashboards-08-EditFeatureModal.png"></a>
+    <a class="carousel-item" href="#nine!"><img src="/img/CustomDashboards-09-HoverOverGroup.png"></a>
+    <a class="carousel-item" href="#ten!"><img src="/img/CustomDashboards-10-GroupSelected.png"></a>
+    <a class="carousel-item" href="#eleven!"><img src="/img/CustomDashboards-11-DragToReorder.png"></a>
+    <a class="carousel-item" href="#twelve!"><img src="/img/CustomDashboards-12-AddtoCustDash.png"></a>
+    <a class="carousel-item" href="#thirteen!"><img src="/img/CustomDashboards-13-AddModal.png"></a>
+    <a class="carousel-item" href="#fourteen!"><img src="/img/CustomDashboards-14-SearchFails.png"></a>
+    <a class="carousel-item" href="#fifteen!"><img src="/img/CustomDashboards-15-CreateNewDashboard.png"></a>
+</div>
 
 ## Outcome 
 [Telerik Analytics](http://www.telerik.com/analytics) was launched on-time in early 2014 as part of the Telerik Platform unveiling. One of the largest pieces of previously non-existing functionality that I designed was the ability for users to create custom dashboards for their data.
