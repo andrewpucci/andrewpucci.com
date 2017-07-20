@@ -20,20 +20,18 @@ tools:
   - Skype
 ---
 
-## Business Problem 
-When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-acquires-danish-cross-platform-app-analytics-software-maker-eqatec/) in early 2013, the company was focused on replacing the existing Silverlight-based web interface with an HTML5 and CSS3 based interface. When I joined the project, I was responsible for updating the interface design, building consistency with existing Telerik products.
+## About Telerik Analytics
+Telerik Analytics is an application analytics service that enables you to get detailed metrics from your application. It allows you to track a number of aspects of your applications across multiple platforms, kind of like Google Analytics, but for your app. 
+
+When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-acquires-danish-cross-platform-app-analytics-software-maker-eqatec/) in early 2013, the company was focused on replacing the existing Silverlight-based web interface with an HTML5 and CSS3 based interface. I was brought on to the project to update the interface design, building consistency with existing Telerik products.
 
 ## Approach 
-At the onset of the project, it seemed that the goals were very simple. As the only designer on the project, I needed to work closely with the developers on the EQATEC team to update the visual design to fit with existing products. While there wasn't an existing style guide, objects were consistent enough throughout each product that I could make design decisions without having to get many people involved.
+At the onset of the project, it seemed that the goals were simple. As the only designer on the project, I needed to work closely with the developers on the EQATEC team to update the visual design to fit with existing products. While there wasn't an existing style guide, most objects were consistent enough throughout each product that I could make design decisions without having to get many people involved. I met with the product owner and lead developer on the EQATEC team to gather information about the users of the product, then got to work.
 
 However, as the project evolved, our effort was expanded to introduce Telerik Analytics into the [Telerik Platform](http://www.telerik.com/platform). This meant that a visual redesign quickly turned into a full-blown product experience redesign. I worked with designers from across all of the Platform products to create and implement a cohesive style guide and understand how users would expect to interact with the Analytics product throughout the entire ecosystem.
 
+As I worked through discussions with the product team and users, we became aware of the need for users to have a way to create their own dashboards. They needed a way to quickly see the information that mattered most to them and their stakeholders. To help with this, I designed the custom dashboard feature. You can see a few screenshots below.
 
-### Tools Used 
-* Adobe Illustrator 
-* Balsamiq 
-* Camtasia 
-* Skype
 <div class="carousel carousel-slider">
     <a class="carousel-item" href="#one!"><img src="/img/CustomDashboards-01-CreateFirstDashboard.png"></a>
     <a class="carousel-item" href="#two!"><img src="/img/CustomDashboards-02-CreateDashboardModal.png"></a>
