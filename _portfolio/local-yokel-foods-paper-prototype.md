@@ -6,6 +6,19 @@ description: Portfolio piece showing how a paper prototype was used to improve t
 name: local-yokel-foods-paper-prototype
 hero: /img/paper-prototype.png
 hero-title: Local Yokel Foods Paper Prototype
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Linda Hart
+  - name: Jeff Kreger
+    link: https://www.linkedin.com/in/jeffkreger/
+responsibilities:
+  - Wireframes
+  - Usability Study
+tools:
+  - Posterboard
+  - Sharpies
+  - Post-it notes
+  - Highlighters
 ---
 
 ## Business Problem
@@ -15,12 +28,6 @@ Because they are a new company with a somewhat innovative approach to grocery sh
 
 ## Approach
 The paper prototype testing team consisted of a facilitator, who directed the user in a series of tasks, a computer, who manipulated the paper interfaces to simulate computer interaction, and a note taker. Study participants were directed to complete various tasks typical of online customers. They were also asked their opinion about the ease of completing the tasks and suggestions for improvements. Between tests, the team made refinements in the interface to improve usability and correct any problems.
-
-### Tools Used
-* Posterboard
-* Sharpies
-* Post-it notes
-* Highlighters
 
 ## Outcome
 A list of recommendations was produced in order to increase the usability of the Local Yokel Foods website.

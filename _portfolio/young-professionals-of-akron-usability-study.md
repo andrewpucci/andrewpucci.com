@@ -6,11 +6,17 @@ description: Portfolio piece showing how eye-tracking was used to improve the Yo
 name: young-professionals-of-akron-usability-study
 hero: /img/ypa-eyetracking.png
 hero-title: Young Professionals of Akron Usability Study
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Heather Knable
+    link: https://www.linkedin.com/in/heather-johnson-9289a750/
+  - name: Tess Megla
+    link: https://www.linkedin.com/in/tessweavermegla
+responsibilities:
+  - Usability Study
+tools:
+  - Tobii (Eyetracking)
 ---
-## Team
--   Andrew Pucci
--   [Heather Knable](https://www.linkedin.com/in/heather-johnson-9289a750/)
--   [Tess Megla](https://www.linkedin.com/in/tessweavermegla)
 
 ### Goals of Testing
 

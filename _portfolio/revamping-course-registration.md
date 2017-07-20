@@ -6,6 +6,20 @@ description: Portfolio piece showing the process used to revamp academic course 
 name: revamping-course-registration
 hero: /img/course-selection.png
 hero-title: Revamping Course Registration
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Brian Buirge
+    link: https://www.linkedin.com/in/brian-buirge-4255368/
+  - name: Nisha Somnath
+    link: https://www.linkedin.com/in/nisom/
+responsibilities:
+  - Persona Development
+  - User Flows
+  - Interactive Prototype
+tools:
+  - LovelyCharts
+  - OpenOffice Draw & Impress
+  - Axure RP
 ---
 
 ## Business Problem
@@ -15,11 +29,6 @@ Registering for academic courses can be difficult. A small team and I endeavored
 As a team, we decided to start our research by completing a competitive analysis of a handful of existing course registration software systems, discovering and developing user personas, and mapping existing interaction and process flows.
 
 Once we had a good understanding of the user environment, we started sketching out workflows, interaction flows, and wireframes. The wireframes were then turned into interactive prototypes using Axure RP. These prototypes were iteratively tested and improved with undergraduate study participants.
-
-### Tools Used
-* LovelyCharts
-* OpenOffice Draw & Impress
-* Axure RP
 
 ## Outcome
 When we were comfortable with our experience design direction, we created high-fidelity wireframes which were used to present our design decisions.
