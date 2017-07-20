@@ -6,6 +6,18 @@ description: Portfolio piece showing the process used to design Telerik Analytic
 name: redesigning-telerik-analytics 
 hero: /img/analytics-design.png 
 hero-title: Redesigning Telerik Analytics 
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Thomas Høst Andersen
+    link: https://www.linkedin.com/in/thomas-høst-andersen-a98502/
+  - name: Kostadin Kushlev
+    link: https://www.linkedin.com/in/kostadinkushlev/
+responsibilities:
+  - Visual Design
+  - Interaction Design
+tools:
+  - Adobe Illustrator
+  - Skype
 ---
 
 ## Business Problem 
