@@ -6,6 +6,20 @@ description: Portfolio piece showing how surveys and interviews were used to und
 name: understanding-justcode-users
 hero: /img/improving-justcode.png
 hero-title: Understanding JustCode Users
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Chris Sells
+    link: https://www.linkedin.com/in/csells/
+responsibilities:
+  - Participant Recruitment
+  - Usability Studies
+  - Wireframes
+tools:
+  - Qualtrics
+  - Doodle (for participant scheduling)
+  - Skype and join.me
+  - Camtasia
+  - Photoshop
 ---
 
 ## Business Problem
@@ -15,13 +29,6 @@ From talking with the support team, the [JustCode](http://www.telerik.com/produc
 To help me understand how JustCode users were using the product, I designed a survey to find out which features of the product people were aware of and using (or not using). This survey was delivered to thousands of JustCode customers.
 
 Once I understood which features were causing the most confusion, I designed and ran a remote usability study with about ten participants to further understand how specific users were using these features.
-
-### Tools Used
-* Qualtrics
-* Doodle (for participant scheduling)
-* Skype and join.me
-* Camtasia
-* Photoshop
 
 ## Outcome
 After running the survey and usability studies, I compiled all of the results and delivered a few suggestions for usability improvements to the JustCode team. These suggestions were scheduled for implementation in future releases of the product.

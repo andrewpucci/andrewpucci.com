@@ -6,6 +6,17 @@ description: Portfolio piece showing how usability studies were conducted to imp
 name: employee-tool
 hero: /img/employee-tool.jpg
 hero-title: Society of Grownups Employee Tool
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Kim Miller
+    link: https://www.linkedin.com/in/kim-miller-a14ba033/
+  - name: Michael Pelletier
+    link: https://www.linkedin.com/in/mkpelletier/
+responsibilities:
+  - In-person usability studies
+tools:
+  - Github
+  - HTML/CSS
 ---
 
 ## Business Problem
@@ -13,9 +24,6 @@ hero-title: Society of Grownups Employee Tool
 
 ## Approach
 I set up quick and dirty usability studies with members of the community team (the team members who interacted directly with our customers) to understand if they were having any problems using the customer check in functionality. I asked them to perform simple tasks and watched as they attempted to complete them on an iPad, taking notes where things weren't working as well as we thought they might.
-
-### Tools Used
-* In-person usability studies
 
 ## Outcome
 As I noticed where our employees were getting tripped up on the new interface, I worked closely with an internal developer to make changes. This mostly consisted of crude drawings, short conversations, and issue reports in Github. Occasionally, I actually made changes to the code myself to address minor spacing or wording issues.
