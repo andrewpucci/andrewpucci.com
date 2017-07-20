@@ -6,6 +6,20 @@ description: Portfolio piece showing how Telerik product documentation was impro
 name: improving-telerik-product-documentation
 hero: /img/kendoui-docs.png
 hero-title: Improving Telerik Product Documentation
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Craig Palenshus
+    link: https://www.linkedin.com/in/craig-palenshus-5b07b33/
+  - name: Telerik Support Team
+responsibilities:
+  - Remote Interviews
+  - Competitive Analysis
+  - Wireframes
+tools:
+  - Doodle (for participant scheduling)
+  - Skype
+  - Camtasia
+  - Balsamiq
 ---
 
 ## Business Problem
@@ -13,12 +27,6 @@ It was discovered that some customers were having trouble finding what they were
 
 ## Approach
 I decided to try to understand more about the problem by recruiting for and performing remote interviews with customers. Talking with the customers uncovered some issues with the way people try to use the product documentation. I then performed a competitive analysis of other product documentation systems and sketched out wireframes for improvements.
-
-### Tools Used
-* Doodle (for participant scheduling)
-* Skype
-* Camtasia
-* Balsamiq
 
 ## Outcome
 This project uncovered underlying issues that lead to a larger effort to significantly revamp the online support system. It also served as a starting point for a large project to redesign and relaunch the [Telerik product documentation](http://docs.telerik.com).
