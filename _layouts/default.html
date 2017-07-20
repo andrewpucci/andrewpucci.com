@@ -51,6 +51,55 @@
           </div>
           <div class="parallax"><img src="{{ page.hero }}" alt="{{ page.hero-title }}"></div>
         </div>
+
+        <div class="white">
+          <div class="container">
+            <div class="section">
+            <!--   Icon Section   -->
+              <div class="row">
+                <div class="col s12 l4">
+                  <div class="icon-block">
+                    <h2 class="center pink-text text-lighten-2"><i class="material-icons">people</i></h2>
+                    <h5 class="center">Project Team</h5>
+                    <ul class="center">
+                    {% for teammate in page.team %}
+                      {% if teammate.link != null %}
+                        <li><a href="{{ teammate.link }}">{{ teammate.name }}</a></li>
+                      {% else %}
+                        <li>{{ teammate.name }}</li>
+                      {% endif %}
+                    {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="col s12 l4">
+                  <div class="icon-block">
+                    <h2 class="center pink-text text-lighten-2"><i class="material-icons">face</i></h2>
+                    <h5 class="center">Responsibilities</h5>
+                    <ul class="center">
+                      {% for responsibility in page.responsibilities %}
+                        <li>{{ responsibility }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="col s12 l4">
+                  <div class="icon-block">
+                    <h2 class="center pink-text text-lighten-2"><i class="material-icons">build</i></h2>
+                    <h5 class="center">Tools Used</h5>
+                    <ul class="center">
+                      {% for tool in page.tools %}
+                        <li>{{ tool }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       {% else %}
       {% endif %}
 
