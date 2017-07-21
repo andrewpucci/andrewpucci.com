@@ -22,7 +22,7 @@ tools:
   - Balsamiq
 ---
 
-## Business Problem
+## Challenge
 It was discovered that some customers were having trouble finding what they were looking for when using online support tools such as the forums, documentation, and knowledgebases, causing an excessive burden on the support team, who routinely had to answer tickets dealing with material that was already available to the customer. This project was meant to help reduce the menial ticket load of the support staff.
 
 ## Approach
