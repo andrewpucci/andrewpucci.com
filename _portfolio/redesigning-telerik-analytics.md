@@ -28,6 +28,16 @@ When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-
 ## Approach 
 At the onset of the project, it seemed that the goals were simple. As the only designer on the project, I needed to work closely with the developers on the EQATEC team to update the visual design to fit with existing products. While there wasn't an existing style guide, most objects were consistent enough throughout each product that I could make design decisions without having to get many people involved. I met with the product owner and lead developer on the EQATEC team to gather information about the users of the product, then got to work.
 
+<div class="row">
+  <div class="col l6">
+    <img class="materialboxed responsive-img" data-caption="http://bristowe.com/blog/2013/10/10/eqatec-monitoring-of-windows-store-apps" src="/img/eqatec-old.png">
+  </div>
+  <div class="col l6">
+    <img class="materialboxed responsive-img" src="/img/LiveMode.png">
+  </div>
+</div>
+<p class="center-align">Telerik Analytics, before and after this project.</p>
+
 However, as the project evolved, our effort was expanded to introduce Telerik Analytics into the [Telerik Platform](http://www.telerik.com/platform). This meant that a visual redesign quickly turned into a full-blown product experience redesign. I worked with designers from across all of the Platform products to create and implement a cohesive style guide and understand how users would expect to interact with the Analytics product throughout the entire ecosystem.
 
 As I worked through discussions with the product team and users, we became aware of the need for users to have a way to create their own dashboards. They needed a way to quickly see the information that mattered most to them and their stakeholders. To help with this, I designed the custom dashboard feature. You can see a few screenshots below.
