@@ -23,7 +23,7 @@ tools:
   - Skype
 ---
 
-## Business Problem
+## Challenge
 [BookMooch](http://bookmooch.com/) is a community for exchanging used books; it lets you give away books you no longer need in exchange for books you really want. My team and I worked with the site's creator, John Buckman, to help him identify the sites that BookMoochers frequent, find out how Moochers learn about the different groups on these sites, and determine what takes place on these sites that could instead take place on BookMooch itself.
 
 ## Approach

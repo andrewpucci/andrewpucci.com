@@ -19,7 +19,7 @@ tools:
   - HTML/CSS
 ---
 
-## Business Problem
+## Challenge
 [Society of Grownups](https://www.societyofgrownups.com) opened its doors to the public in October 2014. A team of researchers, designers, and developers built a prototype of a tool to help employees know who was scheduled to visit each day and what the purpose of their visit was. As we had no experience with this business model and no directly comparable model to use as a template, we needed to iterate on the design quickly as we learned what obstacles our employees ran into.
 
 ## Approach
