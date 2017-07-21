@@ -122,6 +122,10 @@ article .material-icons {
   display: block;
 }
 
+.carousel-slider {
+  height: 450px !important;
+}
+
 .slider .indicators .indicator-item.active {
   background-color: rgba(231, 106, 162, 1);
 }
