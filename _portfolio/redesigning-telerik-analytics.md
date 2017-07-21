@@ -20,7 +20,7 @@ tools:
   - Skype
 ---
 
-## About Telerik Analytics
+## Challenge
 Telerik Analytics is an application analytics service that enables you to get detailed metrics from your application. It allows you to track a number of aspects of your applications across multiple platforms, kind of like Google Analytics, but for your app. 
 
 When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-acquires-danish-cross-platform-app-analytics-software-maker-eqatec/) in early 2013, the company was focused on replacing the existing Silverlight-based web interface with an HTML5 and CSS3 based interface. I was brought on to the project to update the interface design, building consistency with existing Telerik products.

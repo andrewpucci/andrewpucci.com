@@ -27,7 +27,7 @@ tools:
   - HTML/CSS
 ---
 
-## Business Problem
+## Challenge
 [Society of Grownups](https://www.societyofgrownups.com) needed a way to help its customers, affectionately called Grownups, to start thinking about the big goals they might have for their lives. These goals were used to help our financial planners build a useful path forward for each Grownup.
 
 ## Approach

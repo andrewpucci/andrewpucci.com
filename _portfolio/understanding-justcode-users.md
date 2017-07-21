@@ -22,7 +22,7 @@ tools:
   - Photoshop
 ---
 
-## Business Problem
+## Challenge
 From talking with the support team, the [JustCode](http://www.telerik.com/products/justcode.aspx) product team had a hunch that they could probably improve some areas of their product. They enlisted me to help them understand what was and was not working for their users.
 
 ## Approach
