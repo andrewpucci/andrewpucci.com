@@ -22,7 +22,7 @@ tools:
   - Axure RP
 ---
 
-## Business Problem
+## Challenge
 Registering for academic courses can be difficult. A small team and I endeavored to create a more usable design that would allow for simpler registration, especially for students who have never registered before. This group of students was a special focus for us since they usually require the assistance of their academic advisor to use the system when they register for their first classes.
 
 ## Approach

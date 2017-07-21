@@ -24,7 +24,7 @@ tools:
   - Balsamiq
 ---
 
-## Business Problem
+## Challenge
 Have you ever gone to lunch, only to realize that your co-worker is already in line a few people ahead of you? In our office, this happened way too often, so we decided to create an app to make it easier to find out what everyone had planned for lunch.
 
 ## Approach

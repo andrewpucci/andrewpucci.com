@@ -22,7 +22,7 @@ tools:
   - OpenOffice Draw
 ---
 
-## Business Problem
+## Challenge
 The Carnation City Mall website was not supplying critical information needed by its users. As part of a graduate school  study, my team was assigned to determine how the site could be of better use to their shoppers.
 
 ## Approach

@@ -21,7 +21,7 @@ tools:
   - Highlighters
 ---
 
-## Business Problem
+## Challenge
 Local Yokel Foods, an online farmer’s market company in Columbus, Ohio offers home delivery of produce from local and organic farmers. Customers can purchase fruits, vegetables, dairy, meat, breads, and specialty products via an online shopping cart and checkout.
 
 Because they are a new company with a somewhat innovative approach to grocery shopping, Local Yokel Foods wanted to determine if customers can easily use their website for selecting items and purchasing groceries online. Paper prototyping allowed the company to test these basic usability questions based on their existing website design and make any necessary improvements.
