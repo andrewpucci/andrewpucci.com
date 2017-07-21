@@ -28,6 +28,14 @@ I set up quick and dirty usability studies with members of the community team (t
 ## Outcome
 As I noticed where our employees were getting tripped up on the new interface, I worked closely with an internal developer to make changes. This mostly consisted of crude drawings, short conversations, and issue reports in Github. Occasionally, I actually made changes to the code myself to address minor spacing or wording issues.
 
+<div class="carousel carousel-slider">
+  <a class="carousel-item" href="#one!"><img src="/img/employee-tool-1.png"></a>
+  <a class="carousel-item" href="#two!"><img src="/img/employee-tool-2.png"></a>
+  <a class="carousel-item" href="#three!"><img src="/img/employee-tool-3.png"></a>
+  <a class="carousel-item" href="#four!"><img src="/img/employee-tool-4.png"></a>
+  <a class="carousel-item" href="#five!"><img src="/img/employee-tool-5.png"></a>
+</div>
+
 ## Lessons Learned
 Having a short feedback loop between myself and the developer who was responsible for coding this tool enabled us to act quickly and with little effort spent on superfluous documentation. This enabled us to make quick changes, helping the community team function more efficiently.
 
