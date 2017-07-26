@@ -29,6 +29,12 @@ Because they are a new company with a somewhat innovative approach to grocery sh
 ## Approach
 The paper prototype testing team consisted of a facilitator, who directed the user in a series of tasks, a computer, who manipulated the paper interfaces to simulate computer interaction, and a note taker. Study participants were directed to complete various tasks typical of online customers. They were also asked their opinion about the ease of completing the tasks and suggestions for improvements. Between tests, the team made refinements in the interface to improve usability and correct any problems.
 
+<div class="carousel carousel-slider">
+  <a class="carousel-item" href="#one!"><img src="/img/pp_group7_1.jpg"></a>
+  <a class="carousel-item" href="#two!"><img src="/img/pp_group7_2.jpg"></a>
+  <a class="carousel-item" href="#three!"><img src="/img/pp_group7_3.jpg"></a>
+</div>
+
 ## Outcome
 A list of recommendations was produced in order to increase the usability of the Local Yokel Foods website.
 
