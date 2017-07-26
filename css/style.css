@@ -14,14 +14,13 @@ html {
   font-family: 'Alegreya Sans', sans-serif;
 } 
 
-p, article, footer li {
+p, article, .container:not(.nav-wrapper) ul {
   font-size: 1.2rem;
-  line-height: 1.7rem;
+  line-height: 2rem;
 }
 
 p {
   margin: 1rem 0;
-  line-height: 2rem;
 }
 
 article a, cite a {
@@ -118,10 +117,17 @@ article .material-icons {
   vertical-align: top;
 }
 
-.center-image
-{
-    margin: 1rem auto;
-    display: block;
+.center-image {
+  margin: 1rem auto;
+  display: block;
+}
+
+.carousel-slider {
+  height: 450px !important;
+}
+
+.slider .indicators .indicator-item.active {
+  background-color: rgba(231, 106, 162, 1);
 }
 
 nav .brand-logo img {
@@ -135,7 +141,7 @@ nav .brand-logo img {
 }
 
 nav li a:hover {
-  background-color: #f06292;
+  background-color: rgba(231, 106, 162, 1);
   color: #fff;
 }
 

@@ -6,9 +6,23 @@ description: Portfolio piece showing how surveys and interviews were used to und
 name: understanding-justcode-users
 hero: /img/improving-justcode.png
 hero-title: Understanding JustCode Users
+team: 
+  - name: Andrew Pucci (me!)
+  - name: Chris Sells
+    link: https://www.linkedin.com/in/csells/
+responsibilities:
+  - Participant Recruitment
+  - Usability Studies
+  - Wireframes
+tools:
+  - Qualtrics
+  - Doodle (for participant scheduling)
+  - Skype and join.me
+  - Camtasia
+  - Photoshop
 ---
 
-## Business Problem
+## Challenge
 From talking with the support team, the [JustCode](http://www.telerik.com/products/justcode.aspx) product team had a hunch that they could probably improve some areas of their product. They enlisted me to help them understand what was and was not working for their users.
 
 ## Approach
@@ -16,12 +30,17 @@ To help me understand how JustCode users were using the product, I designed a su
 
 Once I understood which features were causing the most confusion, I designed and ran a remote usability study with about ten participants to further understand how specific users were using these features.
 
-### Tools Used
-* Qualtrics
-* Doodle (for participant scheduling)
-* Skype and join.me
-* Camtasia
-* Photoshop
+<div class="row">
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/justcode-freeformtextanalysis.jpg">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/justcode-telerikprofile.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/justcode-vampanel.png">
+  </div>
+</div>
 
 ## Outcome
 After running the survey and usability studies, I compiled all of the results and delivered a few suggestions for usability improvements to the JustCode team. These suggestions were scheduled for implementation in future releases of the product.
