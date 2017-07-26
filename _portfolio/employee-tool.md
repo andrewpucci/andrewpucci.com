@@ -40,4 +40,4 @@ As I noticed where our employees were getting tripped up on the new interface, I
 Having a short feedback loop between myself and the developer who was responsible for coding this tool enabled us to act quickly and with little effort spent on superfluous documentation. This enabled us to make quick changes, helping the community team function more efficiently.
 
 ### Important Note
-The image above was created by a designer from IDEO with whom I worked very closely to iterate on this design. This image is for illustrative purposes only and should not be construed as representative of my work entirely.
+The images above were created by a designer from IDEO with whom I worked very closely to iterate on this design. This image is for illustrative purposes only and should not be construed as representative of my work entirely.
