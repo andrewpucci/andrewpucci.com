@@ -35,7 +35,7 @@ When we were comfortable with our experience design direction, we created high-f
 I also [presented](http://www.slideshare.net/andrewrpucci/ixda-cleveland-ux-show-tell-oct-2011) the project process and outcomes at an IxDA Cleveland meeting.
 
 <div class="video-container">
-  <iframe src="https://docs.google.com/presentation/d/1pysSKJNCSWJojZDcBSQOe25DPdZuNfill93RR9w96zA/embed?start=false&loop=true&delayms=3000" frameborder="0" width="1058" height="823" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+  <iframe src="https://docs.google.com/presentation/d/1pysSKJNCSWJojZDcBSQOe25DPdZuNfill93RR9w96zA/embed?start=true&loop=true&delayms=3000" frameborder="0" width="1058" height="823" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 </div>
 
 ## Lessons Learned
