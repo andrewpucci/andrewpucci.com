@@ -30,6 +30,18 @@ Have you ever gone to lunch, only to realize that your co-worker is already in l
 ## Approach
 A few co-workers and I headed straight to the whiteboard to figure out what information was needed to help make sharing lunch easier. Once we had a good idea what was needed, I took to the sketchpad and started drawing out some interaction design ideas, which were then translated into interaction flows using Balsamiq.
 
+<div class="row">
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/lunchboat-sketch1.jpg">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/lunchboat-sketch2.jpg">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/lunchboat-behaviorflow.png">
+  </div>
+</div>
+
 ## Outcome
 The project, named LunchBoat, was released to the [Apple AppStore](https://itunes.apple.com/us/app/lunchboat/id743930347?mt=8) and [Google Play](https://play.google.com/store/apps/details?id=com.telerik.lunchboat2) as a demo application for [Telerik AppBuilder](http://www.telerik.com/appbuilder), [KendoUI Mobile](http://www.telerik.com/kendo-ui-mobile), and [Telerik Backend Services](http://www.telerik.com/backend-services).
 
