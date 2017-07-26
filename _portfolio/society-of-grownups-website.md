@@ -38,6 +38,14 @@ Annotated wireframes were created, outlining all of the anticipated steps the Gr
 
 This website won [The Webby Awards People's Voice](http://webbyawards.com/winners/2015/advertising-media/websites-micro-sites-and-rich-media/financial-services-insurance/society-of-grownups/) for Advertising & Media in Financial Services & Insurance. You can even see me accept the award with our [5-Word Speech](http://www.youtube.com/embed/4omB6bC1Nig?autoplay=1)!
 
+<div class="carousel carousel-slider">
+  <a class="carousel-item" href="#one!"><img src="/img/sog-1.png"></a>
+  <a class="carousel-item" href="#two!"><img src="/img/sog-2.png"></a>
+  <a class="carousel-item" href="#three!"><img src="/img/sog-3.png"></a>
+  <a class="carousel-item" href="#four!"><img src="/img/sog-4.png"></a>
+  <a class="carousel-item" href="#five!"><img src="/img/sog-5.png"></a>
+</div>
+
 ## Lessons Learned
 While the designer at IDEO used InVision to specify interactions between pages, there were a lot of interactions that either weren't prototyped due to time constraints or just couldn't be modeled easily through the tool. In some cases, it was easier to prototype directly in code. As the consultant teams from IDEO and Bocoup rolled off the project and more work was picked up by members of the newly formed Society of Grownups design and development teams, I continued to provide code examples to the developers where it made sense, decreasing the amount of time between iterations.
 
