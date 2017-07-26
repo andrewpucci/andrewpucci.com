@@ -28,6 +28,28 @@ It was discovered that some customers were having trouble finding what they were
 ## Approach
 I decided to try to understand more about the problem by recruiting for and performing remote interviews with customers. Talking with the customers uncovered some issues with the way people try to use the product documentation. I then performed a competitive analysis of other product documentation systems and sketched out wireframes for improvements.
 
+<div class="row">
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/support-dashboard.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/support-documentation.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/support-kb.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/support-plans.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/support-videos.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/support-youraccount.png">
+  </div>
+</div>
+
+
 ## Outcome
 This project uncovered underlying issues that lead to a larger effort to significantly revamp the online support system. It also served as a starting point for a large project to redesign and relaunch the [Telerik product documentation](http://docs.telerik.com).
 
