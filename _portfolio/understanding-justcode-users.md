@@ -30,6 +30,18 @@ To help me understand how JustCode users were using the product, I designed a su
 
 Once I understood which features were causing the most confusion, I designed and ran a remote usability study with about ten participants to further understand how specific users were using these features.
 
+<div class="row">
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/justcode-freeformtextanalysis.jpg">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/justcode-telerikprofile.png">
+  </div>
+  <div class="col s12 l4">
+    <img class="materialboxed responsive-img" src="/img/justcode-vampanel.png">
+  </div>
+</div>
+
 ## Outcome
 After running the survey and usability studies, I compiled all of the results and delivered a few suggestions for usability improvements to the JustCode team. These suggestions were scheduled for implementation in future releases of the product.
 
