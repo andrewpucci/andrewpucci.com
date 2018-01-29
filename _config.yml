@@ -6,4 +6,4 @@ collections:
   portfolio:
     output: true
 
-analytics: UA-XXXXXXXX-1
+analytics: GTM-XXXXXXX
