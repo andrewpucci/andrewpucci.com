@@ -1,0 +1,65 @@
+- name: redesigning-telerik-analytics
+  title: Redesigning Telerik&nbsp;Analytics
+  imgurl: /img/analytics-design.png
+  url: /portfolio/redesigning-telerik-analytics
+  content: Powerful real-time application analytics to grow user engagement, improve user experience, and navigate product growth.
+
+- name: employee-tool
+  title: Society of Grownups Employee&nbsp;Tool
+  imgurl: /img/employee-tool.jpg
+  url: /portfolio/employee-tool
+  content: A mobile website used by employees at Society&nbsp;of&nbsp;Grownups to manage interactions with customers.
+
+- name: society-of-grownups-website
+  title: Society of Grownups Website
+  imgurl: /img/grownup-goals.jpg
+  url: /portfolio/society-of-grownups-website
+  content: The Webby Awards-winning website used by Society&nbsp;of&nbsp;Grownups customers to understand their financial goals.
+
+- name: improving-telerik-product-documentation
+  title: Improving Telerik Product Documentation
+  imgurl: /img/kendoui-docs.png
+  url: /portfolio/improving-telerik-product-documentation
+  content: Helping developers more thoroughly understand using documentation and knowledgebases for Telerik frameworks.
+
+- name: lunchboat-mobile-app-interaction-flow
+  title: LunchBoat Mobile App Interaction Flow
+  imgurl: /img/lunchboat-interactionflow.png
+  url: /portfolio/lunchboat-mobile-app-interaction-flow
+  content: Tired of arriving at Chipotle only to see that a few others from your team are already there eating? We built an app for that.
+
+- name: understanding-justcode-users
+  title: Understanding JustCode Users
+  imgurl: /img/improving-justcode.png
+  url: /portfolio/understanding-justcode-users
+  content: Survey of users to understand the features they were using in JustCode followed by a remote usability study to dive deeper.
+
+- name: revamping-course-registration
+  title: Revamping Course Registration
+  imgurl: /img/course-selection.png
+  url: /portfolio/revamping-course-registration
+  content: Registering for academic courses can be difficult. We created a more usable design that would allow for simpler registration.
+
+- name: carnation-city-mall-blueprints
+  title: Carnation City Mall Blueprints
+  imgurl: /img/carnation-blueprint.png
+  url: /portfolio/carnation-city-mall-blueprints
+  content: Malls usually have good signage to point you in the right direction. But websites? Probably a different story.
+
+- name: local-yokel-foods-paper-prototype
+  title: Local Yokel Foods Paper&nbsp;Prototype
+  imgurl: /img/paper-prototype.png
+  url: /portfolio/local-yokel-foods-paper-prototype
+  content: Improving the process of purchasing groceries online at Local Yokel Foods through paper prototyping.
+
+- name: young-professionals-of-akron-usability-study
+  title: Young Professionals of Akron Usability&nbsp;Study
+  imgurl: /img/ypa-eyetracking.png
+  url: /portfolio/young-professionals-of-akron-usability-study
+  content: Using an eye tracker, my team found areas of concern in the Young Professionals of Akron website, which I then redesigned.
+
+- name: bookmooch-social-networking-survey
+  title: BookMooch Social&nbsp;Networking Survey
+  imgurl: /img/bookmooch-survey.png
+  url: /portfolio/bookmooch-social-networking-survey
+  content: In partnership with John Buckman, founder of BookMooch, my team surveyed users to help understand their social media habits.

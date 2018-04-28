@@ -1,4 +1,7 @@
 .DS_Store
 node_modules/
+vendor/
 _site/
 .htaccess
+*.scssc
+.bundle/config
