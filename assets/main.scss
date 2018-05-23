@@ -1,10 +1,177 @@
 ---
 ---
-
 @import "bootstrap/scss/functions";
 @import "variables";
 @import "bootstrap/scss/bootstrap";
-
-.content {
-  font-size: $custom-font-size;
+article ul:not(.browser-default) {
+  list-style-type: initial;
+  padding-left: 30px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+article ul:not(.browser-default) li {
+  list-style-type: initial;
+}
+.card-title {
+  font-size: 1rem;
+  font-family: "Oswald", sans-serif;
+  text-transform: uppercase;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 1.5em 0;
+}
+tr:nth-child(odd) {
+  background-color: rgba(59, 50, 38, 0.15);
+}
+th {
+  font-size: 1em;
+  vertical-align: middle;
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+tr:first-child th {
+  text-align: center;
+}
+td {
+  vertical-align: text-top;
+  text-align: center;
+  padding: 0.5em 0.75em;
+}
+table caption {
+  caption-side: bottom;
+  text-align: left;
+}
+article .material-icons {
+  font-size: 1.2rem;
+  line-height: 1.7rem;
+  vertical-align: top;
+}
+.center-image {
+  margin: 1rem auto;
+  display: block;
+}
+.slider .indicators .indicator-item.active {
+  background-color: rgba(231, 106, 162, 1);
+}
+nav .navbar-brand img {
+  height: 3.5rem;
+}
+@media only screen and (min-width: 601px) {
+  nav .navbar-brand img {
+    height: 4rem;
+  }
+}
+nav li a:hover {
+  background-color: rgba(231, 106, 162, 1);
+  color: #fff;
+}
+.side-nav li {
+  color: #444;
+  font-family: "Quicksand", sans-serif;
+  text-transform: uppercase;
+}
+.side-nav li a:hover {
+  background-color: #f06292;
+  color: #fff;
+}
+.side-nav li:hover > a > i {
+  color: #fff;
+}
+nav a,
+nav .navbar-brand {
+  color: #444;
+  font-family: "Quicksand", sans-serif;
+  text-transform: uppercase;
+}
+blockquote {
+  border-left: map-get($spacers, 2) solid #f06292;
+  padding-left: map-get($spacers, 3);
+  margin: map-get($spacers, 3) 0;
+}
+cite img {
+  height: map-get($spacers, 5);
+  width: map-get($spacers, 5);
+  vertical-align: middle;
+}
+.button-collapse {
+  color: #26a69a;
+}
+.parallax-container {
+  min-height: 380px;
+  line-height: 0;
+  height: auto;
+  color: rgba(255, 255, 255, 0.9);
+}
+.parallax-container .section {
+  width: 100%;
+}
+@media only screen and (max-width: 992px) {
+  .parallax-container .section {
+    position: absolute;
+    top: 40%;
+  }
+  #index-banner .section {
+    top: 10%;
+  }
+}
+@media only screen and (max-width: 600px) {
+  #index-banner .section {
+    top: 0;
+  }
+}
+#index-banner.artifact {
+  background: rgba(231, 106, 162, 0.75);
+}
+#index-banner.artifact img {
+  filter: blur(7px) grayscale(100%);
+}
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+  font-size: inherit;
+}
+.card-image img {
+  width: 100%;
+  display: block;
+  filter: grayscale(100%);
+} /* http://stackoverflow.com/questions/36864692/materialize-css-transparent-gradient-overlay-on-card-image */
+.card-image-gradient {
+  display: block;
+  position: relative;
+}
+.card-image-gradient::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+}
+.card
+  .card-action
+  a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating) {
+  color: rgba(231, 106, 162, 1);
+}
+.card
+  .card-action
+  a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating):hover {
+  color: rgba(248, 187, 208, 1);
+}
+.carousel {
+  height: 600px;
+}
+.carousel .carousel-item {
+  width: 300px;
+  height: 400px;
+}
+footer.page-footer {
+  margin: 0;
 }
