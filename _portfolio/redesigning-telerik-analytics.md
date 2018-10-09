@@ -29,35 +29,98 @@ When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-
 At the onset of the project, it seemed that the goals were simple. As the only designer on the project, I needed to work closely with the developers on the EQATEC team to update the visual design to fit with existing products. While there wasn't an existing style guide, most objects were consistent enough throughout each product that I could make design decisions without having to get many people involved. I met with the product owner and lead developer on the EQATEC team to gather information about the users of the product, then got to work.
 
 <div class="row">
-  <div class="col l6">
-    <img class="materialboxed responsive-img" data-caption="http://bristowe.com/blog/2013/10/10/eqatec-monitoring-of-windows-store-apps" src="/img/eqatec-old.png">
+  <div class="col-6">
+    <figure class="figure">
+      <img class="img-fluid" src="/img/eqatec-old.png" alt="Screenshot of the Silverlight EQATEC interface before the project">
+      <figcaption class="figure-caption">Before Project <a href="http://bristowe.com/blog/2013/10/10/eqatec-monitoring-of-windows-store-apps">(source)</a></figcaption>
+    </figure>
   </div>
-  <div class="col l6">
-    <img class="materialboxed responsive-img" src="/img/LiveMode.png">
+  <div class="col-6">
+    <figure class="figure">
+      <img class="img-fluid" src="/img/LiveMode.png" alt="Screenshot of the Telerik Analytics interface after project finalization">
+      <figcaption class="figure-caption">After Project</figcaption>
+    </figure>
   </div>
 </div>
-<p class="center-align">Telerik Analytics, before and after this project.</p>
 
 However, as the project evolved, our effort was expanded to introduce Telerik Analytics into the [Telerik Platform](http://www.telerik.com/platform). This meant that a visual redesign quickly turned into a full-blown product experience redesign. I worked with designers from across all of the Platform products to create and implement a cohesive style guide and understand how users would expect to interact with the Analytics product throughout the entire ecosystem.
 
 As I worked through discussions with the product team and users, we became aware of the need for users to have a way to create their own dashboards. They needed a way to quickly see the information that mattered most to them and their stakeholders. To help with this, I designed the custom dashboard feature. You can see a few screenshots below.
 
-<div class="carousel carousel-slider">
-    <a class="carousel-item" href="#one!"><img src="/img/CustomDashboards-01-CreateFirstDashboard.png"></a>
-    <a class="carousel-item" href="#two!"><img src="/img/CustomDashboards-02-CreateDashboardModal.png"></a>
-    <a class="carousel-item" href="#three!"><img src="/img/CustomDashboards-03-StartEditing.png"></a>
-    <a class="carousel-item" href="#four!"><img src="/img/CustomDashboards-04-SelectFeatures.png"></a>
-    <a class="carousel-item" href="#five!"><img src="/img/CustomDashboards-05-DragToGroup.png"></a>
-    <a class="carousel-item" href="#six!"><img src="/img/CustomDashboards-06-DragOnTarget.png"></a>
-    <a class="carousel-item" href="#seven!"><img src="/img/CustomDashboards-07-HoverOverFeature.png"></a>
-    <a class="carousel-item" href="#eight!"><img src="/img/CustomDashboards-08-EditFeatureModal.png"></a>
-    <a class="carousel-item" href="#nine!"><img src="/img/CustomDashboards-09-HoverOverGroup.png"></a>
-    <a class="carousel-item" href="#ten!"><img src="/img/CustomDashboards-10-GroupSelected.png"></a>
-    <a class="carousel-item" href="#eleven!"><img src="/img/CustomDashboards-11-DragToReorder.png"></a>
-    <a class="carousel-item" href="#twelve!"><img src="/img/CustomDashboards-12-AddtoCustDash.png"></a>
-    <a class="carousel-item" href="#thirteen!"><img src="/img/CustomDashboards-13-AddModal.png"></a>
-    <a class="carousel-item" href="#fourteen!"><img src="/img/CustomDashboards-14-SearchFails.png"></a>
-    <a class="carousel-item" href="#fifteen!"><img src="/img/CustomDashboards-15-CreateNewDashboard.png"></a>
+<div id="custom-dashboard-carousel" class="carousel slide mb-3" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#custom-dashboard-carousel" data-slide-to="0" class="active"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="1"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="2"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="3"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="4"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="5"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="6"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="7"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="8"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="9"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="10"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="11"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="12"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="13"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="14"></li>
+    <li data-target="#custom-dashboard-carousel" data-slide-to="15"></li>
+  </ol>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100" src="/img/CustomDashboards-01-CreateFirstDashboard.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-02-CreateDashboardModal.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-03-StartEditing.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-04-SelectFeatures.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-05-DragToGroup.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-06-DragOnTarget.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-07-HoverOverFeature.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-08-EditFeatureModal.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-09-HoverOverGroup.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-10-GroupSelected.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-11-DragToReorder.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-12-AddtoCustDash.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-13-AddModal.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-14-SearchFails.png">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/img/CustomDashboards-15-CreateNewDashboard.png">
+    </div>
+  </div>
+  <a class="carousel-control-prev" href="#custom-dashboard-carousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#custom-dashboard-carousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
 </div>
 
 ## Outcome
