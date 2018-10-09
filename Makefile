@@ -34,6 +34,7 @@ include-yarn-deps:
 	cp node_modules/popper.js/dist/umd/popper.min.js.map $(VENDOR_DIR)
 	cp node_modules/bootstrap/dist/js/bootstrap.min.js $(VENDOR_DIR)
 	cp node_modules/bootstrap/dist/js/bootstrap.min.js.map $(VENDOR_DIR)
+	cp node_modules/@fortawesome/fontawesome-free/js/all.min.js $(VENDOR_DIR)
 
 build: install include-yarn-deps
 	$(JEKYLL) build
