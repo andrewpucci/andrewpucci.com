@@ -4,9 +4,9 @@ content-type: artifact
 title: Society of Grownups Employee Tool - Andrew Pucci
 description: Portfolio piece showing how usability studies were conducted to improve an internal tool at Society of Grownups.
 name: employee-tool
-hero: /img/employee-tool.jpg
+hero: /img/card-img/employee-tool.png
 hero-title: Society of Grownups Employee Tool
-team: 
+team:
   - name: Andrew Pucci (me!)
   - name: Kim Miller
     link: https://www.linkedin.com/in/kim-miller-a14ba033/

@@ -1,12 +1,12 @@
---- 
+---
 layout: default
-content-type: artifact 
-title: Redesigning Telerik Analytics - Andrew Pucci 
-description: Portfolio piece showing the process used to design Telerik Analytics. 
-name: redesigning-telerik-analytics 
-hero: /img/analytics-design.png 
-hero-title: Redesigning Telerik Analytics 
-team: 
+content-type: artifact
+title: Redesigning Telerik Analytics - Andrew Pucci
+description: Portfolio piece showing the process used to design Telerik Analytics.
+name: redesigning-telerik-analytics
+hero: /img/card-img/analytics-design.png
+hero-title: Redesigning Telerik Analytics
+team:
   - name: Andrew Pucci (me!)
   - name: Thomas Høst Andersen
     link: https://www.linkedin.com/in/thomas-høst-andersen-a98502/
@@ -21,11 +21,11 @@ tools:
 ---
 
 ## Challenge
-Telerik Analytics is an application analytics service that enables you to get detailed metrics from your application. It allows you to track a number of aspects of your applications across multiple platforms, kind of like Google Analytics, but for your app. 
+Telerik Analytics is an application analytics service that enables you to get detailed metrics from your application. It allows you to track a number of aspects of your applications across multiple platforms, kind of like Google Analytics, but for your app.
 
 When Telerik [acquired EQATEC](http://thenextweb.com/insider/2013/03/07/telerik-acquires-danish-cross-platform-app-analytics-software-maker-eqatec/) in early 2013, the company was focused on replacing the existing Silverlight-based web interface with an HTML5 and CSS3 based interface. I was brought on to the project to update the interface design, building consistency with existing Telerik products.
 
-## Approach 
+## Approach
 At the onset of the project, it seemed that the goals were simple. As the only designer on the project, I needed to work closely with the developers on the EQATEC team to update the visual design to fit with existing products. While there wasn't an existing style guide, most objects were consistent enough throughout each product that I could make design decisions without having to get many people involved. I met with the product owner and lead developer on the EQATEC team to gather information about the users of the product, then got to work.
 
 <div class="row">
@@ -60,8 +60,8 @@ As I worked through discussions with the product team and users, we became aware
     <a class="carousel-item" href="#fifteen!"><img src="/img/CustomDashboards-15-CreateNewDashboard.png"></a>
 </div>
 
-## Outcome 
+## Outcome
 [Telerik Analytics](http://www.telerik.com/analytics) was launched on-time in early 2014 as part of the Telerik Platform unveiling. One of the largest pieces of previously non-existing functionality that I designed was the ability for users to create custom dashboards for their data.
 
-## Lessons Learned 
+## Lessons Learned
 This project really improved my ability to work with an international team. I worked constantly with team members both in my local office and abroad in Denmark and Bulgaria. Traveling to Bulgaria for the project kickoff allowed me to make sure I was integrated properly with the product designers for the other products involved in this project.

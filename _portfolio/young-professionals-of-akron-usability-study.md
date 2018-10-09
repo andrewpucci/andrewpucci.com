@@ -4,9 +4,9 @@ content-type: artifact
 title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
 name: young-professionals-of-akron-usability-study
-hero: /img/ypa-eyetracking.png
+hero: /img/card-img/ypa-eyetracking.png
 hero-title: Young Professionals of Akron Usability Study
-team: 
+team:
   - name: Andrew Pucci (me!)
   - name: Heather Knable
     link: https://www.linkedin.com/in/heather-johnson-9289a750/
@@ -243,7 +243,7 @@ Although participants were generally successful in completing each of the tasks,
     <td>0:21</td>
     <td>0:06</td>
   </tr>
-  
+
 </table>
 
 As you can see from the large amounts of time that participants required to complete task 1 (locate descriptions and pictures of past events), participants encountered some difficulty with this task. Task 2 (locate the newsletter and event notification sign-up form) also caused some difficulty for users as evidenced by the time-on-task measurements. Task 3 was easily and successfully completed by all four participants.
