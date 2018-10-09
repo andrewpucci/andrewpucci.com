@@ -4,9 +4,9 @@ content-type: artifact
 title: Carnation City Mall Blueprints - Andrew Pucci
 description: Portfolio piece showing how blueprints were created for Carnation City Mall.
 name: carnation-city-mall-blueprints
-hero: /img/carnation-blueprint.png
+hero: /img/card-img/carnation-blueprint.png
 hero-title: Carnation City Mall Blueprints
-team: 
+team:
   - name: Andrew Pucci (me!)
   - name: David Cunningham
     link: https://www.linkedin.com/in/david-cunningham-61677940/
