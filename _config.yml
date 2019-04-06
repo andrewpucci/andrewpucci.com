@@ -1,6 +1,12 @@
 timezone: America/New_York
-exclude:  ["*.sublime-project", "*.sublime-workspace"]
+exclude: [node_modules, vendor, Gemfile, Gemfile.lock, Makefile, package.json, yarn.lock]
 permalink: /blog/:year/:month/:day/:title.html
+
+sass:
+  load_paths:
+    - _sass
+    - node_modules
+  style: compressed
 
 collections:
   portfolio:
