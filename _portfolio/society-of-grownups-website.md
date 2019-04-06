@@ -38,12 +38,37 @@ Annotated wireframes were created, outlining all of the anticipated steps the Gr
 
 This website won [The Webby Awards People's Voice](http://webbyawards.com/winners/2015/advertising-media/websites-micro-sites-and-rich-media/financial-services-insurance/society-of-grownups/) for Advertising & Media in Financial Services & Insurance. You can even see me accept the award with our [5-Word Speech](http://www.youtube.com/embed/4omB6bC1Nig?autoplay=1)!
 
-<div class="carousel carousel-slider">
-  <a class="carousel-item" href="#one!"><img src="/img/sog-1.png"></a>
-  <a class="carousel-item" href="#two!"><img src="/img/sog-2.png"></a>
-  <a class="carousel-item" href="#three!"><img src="/img/sog-3.png"></a>
-  <a class="carousel-item" href="#four!"><img src="/img/sog-4.png"></a>
-  <a class="carousel-item" href="#five!"><img src="/img/sog-5.png"></a>
+<div id="sog-carousel" class="carousel slide mb-3" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#sog-carousel" data-slide-to="0" class="active"></li>
+    <li data-target="#sog-carousel" data-slide-to="1"></li>
+    <li data-target="#sog-carousel" data-slide-to="2"></li>
+    <li data-target="#sog-carousel" data-slide-to="3"></li>
+    <li data-target="#sog-carousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-item active">
+    <img class="d-block w-100" src="/img/sog-1.png" alt="Annotated screen design for user profile page">
+  </div>
+  <div class="carousel-item">
+    <img class="d-block w-100" src="/img/sog-2.png" alt="Annotated screen design for user information gathering page">
+  </div>
+  <div class="carousel-item">
+    <img class="d-block w-100" src="/img/sog-3.png" alt="Annotated screen design for grownup goals page">
+  </div>
+  <div class="carousel-item">
+    <img class="d-block w-100" src="/img/sog-4.png" alt="Annotated screen design showing modal confirmation">
+  </div>
+  <div class="carousel-item">
+    <img class="d-block w-100" src="/img/sog-5.png" alt="Annotated screen design for income information gathering">
+  </div>
+  <a class="carousel-control-prev" href="#sog-carousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#sog-carousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
 </div>
 
 ## Lessons Learned

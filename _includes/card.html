@@ -1,8 +1,12 @@
 <div class="card">
-  <img class="card-img-top card-image-gradient" src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
-  <div class="card-body">
-    <h5 class="card-title">{{ card.title }}</h5>
-    <p class="card-text">{{ card.content }}</p>
-    <a href="{{ card.url }}" class="btn btn-primary">See more</a>
+    <div class="card-image">
+      <img class="card-img-top" src="{{ card.imgurl }}" alt="{{ card.title }}" title="{{ card.title }}">
+    </div>
+    <div class="card-body">
+      <p class="h5 card-title">{{ card.title }}</p>
+      <p class="card-text">{{ card.content }}</p>
+    </div>
+    <div class="card-footer">
+      <a href="{{ card.url }}" class="btn btn-primary text-uppercase">See more</a>
+    </div>
   </div>
-</div>

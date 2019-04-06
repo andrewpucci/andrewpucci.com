@@ -68,49 +68,49 @@ As I worked through discussions with the product team and users, we became aware
   </ol>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img class="d-block w-100" src="/img/CustomDashboards-01-CreateFirstDashboard.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-01-CreateFirstDashboard.png" alt="Dashboard creation screen for Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-02-CreateDashboardModal.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-02-CreateDashboardModal.png" alt="Modal showing options for creating a new dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-03-StartEditing.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-03-StartEditing.png" alt="Example screen showing multiple custom dashboards and features in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-04-SelectFeatures.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-04-SelectFeatures.png" alt="Example showing feature selection during custom dashboard creation in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-05-DragToGroup.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-05-DragToGroup.png" alt="Example showing the drag and drop capability for adding features to a custom dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-06-DragOnTarget.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-06-DragOnTarget.png" alt="Dropping features into a custom dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-07-HoverOverFeature.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-07-HoverOverFeature.png" alt="Hovering over a feature will reveal the custom dashboards that it is included in">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-08-EditFeatureModal.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-08-EditFeatureModal.png" alt="Modal allowing edits to feature name and description in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-09-HoverOverGroup.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-09-HoverOverGroup.png" alt="Hovering over a custom dashboard will reveal all of the features that are included in that dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-10-GroupSelected.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-10-GroupSelected.png" alt="Only features that are included on a custom dashboard are listed when that dashboard is selected">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-11-DragToReorder.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-11-DragToReorder.png" alt="Features can be reordered on a custom dashboard by dragging and dropping into the order required">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-12-AddtoCustDash.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-12-AddtoCustDash.png" alt="Option showing ability to add an existing chart to a custom dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-13-AddModal.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-13-AddModal.png" alt="Modal providing the ability to add a feature chart to a custom dashboard including a way to search custom dashboards by name">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-14-SearchFails.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-14-SearchFails.png" alt="Error message in modal informing user that there are no matches for the search query">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-15-CreateNewDashboard.png">
+      <img class="d-block w-100" src="/img/CustomDashboards-15-CreateNewDashboard.png" alt="Modal that results in creation of a new custom dashboard including an existing feature chart">
     </div>
   </div>
   <a class="carousel-control-prev" href="#custom-dashboard-carousel" role="button" data-slide="prev">
