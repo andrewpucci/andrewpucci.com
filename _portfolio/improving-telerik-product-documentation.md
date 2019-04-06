@@ -29,23 +29,23 @@ It was discovered that some customers were having trouble finding what they were
 I decided to try to understand more about the problem by recruiting for and performing remote interviews with customers. Talking with the customers uncovered some issues with the way people try to use the product documentation. I then performed a competitive analysis of other product documentation systems and sketched out wireframes for improvements.
 
 <div class="row">
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/support-dashboard.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/support-dashboard.png" alt="Mockup of documentation homepage">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/support-documentation.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/support-documentation.png" alt="Mockup of documentation for a particular component">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/support-kb.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/support-kb.png" alt="Mockup of the knowledgebase interface">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/support-plans.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/support-plans.png" alt="Mockup of support plan pricing page">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/support-videos.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/support-videos.png" alt="Mockup of video search in documentation">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/support-youraccount.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/support-youraccount.png" alt="Mockup of updated account page">
   </div>
 </div>
 

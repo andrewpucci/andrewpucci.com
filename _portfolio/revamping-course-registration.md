@@ -34,9 +34,7 @@ Once we had a good understanding of the user environment, we started sketching o
 When we were comfortable with our experience design direction, we created high-fidelity wireframes which were used to present our design decisions.
 I also [presented](http://www.slideshare.net/andrewrpucci/ixda-cleveland-ux-show-tell-oct-2011) the project process and outcomes at an IxDA Cleveland meeting.
 
-<div class="video-container">
-  <iframe src="https://docs.google.com/presentation/d/1pysSKJNCSWJojZDcBSQOe25DPdZuNfill93RR9w96zA/embed?start=true&loop=true&delayms=3000" frameborder="0" width="1058" height="823" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
-</div>
+<iframe src="https://docs.google.com/presentation/d/1pysSKJNCSWJojZDcBSQOe25DPdZuNfill93RR9w96zA/embed?start=true&loop=true&delayms=3000" frameborder="0" width="1058" height="823" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true" title="Slides for presentation of course registration redesign at IxDA Cleveland"></iframe>
 
 ## Lessons Learned
 This project gave me a great deal of experience creating an interactive prototype using Axure RP, especially with using dynamic panels to mimic rich interactions.
