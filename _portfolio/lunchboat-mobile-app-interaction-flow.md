@@ -4,9 +4,9 @@ content-type: artifact
 title: LunchBoat Mobile App Interaction Flow  - Andrew Pucci
 description: Portfolio piece showing the ideation process for the LunchBoat mobile app.
 name: lunchboat-mobile-app-interaction-flow
-hero: /img/lunchboat-interactionflow.png
+hero: /img/card-img/lunchboat-interactionflow.png
 hero-title: LunchBoat Mobile App Interaction Flow
-team: 
+team:
   - name: Andrew Pucci (me!)
   - name: Caitlin Steinert
     link: https://www.linkedin.com/in/csteinert/
@@ -31,14 +31,14 @@ Have you ever gone to lunch, only to realize that your co-worker is already in l
 A few co-workers and I headed straight to the whiteboard to figure out what information was needed to help make sharing lunch easier. Once we had a good idea what was needed, I took to the sketchpad and started drawing out some interaction design ideas, which were then translated into interaction flows using Balsamiq.
 
 <div class="row">
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/lunchboat-sketch1.jpg">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/lunchboat-sketch1.jpg" alt="Conceptual sketch of LunchBoat interface">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/lunchboat-sketch2.jpg">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/lunchboat-sketch2.jpg" alt="Rough sketch of LunchBoat user flow diagram">
   </div>
-  <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/lunchboat-behaviorflow.png">
+  <div class="col-12 col-lg-4">
+    <img class="img-fluid mb-3" src="/img/lunchboat-behaviorflow.png" alt="Mockup of screen interface flow diagram for LunchBoat">
   </div>
 </div>
 
