@@ -1,10 +1,10 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: Carnation City Mall Blueprints - Andrew Pucci
 description: Portfolio piece showing how blueprints were created for Carnation City Mall.
 name: carnation-city-mall-blueprints
-hero: /img/card-img/carnation-blueprint.png
+hero: /assets/img/card-img/carnation-blueprint.png
 hero-title: Carnation City Mall Blueprints
 team:
   - name: Andrew Pucci (me!)

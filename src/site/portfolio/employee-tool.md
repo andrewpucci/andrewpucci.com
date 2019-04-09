@@ -1,11 +1,10 @@
 ---
-layout: default
-content-type: artifact
+layout: artifact
 title: Society of Grownups Employee Tool - Andrew Pucci
 description: Portfolio piece showing how usability studies were conducted to improve an internal tool at Society of Grownups.
 name: employee-tool
-hero: /img/card-img/employee-tool.png
-hero-title: Society of Grownups Employee Tool
+hero: /assets/img/card-img/employee-tool.png
+heroTitle: Society of Grownups Employee Tool
 team:
   - name: Andrew Pucci (me!)
   - name: Kim Miller
@@ -37,19 +36,19 @@ As I noticed where our employees were getting tripped up on the new interface, I
     <li data-target="#employee-tool-carousel" data-slide-to="4"></li>
   </ol>
   <div class="carousel-item active">
-    <img class="d-block w-100" src="/img/employee-tool-1.png" alt="View of Society of Grownups Employee Tool showing list of checkups scheduled for the day">
+    <img class="d-block w-100" src="/assets/img/employee-tool-1.png" alt="View of Society of Grownups Employee Tool showing list of checkups scheduled for the day">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/employee-tool-2.png" alt="Contextual user menu showing all options available to a particular employee">
+    <img class="d-block w-100" src="/assets/img/employee-tool-2.png" alt="Contextual user menu showing all options available to a particular employee">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/employee-tool-3.png" alt="View of Society of Grownups Employee Tool showing list of appointments scheduled for the day">
+    <img class="d-block w-100" src="/assets/img/employee-tool-3.png" alt="View of Society of Grownups Employee Tool showing list of appointments scheduled for the day">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/employee-tool-4.png" alt="View of Society of Grownups Employee Tool showing list of classes and events scheduled for the day">
+    <img class="d-block w-100" src="/assets/img/employee-tool-4.png" alt="View of Society of Grownups Employee Tool showing list of classes and events scheduled for the day">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/employee-tool-5.png" alt="User linking and creation screen">
+    <img class="d-block w-100" src="/assets/img/employee-tool-5.png" alt="User linking and creation screen">
   </div>
   <a class="carousel-control-prev" href="#employee-tool-carousel" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>

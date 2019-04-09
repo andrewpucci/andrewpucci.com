@@ -1,10 +1,10 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: Society of Grownups Website - Andrew Pucci
 description: Portfolio piece showing the design process for the Society of Grownups website.
 name: society-of-grownups-website
-hero: /img/card-img/grownup-goals.png
+hero: /assets/img/card-img/grownup-goals.png
 hero-title: Society of Grownups Website
 team:
   - name: Andrew Pucci (me!)
@@ -47,19 +47,19 @@ This website won [The Webby Awards People's Voice](http://webbyawards.com/winner
     <li data-target="#sog-carousel" data-slide-to="4"></li>
   </ol>
   <div class="carousel-item active">
-    <img class="d-block w-100" src="/img/sog-1.png" alt="Annotated screen design for user profile page">
+    <img class="d-block w-100" src="/assets/img/sog-1.png" alt="Annotated screen design for user profile page">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/sog-2.png" alt="Annotated screen design for user information gathering page">
+    <img class="d-block w-100" src="/assets/img/sog-2.png" alt="Annotated screen design for user information gathering page">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/sog-3.png" alt="Annotated screen design for grownup goals page">
+    <img class="d-block w-100" src="/assets/img/sog-3.png" alt="Annotated screen design for grownup goals page">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/sog-4.png" alt="Annotated screen design showing modal confirmation">
+    <img class="d-block w-100" src="/assets/img/sog-4.png" alt="Annotated screen design showing modal confirmation">
   </div>
   <div class="carousel-item">
-    <img class="d-block w-100" src="/img/sog-5.png" alt="Annotated screen design for income information gathering">
+    <img class="d-block w-100" src="/assets/img/sog-5.png" alt="Annotated screen design for income information gathering">
   </div>
   <a class="carousel-control-prev" href="#sog-carousel" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>

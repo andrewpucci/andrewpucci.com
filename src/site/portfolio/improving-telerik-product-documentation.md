@@ -1,10 +1,10 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
 name: improving-telerik-product-documentation
-hero: /img/card-img/kendoui-docs.png
+hero: /assets/img/card-img/kendoui-docs.png
 hero-title: Improving Telerik Product Documentation
 team:
   - name: Andrew Pucci (me!)
@@ -30,22 +30,22 @@ I decided to try to understand more about the problem by recruiting for and perf
 
 <div class="row">
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/support-dashboard.png" alt="Mockup of documentation homepage">
+    <img class="img-fluid mb-3" src="/assets/img/support-dashboard.png" alt="Mockup of documentation homepage">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/support-documentation.png" alt="Mockup of documentation for a particular component">
+    <img class="img-fluid mb-3" src="/assets/img/support-documentation.png" alt="Mockup of documentation for a particular component">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/support-kb.png" alt="Mockup of the knowledgebase interface">
+    <img class="img-fluid mb-3" src="/assets/img/support-kb.png" alt="Mockup of the knowledgebase interface">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/support-plans.png" alt="Mockup of support plan pricing page">
+    <img class="img-fluid mb-3" src="/assets/img/support-plans.png" alt="Mockup of support plan pricing page">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/support-videos.png" alt="Mockup of video search in documentation">
+    <img class="img-fluid mb-3" src="/assets/img/support-videos.png" alt="Mockup of video search in documentation">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/support-youraccount.png" alt="Mockup of updated account page">
+    <img class="img-fluid mb-3" src="/assets/img/support-youraccount.png" alt="Mockup of updated account page">
   </div>
 </div>
 

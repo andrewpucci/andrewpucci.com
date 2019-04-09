@@ -1,0 +1,66 @@
+---
+layout: base.njk
+---
+          <div class="carousel bg-primary">
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="{{ hero }}" class="banner-image hero-image" alt="{{ heroTitle }}">
+                <div class="carousel-caption">
+                  <h1 class="text-white text-uppercase display-4 d-none d-md-inline"><span class="px-2 bg-dark">{{ heroTitle }}</span></h1>
+                  <h1 class="h2 text-white text-uppercase font-weight-light d-md-none"><span class="px-2 bg-dark">{{ heroTitle }}</span></h1>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row bg-white py-5">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="text-primary text-center display-4 mb-2">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <h2 class="h4 text-center">Project Team</h2>
+                  <ul class="list-unstyled text-center mb-4 mb-md-0">
+                    {% for teammate in team %}
+                      {% if teammate.link != null %}
+                        <li>
+                          <a href="{{ teammate.link }}">{{ teammate.name }}</a>
+                        </li>
+                      {% else %}
+                        <li>{{ teammate.name }}</li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <div class="text-primary text-center display-4 mb-2">
+                    <i class="fas fa-clipboard-list"></i>
+                  </div>
+                  <h2 class="h4 text-center">Responsibilities</h2>
+                  <ul class="list-unstyled text-center mb-4 mb-md-0">
+                    {% for responsibility in responsibilities %}
+                      <li>{{ responsibility }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <div class="text-primary text-center display-4 mb-2">
+                    <i class="fas fa-wrench"></i>
+                  </div>
+                  <h2 class="h4 text-center">Tools Used</h2>
+                  <ul class="list-unstyled text-center mb-0">
+                    {% for tool in tools %}
+                    <li>{{ tool }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <div class="container py-5">
+          <article>
+            {{ content | safe }}
+          </article>
+        </div>
