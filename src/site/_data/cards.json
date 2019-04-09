@@ -1,0 +1,79 @@
+[
+	{
+		"name": "redesigning-telerik-analytics",
+		"title": "Redesigning Telerik&nbsp;Analytics",
+		"imgurl": "/assets/img/card-img/analytics-design.png",
+		"url": "/portfolio/redesigning-telerik-analytics",
+		"content": "Real-time application analytics to grow user engagement and improve user experience."
+	},
+	{
+		"name": "employee-tool",
+		"title": "Society of Grownups Employee&nbsp;Tool",
+		"imgurl": "/assets/img/card-img/employee-tool.png",
+		"url": "/portfolio/employee-tool",
+		"content": "A mobile website used by employees at Society&nbsp;of&nbsp;Grownups to manage interactions with customers."
+	},
+	{
+		"name": "society-of-grownups-website",
+		"title": "Society of Grownups Website",
+		"imgurl": "/assets/img/card-img/grownup-goals.png",
+		"url": "/portfolio/society-of-grownups-website",
+		"content": "The Webby Awards-winning website used by Society&nbsp;of&nbsp;Grownups customers to understand their financial goals."
+	},
+	{
+		"name": "improving-telerik-product-documentation",
+		"title": "Improving Telerik Product Documentation",
+		"imgurl": "/assets/img/card-img/kendoui-docs.png",
+		"url": "/portfolio/improving-telerik-product-documentation",
+		"content": "Making documentation and knowledgebases for Telerik frameworks easier for developers to understand."
+	},
+	{
+		"name": "lunchboat-mobile-app-interaction-flow",
+		"title": "LunchBoat Mobile App Interaction Flow",
+		"imgurl": "/assets/img/card-img/lunchboat-interactionflow.png",
+		"url": "/portfolio/lunchboat-mobile-app-interaction-flow",
+		"content": "Have you been running into coworkers while out for lunch? We built an app to help facilitate that."
+	},
+	{
+		"name": "understanding-justcode-users",
+		"title": "Understanding JustCode Users",
+		"imgurl": "/assets/img/card-img/improving-justcode.png",
+		"url": "/portfolio/understanding-justcode-users",
+		"content": "Survey of users to understand the features they were using in JustCode followed by a remote usability study to dive deeper."
+	},
+	{
+		"name": "revamping-course-registration",
+		"title": "Revamping Course Registration",
+		"imgurl": "/assets/img/card-img/course-selection.png",
+		"url": "/portfolio/revamping-course-registration",
+		"content": "Registering for academic courses can be difficult. We created a design that enables simpler registration."
+	},
+	{
+		"name": "carnation-city-mall-blueprints",
+		"title": "Carnation City Mall Blueprints",
+		"imgurl": "/assets/img/card-img/carnation-blueprint.png",
+		"url": "/portfolio/carnation-city-mall-blueprints",
+		"content": "Malls usually have good signage to point you in the right direction. But websites? Probably a different story."
+	},
+	{
+		"name": "local-yokel-foods-paper-prototype",
+		"title": "Local Yokel Foods Paper&nbsp;Prototype",
+		"imgurl": "/assets/img/card-img/paper-prototype.png",
+		"url": "/portfolio/local-yokel-foods-paper-prototype",
+		"content": "Improving the process of purchasing groceries online at Local Yokel Foods through paper prototyping."
+	},
+	{
+		"name": "young-professionals-of-akron-usability-study",
+		"title": "Young Professionals of Akron Usability&nbsp;Study",
+		"imgurl": "/assets/img/card-img/ypa-eyetracking.png",
+		"url": "/portfolio/young-professionals-of-akron-usability-study",
+		"content": "Using an eye tracker, my team found areas of concern in the Young Professionals of Akron website, which I then redesigned."
+	},
+	{
+		"name": "bookmooch-social-networking-survey",
+		"title": "BookMooch Social&nbsp;Networking Survey",
+		"imgurl": "/assets/img/card-img/bookmooch-survey.png",
+		"url": "/portfolio/bookmooch-social-networking-survey",
+		"content": "In partnership with the founder of BookMooch, my team surveyed users to help understand their social media habits."
+	}
+]
