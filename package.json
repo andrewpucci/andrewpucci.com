@@ -15,11 +15,11 @@
     "url": "https://github.com/andrewpucci/andrewpucci.com"
   },
   "dependencies": {
-    "@11ty/eleventy": "^0.8.0",
+    "@11ty/eleventy": "^0.8.2",
     "@babel/core": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@fortawesome/fontawesome-free": "^5.8.1",
-    "autoprefixer": "^9.5.0",
+    "autoprefixer": "^9.5.1",
     "bootstrap": "^4.3.1",
     "cssnano": "^4.1.10",
     "del": "^4.1.0",
@@ -45,7 +45,7 @@
     "eslint-plugin-security": "^1.4.0",
     "stylelint": "^9.10.1",
     "stylelint-config-standard": "^18.2.0",
-    "stylelint-order": "^2.1.0",
+    "stylelint-order": "^2.2.0",
     "stylelint-scss": "^3.5.4"
   }
 }
