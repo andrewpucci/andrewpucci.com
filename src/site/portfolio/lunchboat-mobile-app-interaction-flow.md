@@ -1,10 +1,10 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: LunchBoat Mobile App Interaction Flow  - Andrew Pucci
 description: Portfolio piece showing the ideation process for the LunchBoat mobile app.
 name: lunchboat-mobile-app-interaction-flow
-hero: /img/card-img/lunchboat-interactionflow.png
+hero: /assets/img/card-img/lunchboat-interactionflow.png
 hero-title: LunchBoat Mobile App Interaction Flow
 team:
   - name: Andrew Pucci (me!)
@@ -32,13 +32,13 @@ A few co-workers and I headed straight to the whiteboard to figure out what info
 
 <div class="row">
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/lunchboat-sketch1.jpg" alt="Conceptual sketch of LunchBoat interface">
+    <img class="img-fluid mb-3" src="/assets/img/lunchboat-sketch1.jpg" alt="Conceptual sketch of LunchBoat interface">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/lunchboat-sketch2.jpg" alt="Rough sketch of LunchBoat user flow diagram">
+    <img class="img-fluid mb-3" src="/assets/img/lunchboat-sketch2.jpg" alt="Rough sketch of LunchBoat user flow diagram">
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/img/lunchboat-behaviorflow.png" alt="Mockup of screen interface flow diagram for LunchBoat">
+    <img class="img-fluid mb-3" src="/assets/img/lunchboat-behaviorflow.png" alt="Mockup of screen interface flow diagram for LunchBoat">
   </div>
 </div>
 

@@ -1,10 +1,10 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
 name: young-professionals-of-akron-usability-study
-hero: /img/card-img/ypa-eyetracking.png
+hero: /assets/img/card-img/ypa-eyetracking.png
 hero-title: Young Professionals of Akron Usability Study
 team:
   - name: Andrew Pucci (me!)
@@ -355,7 +355,7 @@ Task 2 also helped identify another issue with the overall site – the Flash-ba
 
 In fact, most of the participants disregarded the Flash-based graphic upon first view of the site. A heat map (below) that shows where the participants focused their attentions supports the finding that the Flash graphic was nearly ignored. As you can see, the graphic was not the subject of much attention (the red hotspots indicate the most focused attention).
 
-![Figure 1: Heatmap showing inattention to Flash graphics](/img/figure1-thumb.png){: .center-image .materialboxed }
+![Figure 1: Heatmap showing inattention to Flash graphics](/assets/img/figure1-thumb.png){: .center-image .materialboxed }
 Comments made by participants specific to the Flash-based graphic include:
 -   “I tend to disregard anything that’s flashing.”
 -   “It looks like part of a graphic, not a part of a navigational element.”
@@ -366,11 +366,11 @@ Task 3, email YPA to ask a question, was not problematic for any of the particip
 ### Other Findings (Not Specific to Tasks)
 Through observation, note-taking, and reviewing the recordings of the test sessions, we found other issues not directly related to the completion of tasks. These general findings are listed below.
 -   Most users were confused by text that looks clickable because it is colored blue. However, the color was used for emphasis and not because the text was a link. This screen capture shows an example of the deceptive text formatting that participants commented about.
-![Figure 2: Blue text looks clickable, but isn't](/img/figure2.png){: .center-image .materialboxed }
+![Figure 2: Blue text looks clickable, but isn't](/assets/img/figure2.png){: .center-image .materialboxed }
 -   There were graphics throughout the site (forward pointing arrows) that appeared to be links. Some users tried to click but got no response. The capture below shows one such useless arrow.
-![Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable](/img/figure3.png){: .center-image .materialboxed }
+![Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable](/assets/img/figure3.png){: .center-image .materialboxed }
 -   Each participant tried to click on News and Events in the sidebar on the site’s home page. Only the event listed underneath the News and Events text is navigable. This capture indicates where the participants attempted to click without success (yellow circles indicate click attempts).
-![Figure 4: News & Events is not clickable](/img/figure4.png){: .center-image .materialboxed }
+![Figure 4: News & Events is not clickable](/assets/img/figure4.png){: .center-image .materialboxed }
 -   It was difficult for some users to discern the difference between YPA’s current events, past events and events not hosted by YPA.
 -   Everything above the navigation bar was ignored by users because of the Flash-based graphic.
 

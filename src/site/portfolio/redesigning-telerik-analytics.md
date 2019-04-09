@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: Redesigning Telerik Analytics - Andrew Pucci
 description: Portfolio piece showing the process used to design Telerik Analytics.

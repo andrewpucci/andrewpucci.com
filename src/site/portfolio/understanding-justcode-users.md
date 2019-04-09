@@ -1,10 +1,10 @@
 ---
-layout: default
+layout: artifact
 content-type: artifact
 title: Understanding JustCode Users - Andrew Pucci
 description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
 name: understanding-justcode-users
-hero: /img/card-img/improving-justcode.png
+hero: /assets/img/card-img/improving-justcode.png
 hero-title: Understanding JustCode Users
 team:
   - name: Andrew Pucci (me!)
@@ -32,13 +32,13 @@ Once I understood which features were causing the most confusion, I designed and
 
 <div class="row">
   <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/justcode-freeformtextanalysis.jpg">
+    <img class="materialboxed responsive-img" src="/assets/img/justcode-freeformtextanalysis.jpg">
   </div>
   <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/justcode-telerikprofile.png">
+    <img class="materialboxed responsive-img" src="/assets/img/justcode-telerikprofile.png">
   </div>
   <div class="col s12 l4">
-    <img class="materialboxed responsive-img" src="/img/justcode-vampanel.png">
+    <img class="materialboxed responsive-img" src="/assets/img/justcode-vampanel.png">
   </div>
 </div>
 
