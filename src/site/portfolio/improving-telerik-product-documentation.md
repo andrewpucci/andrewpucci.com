@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
 name: improving-telerik-product-documentation
 hero: /assets/img/card-img/kendoui-docs.png
-hero-title: Improving Telerik Product Documentation
+heroTitle: Improving Telerik Product Documentation
 team:
   - name: Andrew Pucci (me!)
   - name: Craig Palenshus

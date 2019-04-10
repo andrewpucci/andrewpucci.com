@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
 name: young-professionals-of-akron-usability-study
 hero: /assets/img/card-img/ypa-eyetracking.png
-hero-title: Young Professionals of Akron Usability Study
+heroTitle: Young Professionals of Akron Usability Study
 team:
   - name: Andrew Pucci (me!)
   - name: Heather Knable

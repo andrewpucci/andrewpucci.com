@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: LunchBoat Mobile App Interaction Flow  - Andrew Pucci
 description: Portfolio piece showing the ideation process for the LunchBoat mobile app.
 name: lunchboat-mobile-app-interaction-flow
 hero: /assets/img/card-img/lunchboat-interactionflow.png
-hero-title: LunchBoat Mobile App Interaction Flow
+heroTitle: LunchBoat Mobile App Interaction Flow
 team:
   - name: Andrew Pucci (me!)
   - name: Caitlin Steinert
