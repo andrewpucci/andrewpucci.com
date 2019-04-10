@@ -4,7 +4,7 @@
     {% for card in cards %}
       {% if card.name != name %}
         {% set counter = counter + 1 %}
-        {% if loop.first %}
+        {% if counter == 1 %}
           <div class="carousel-item active">
             <div class="row">
         {% elif counter % 3 == 1 %}
