@@ -1,7 +1,7 @@
 <div id="portfolio-overview-carousel" class="carousel slide py-5" data-ride="carousel">
   <div class="container carousel-inner">
     {% for card in cards %}
-      {% if card.name != page.name %}
+      {% if card.name != name %}
         {% set counter = counter + 1 %}
         {% if loop.first %}
           <div class="carousel-item active">
