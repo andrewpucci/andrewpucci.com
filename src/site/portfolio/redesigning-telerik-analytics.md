@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Redesigning Telerik Analytics - Andrew Pucci
 description: Portfolio piece showing the process used to design Telerik Analytics.
 name: redesigning-telerik-analytics
-hero: /img/card-img/analytics-design.png
-hero-title: Redesigning Telerik Analytics
+hero: /assets/img/card-img/analytics-design.png
+heroTitle: Redesigning Telerik Analytics
 team:
   - name: Andrew Pucci (me!)
   - name: Thomas Høst Andersen
@@ -31,13 +30,13 @@ At the onset of the project, it seemed that the goals were simple. As the only d
 <div class="row">
   <div class="col-6">
     <figure class="figure">
-      <img class="img-fluid" src="/img/eqatec-old.png" alt="Screenshot of the Silverlight EQATEC interface before the project">
+      <img class="img-fluid" src="/assets/img/eqatec-old.png" alt="Screenshot of the Silverlight EQATEC interface before the project">
       <figcaption class="figure-caption">Before Project <a href="http://bristowe.com/blog/2013/10/10/eqatec-monitoring-of-windows-store-apps">(source)</a></figcaption>
     </figure>
   </div>
   <div class="col-6">
     <figure class="figure">
-      <img class="img-fluid" src="/img/LiveMode.png" alt="Screenshot of the Telerik Analytics interface after project finalization">
+      <img class="img-fluid" src="/assets/img/LiveMode.png" alt="Screenshot of the Telerik Analytics interface after project finalization">
       <figcaption class="figure-caption">After Project</figcaption>
     </figure>
   </div>
@@ -68,49 +67,49 @@ As I worked through discussions with the product team and users, we became aware
   </ol>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img class="d-block w-100" src="/img/CustomDashboards-01-CreateFirstDashboard.png" alt="Dashboard creation screen for Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-01-CreateFirstDashboard.png" alt="Dashboard creation screen for Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-02-CreateDashboardModal.png" alt="Modal showing options for creating a new dashboard in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-02-CreateDashboardModal.png" alt="Modal showing options for creating a new dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-03-StartEditing.png" alt="Example screen showing multiple custom dashboards and features in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-03-StartEditing.png" alt="Example screen showing multiple custom dashboards and features in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-04-SelectFeatures.png" alt="Example showing feature selection during custom dashboard creation in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-04-SelectFeatures.png" alt="Example showing feature selection during custom dashboard creation in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-05-DragToGroup.png" alt="Example showing the drag and drop capability for adding features to a custom dashboard in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-05-DragToGroup.png" alt="Example showing the drag and drop capability for adding features to a custom dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-06-DragOnTarget.png" alt="Dropping features into a custom dashboard in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-06-DragOnTarget.png" alt="Dropping features into a custom dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-07-HoverOverFeature.png" alt="Hovering over a feature will reveal the custom dashboards that it is included in">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-07-HoverOverFeature.png" alt="Hovering over a feature will reveal the custom dashboards that it is included in">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-08-EditFeatureModal.png" alt="Modal allowing edits to feature name and description in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-08-EditFeatureModal.png" alt="Modal allowing edits to feature name and description in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-09-HoverOverGroup.png" alt="Hovering over a custom dashboard will reveal all of the features that are included in that dashboard in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-09-HoverOverGroup.png" alt="Hovering over a custom dashboard will reveal all of the features that are included in that dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-10-GroupSelected.png" alt="Only features that are included on a custom dashboard are listed when that dashboard is selected">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-10-GroupSelected.png" alt="Only features that are included on a custom dashboard are listed when that dashboard is selected">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-11-DragToReorder.png" alt="Features can be reordered on a custom dashboard by dragging and dropping into the order required">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-11-DragToReorder.png" alt="Features can be reordered on a custom dashboard by dragging and dropping into the order required">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-12-AddtoCustDash.png" alt="Option showing ability to add an existing chart to a custom dashboard in Telerik Analytics">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-12-AddtoCustDash.png" alt="Option showing ability to add an existing chart to a custom dashboard in Telerik Analytics">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-13-AddModal.png" alt="Modal providing the ability to add a feature chart to a custom dashboard including a way to search custom dashboards by name">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-13-AddModal.png" alt="Modal providing the ability to add a feature chart to a custom dashboard including a way to search custom dashboards by name">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-14-SearchFails.png" alt="Error message in modal informing user that there are no matches for the search query">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-14-SearchFails.png" alt="Error message in modal informing user that there are no matches for the search query">
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/img/CustomDashboards-15-CreateNewDashboard.png" alt="Modal that results in creation of a new custom dashboard including an existing feature chart">
+      <img class="d-block w-100" src="/assets/img/CustomDashboards-15-CreateNewDashboard.png" alt="Modal that results in creation of a new custom dashboard including an existing feature chart">
     </div>
   </div>
   <a class="carousel-control-prev" href="#custom-dashboard-carousel" role="button" data-slide="prev">

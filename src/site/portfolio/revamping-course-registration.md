@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Revamping Course Registration  - Andrew Pucci
 description: Portfolio piece showing the process used to revamp academic course registration.
 name: revamping-course-registration
 hero: /assets/img/card-img/course-selection.png
-hero-title: Revamping Course Registration
+heroTitle: Revamping Course Registration
 team:
   - name: Andrew Pucci (me!)
   - name: Brian Buirge

@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Understanding JustCode Users - Andrew Pucci
 description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
 name: understanding-justcode-users
 hero: /assets/img/card-img/improving-justcode.png
-hero-title: Understanding JustCode Users
+heroTitle: Understanding JustCode Users
 team:
   - name: Andrew Pucci (me!)
   - name: Chris Sells

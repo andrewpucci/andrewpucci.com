@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Society of Grownups Website - Andrew Pucci
 description: Portfolio piece showing the design process for the Society of Grownups website.
 name: society-of-grownups-website
 hero: /assets/img/card-img/grownup-goals.png
-hero-title: Society of Grownups Website
+heroTitle: Society of Grownups Website
 team:
   - name: Andrew Pucci (me!)
   - name: Kim Miller

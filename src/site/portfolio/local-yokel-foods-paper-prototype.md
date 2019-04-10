@@ -1,11 +1,10 @@
 ---
 layout: artifact
-content-type: artifact
 title: Local Yokel Foods Paper Prototype - Andrew Pucci
 description: Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.
 name: local-yokel-foods-paper-prototype
 hero: /assets/img/card-img/paper-prototype.png
-hero-title: Local Yokel Foods Paper Prototype
+heroTitle: Local Yokel Foods Paper Prototype
 team:
   - name: Andrew Pucci (me!)
   - name: Linda Hart
