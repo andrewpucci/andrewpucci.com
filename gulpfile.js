@@ -19,10 +19,8 @@ gulp.task('clean', gulp.parallel(
   Let's build this sucker.
 */
 gulp.task('build', gulp.parallel(
-  // 'css:deps',
   'css',
   'js:deps',
-  // 'js',
 ));
 
 /*
@@ -30,5 +28,4 @@ gulp.task('build', gulp.parallel(
 */
 gulp.task('watch', () => {
   gulp.watch('./src/scss/**/*.scss', gulp.parallel('css'));
-  gulp.watch('./src/js/**/*.js', gulp.parallel('js'));
 });
