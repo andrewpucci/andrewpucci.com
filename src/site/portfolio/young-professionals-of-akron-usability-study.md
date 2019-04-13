@@ -147,7 +147,7 @@ All of the data was collected and assessed for usefulness. As a result, not all 
 In general, the participants were able to successfully complete the three tasks. This table indicates successful completion of tasks for each participant.
 
 <table>
-  <caption><i class="material-icons">check</i> = Successful <i class="material-icons">close</i> = Unsuccessful</caption>
+  <caption><i class="fas fa-check-circle fa-fw"></i> = Successful <i class="fas fa-times-circle fa-fw"></i> = Unsuccessful</caption>
   <tr>
     <th>&nbsp;</th>
     <th>Task 1: Locate descriptions and pictures of past events</th>
@@ -156,27 +156,27 @@ In general, the participants were able to successfully complete the three tasks.
   </tr>
   <tr>
     <th>Participant 1</th>
-    <td><i class="material-icons">check</i></td>
-    <td><i class="material-icons">check</i></td>
-    <td><i class="material-icons">check</i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
   </tr>
   <tr>
     <th>Participant 2</th>
-    <td><i class="material-icons">check</i></td>
-    <td><i class="material-icons">check</i></td>
-    <td><i class="material-icons">check</i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
   </tr>
   <tr>
     <th>Participant 3</th>
-    <td><i class="material-icons">close</i></td>
-    <td><i class="material-icons">check</i></td>
-    <td><i class="material-icons">check</i></td>
+    <td><i class="fas fa-times-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
   </tr>
   <tr>
     <th>Participant 4</th>
-    <td><i class="material-icons">check</i></td>
-    <td><i class="material-icons">close</i></td>
-    <td><i class="material-icons">check</i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td><i class="fas fa-times-circle fa-fw"></i></td>
+    <td><i class="fas fa-check-circle fa-fw"></i></td>
   </tr>
   <tr>
     <th>Percentage of Participants Successful</th>
@@ -266,66 +266,66 @@ Here are the paths that each participant followed to find the descriptions and p
   <tr>
     <td>
       Home<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Clicked the event listed below News and Events<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       See All 2010 Events<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       The Library
     </td>
     <td>
       Home<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Save the Date<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       See All 2010 Events<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Date on Calendar<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Back<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Community Happenings<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       The Library
     </td>
     <td>
       Home<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Attempted to click News and Events (not a link)<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       We Are YPA<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Welcome<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Community Happenings<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Free Tour (sublink)<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Welcome<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Save the Date<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Welcome<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Aborted task
     </td>
     <td>
       Home<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Attempted to click News and Events (not a link)<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Save the Date<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Calendar scrolled<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Links to other sites<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Welcome<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       News Articles<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       Community Happenings<br>
-      <i class="material-icons">arrow_downward</i><br>
+      <i class="fas fa-arrow-down fa-fw"></i><br>
       The Library
     </td>
   </tr>
@@ -354,7 +354,11 @@ Task 2 also helped identify another issue with the overall site – the Flash-ba
 
 In fact, most of the participants disregarded the Flash-based graphic upon first view of the site. A heat map (below) that shows where the participants focused their attentions supports the finding that the Flash graphic was nearly ignored. As you can see, the graphic was not the subject of much attention (the red hotspots indicate the most focused attention).
 
-![Figure 1: Heatmap showing inattention to Flash graphics](/assets/img/figure1-thumb.png){: .center-image .materialboxed }
+<figure>
+  <img src="/assets/img/figure1-thumb.png" class="img-fluid" alt="Figure 1: Heatmap showing inattention to Flash graphics" />
+  <figcaption>Figure 1: Heatmap showing inattention to Flash graphics</figcaption>
+</figure>
+
 Comments made by participants specific to the Flash-based graphic include:
 -   “I tend to disregard anything that’s flashing.”
 -   “It looks like part of a graphic, not a part of a navigational element.”
@@ -365,11 +369,26 @@ Task 3, email YPA to ask a question, was not problematic for any of the particip
 ### Other Findings (Not Specific to Tasks)
 Through observation, note-taking, and reviewing the recordings of the test sessions, we found other issues not directly related to the completion of tasks. These general findings are listed below.
 -   Most users were confused by text that looks clickable because it is colored blue. However, the color was used for emphasis and not because the text was a link. This screen capture shows an example of the deceptive text formatting that participants commented about.
-![Figure 2: Blue text looks clickable, but isn't](/assets/img/figure2.png){: .center-image .materialboxed }
+
+<figure>
+  <img src="/assets/img/figure2.png" class="img-fluid" alt="Figure 2: Blue text looks clickable, but isn't" />
+  <figcaption>Figure 2: Blue text looks clickable, but isn't</figcaption>
+</figure>
+
 -   There were graphics throughout the site (forward pointing arrows) that appeared to be links. Some users tried to click but got no response. The capture below shows one such useless arrow.
-![Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable](/assets/img/figure3.png){: .center-image .materialboxed }
+
+<figure>
+  <img src="/assets/img/figure3.png" class="img-fluid" alt="Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable" />
+  <figcaption>Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable</figcaption>
+</figure>
+
 -   Each participant tried to click on News and Events in the sidebar on the site’s home page. Only the event listed underneath the News and Events text is navigable. This capture indicates where the participants attempted to click without success (yellow circles indicate click attempts).
-![Figure 4: News & Events is not clickable](/assets/img/figure4.png){: .center-image .materialboxed }
+
+<figure>
+  <img src="/assets/img/figure4.png" class="img-fluid" alt="Figure 4: News & Events is not clickable" />
+  <figcaption>Figure 4: News & Events is not clickable</figcaption>
+</figure>
+
 -   It was difficult for some users to discern the difference between YPA’s current events, past events and events not hosted by YPA.
 -   Everything above the navigation bar was ignored by users because of the Flash-based graphic.
 
