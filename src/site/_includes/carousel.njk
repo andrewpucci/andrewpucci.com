@@ -1,0 +1,36 @@
+<div id="portfolio-overview-carousel" class="carousel slide py-5" data-ride="carousel">
+  <div class="container carousel-inner">
+    {% set counter = 0 %}
+    {% for card in cards %}
+      {% if card.name != name %}
+        {% set counter = counter + 1 %}
+        {% if counter == 1 %}
+          <div class="carousel-item active">
+            <div class="row">
+        {% elif counter % 3 == 1 %}
+          <div class="carousel-item">
+            <div class="row">
+        {% endif %}
+              <div class="col-lg-4 d-flex mb-3 mb-lg-0">
+                {% include 'card.njk' %}
+              </div>
+        {% if counter % 3 == 0 %}
+              </div>
+            </div>
+        {% endif %}
+      {% endif %}
+      {% if counter % 3 != 0 and loop.last %}
+            </div>
+          </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <a class="carousel-control-prev" href="#portfolio-overview-carousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#portfolio-overview-carousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+</div>
