@@ -1,7 +1,6 @@
-.DS_Store
-node_modules/
-vendor/
-_site/
-.htaccess
-*.scssc
-.bundle/config
+node_modules
+dist
+.env
+yarn-error.log
+src/site/assets/js/*
+src/site/assets/css/*

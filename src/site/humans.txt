@@ -1,0 +1,9 @@
+/* TEAM */
+  Andrew Pucci -- Designer & Developer
+  Twitter: @AndrewRPucci
+  Website: https://www.andrewpucci.com
+
+/* SITE */
+  Standards: CSS3, HTML5
+  Components: Eleventy, Gulp, Bootstrap
+  Software: VS Code, GitHub Desktop
