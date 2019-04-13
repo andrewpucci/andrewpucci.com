@@ -5,9 +5,9 @@ layout: base.njk
   <article>
     {{ content | safe }}
     <div class="row d-flex flex-wrap">
-      {% for card in site.data.cards %}
+      {% for card in cards %}
       <div class="col-md-6 col-lg-4 d-flex mb-3">
-        {% include card.html %}
+        {% include 'card.njk' %}
       </div>
       {% endfor %}
     </div>

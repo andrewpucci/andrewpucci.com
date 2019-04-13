@@ -14,10 +14,14 @@
               <div class="col-lg-4 d-flex">
                 {% include 'card.njk' %}
               </div>
-        {% if counter % 3 == 0 or loop.last %}
+        {% if counter % 3 == 0 %}
+              </div>
+            </div>
+        {% endif %}
+      {% endif %}
+      {% if counter % 3 != 0 and loop.last %}
             </div>
           </div>
-        {% endif %}
       {% endif %}
     {% endfor %}
   </div>

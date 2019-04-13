@@ -45,20 +45,22 @@ This website won [The Webby Awards People's Voice](http://webbyawards.com/winner
     <li data-target="#sog-carousel" data-slide-to="3"></li>
     <li data-target="#sog-carousel" data-slide-to="4"></li>
   </ol>
-  <div class="carousel-item active">
-    <img class="d-block w-100" src="/assets/img/sog-1.png" alt="Annotated screen design for user profile page">
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" src="/assets/img/sog-2.png" alt="Annotated screen design for user information gathering page">
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" src="/assets/img/sog-3.png" alt="Annotated screen design for grownup goals page">
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" src="/assets/img/sog-4.png" alt="Annotated screen design showing modal confirmation">
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" src="/assets/img/sog-5.png" alt="Annotated screen design for income information gathering">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100" src="/assets/img/sog-1.png" alt="Annotated screen design for user profile page">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/assets/img/sog-2.png" alt="Annotated screen design for user information gathering page">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/assets/img/sog-3.png" alt="Annotated screen design for grownup goals page">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/assets/img/sog-4.png" alt="Annotated screen design showing modal confirmation">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/assets/img/sog-5.png" alt="Annotated screen design for income information gathering">
+    </div>
   </div>
   <a class="carousel-control-prev" href="#sog-carousel" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
