@@ -34,14 +34,16 @@ The paper prototype testing team consisted of a facilitator, who directed the us
     <li data-target="#local-yokel-carousel" data-slide-to="1"></li>
     <li data-target="#local-yokel-carousel" data-slide-to="2"></li>
   </ol>
-  <div class="carousel-item active">
-    <img class="d-block w-100" src="/assets/img/pp_group7_1.jpg" alt="Paper prototype including sample grocery list, credit card, and ID">
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" src="/assets/img/pp_group7_2.jpg" alt="Example of paper prototype testing in progress. Sticky notes and paper are layered to produce a cohesive mock interface.">
-  </div>
-  <div class="carousel-item">
-    <img class="d-block w-100" src="/assets/img/pp_group7_3.jpg" alt="Paper prototype of checkout process. Important pieces of the interface are filled in with pencil or overlaid with sticky notes.">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100" src="/assets/img/pp_group7_1.jpg" alt="Paper prototype including sample grocery list, credit card, and ID">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/assets/img/pp_group7_2.jpg" alt="Example of paper prototype testing in progress. Sticky notes and paper are layered to produce a cohesive mock interface.">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="/assets/img/pp_group7_3.jpg" alt="Paper prototype of checkout process. Important pieces of the interface are filled in with pencil or overlaid with sticky notes.">
+    </div>
   </div>
   <a class="carousel-control-prev" href="#local-yokel-carousel" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
