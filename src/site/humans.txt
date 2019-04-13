@@ -1,13 +1,9 @@
-# humanstxt.org/
-# The humans responsible & technology colophon
+/* TEAM */
+  Andrew Pucci -- Designer & Developer
+  Twitter: @AndrewRPucci
+  Website: https://www.andrewpucci.com
 
-# TEAM
-Designer & Developer: Andrew Pucci
-Email: admin@andrewpucci.com
-Twitter: @andrewrpucci
-Location: Cambridge, MA, United States
-
-# TECHNOLOGY COLOPHON
-
-HTML5, CSS3
-Jekyll
+/* SITE */
+  Standards: CSS3, HTML5
+  Components: Eleventy, Gulp, Bootstrap
+  Software: VS Code, GitHub Desktop
