@@ -7,8 +7,13 @@ module.exports = {
     browser: true,
     jquery: true,
     node: true,
+    mocha: true,
   },
   plugins: [
+    'mocha',
     'security',
   ],
+  "rules": {
+    "mocha/no-exclusive-tests": "error"
+  }
 };
