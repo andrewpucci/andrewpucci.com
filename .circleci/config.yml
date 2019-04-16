@@ -36,6 +36,9 @@ jobs:
     machine:
       enabled: true
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_FINGERPRINT
       - run:
           name: Deploy Over SSH
           command: |
