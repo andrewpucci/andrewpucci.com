@@ -8,7 +8,8 @@
     "dev": "gulp clean && NODE_ENV=development gulp build && (ELEVENTY_ENV=development eleventy --serve & NODE_ENV=development gulp watch)",
     "prod": "gulp clean && NODE_ENV=production gulp build && ELEVENTY_ENV=production eleventy",
     "build": "gulp clean && NODE_ENV=development gulp build && ELEVENTY_ENV=development eleventy",
-    "clean": "gulp clean"
+    "clean": "gulp clean",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-security": "^1.4.0",
+    "mocha": "^6.1.3",
     "stylelint": "^9.10.1",
     "stylelint-config-standard": "^18.2.0",
     "stylelint-order": "^2.2.0",
