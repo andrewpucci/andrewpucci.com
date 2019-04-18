@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            scp -r dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
+            ssh -vvv $SSH_USER@$SSH_SERVER
 
 workflows:
   version: 2
