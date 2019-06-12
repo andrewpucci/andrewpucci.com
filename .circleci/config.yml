@@ -37,7 +37,7 @@ jobs:
           name: Deploy Over SSH
           working_directory: ~/project
           command: |
-            echo '$SSH_SERVER ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPSw5DFWu8CHrcKtsnJgVcyriLsLHIut059MrPiG7KA31roUxslihvnUnVsZNl5XAQlVWdz5gwnSbkU9QTsNq+c=' >> ~/.ssh/known_hosts
+            echo "$SSH_SERVER ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPSw5DFWu8CHrcKtsnJgVcyriLsLHIut059MrPiG7KA31roUxslihvnUnVsZNl5XAQlVWdz5gwnSbkU9QTsNq+c=" >> ~/.ssh/known_hosts
             scp -r ~/project/workspace/dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
 workflows:
   version: 2
