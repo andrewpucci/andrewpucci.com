@@ -2,40 +2,32 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:8.15.1
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
     working_directory: ~/project
-
     steps:
       - checkout
 
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: yarn prod
-
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run Project Build
+          command: yarn prod
       - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: yarn test
-
+            - ~/.cache/yarn
+      - run:
+          name: Run Tests
+          command: yarn test
   deploy:
-    machine:
-      enabled: true
+    docker:
+      - image: circleci/node:8.15.1
+    working_directory: ~/project
     steps:
+      - checkout
       - add_ssh_keys:
           fingerprints:
             - "38:ad:a6:e9:f5:1e:71:4b:73:4a:47:e5:3b:96:04:5a"
@@ -43,8 +35,8 @@ jobs:
           name: Deploy Over SSH
           working_directory: ~/project
           command: |
-            scp -r ./dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR/.
-
+            yarn prod
+            scp -r ~/project/dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
 workflows:
   version: 2
   build-and-deploy:
