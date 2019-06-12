@@ -25,9 +25,9 @@ jobs:
   deploy:
     docker:
       - image: circleci/node:8.15.1
-    working_directory: ~/project
     steps:
-      - checkout
+      - attach_workspace:
+        at: ~/project
       - add_ssh_keys:
           fingerprints:
             - "38:ad:a6:e9:f5:1e:71:4b:73:4a:47:e5:3b:96:04:5a"
@@ -35,8 +35,7 @@ jobs:
           name: Deploy Over SSH
           working_directory: ~/project
           command: |
-            yarn prod
-            for ip in $(dig @1.1.1.1 $SSH_SERVER +short); do ssh-keyscan $SSH_SERVER,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
+            echo '$SSH_SERVER ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPSw5DFWu8CHrcKtsnJgVcyriLsLHIut059MrPiG7KA31roUxslihvnUnVsZNl5XAQlVWdz5gwnSbkU9QTsNq+c=' >> ~/.ssh/known_hosts
             scp -r ~/project/dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
 workflows:
   version: 2
