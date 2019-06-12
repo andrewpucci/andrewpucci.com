@@ -36,6 +36,7 @@ jobs:
           working_directory: ~/project
           command: |
             yarn prod
+            for ip in $(dig @1.1.1.1 $SSH_SERVER +short); do ssh-keyscan $SSH_SERVER,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
             scp -r ~/project/dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
 workflows:
   version: 2
