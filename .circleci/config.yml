@@ -38,11 +38,11 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "93:06:43:7a:c4:66:c9:20:9a:b9:00:7a:b5:3d:78:1c"
+            - "38:ad:a6:e9:f5:1e:71:4b:73:4a:47:e5:3b:96:04:5a"
       - run:
           name: Deploy Over SSH
           command: |
-            ssh -vvv $SSH_USER@$SSH_SERVER
+            scp -r dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR/.
 
 workflows:
   version: 2
