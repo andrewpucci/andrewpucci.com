@@ -46,6 +46,7 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $SSH_KNOWN_HOSTS >> ~/.ssh/known_hosts
+            sudo apt install rsync
             rsync -acv --delete --filter='P .*' ./dist/ $SSH_USER@$SSH_SERVER:$SSH_DIR
 
 workflows:
