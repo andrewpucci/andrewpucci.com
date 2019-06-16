@@ -46,7 +46,7 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $SSH_KNOWN_HOSTS >> ~/.ssh/known_hosts
-            rsync -acnv --delete --filter='P .*' ./dist/ $SSH_USER@$SSH_SERVER:$SSH_DIR
+            rsync -acv --delete --filter='P .*' ./dist/ $SSH_USER@$SSH_SERVER:$SSH_DIR
 
 workflows:
   version: 2
