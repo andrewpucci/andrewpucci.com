@@ -44,7 +44,7 @@ jobs:
           name: Deploy Over SSH
           working_directory: ~/project
           command: |
-            echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+            echo $SSH_KNOWN_HOSTS >> ~/.ssh/known_hosts
             scp -r ~/project/dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
 workflows:
   version: 2
