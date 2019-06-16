@@ -7,16 +7,23 @@ jobs:
     steps:
       - checkout
       - restore_cache:
+          name: Restore Yarn Package Cache
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
-          name: Run Project Build
-          command: yarn prod
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+      - restore_cache:
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Build Project
+          command: yarn prod
       - run:
           name: Run Tests
           command: yarn test
@@ -32,12 +39,12 @@ jobs:
           at: ~/project
       - add_ssh_keys:
           fingerprints:
-            - "38:ad:a6:e9:f5:1e:71:4b:73:4a:47:e5:3b:96:04:5a"
+            - "$SSH_FINGERPRINT"
       - run:
           name: Deploy Over SSH
           working_directory: ~/project
           command: |
-            echo "$SSH_SERVER ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPSw5DFWu8CHrcKtsnJgVcyriLsLHIut059MrPiG7KA31roUxslihvnUnVsZNl5XAQlVWdz5gwnSbkU9QTsNq+c=" >> ~/.ssh/known_hosts
+            echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
             scp -r ~/project/dist/* $SSH_USER@$SSH_SERVER:$SSH_DIR
 workflows:
   version: 2
