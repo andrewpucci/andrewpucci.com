@@ -1,8 +1,25 @@
-andrewpucci.com
-===============
+# andrewpucci.com
 
-# Overview
+This is the public portfolio site for Andrew Pucci, a UX Designer with a knack for development.
 
-This is a basic Jekyll site.
+## Running Locally
 
-To run: `make build` then `make serve`
+If you'd like to take a look at my portfolio, head over to [andrewpucci.com](https://andrewpucci.com/?ref=github).
+
+Feel like playing around with the code?
+1.  Clone this repo
+2.  Install node
+```
+nvm use
+```
+3.  Install dependencies
+```
+yarn install
+```
+4.  Run development mode
+```
+yarn dev
+```
+
+### Customization
+Rename the `.env-sample` file to `.env` and add in values for your environment. `ROOT_URL` is the base URL of your deployed project.
