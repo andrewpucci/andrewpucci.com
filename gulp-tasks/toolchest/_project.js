@@ -29,7 +29,7 @@ module.exports = {
         dest: ['./src/site/assets/css'],
       },
       deps: {
-        src: [],
+        src: ['./node_modules/@fortawesome/fontawesome-free/css/svg-with-js.css'],
         dest: ['./src/site/assets/css'],
       },
     },
