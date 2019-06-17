@@ -20,6 +20,7 @@ gulp.task('clean', gulp.parallel(
 */
 gulp.task('build', gulp.parallel(
   'css',
+  'css:deps',
   'js:deps',
 ));
 
