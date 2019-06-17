@@ -16,6 +16,7 @@
     <link rel="preload" as="font" href="{{ '/assets/fonts/ibm-plex-sans-v6-latin-700.woff2' | url }}" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" as="font" href="{{ '/assets/fonts/ibm-plex-sans-v6-latin-700.woff' | url }}" type="font/woff2" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{{ '/assets/css/main.css' | url }}">
+    <link rel="stylesheet" type="text/css" href="{{ '/assets/css/deps.css' | url }}">
   </head>
   <body>
     {% include 'nav.njk' %}
@@ -23,6 +24,6 @@
       {{ content | safe }}
     </main>
     {% include 'footer.njk' %}
-    <script src="{{ '/assets/js/deps.js' | url }}" type="text/javascript"></script>
+    <script src="{{ '/assets/js/deps.js' | url }}" type="text/javascript" data-auto-add-css="false"></script>
   </body>
 </html>
