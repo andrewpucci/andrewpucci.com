@@ -40,40 +40,5 @@
 		"imgurl": "/assets/img/card-img/improving-justcode.png",
 		"url": "/portfolio/understanding-justcode-users",
 		"content": "Survey of users to understand the features they were using in JustCode followed by a remote usability study to dive deeper."
-	},
-	{
-		"name": "revamping-course-registration",
-		"title": "Revamping Course Registration",
-		"imgurl": "/assets/img/card-img/course-selection.png",
-		"url": "/portfolio/revamping-course-registration",
-		"content": "Registering for academic courses can be difficult. We created a design that enables simpler registration."
-	},
-	{
-		"name": "carnation-city-mall-blueprints",
-		"title": "Carnation City Mall Blueprints",
-		"imgurl": "/assets/img/card-img/carnation-blueprint.png",
-		"url": "/portfolio/carnation-city-mall-blueprints",
-		"content": "Malls usually have good signage to point you in the right direction. But websites? Probably a different story."
-	},
-	{
-		"name": "local-yokel-foods-paper-prototype",
-		"title": "Local Yokel Foods Paper&nbsp;Prototype",
-		"imgurl": "/assets/img/card-img/paper-prototype.png",
-		"url": "/portfolio/local-yokel-foods-paper-prototype",
-		"content": "Improving the process of purchasing groceries online at Local Yokel Foods through paper prototyping."
-	},
-	{
-		"name": "young-professionals-of-akron-usability-study",
-		"title": "Young Professionals of Akron Usability&nbsp;Study",
-		"imgurl": "/assets/img/card-img/ypa-eyetracking.png",
-		"url": "/portfolio/young-professionals-of-akron-usability-study",
-		"content": "Using an eye tracker, my team found areas of concern in the Young Professionals of Akron website, which I then redesigned."
-	},
-	{
-		"name": "bookmooch-social-networking-survey",
-		"title": "BookMooch Social&nbsp;Networking Survey",
-		"imgurl": "/assets/img/card-img/bookmooch-survey.png",
-		"url": "/portfolio/bookmooch-social-networking-survey",
-		"content": "In partnership with the founder of BookMooch, my team surveyed users to help understand their social media habits."
 	}
 ]
