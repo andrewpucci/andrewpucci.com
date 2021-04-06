@@ -1,9 +1,16 @@
 [
 	{
+		"name": "employee-onboarding-at-society-of-grownups",
+		"title": "Employee Onboarding at Society of Grownups",
+		"imgurl": "/assets/img/card-img/employee-onboarding.png",
+		"url": "/assets/files/employee-onboarding-at-society-of-grownups.pdf",
+		"content": "Process design to improve new employee experience at Society of Grownups."
+	},
+	{
 		"name": "redesigning-telerik-analytics",
 		"title": "Redesigning Telerik&nbsp;Analytics",
 		"imgurl": "/assets/img/card-img/analytics-design.png",
-		"url": "/portfolio/redesigning-telerik-analytics",
+		"url": "/assets/files/redesigning-telerik-analytics.pdf",
 		"content": "Real-time application analytics to grow user engagement and improve user experience."
 	},
 	{
@@ -12,13 +19,6 @@
 		"imgurl": "/assets/img/card-img/employee-tool.png",
 		"url": "/portfolio/employee-tool",
 		"content": "A mobile website used by employees at Society&nbsp;of&nbsp;Grownups to manage interactions with customers."
-	},
-	{
-		"name": "society-of-grownups-website",
-		"title": "Society of Grownups Website",
-		"imgurl": "/assets/img/card-img/grownup-goals.png",
-		"url": "/portfolio/society-of-grownups-website",
-		"content": "The Webby Awards-winning website used by Society&nbsp;of&nbsp;Grownups customers to understand their financial goals."
 	},
 	{
 		"name": "improving-telerik-product-documentation",
