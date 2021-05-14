@@ -27,14 +27,14 @@ I set up quick and dirty usability studies with members of the community team (t
 ## Outcome
 As I noticed where our employees were getting tripped up on the new interface, I worked closely with an internal developer to make changes. This mostly consisted of crude drawings, short conversations, and issue reports in Github. Occasionally, I actually made changes to the code myself to address minor spacing or wording issues.
 
-<div id="employee-tool-carousel" class="carousel slide mb-3" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#employee-tool-carousel" data-slide-to="0" class="active"></li>
-    <li data-target="#employee-tool-carousel" data-slide-to="1"></li>
-    <li data-target="#employee-tool-carousel" data-slide-to="2"></li>
-    <li data-target="#employee-tool-carousel" data-slide-to="3"></li>
-    <li data-target="#employee-tool-carousel" data-slide-to="4"></li>
-  </ol>
+<div id="employee-tool-carousel" class="carousel slide mb-3" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#employee-tool-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#employee-tool-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#employee-tool-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#employee-tool-carousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    <button type="button" data-bs-target="#employee-tool-carousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+  </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
       <img class="d-block w-100" src="/assets/img/employee-tool-1.png" alt="View of Society of Grownups Employee Tool showing list of checkups scheduled for the day">
@@ -52,14 +52,14 @@ As I noticed where our employees were getting tripped up on the new interface, I
       <img class="d-block w-100" src="/assets/img/employee-tool-5.png" alt="User linking and creation screen">
     </div>
   </div>
-  <a class="carousel-control-prev" href="#employee-tool-carousel" role="button" data-slide="prev">
+  <button class="carousel-control-prev" type="button" data-bs-target="#employee-tool-carousel" role="button" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#employee-tool-carousel" role="button" data-slide="next">
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#employee-tool-carousel" role="button" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
+    <span class="visually-hidden">Next</span>
+  </button>
 </div>
 
 ## Lessons Learned
