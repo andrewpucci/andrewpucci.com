@@ -3,7 +3,7 @@ layout: artifact
 title: Local Yokel Foods Paper Prototype - Andrew Pucci
 description: Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.
 name: local-yokel-foods-paper-prototype
-hero: /assets/img/card-img/paper-prototype.png
+hero: ./src/site/img/card-img/paper-prototype.png
 heroTitle: Local Yokel Foods Paper Prototype
 team:
   - name: Andrew Pucci (me!)
@@ -28,31 +28,31 @@ Because they are a new company with a somewhat innovative approach to grocery sh
 ## Approach
 The paper prototype testing team consisted of a facilitator, who directed the user in a series of tasks, a computer, who manipulated the paper interfaces to simulate computer interaction, and a note taker. Study participants were directed to complete various tasks typical of online customers. They were also asked their opinion about the ease of completing the tasks and suggestions for improvements. Between tests, the team made refinements in the interface to improve usability and correct any problems.
 
-<div id="local-yokel-carousel" class="carousel slide mb-3" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#local-yokel-carousel" data-slide-to="0" class="active"></li>
-    <li data-target="#local-yokel-carousel" data-slide-to="1"></li>
-    <li data-target="#local-yokel-carousel" data-slide-to="2"></li>
-  </ol>
+<div id="local-yokel-carousel" class="carousel slide mb-3" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#local-yokel-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#local-yokel-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#local-yokel-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img class="d-block w-100" src="/assets/img/pp_group7_1.jpg" alt="Paper prototype including sample grocery list, credit card, and ID">
+      {% image "./src/site/img/pp_group7_1.jpg", "Paper prototype including sample grocery list, credit card, and ID", "d-block w-100 h-auto" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/pp_group7_2.jpg" alt="Example of paper prototype testing in progress. Sticky notes and paper are layered to produce a cohesive mock interface.">
+      {% image "./src/site/img/pp_group7_2.jpg", "Example of paper prototype testing in progress. Sticky notes and paper are layered to produce a cohesive mock interface", "d-block w-100 h-auto" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/pp_group7_3.jpg" alt="Paper prototype of checkout process. Important pieces of the interface are filled in with pencil or overlaid with sticky notes.">
+      {% image "./src/site/img/pp_group7_3.jpg", "Paper prototype of checkout process. Important pieces of the interface are filled in with pencil or overlaid with sticky notes", "d-block w-100 h-auto" %}
     </div>
   </div>
-  <a class="carousel-control-prev" href="#local-yokel-carousel" role="button" data-slide="prev">
+  <button class="carousel-control-prev" type="button" data-bs-target="#local-yokel-carousel" role="button" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#local-yokel-carousel" role="button" data-slide="next">
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#local-yokel-carousel" role="button" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Next</span>
-  </a>
+  </button>
 </div>
 
 ## Outcome

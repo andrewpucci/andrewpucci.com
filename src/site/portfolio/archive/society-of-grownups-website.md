@@ -3,7 +3,7 @@ layout: artifact
 title: Society of Grownups Website - Andrew Pucci
 description: Portfolio piece showing the design process for the Society of Grownups website.
 name: society-of-grownups-website
-hero: /assets/img/card-img/grownup-goals.png
+hero: ./src/site/img/card-img/grownup-goals.png
 heroTitle: Society of Grownups Website
 team:
   - name: Andrew Pucci (me!)
@@ -37,39 +37,39 @@ Annotated wireframes were created, outlining all of the anticipated steps the Gr
 
 This website won [The Webby Awards People's Voice](http://webbyawards.com/winners/2015/advertising-media/websites-micro-sites-and-rich-media/financial-services-insurance/society-of-grownups/) for Advertising & Media in Financial Services & Insurance. You can even see me accept the award with our [5-Word Speech](http://www.youtube.com/embed/4omB6bC1Nig?autoplay=1)!
 
-<div id="sog-carousel" class="carousel slide mb-3" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#sog-carousel" data-slide-to="0" class="active"></li>
-    <li data-target="#sog-carousel" data-slide-to="1"></li>
-    <li data-target="#sog-carousel" data-slide-to="2"></li>
-    <li data-target="#sog-carousel" data-slide-to="3"></li>
-    <li data-target="#sog-carousel" data-slide-to="4"></li>
-  </ol>
+<div id="sog-carousel" class="carousel slide mb-3" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></li>
+    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+  </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img class="d-block w-100" src="/assets/img/sog-1.png" alt="Annotated screen design for user profile page">
+      {% image "./src/site/img/sog-1.png", "Annotated screen design for user profile page", "d-block w-100 h-auto" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/sog-2.png" alt="Annotated screen design for user information gathering page">
+      {% image "./src/site/img/sog-2.png", "Annotated screen design for user information gathering page", "d-block w-100 h-auto" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/sog-3.png" alt="Annotated screen design for grownup goals page">
+      {% image "./src/site/img/sog-3.png", "Annotated screen design for grownup goals page", "d-block w-100 h-auto" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/sog-4.png" alt="Annotated screen design showing modal confirmation">
+      {% image "./src/site/img/sog-4.png", "Annotated screen design showing modal confirmation", "d-block w-100 h-auto" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/sog-5.png" alt="Annotated screen design for income information gathering">
+      {% image "./src/site/img/sog-5.png", "Annotated screen design for income information gathering", "d-block w-100 h-auto" %}
     </div>
   </div>
-  <a class="carousel-control-prev" href="#sog-carousel" role="button" data-slide="prev">
+  <button class="carousel-control-prev" type="button" data-bs-target="#sog-carousel" role="button" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#sog-carousel" role="button" data-slide="next">
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#sog-carousel" role="button" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Next</span>
-  </a>
+  </button>
 </div>
 
 ## Lessons Learned
