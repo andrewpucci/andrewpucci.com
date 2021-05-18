@@ -4,7 +4,7 @@ layout: base.njk
           <div class="carousel bg-primary">
             <div class="carousel-inner">
               <div class="carousel-item active">
-                <img src="{{ hero }}" class="banner-image hero-image" alt="{{ heroTitle }}">
+                {% image hero, heroTitle, "banner-image hero-image" %}
                 <div class="carousel-caption">
                   <h1 class="text-white text-uppercase display-4 d-none d-md-inline"><span class="px-2 bg-dark">{{ heroTitle }}</span></h1>
                   <h1 class="h2 text-white text-uppercase font-weight-light d-md-none"><span class="px-2 bg-dark">{{ heroTitle }}</span></h1>

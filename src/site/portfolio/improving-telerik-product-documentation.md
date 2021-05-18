@@ -3,7 +3,7 @@ layout: artifact
 title: Improving Telerik Product Documentation - Andrew Pucci
 description: Portfolio piece showing how Telerik product documentation was improved with interviews.
 name: improving-telerik-product-documentation
-hero: /assets/img/card-img/kendoui-docs.png
+hero: ./src/site/img/card-img/kendoui-docs.png
 heroTitle: Improving Telerik Product Documentation
 team:
   - name: Andrew Pucci (me!)
@@ -29,22 +29,22 @@ I decided to try to understand more about the problem by recruiting for and perf
 
 <div class="row">
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/assets/img/support-dashboard.png" alt="Mockup of documentation homepage">
+    {% image "./src/site/img/support-dashboard.png", "Mockup of documentation homepage", "img-fluid mb-3" %}
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/assets/img/support-documentation.png" alt="Mockup of documentation for a particular component">
+    {% image "./src/site/img/support-documentation.png", "Mockup of documentation for a particular component", "img-fluid mb-3" %}
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/assets/img/support-kb.png" alt="Mockup of the knowledgebase interface">
+    {% image "./src/site/img/support-kb.png", "Mockup of the knowledgebase interface", "img-fluid mb-3" %}
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/assets/img/support-plans.png" alt="Mockup of support plan pricing page">
+    {% image "./src/site/img/support-plans.png", "Mockup of support plan pricing page", "img-fluid mb-3" %}
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/assets/img/support-videos.png" alt="Mockup of video search in documentation">
+    {% image "./src/site/img/support-videos.png", "Mockup of video search in documentation", "img-fluid mb-3" %}
   </div>
   <div class="col-12 col-lg-4">
-    <img class="img-fluid mb-3" src="/assets/img/support-youraccount.png" alt="Mockup of updated account page">
+    {% image "./src/site/img/support-youraccount.png", "Mockup of updated account page", "img-fluid mb-3" %}
   </div>
 </div>
 

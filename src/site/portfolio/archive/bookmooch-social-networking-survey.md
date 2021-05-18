@@ -3,7 +3,7 @@ layout: artifact
 title: BookMooch Social Networking Survey - Andrew Pucci
 description: Portfolio piece showing how a set of surveys was completed for BookMooch.
 name: bookmooch-social-networking-survey
-hero: /assets/img/card-img/bookmooch-survey.png
+hero: ./src/site/img/card-img/bookmooch-survey.png
 heroTitle: BookMooch Social Networking Survey
 team:
   - name: Andrew Pucci (me!)

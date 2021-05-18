@@ -3,7 +3,7 @@ layout: artifact
 title: Society of Grownups Employee Tool - Andrew Pucci
 description: Portfolio piece showing how usability studies were conducted to improve an internal tool at Society of Grownups.
 name: employee-tool
-hero: /assets/img/card-img/employee-tool.png
+hero: ./src/site/img/card-img/employee-tool.png
 heroTitle: Society of Grownups Employee Tool
 team:
   - name: Andrew Pucci (me!)
@@ -37,19 +37,19 @@ As I noticed where our employees were getting tripped up on the new interface, I
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img class="d-block w-100" src="/assets/img/employee-tool-1.png" alt="View of Society of Grownups Employee Tool showing list of checkups scheduled for the day">
+      {% image "./src/site/img/employee-tool-1.png", "View of Society of Grownups Employee Tool showing list of checkups scheduled for the day", "d-block w-100" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/employee-tool-2.png" alt="Contextual user menu showing all options available to a particular employee">
+      {% image "./src/site/img/employee-tool-2.png", "Contextual user menu showing all options available to a particular employee", "d-block w-100" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/employee-tool-3.png" alt="View of Society of Grownups Employee Tool showing list of appointments scheduled for the day">
+      {% image "./src/site/img/employee-tool-3.png", "View of Society of Grownups Employee Tool showing list of appointments scheduled for the day", "d-block w-100" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/employee-tool-4.png" alt="View of Society of Grownups Employee Tool showing list of classes and events scheduled for the day">
+      {% image "./src/site/img/employee-tool-4.png", "View of Society of Grownups Employee Tool showing list of classes and events scheduled for the day", "d-block w-100" %}
     </div>
     <div class="carousel-item">
-      <img class="d-block w-100" src="/assets/img/employee-tool-5.png" alt="User linking and creation screen">
+      {% image "./src/site/img/employee-tool-5.png", "User linking and creation screen", "d-block w-100" %}
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#employee-tool-carousel" role="button" data-bs-slide="prev">

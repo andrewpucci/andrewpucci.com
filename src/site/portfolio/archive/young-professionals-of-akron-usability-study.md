@@ -3,7 +3,7 @@ layout: artifact
 title: Young Professionals of Akron Usability Study - Andrew Pucci
 description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
 name: young-professionals-of-akron-usability-study
-hero: /assets/img/card-img/ypa-eyetracking.png
+hero: ./src/site/img/card-img/ypa-eyetracking.png
 heroTitle: Young Professionals of Akron Usability Study
 team:
   - name: Andrew Pucci (me!)
@@ -355,7 +355,7 @@ Task 2 also helped identify another issue with the overall site – the Flash-ba
 In fact, most of the participants disregarded the Flash-based graphic upon first view of the site. A heat map (below) that shows where the participants focused their attentions supports the finding that the Flash graphic was nearly ignored. As you can see, the graphic was not the subject of much attention (the red hotspots indicate the most focused attention).
 
 <figure>
-  <img src="/assets/img/figure1-thumb.png" class="img-fluid" alt="Figure 1: Heatmap showing inattention to Flash graphics" />
+  {% image "./src/site/img/figure1-thumb.png", "", "img-fluid" %}
   <figcaption>Figure 1: Heatmap showing inattention to Flash graphics</figcaption>
 </figure>
 
@@ -371,21 +371,21 @@ Through observation, note-taking, and reviewing the recordings of the test sessi
 -   Most users were confused by text that looks clickable because it is colored blue. However, the color was used for emphasis and not because the text was a link. This screen capture shows an example of the deceptive text formatting that participants commented about.
 
 <figure>
-  <img src="/assets/img/figure2.png" class="img-fluid" alt="Figure 2: Blue text looks clickable, but isn't" />
+  {% image "./src/site/img/figure2.png", "", "img-fluid" %}
   <figcaption>Figure 2: Blue text looks clickable, but isn't</figcaption>
 </figure>
 
 -   There were graphics throughout the site (forward pointing arrows) that appeared to be links. Some users tried to click but got no response. The capture below shows one such useless arrow.
 
 <figure>
-  <img src="/assets/img/figure3.png" class="img-fluid" alt="Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable" />
+  {% image "./src/site/img/figure3.png", "", "img-fluid" %}
   <figcaption>Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable</figcaption>
 </figure>
 
 -   Each participant tried to click on News and Events in the sidebar on the site’s home page. Only the event listed underneath the News and Events text is navigable. This capture indicates where the participants attempted to click without success (yellow circles indicate click attempts).
 
 <figure>
-  <img src="/assets/img/figure4.png" class="img-fluid" alt="Figure 4: News & Events is not clickable" />
+  {% image "./src/site/img/figure4.png", "", "img-fluid" %}
   <figcaption>Figure 4: News & Events is not clickable</figcaption>
 </figure>
 

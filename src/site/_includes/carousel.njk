@@ -12,7 +12,16 @@
             <div class="row">
         {% endif %}
               <div class="col-lg-4 d-flex mb-3 mb-lg-0">
-                {% include 'card.njk' %}
+                <div class="card">
+                  {% image card.imgurl, card.title, "card-img-top h-auto" %}
+                  <div class="card-body">
+                    <p class="h5 card-title">{{ card.title | safe }}</p>
+                    <p class="card-text">{{ card.content | safe }}</p>
+                  </div>
+                  <div class="card-footer">
+                    <a href="{{ card.url }}" class="btn btn-primary text-uppercase">See more</a>
+                  </div>
+                </div>
               </div>
         {% if counter % 3 == 0 %}
               </div>
