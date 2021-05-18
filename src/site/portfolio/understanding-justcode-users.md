@@ -3,7 +3,7 @@ layout: artifact
 title: Understanding JustCode Users - Andrew Pucci
 description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
 name: understanding-justcode-users
-hero: /assets/img/card-img/improving-justcode.png
+hero: ./src/site/img/card-img/improving-justcode.png
 heroTitle: Understanding JustCode Users
 team:
   - name: Andrew Pucci (me!)
@@ -31,13 +31,13 @@ Once I understood which features were causing the most confusion, I designed and
 
 <div class="row">
   <div class="col-lg-4">
-    <img class="img-fluid mb-3 mb-lg-0" src="/assets/img/justcode-freeformtextanalysis.jpg">
+    {% image "./src/site/img/justcode-freeformtextanalysis.jpg", "Whiteboard with affinity diagram made of Post-it notes", "img-fluid mb-3 mb-lg-0" %}
   </div>
   <div class="col-lg-4 mb-3 mb-lg-0">
-    <img class="img-fluid" src="/assets/img/justcode-telerikprofile.png">
+    {% image "./src/site/img/justcode-telerikprofile.png", "Screenshot of Telerik Account page", "img-fluid mb-3 mb-lg-0" %}
   </div>
   <div class="col-lg-4 mb-3 mb-lg-0">
-    <img class="img-fluid" src="/assets/img/justcode-vampanel.png">
+    {% image "./src/site/img/justcode-vampanel.png", "Screenshot of Visual Studio showing mockup of JustCode Visual Aid Menu", "img-fluid" %}
   </div>
 </div>
 

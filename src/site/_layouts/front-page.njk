@@ -4,7 +4,7 @@ layout: base.njk
 <div class="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="/assets/img/background.jpg" class="banner-image" alt="View of mountains in Bulgaria">
+      {% image "./src/site/img/background.jpg", "View of mountains in Bulgaria", "banner-image", "1440" %}
       <div class="carousel-caption">
         <h1 class="text-white text-uppercase display-4 mb-5"><span class="px-2 bg-primary">Hi, I'm Andrew.</span></h1>
         <h2 class="h4 text-primary text-uppercase font-weight-light"><span class="px-2 bg-white">I aim to understand what makes broken experiences and design improvements to fix them.</span></h4>
@@ -59,7 +59,7 @@ layout: base.njk
             Whether it was leading by example, analyzing and driving the metrics on employee satisfaction, Andrew is truly dedicated
             and gifted.</blockquote>
           <cite>
-            <img class="rounded-circle" alt="Nondini Naqui" src="{{ '/assets/img/nondininaqui.jpg' | url }}">
+            {% image "./src/site/img/nondininaqui.jpg", "Nondini Naqui", "rounded-circle align-middle me-2", "40", [40] %}
             <a href="https://www.linkedin.com/in/nondini/" target="_blank" rel="noopener">Nondini Naqui</a>, CEO &amp; President, Society of Grownups</cite>
         </div>
         <div class="col-12 col-lg-6">
@@ -68,7 +68,7 @@ layout: base.njk
             products overall. His optimistic attitude, coupled with a no-nonsense critical sensibility, make him an insightful
             collaborator and a great asset to any team.</blockquote>
           <cite>
-            <img class="rounded-circle" alt="Sarah Pascarella" src="{{ '/assets/img/sarahpascarella.jpg' | url }}">
+            {% image "./src/site/img/sarahpascarella.jpg", "Sarah Pascarella", "rounded-circle align-middle me-2", "40", [40] %}
             <a href="https://www.linkedin.com/in/sarah-pascarella-b911835/" target="_blank" rel="noopener">Sarah Pascarella</a>, Head of Digital Content, Society of Grownups</cite>
         </div>
     </div>
