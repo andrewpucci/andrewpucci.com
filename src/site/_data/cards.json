@@ -1,10 +1,24 @@
 [
 	{
+		"name": "evolving-binary-defense-mdr",
+		"title": "Evolving Binary Defense MDR",
+		"imgurl": "./src/site/img/card-img/evolving-binary-defense-mdr.jpg",
+		"url": "/assets/files/evolving-binary-defense-mdr.pdf",
+		"content": "Researching user workflows to design improvements to the UI of an information security SaaS application."
+	},
+	{
 		"name": "employee-onboarding-at-society-of-grownups",
-		"title": "Employee Onboarding at Society of Grownups",
+		"title": "Employee Onboarding at Society&nbsp;of&nbsp;Grownups",
 		"imgurl": "./src/site/img/card-img/employee-onboarding.png",
 		"url": "/assets/files/employee-onboarding-at-society-of-grownups.pdf",
 		"content": "Process design to improve new employee experience at Society of Grownups."
+	},
+	{
+		"name": "organization-design-at-society-of-grownups",
+		"title": "Organization Design at Society&nbsp;of&nbsp;Grownups",
+		"imgurl": "./src/site/img/card-img/society-of-grownups-organization.jpg",
+		"url": "/assets/files/organization-design-at-society-of-grownups.pdf",
+		"content": "Development of organization design to improve communication at Society of Grownups."
 	},
 	{
 		"name": "redesigning-telerik-analytics",
@@ -12,13 +26,6 @@
 		"imgurl": "./src/site/img/card-img/analytics-design.png",
 		"url": "/assets/files/redesigning-telerik-analytics.pdf",
 		"content": "Real-time application analytics to grow user engagement and improve user experience."
-	},
-	{
-		"name": "employee-tool",
-		"title": "Society of Grownups Employee&nbsp;Tool",
-		"imgurl": "./src/site/img/card-img/employee-tool.png",
-		"url": "/portfolio/employee-tool",
-		"content": "A mobile website used by employees at Society&nbsp;of&nbsp;Grownups to manage interactions with customers."
 	},
 	{
 		"name": "improving-telerik-product-documentation",
@@ -33,12 +40,5 @@
 		"imgurl": "./src/site/img/card-img/lunchboat-interactionflow.png",
 		"url": "/portfolio/lunchboat-mobile-app-interaction-flow",
 		"content": "Have you been running into coworkers while out for lunch? We built an app to help facilitate that."
-	},
-	{
-		"name": "understanding-justcode-users",
-		"title": "Understanding JustCode Users",
-		"imgurl": "./src/site/img/card-img/improving-justcode.png",
-		"url": "/portfolio/understanding-justcode-users",
-		"content": "Survey of users to understand the features they were using in JustCode followed by a remote usability study to dive deeper."
 	}
 ]
