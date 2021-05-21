@@ -4,3 +4,4 @@ dist
 yarn-error.log
 src/site/assets/js/*
 src/site/assets/css/*
+.cache/*
