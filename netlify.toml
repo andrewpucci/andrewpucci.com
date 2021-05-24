@@ -2,3 +2,4 @@
   for = "/*"
   [headers.values]
     Content-Security-Policy-Report-Only = "HEADER_PLACEHOLDER"
+    Permissions-Policy = "interest-cohort=()"
