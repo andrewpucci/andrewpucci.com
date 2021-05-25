@@ -3,3 +3,9 @@
   [headers.values]
     Content-Security-Policy-Report-Only = "HEADER_PLACEHOLDER"
     Permissions-Policy = "interest-cohort=()"
+
+[[redirects]]
+  from = "/shotplot"
+  to = "https://shotplot.app"
+  status = 301
+  force = true
