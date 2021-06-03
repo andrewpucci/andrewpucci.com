@@ -2,6 +2,7 @@
   for = "/*"
   [headers.values]
     Permissions-Policy = "interest-cohort=()"
+    cache-control = "public,max-age=60"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "no-referrer-when-downgrade"
@@ -18,6 +19,11 @@
       "include_subdomains":true
     }'''
 
+[[headers]]
+  for = "/*.*"
+  [headers.values]
+  cache-control = "public,max-age=360000"
+
 [[redirects]]
   from = "/shotplot"
   to = "https://shotplot.app"
@@ -29,13 +35,12 @@ package = "netlify-plugin-csp-generator"
 
   [plugins.inputs]
   buildDir = "dist"
-  reportOnly = true
-  reportURI = "https://andrewpucci.report-uri.com/r/d/csp/wizard"
+  reportURI = "https://andrewpucci.report-uri.com/r/d/csp/enforce"
 
   [plugins.inputs.policies]
     defaultSrc = "'none'"
     scriptSrc = "'self'"
-    styleSrc = "'unsafe-hashes'"
+    styleSrc = "'self' 'unsafe-hashes'"
     imgSrc = "'self' data:"
     fontSrc = "'self'"
     connectSrc = "'none'"
