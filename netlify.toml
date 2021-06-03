@@ -2,6 +2,21 @@
   for = "/*"
   [headers.values]
     Permissions-Policy = "interest-cohort=()"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "no-referrer-when-downgrade"
+    Report-To = '''{
+      "group":"default",
+      "max_age":31536000,
+      "endpoints":[
+        {"url":"https://andrewpucci.report-uri.com/a/d/g"}
+      ],
+      "include_subdomains":true}'''
+    NEL = '''{
+      "report_to":"default",
+      "max_age":31536000,
+      "include_subdomains":true
+    }'''
 
 [[redirects]]
   from = "/shotplot"
@@ -20,19 +35,16 @@ package = "netlify-plugin-csp-generator"
   [plugins.inputs.policies]
     defaultSrc = "'none'"
     scriptSrc = "'self'"
-    styleSrc = "'self'"
-    imgSrc = "'self'"
+    styleSrc = "'unsafe-hashes'"
+    imgSrc = "'self' data:"
     fontSrc = "'self'"
     connectSrc = "'none'"
     mediaSrc = "'none'"
     objectSrc = "'none'"
     prefetchSrc = "'self'"
-    childSrc = "'none'"
     frameSrc = "'none'"
     workerSrc = "'none'"
     frameAncestors = "'none'"
     formAction = "'none'"
-    upgradeInsecureRequests = ""
-    blockAllMixedContent = ""
     baseUri = "'self'"
     manifestSrc = "'none'"
