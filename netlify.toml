@@ -32,7 +32,7 @@ package = "netlify-plugin-csp-generator"
     workerSrc = "'none'"
     frameAncestors = "'none'"
     formAction = "'none'"
-    upgradeInsecureRequests
-    blockAllMixedContent
+    upgradeInsecureRequests = ""
+    blockAllMixedContent = ""
     baseUri = "'self'"
     manifestSrc = "'none'"
