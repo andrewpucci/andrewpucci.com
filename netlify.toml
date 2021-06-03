@@ -1,8 +1,10 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy-Report-Only = "HEADER_PLACEHOLDER"
+    Content-Security-Policy-Report-Only = "CSP_PLACEHOLDER"
     Permissions-Policy = "interest-cohort=()"
+    NEL = "NEL_PLACEHOLDER"
+    Report-To = "REPORT_TO_PLACEHOLDER"
 
 [[redirects]]
   from = "/shotplot"
