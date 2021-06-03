@@ -1,13 +1,38 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy-Report-Only = "CSP_PLACEHOLDER"
     Permissions-Policy = "interest-cohort=()"
-    NEL = "NEL_PLACEHOLDER"
-    Report-To = "REPORT_TO_PLACEHOLDER"
 
 [[redirects]]
   from = "/shotplot"
   to = "https://shotplot.app"
   status = 301
   force = true
+
+[[plugins]]
+package = "netlify-plugin-csp-generator"
+
+  [plugins.inputs]
+  buildDir = "dist"
+  reportOnly = true
+  reportURI = "https://andrewpucci.report-uri.com/r/d/csp/wizard"
+
+  [plugins.inputs.policies]
+    defaultSrc = "'none'"
+    scriptSrc = "'self'"
+    styleSrc = "'self'"
+    imgSrc = "'self'"
+    fontSrc = "'self'"
+    connectSrc = "'none'"
+    mediaSrc = "'none'"
+    objectSrc = "'none'"
+    prefetchSrc = "'self'"
+    childSrc = "'none'"
+    frameSrc = "'none'"
+    workerSrc = "'none'"
+    frameAncestors = "'none'"
+    formAction = "'none'"
+    upgradeInsecureRequests = ""
+    blockAllMixedContent = ""
+    baseUri = "'self'"
+    manifestSrc = "'none'"
