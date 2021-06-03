@@ -18,6 +18,24 @@
       "max_age":31536000,
       "include_subdomains":true
     }'''
+    Content-Security-Policy = '''
+      default-src 'none';
+      script-src 'self';
+      style-src 'self';
+      img-src 'self' data:;
+      font-src 'self';
+      connect-src 'none';
+      media-src 'none';
+      object-src 'none';
+      prefetch-src 'self';
+      frame-src 'none';
+      worker-src 'none';
+      frame-ancestors 'none';
+      form-action 'none';
+      block-all-mixed-content;
+      base-uri 'self';
+      manifest-src 'none';
+      report-uri https://andrewpucci.report-uri.com/r/d/csp/enforce;'''
 
 [[headers]]
   for = "/*.*"
@@ -29,27 +47,3 @@
   to = "https://shotplot.app"
   status = 301
   force = true
-
-[[plugins]]
-package = "netlify-plugin-csp-generator"
-
-  [plugins.inputs]
-  buildDir = "dist"
-  reportURI = "https://andrewpucci.report-uri.com/r/d/csp/enforce"
-
-  [plugins.inputs.policies]
-    defaultSrc = "'none'"
-    scriptSrc = "'self'"
-    styleSrc = "'self' 'unsafe-hashes'"
-    imgSrc = "'self' data:"
-    fontSrc = "'self'"
-    connectSrc = "'none'"
-    mediaSrc = "'none'"
-    objectSrc = "'none'"
-    prefetchSrc = "'self'"
-    frameSrc = "'none'"
-    workerSrc = "'none'"
-    frameAncestors = "'none'"
-    formAction = "'none'"
-    baseUri = "'self'"
-    manifestSrc = "'none'"
