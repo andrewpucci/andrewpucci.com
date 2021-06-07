@@ -9,9 +9,18 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <div class="navbar-nav">
-        <a class="nav-item nav-link {% if (layout == "front-page") %} text-primary" aria-current="page{% endif %}" href="{{ '/' | url }}">About</a>
+        <a class="nav-item nav-link{% if (layout == "front-page") %} text-primary" aria-current="page{% endif %}" href="{{ '/' | url }}">About</a>
         <a class="nav-item nav-link" href="{{ '/assets/files/AndrewPucci-Resume.pdf' | url }}" target="_blank" rel="noopener">Resume</a>
-        <a class="nav-item nav-link {% if (layout == "collection") or (layout == "artifact") %} text-primary" aria-current="page{% endif %}" href="{{ '/portfolio/' | url }}">Portfolio</a>
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{% if (layout == "collection") or (layout == "artifact") %} text-primary" aria-current="page{% endif %}" href="#" id="portfolio-link" role="button" data-bs-toggle="dropdown" aria-expanded="false">Portfolio</a>
+            <ul class="dropdown-menu" aria-labelledby="portfolio-link">
+              <li><a class="dropdown-item{% if (layout == "collection") %} text-primary {% endif %}" href="{{ '/portfolio/' | url }}">Overview</a></li>
+              <li><hr class="dropdown-divider"></li>
+            {% for card in cards %}
+              <li><a class="dropdown-item{% if name == card.name %} text-primary{% endif %}" href="{{ card.url | url }}">{{ card.title | safe }}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
         <a class="nav-item nav-link" href="https://twitter.com/andrewrpucci" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
         <a class="nav-item nav-link" href="https://www.linkedin.com/in/andrewpucci" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
       </div>
