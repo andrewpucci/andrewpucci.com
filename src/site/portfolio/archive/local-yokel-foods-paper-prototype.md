@@ -14,10 +14,10 @@ responsibilities:
   - Wireframes
   - Usability Study
 tools:
-  - Posterboard
-  - Sharpies
-  - Post-it notes
-  - Highlighters
+  - name: Posterboard
+  - name: Sharpies
+  - name: Post-it notes
+  - name: Highlighters
 ---
 
 ## Challenge

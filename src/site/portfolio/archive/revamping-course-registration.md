@@ -16,9 +16,9 @@ responsibilities:
   - User Flows
   - Interactive Prototype
 tools:
-  - LovelyCharts
-  - OpenOffice Draw & Impress
-  - Axure RP
+  - name: LovelyCharts
+  - name: OpenOffice Draw & Impress
+  - name: Axure RP
 ---
 
 ## Challenge

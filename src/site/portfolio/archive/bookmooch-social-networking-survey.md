@@ -17,9 +17,9 @@ responsibilities:
   - Survey Design
   - Remote Interviews
 tools:
-  - Qualtrics
-  - Microsoft Excel
-  - Skype
+  - name: Qualtrics
+  - name: Microsoft Excel
+  - name: Skype
 ---
 
 ## Challenge
