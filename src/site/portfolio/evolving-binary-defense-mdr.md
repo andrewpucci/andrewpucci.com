@@ -146,7 +146,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
     <a href="#bd-1-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-1.png", "Screenshot of Binary Defense Vision interface", "img-fluid img-thumbnail", "629", [629] %}
+      {% image "./src/site/img/bd-1.png", "Screenshot of Binary Defense Vision interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
     </a>
     <div class="modal fade" id="bd-1-modal" tabindex="-1" aria-labelledby="bd-1-modal-title" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
@@ -175,7 +175,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
     <a href="#bd-2-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-2.jpg", "Hand drawn sketch of user interface", "img-fluid img-thumbnail", "629", [629] %}
+      {% image "./src/site/img/bd-2.jpg", "Hand drawn sketch of user interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
     </a>
     <div class="modal fade" id="bd-2-modal" tabindex="-1" aria-labelledby="bd-2-modal-title" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
@@ -201,7 +201,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
     <a href="#bd-3-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-3.png", "Mockup of user interface", "img-fluid img-thumbnail", "629", [629] %}
+      {% image "./src/site/img/bd-3.png", "Mockup of user interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
     </a>
     <div class="modal fade" id="bd-3-modal" tabindex="-1" aria-labelledby="bd-3-modal-title" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
@@ -229,7 +229,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
     <a href="#bd-4-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-4.png", "Screenshot of user interface with new theme applied", "img-fluid img-thumbnail", "629", [629] %}
+      {% image "./src/site/img/bd-4.png", "Screenshot of user interface with new theme applied", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
     </a>
     <div class="modal fade" id="bd-4-modal" tabindex="-1" aria-labelledby="bd-4-modal-title" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
@@ -257,7 +257,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
     <a href="#bd-5-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-5.png", "Screenshot of user interface", "img-fluid img-thumbnail", "629", [629] %}
+      {% image "./src/site/img/bd-5.png", "Screenshot of user interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
     </a>
     <div class="modal fade" id="bd-5-modal" tabindex="-1" aria-labelledby="bd-5-modal-title" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
