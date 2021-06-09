@@ -18,7 +18,7 @@ responsibilities:
   - Competitive Analysis
   - Blueprints
 tools:
-  - OpenOffice Draw
+  - name: OpenOffice Draw
 ---
 
 ## Challenge

@@ -14,11 +14,11 @@ responsibilities:
   - Usability Studies
   - Wireframes
 tools:
-  - Qualtrics
-  - Doodle (for participant scheduling)
-  - Skype and join.me
-  - Camtasia
-  - Photoshop
+  - name: Qualtrics
+  - name: Doodle (for participant scheduling)
+  - name: Skype and join.me
+  - name: Camtasia
+  - name: Photoshop
 ---
 
 ## Challenge
