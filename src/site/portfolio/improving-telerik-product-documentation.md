@@ -15,10 +15,10 @@ responsibilities:
   - Competitive Analysis
   - Wireframes
 tools:
-  - Doodle (for participant scheduling)
-  - Skype
-  - Camtasia
-  - Balsamiq
+  - name: Doodle (for participant scheduling)
+  - name: Skype
+  - name: Camtasia
+  - name: Balsamiq
 ---
 
 ## Challenge

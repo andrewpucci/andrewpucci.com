@@ -14,7 +14,7 @@ team:
 responsibilities:
   - Usability Study
 tools:
-  - Tobii (Eyetracking)
+  - name: Tobii (Eyetracking)
 ---
 
 ### Goals of Testing
