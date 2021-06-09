@@ -18,9 +18,9 @@ team:
 responsibilities:
   - User Flow
 tools:
-  - Whiteboard
-  - Sketchpad
-  - Balsamiq
+  - name: Whiteboard
+  - name: Sketchpad
+  - name: Balsamiq
 ---
 
 ## Challenge

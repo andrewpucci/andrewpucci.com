@@ -20,10 +20,10 @@ responsibilities:
   - Prototypes
   - Minor Development
 tools:
-  - Balsamiq
-  - Adobe Creative Cloud (mainly Photoshop)
-  - InVision
-  - HTML/CSS
+  - name: Balsamiq
+  - name: Adobe Creative Cloud (mainly Photoshop)
+  - name: InVision
+  - name: HTML/CSS
 ---
 
 ## Challenge

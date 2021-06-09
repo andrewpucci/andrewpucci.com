@@ -14,8 +14,8 @@ team:
 responsibilities:
   - In-person usability studies
 tools:
-  - Github
-  - HTML/CSS
+  - name: Github
+  - name: HTML/CSS
 ---
 
 ## Challenge
