@@ -15,20 +15,23 @@ responsibilities:
   - Usability Study
 tools:
   - name: Tobii (Eyetracking)
+eleventyExcludeFromCollections: true
 ---
 
 ### Goals of Testing
 
 The primary goals of conducting usability testing on the [Young Professionals of Akron website](http://www.ypakron.org) were to:
--   Determine if the current organization of the Young Professionals of Akron website facilitates navigation and the completion of common tasks.
--   Identify areas for improvement specific to menu options, titles, and actions that may be completed at the Young Professionals of Akron website.
+
+- Determine if the current organization of the Young Professionals of Akron website facilitates navigation and the completion of common tasks.
+- Identify areas for improvement specific to menu options, titles, and actions that may be completed at the Young Professionals of Akron website.
 
 ## Findings
 
 As a result of the tests conducted and the data gathered, these general findings were identified and are discussed further within this report:
--   Labels used in the global navigation are ambiguous and cause confusion as to the contents of each section of the page.
--   Graphical and textual formatting throughout the site does not adhere to current web standards and creates confusion among users.
--   The Flash-based graphical element at the top of the global navigation is purposefully ignored by most users.
+
+- Labels used in the global navigation are ambiguous and cause confusion as to the contents of each section of the page.
+- Graphical and textual formatting throughout the site does not adhere to current web standards and creates confusion among users.
+- The Flash-based graphical element at the top of the global navigation is purposefully ignored by most users.
 
 ## Methodology
 
@@ -37,18 +40,20 @@ Standard usability methodologies were followed as much as possible. The followin
 ### Participants
 
 For the purposes of this study, a characterization of an expected user was documented and a screening questionnaire was developed to identify potential participants who met the criteria identified in the characterization. The characterization was as follows.
--   Age: 21-40
--   Location: Within 1 hour driving distance of Akron (CLE+)
--   Socioeconomic Status: Medium-high SES
--   Occupation: Entry-level professional and higher (typically not low-wage jobs) Education: Senior year of Bachelor's program and higher
--   Job Experience Level: 0-15 years
--   Income: $40,000 - $100,000
--   Marital/Family Status: Single, no kids
+
+- Age: 21-40
+- Location: Within 1 hour driving distance of Akron (CLE+)
+- Socioeconomic Status: Medium-high SES
+- Occupation: Entry-level professional and higher (typically not low-wage jobs) Education: Senior year of Bachelor's program and higher
+- Job Experience Level: 0-15 years
+- Income: $40,000 - $100,000
+- Marital/Family Status: Single, no kids
 
 #### Goals and Interests
--   Meeting new people and expanding professional networks
--   Learning more about the Akron area's unique venues and recognizable citizens
--   Investing in the Akron area through community involvement
+
+- Meeting new people and expanding professional networks
+- Learning more about the Akron area's unique venues and recognizable citizens
+- Investing in the Akron area through community involvement
 
 Although the screening questionnaire was thoughtfully developed, the time and location constraints involved with this study caused us to use readily-available participants who may or may not have might the characterization criteria identified.
 
@@ -118,12 +123,12 @@ This table indicates responses to the pre-test questionnaire. For the first four
 These results indicate that each participant was familiar with computers, hardware, Internet browsing, email and online forms. In addition to standard computer use skills, each of the available participants was familiar with usability studies methodologies and the Tobii software used to conduct the test. This was because of their participation in the Usability I course that they participated in.
 
 ### Test Sessions
+
 For each test session, participants were greeted and invited to wait in a ‘green room’ that was far enough away from the testing rooms to ensure they were not exposed to tests in progress. This was done to protect them from gathering prior knowledge that might influence test results.
 
 While participants waited in the green room, the pre-test questionnaire was conducted and assessed by a tester to determine if special accommodations for testing were required (for example, enlarged text). None of the participants required special accommodations except for one participant who was left-handed and required the mouse be placed of the left side of the computer instead of the pre-arranged right side. No other changes were made during his test session.
 
 During each test, a pre-developed script was used by the moderator so that test sessions were conducted as similarly as possible. The script included an explanation of how the test would be conducted, a brief explanation of the purpose of the Young Professionals of Akron website, and encouragement for participants to ‘think-out-loud’ as they completed the tasks that comprised the usability test.
-
 
 In addition, the script contained the statements that indicated each task to be completed and questions for the moderator to ask after the completion of each task. When the moderator indicated the beginning of a new task and explained the requested task action, a slip of paper with the task listed in large print (size 16 font) was provided to the participant for use as a reminder when completing the task.
 
@@ -132,6 +137,7 @@ While moderators typically followed the script, there were some deviations when 
 After each participant completed the three tasks and testing-related conversations were complete, the participant was thanked for his/her time and escorted out of the testing area.
 
 ### Data Collection
+
 To begin the testing process, each participant was asked to fill out a questionnaire to capture data in regards to their familiarity with computers and the Internet related tasks. The results were cataloged in a simple spread sheet shown in the Participants section.
 
 To record each participant’s experience while completing the usability test of the YPA website, each member of the group took notes during the test. Also noted were significant comments made by the participant and any interesting occurrences observed by the team members.
@@ -141,9 +147,11 @@ Through the use of Tobii Studio software, use data was collected from four parti
 In addition, participants were asked to speak aloud their thought processes in navigating through the site. They were also asked questions while they performed each task. Their comments and answers were recorded. Upon the completion of the test, participants were also asked follow-up questions about their overall experience.
 
 ## Findings
+
 All of the data was collected and assessed for usefulness. As a result, not all of the data was used to create this report of findings, but is available for use if needed at a later date.
 
 ### Success and Time
+
 In general, the participants were able to successfully complete the three tasks. This table indicates successful completion of tasks for each participant.
 
 <table>
@@ -250,7 +258,9 @@ As you can see from the large amounts of time that participants required to comp
 Time-on-task measurements are not fully accurate, however, because the participants were encouraged to talk and ‘think-out-loud’ while they completed the tasks. Their sharing of comments may have inflated the amount of time required to complete each task.
 
 ### Evaluations
+
 #### Task 1
+
 While there were a small number of participants in our study, some common trends were evident. The first task, to locate a description and pictures of a past YPA event, was the hardest task for participants to complete. It took the most time to complete, with an average completion of just less than three minutes.
 
 The biggest barrier to successful completion of this task can be easily identified as a labeling issue in the global navigation bar. Most participants did not easily identify that descriptions and photos of past events would be located in the section labeled The Library. All of the participants first looked in other sections of the site before trying The Library section, which was usually attempted in desperation.
@@ -338,16 +348,18 @@ Here are the paths that each participant followed to find the descriptions and p
 </table>
 
 Here are some of the comments that participants made while completing task 1:
--   “I thought this task was fairly difficult because of the labeling.”
--   “Why are you making me jump through hoops to see pictures?”
--   “If this were a first date, I’d send him back to his Mom.”
--   “Library... I would think of that as being resources or references.”
+
+- “I thought this task was fairly difficult because of the labeling.”
+- “Why are you making me jump through hoops to see pictures?”
+- “If this were a first date, I’d send him back to his Mom.”
+- “Library... I would think of that as being resources or references.”
 
 Since the YPA is a group that presents itself as an organization focused on participating in networking events, more effort should be made to expose the available events and past events to the intended audience. The only place on the home page that explicitly mentions events is in the side bar on the right side of the page, a place that by convention is usually relegated to advertising and other off-topic content.
 
 The subsequent tasks were performed much more quickly. This may mean that once the participants have gotten familiar with the way the site is presented they can navigate more efficiently. For example, with task 2, locate the sign-up for the e-newsletter, participants were able to complete the task in about a minute.
 
 #### Task 2
+
 There were some navigational issues with task 2, though not as severe as with task 1. Two of the four participants attempted to locate the sign-up for the e-newsletter in the Contact Us section of the website. After scanning the Contact Us page and not finding the e-newsletter sign-up, these two participants then tried the Get Connected links.
 
 Task 2 also helped identify another issue with the overall site – the Flash-based graphic located above the global navigation bar. None of the participants immediately recognized the link in the graphic.
@@ -360,45 +372,52 @@ In fact, most of the participants disregarded the Flash-based graphic upon first
 </figure>
 
 Comments made by participants specific to the Flash-based graphic include:
--   “I tend to disregard anything that’s flashing.”
--   “It looks like part of a graphic, not a part of a navigational element.”
+
+- “I tend to disregard anything that’s flashing.”
+- “It looks like part of a graphic, not a part of a navigational element.”
 
 #### Task 3
+
 Task 3, email YPA to ask a question, was not problematic for any of the participants and most completed the task in about 10 seconds. The only comment made related to the task of emailing a question was specific to email address, where the participant indicated that she questioned the likelihood of receiving a response because it was a Yahoo address that “probably no one is even checking.”
 
 ### Other Findings (Not Specific to Tasks)
+
 Through observation, note-taking, and reviewing the recordings of the test sessions, we found other issues not directly related to the completion of tasks. These general findings are listed below.
--   Most users were confused by text that looks clickable because it is colored blue. However, the color was used for emphasis and not because the text was a link. This screen capture shows an example of the deceptive text formatting that participants commented about.
+
+- Most users were confused by text that looks clickable because it is colored blue. However, the color was used for emphasis and not because the text was a link. This screen capture shows an example of the deceptive text formatting that participants commented about.
 
 <figure>
   {% image "./src/site/img/figure2.png", "", "img-fluid" %}
   <figcaption>Figure 2: Blue text looks clickable, but isn't</figcaption>
 </figure>
 
--   There were graphics throughout the site (forward pointing arrows) that appeared to be links. Some users tried to click but got no response. The capture below shows one such useless arrow.
+- There were graphics throughout the site (forward pointing arrows) that appeared to be links. Some users tried to click but got no response. The capture below shows one such useless arrow.
 
 <figure>
   {% image "./src/site/img/figure3.png", "", "img-fluid" %}
   <figcaption>Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable</figcaption>
 </figure>
 
--   Each participant tried to click on News and Events in the sidebar on the site’s home page. Only the event listed underneath the News and Events text is navigable. This capture indicates where the participants attempted to click without success (yellow circles indicate click attempts).
+- Each participant tried to click on News and Events in the sidebar on the site’s home page. Only the event listed underneath the News and Events text is navigable. This capture indicates where the participants attempted to click without success (yellow circles indicate click attempts).
 
 <figure>
   {% image "./src/site/img/figure4.png", "", "img-fluid" %}
   <figcaption>Figure 4: News & Events is not clickable</figcaption>
 </figure>
 
--   It was difficult for some users to discern the difference between YPA’s current events, past events and events not hosted by YPA.
--   Everything above the navigation bar was ignored by users because of the Flash-based graphic.
+- It was difficult for some users to discern the difference between YPA’s current events, past events and events not hosted by YPA.
+- Everything above the navigation bar was ignored by users because of the Flash-based graphic.
 
 ## Recommendations
+
 There seemed to be three main areas of trouble for the participants in our test:
-1.  _Unfamiliar labels in the global navigation_ - The navigation labels on the YPA website did more to confuse participants than to help them find the content they were looking for. As noted, the labels The Library, “Save the Date” and “Community Happenings” were especially confusing to the participants. Perhaps these labels could be replaced with something resembling “Past Events”, “Future Events” and “Other Events in the Area,” respectively. Changing these labels would help users be able to understand exactly what to expect in each of those sections of the website before visiting those pages.
-2.  _Web conventions not followed_ - There is quite a large amount of non-black colored text on the YPA website. Conventionally, blue text represents a link when presented in content. On the YPA website, however, blue text almost never denotes a link; instead, links are most often represented by orange colored text. This web faux pas had participants clicking text expecting to be directed to their desired content but instead left them disappointed and searching for alternate methods of reaching their target. To remedy this situation, the use of blue text should be reevaluated across all pages on the website. Text links should be changed from orange to blue and existing non-link blue text should be changed to black or some other non-blue color.
-3.  _Elements intended to be prominent were instead ignored_ - The Flash animation on the homepage and above the navigation on other pages of the website was ignored by every participant in our tests until they were probed by the test facilitator. Users noted that they automatically associate moving images that they are not expecting to see with advertisements.
+
+1. _Unfamiliar labels in the global navigation_ - The navigation labels on the YPA website did more to confuse participants than to help them find the content they were looking for. As noted, the labels The Library, “Save the Date” and “Community Happenings” were especially confusing to the participants. Perhaps these labels could be replaced with something resembling “Past Events”, “Future Events” and “Other Events in the Area,” respectively. Changing these labels would help users be able to understand exactly what to expect in each of those sections of the website before visiting those pages.
+2. _Web conventions not followed_ - There is quite a large amount of non-black colored text on the YPA website. Conventionally, blue text represents a link when presented in content. On the YPA website, however, blue text almost never denotes a link; instead, links are most often represented by orange colored text. This web faux pas had participants clicking text expecting to be directed to their desired content but instead left them disappointed and searching for alternate methods of reaching their target. To remedy this situation, the use of blue text should be reevaluated across all pages on the website. Text links should be changed from orange to blue and existing non-link blue text should be changed to black or some other non-blue color.
+3. _Elements intended to be prominent were instead ignored_ - The Flash animation on the homepage and above the navigation on other pages of the website was ignored by every participant in our tests until they were probed by the test facilitator. Users noted that they automatically associate moving images that they are not expecting to see with advertisements.
 
 ## Suggestions for Further Investigation
+
 There were some aspects of the YPA website that our group did not examine during our usability tests. Of these, there were two opportunities we noted for further investigation: how users find an event to attend and how users expect to be able to RSVP for an event.
 
 Currently, scheduled events are located on their own page of the YPA website. Users must navigate a calendar interface to find an event to attend. Since the YPA averages only one event per month, it’d be interesting to investigate if there could be a better way to present the upcoming events so users could more easily find all planned events without navigating month to month through a full calendar.
