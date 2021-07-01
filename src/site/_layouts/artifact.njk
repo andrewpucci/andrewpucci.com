@@ -1,68 +1,69 @@
 ---
 layout: base.njk
 ---
-          <div class="carousel bg-primary">
-            <div class="carousel-inner">
-              <div class="carousel-item active">
-                {% image hero, heroTitle, "banner-image hero-image" %}
-                <div class="carousel-caption">
-                  <h1 class="display-4 text-white fw-bold bg-dark px-2 lh-base">{{ heroTitle }}</h1>
-                </div>
+      <main>
+        <div class="carousel bg-primary">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              {% image hero, heroTitle, "banner-image hero-image" %}
+              <div class="carousel-caption">
+                <h1 class="display-4 text-white fw-bold bg-dark px-2 lh-base">{{ heroTitle }}</h1>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="bg-white py-5">
-            <div class="container">
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="text-primary text-center display-4 mb-2">
-                    <i class="fas fa-users"></i>
-                  </div>
-                  <h2 class="h4 text-center">Project Team</h2>
-                  <ul class="list-unstyled text-center mb-4 mb-md-0">
-                    {% for teammate in team %}
-                      {% if teammate.link %}
-                        <li>
-                          <a href="{{ teammate.link }}">{{ teammate.name }}</a>
-                        </li>
-                      {% else %}
-                        <li>{{ teammate.name }}</li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
+        <div class="bg-white py-5">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="text-primary text-center display-4 mb-2">
+                  <i class="fas fa-users"></i>
                 </div>
-                <div class="col-md-4">
-                  <div class="text-primary text-center display-4 mb-2">
-                    <i class="fas fa-clipboard-list"></i>
-                  </div>
-                  <h2 class="h4 text-center">Responsibilities</h2>
-                  <ul class="list-unstyled text-center mb-4 mb-md-0">
-                    {% for responsibility in responsibilities %}
-                      <li>{{ responsibility }}</li>
-                    {% endfor %}
-                  </ul>
+                <h2 class="h4 text-center">Project Team</h2>
+                <ul class="list-unstyled text-center mb-4 mb-md-0">
+                  {% for teammate in team %}
+                    {% if teammate.link %}
+                      <li>
+                        <a href="{{ teammate.link }}">{{ teammate.name }}</a>
+                      </li>
+                    {% else %}
+                      <li>{{ teammate.name }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="col-md-4">
+                <div class="text-primary text-center display-4 mb-2">
+                  <i class="fas fa-clipboard-list"></i>
                 </div>
-                <div class="col-md-4">
-                  <div class="text-primary text-center display-4 mb-2">
-                    <i class="fas fa-wrench"></i>
-                  </div>
-                  <h2 class="h4 text-center">Tools Used</h2>
-                  <ul class="list-unstyled text-center mb-0">
-                    {% for tool in tools %}
-                      {% if tool.link %}
-                        <li>
-                          <a href="{{ tool.link }}">{{ tool.name }}</a>
-                        </li>
-                      {% else %}
-                        <li>{{ tool.name }}</li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
+                <h2 class="h4 text-center">Responsibilities</h2>
+                <ul class="list-unstyled text-center mb-4 mb-md-0">
+                  {% for responsibility in responsibilities %}
+                    <li>{{ responsibility }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="col-md-4">
+                <div class="text-primary text-center display-4 mb-2">
+                  <i class="fas fa-wrench"></i>
                 </div>
+                <h2 class="h4 text-center">Tools Used</h2>
+                <ul class="list-unstyled text-center mb-0">
+                  {% for tool in tools %}
+                    {% if tool.link %}
+                      <li>
+                        <a href="{{ tool.link }}">{{ tool.name }}</a>
+                      </li>
+                    {% else %}
+                      <li>{{ tool.name }}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
               </div>
             </div>
           </div>
+        </div>
 
         <div class="container py-5">
           <article>
@@ -70,3 +71,4 @@ layout: base.njk
           </article>
         </div>
         {% include 'carousel.njk' %}
+      </main>
