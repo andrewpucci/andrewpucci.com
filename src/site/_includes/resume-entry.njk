@@ -1,0 +1,40 @@
+<article class="mt-3">
+  <div class="d-flex flex-column">
+    <h3 class="p-name">{{ entry.data.title }}</h3>
+
+    <p class="small text-secondary order-first mb-1">
+      <time class="dt-start" datetime="{{ entry.data.start | dateToFormat("yyyy-MM-dd") }}">
+        {{ entry.data.start | dateToFormat("MMMM yyyy") }}
+      </time>
+      {% if entry.data.end and entry.data.end != "present" %}
+        <span>&ndash;</span>
+        <time class="dt-end" datetime="{{ entry.data.end | dateToFormat("yyyy-MM-dd") }}">
+          {{ entry.data.end | dateToFormat("MMMM yyyy") }}
+        </time>
+      {% elif entry.data.end == "present" %}
+        <span>&ndash;</span>
+        <span>{{ strings.labels.present }}</span>
+      {% endif %}
+    </p>
+
+    {% if entry.data.organization %}
+      <p class="lead p-org h-card">
+        {% if entry.data.organizationUrl %}
+          <a href="{{ entry.data.organizationUrl }}" class="p-name u-url" target="_blank" rel="noopener noreferrer">{{ entry.data.organization }}</a>
+        {% else %}
+          <span class="p-name">{{ entry.data.organization }}</span>
+        {% endif %}
+        {% if entry.data.location %}
+          <span aria-hidden="true">&middot;</span>
+          <span class="p-location">{{ entry.data.location }}</span>
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+
+  {% if entry.templateContent %}
+  <div class="p-summary">
+    {{ entry.templateContent | safe }}
+  </div>
+  {% endif %}
+</article>

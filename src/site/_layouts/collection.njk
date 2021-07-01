@@ -1,24 +1,26 @@
 ---
 layout: base.njk
 ---
-<div class="container py-5">
-  <article>
-    {{ content | safe }}
-    <div class="row d-flex flex-wrap">
-      {% for card in cards %}
-      <div class="col-md-6 col-lg-4 d-flex mb-3">
-        <div class="card">
-          {% image card.imgurl, card.title, "card-img-top h-auto" %}
-          <div class="card-body">
-            <p class="h5 card-title">{{ card.title | safe }}</p>
-            <p class="card-text">{{ card.content | safe }}</p>
-          </div>
-          <div class="card-footer">
-            <a href="{{ card.url }}" class="btn btn-primary text-uppercase">See more</a>
+<main>
+  <div class="container py-5">
+    <article>
+      {{ content | safe }}
+      <div class="row d-flex flex-wrap">
+        {% for card in cards %}
+        <div class="col-md-6 col-lg-4 d-flex mb-3">
+          <div class="card">
+            {% image card.imgurl, card.title, "card-img-top h-auto" %}
+            <div class="card-body">
+              <p class="h5 card-title">{{ card.title | safe }}</p>
+              <p class="card-text">{{ card.content | safe }}</p>
+            </div>
+            <div class="card-footer">
+              <a href="{{ card.url }}" class="btn btn-primary text-uppercase">See more</a>
+            </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
-  </article>
-</div>
+    </article>
+  </div>
+</main>

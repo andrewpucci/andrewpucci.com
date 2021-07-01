@@ -1,0 +1,49 @@
+{
+  "name": "Andrew Pucci",
+  "occupation": "User Experience Design Manager",
+  "location": "Pittsburgh, PA",
+  "avatar": "avatar.jpg",
+  "pronouns": "he/his",
+  "email": "andrew@andrewpucci.com",
+  "website": "https://andrewpucci.com",
+  "skills": [
+    "People Management",
+    "Workload Prioritization",
+    "Mentorship",
+    "Recruitment & Hiring",
+    "Organization Design",
+    "Wireframes",
+    "Prototypes (All Fidelities)",
+    "Competitive Analysis",
+    "Usability Studies",
+    "Storyboards",
+    "Surveys",
+    "HTML",
+    "CSS",
+    "JavaScript"
+  ],
+  "tools": [
+    "Adobe XD",
+    "Balsamiq",
+    "Adobe Illustrator",
+    "Sketch",
+    "InVision",
+    "Camtasia",
+    "Adobe Photoshop",
+    "Git / Github / GitLab",
+    "Visual Studio Code",
+    "Keynote / Powerpoint"
+  ],
+  "social": [
+    {
+      "name": "Github",
+      "user": "@andrewpucci",
+      "url": "https://github.com/andrewpucci"
+    },
+    {
+      "name": "LinkedIn",
+      "user": "andrewpucci",
+      "url": "https://www.linkedin.com/in/andrewpucci/"
+    }
+  ]
+}

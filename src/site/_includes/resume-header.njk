@@ -1,0 +1,18 @@
+<header class="header">
+  <div class="vcard h-card">
+    <div class="d-flex align-items-baseline flex-wrap">
+      <h1 class="p-name">{{ author.name }}</h1>
+      {% if author.pronouns %}
+        <em class="text-secondary ms-2 p-gender-identity">({{ author.pronouns }})</em>
+      {% endif %}
+    </div>
+
+    <p class="lead">
+      <span class="p-job-title">{{ author.occupation }}</span>
+      {% if author.location %}
+        <span aria-hidden="true">&middot;</span>
+        <span class="p-locality">{{ author.location }}</span>
+      {% endif %}
+    </p>
+  </div>
+</header>

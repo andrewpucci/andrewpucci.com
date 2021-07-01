@@ -1,0 +1,13 @@
+{
+  "titles": {
+      "experience": "Professional Experience",
+      "education": "Education",
+      "speaking": "Speaking Engagements",
+      "volunteering": "Volunteer Experience",
+      "skills": "Skills",
+      "tools": "Tools"
+  },
+  "labels": {
+      "present": "Present"
+  }
+}
