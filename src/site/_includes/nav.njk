@@ -10,7 +10,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <div class="navbar-nav w-100">
         <a class="nav-item nav-link{% if (layout == "front-page") %} text-primary" aria-current="page{% endif %}" href="{{ '/' | url }}">About</a>
-        <a class="nav-item nav-link" href="{{ '/resume/' | url }}">Résumé</a>
+        <a class="nav-item nav-link{% if (layout == "resume") %} text-primary" aria-current="page{% endif %}" href="{{ '/resume/' | url }}">Résumé</a>
         <div class="nav-item dropdown">
           <a class="nav-link dropdown-toggle{% if (layout == "collection") or (layout == "artifact") %} text-primary" aria-current="page{% endif %}" href="#" id="portfolio-link" role="button" data-bs-toggle="dropdown" aria-expanded="false">Portfolio</a>
             <ul class="dropdown-menu" aria-labelledby="portfolio-link">
