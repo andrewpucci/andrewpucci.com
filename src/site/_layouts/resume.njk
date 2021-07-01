@@ -1,0 +1,67 @@
+---
+layout: base.njk
+---
+<div class="h-resume container py-5" role="document">
+  {% include "resume-header.njk" %}
+
+  <main class="main">
+
+    <section id="section-experience" class="mt-5">
+      <h2 class="mb-0">{{ strings.titles.experience }}</h2>
+      {% set entries = collections.work %}
+      {% set microformat = "p-experience" %}
+      {% include "resume-entrylist.njk" %}
+    </section>
+
+    <section id="section-education" class="mt-5">
+      <h2>{{ strings.titles.education }}</h2>
+      {% set entries = collections.education %}
+      {% set microformat = "p-education" %}
+      {% include "resume-entrylist.njk" %}
+    </section>
+
+    <section id="section-speaking" class="mt-5">
+      <h2 class="mb-0">{{ strings.titles.speaking }}</h2>
+      {% set entries = collections.speaking %}
+      {% set microformat = "p-experience" %}
+      {% include "resume-entrylist.njk" %}
+    </section>
+
+    <section id="section-volunteering" class="mt-5">
+      <h2 class="mb-0">{{ strings.titles.volunteering }}</h2>
+      {% set entries = collections.volunteering %}
+      {% set microformat = "p-experience" %}
+      {% include "resume-entrylist.njk" %}
+    </section>
+
+    {% if author.skills or author.tools %}
+      <div class="row row-cols-1 row-cols-md-2">
+        {% if author.skills %}
+        <section class="col mt-5" id="section-skills">
+          <h2>{{ strings.titles.skills }}</h2>
+          <ul class="bulletlist list-unstyled mb-0 ps-4">
+          {% for skill in author.skills %}
+            <li class="position-relative p-skill">{{ skill }}</li>
+          {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+
+        {% if author.tools %}
+        <section class="col mt-5" id="section-tools">
+          <h2>{{ strings.titles.tools }}</h2>
+          <ul class="bulletlist list-unstyled mb-0 ps-4">
+          {% for tool in author.tools %}
+            <li class="position-relative p-skill">{{ tool }}</li>
+          {% endfor %}
+          </ul>
+        </section>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </main>
+  {{ content | safe }}
+  {# {% include "sidebar.njk" %} #}
+  {# {% include "footer.njk" %} #}
+</div>

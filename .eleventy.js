@@ -1,4 +1,5 @@
 const Image = require("@11ty/eleventy-img"); // See https://www.11ty.dev/docs/plugins/image/
+const filters = require('./src/utils/filters.js');
 
 async function imageShortcode(src, alt, cls, sizes = "100vw", widths = [null]) {
   if(alt === undefined) {
@@ -31,10 +32,34 @@ async function imageShortcode(src, alt, cls, sizes = "100vw", widths = [null]) {
 
 module.exports = function(config) {
   // Add some utility filters
-  config.addFilter('squash', require('./src/filters/squash.js') );
+  //config.addFilter('squash', require('./src/filters/squash.js') );
+  Object.keys(filters).forEach((filterName) => {
+    config.addFilter(filterName, filters[filterName])
+  })
 
   // Minify the HTML output
   config.addTransform('htmlmin', require('./src/utils/minify-html.js'));
+
+  // Collections
+  const collections = ['work', 'education', 'speaking', 'volunteering'];
+  collections.forEach((name) => {
+    config.addCollection(name, function (collection) {
+      const folderRegex = new RegExp(`\/${name}\/`);
+      const inEntryFolder = (item) => item.inputPath.match(folderRegex) !== null;
+
+      const byStartDate = (a, b) => {
+        if (a.data.start && b.data.start) {
+          return a.data.start - b.data.start;
+        }
+        return 0;
+      }
+
+      return collection
+        .getAllSorted()
+        .filter(inEntryFolder)
+        .sort(byStartDate)
+    })
+  })
 
   // Pass some assets right through
   config.addPassthroughCopy('./src/site/assets');

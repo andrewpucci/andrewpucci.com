@@ -1,0 +1,9 @@
+{% if entries %}
+<ol class="entrylist position-relative list-unstyled mb-0 ps-3" reversed>
+    {% for entry in entries | reverse %}
+    <li class="entrylist__item position-relative ps-3 h-event {% if microformat %}{{ microformat }}{% endif %}">
+        {% include "resume-entry.njk" %}
+    </li>
+    {% endfor %}
+</ol>
+{% endif %}
