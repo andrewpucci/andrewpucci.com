@@ -21,9 +21,7 @@
   </head>
   <body>
     {% include 'nav.njk' %}
-    <main>
-      {{ content | safe }}
-    </main>
+    {{ content | safe }}
     {% include 'footer.njk' %}
     <script src="{{ '/assets/js/deps.js' | url }}" type="text/javascript" data-auto-add-css="false"></script>
   </body>

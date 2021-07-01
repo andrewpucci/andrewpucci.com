@@ -1,0 +1,16 @@
+.bulletlist {
+  li {
+    &::before {
+      position: absolute;
+      top: 0.5rem;
+      left: -1.4rem;
+      display: block;
+      width: 0.5rem;
+      height: 0.5rem;
+      content: "";
+      background-color: $primary;
+      border-radius: 50%;
+      transform: translate(-50%, 20%);
+    }
+  }
+}
