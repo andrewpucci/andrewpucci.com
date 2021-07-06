@@ -31,11 +31,14 @@ async function imageShortcode(src, alt, cls, sizes = "100vw", widths = [null]) {
 }
 
 module.exports = function(config) {
+
+  // Use .eleventyignore instead of .gitignore to specify what should be ignored by Eleventy processing
+  config.setUseGitIgnore(false);
+
   // Add some utility filters
-  //config.addFilter('squash', require('./src/filters/squash.js') );
   Object.keys(filters).forEach((filterName) => {
-    config.addFilter(filterName, filters[filterName])
-  })
+    config.addFilter(filterName, filters[filterName]);
+  });
 
   // Minify the HTML output
   config.addTransform('htmlmin', require('./src/utils/minify-html.js'));
@@ -52,14 +55,14 @@ module.exports = function(config) {
           return a.data.start - b.data.start;
         }
         return 0;
-      }
+      };
 
       return collection
         .getAllSorted()
         .filter(inEntryFolder)
-        .sort(byStartDate)
-    })
-  })
+        .sort(byStartDate);
+    });
+  });
 
   // Pass some assets right through
   config.addPassthroughCopy('./src/site/assets');
@@ -68,6 +71,10 @@ module.exports = function(config) {
 
   // Perform image transformations
   config.addNunjucksAsyncShortcode("image", imageShortcode);
+
+  // Watch for SCSS changes to pass through
+  config.addWatchTarget("./src/site/assets/css");
+  config.addWatchTarget("./src/site/assets/js");
 
   return {
     dir: {
