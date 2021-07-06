@@ -16,7 +16,7 @@ gulp.task('clean', gulp.parallel(
 ));
 
 /*
-  Let's build this sucker.
+  Build the JS and CSS
 */
 gulp.task('build', gulp.parallel(
   'css',
@@ -25,7 +25,7 @@ gulp.task('build', gulp.parallel(
 ));
 
 /*
-  Watch folders for changess
+  Watch folders for changes
 */
 gulp.task('watch', () => {
   gulp.watch('./src/scss/**/*.scss', gulp.parallel('css'));
