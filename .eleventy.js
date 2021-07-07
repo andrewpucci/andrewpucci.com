@@ -1,43 +1,25 @@
-const Image = require("@11ty/eleventy-img"); // See https://www.11ty.dev/docs/plugins/image/
 const filters = require('./src/utils/filters.js');
-
-async function imageShortcode(src, alt, cls, sizes = "100vw", widths = [null]) {
-  if(alt === undefined) {
-    throw new Error(`Missing \`alt\` on responsiveimage from: ${src}`);
-  }
-
-  let metadata = await Image(src, {
-    widths: widths,
-    formats: ['webp', 'jpeg'],
-    urlPath: "/assets/img/",
-    outputDir: "./dist/assets/img/",
-  });
-
-  let lowsrc = metadata.jpeg[0];
-
-  return `<picture>
-    ${Object.values(metadata).map(imageFormat => {
-      return `  <source type="${imageFormat[0].sourceType}" srcset="${imageFormat.map(entry => entry.srcset).join(", ")}" sizes="${sizes}">`;
-    }).join("\n")}
-      <img
-        src="${lowsrc.url}"
-        width="${lowsrc.width}"
-        height="${lowsrc.height}"
-        alt="${alt}"
-        class="${cls}"
-        loading="lazy"
-        decoding="async">
-    </picture>`;
-}
+const shortcodes = require('./src/utils/shortcodes.js');
+const pairedShortcodes = require('./src/utils/paired-shortcodes.js');
 
 module.exports = function(config) {
 
   // Use .eleventyignore instead of .gitignore to specify what should be ignored by Eleventy processing
   config.setUseGitIgnore(false);
 
-  // Add some utility filters
+  // Add utility filters
   Object.keys(filters).forEach((filterName) => {
     config.addFilter(filterName, filters[filterName]);
+  });
+
+  // Add shortcodes
+  Object.keys(shortcodes).forEach((shortcodeName) => {
+    config.addNunjucksShortcode(shortcodeName, shortcodes[shortcodeName]);
+  });
+
+  // Add paired shortcodes
+  Object.keys(pairedShortcodes).forEach((shortcodeName) => {
+    config.addPairedNunjucksShortcode(shortcodeName, pairedShortcodes[shortcodeName]);
   });
 
   // Minify the HTML output
@@ -68,9 +50,6 @@ module.exports = function(config) {
   config.addPassthroughCopy('./src/site/assets');
   config.addPassthroughCopy('./src/site/humans.txt');
   config.addPassthroughCopy('./src/site/robots.txt');
-
-  // Perform image transformations
-  config.addNunjucksAsyncShortcode("image", imageShortcode);
 
   // Watch for SCSS changes to pass through
   config.addWatchTarget("./src/site/assets/css");
