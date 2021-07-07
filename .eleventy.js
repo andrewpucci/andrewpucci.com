@@ -1,5 +1,6 @@
 const filters = require('./src/utils/filters.js');
 const shortcodes = require('./src/utils/shortcodes.js');
+const pairedShortcodes = require('./src/utils/paired-shortcodes.js');
 
 module.exports = function(config) {
 
@@ -14,6 +15,11 @@ module.exports = function(config) {
   // Add shortcodes
   Object.keys(shortcodes).forEach((shortcodeName) => {
     config.addNunjucksShortcode(shortcodeName, shortcodes[shortcodeName]);
+  });
+
+  // Add paired shortcodes
+  Object.keys(pairedShortcodes).forEach((shortcodeName) => {
+    config.addPairedNunjucksShortcode(shortcodeName, pairedShortcodes[shortcodeName]);
   });
 
   // Minify the HTML output
