@@ -3,7 +3,7 @@ title: Interaction Designer / Culture Architect
 organization: Society of Grownups (MassMutual)
 organizationUrl: https://www.societyofgrownups.com
 location: Brookline, MA
-start: 2014-06-22
+start: 2014-06-23
 end: 2016-10-07
 ---
 
