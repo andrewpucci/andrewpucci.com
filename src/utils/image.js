@@ -1,23 +1,19 @@
-const eleventyImage = require("@11ty/eleventy-img"); // See https://www.11ty.dev/docs/plugins/image/
+const Image = require('@11ty/eleventy-img');
 
 module.exports = {
 
   // Perform image transformations
-  image(src, alt, cls, sizes = '100vw', widths = [null]) {
+  async image(src, alt, cls, sizes = '100vw', widths = [null]) {
     if (alt === undefined) {
       throw new Error(`Missing \`alt\` on responsive image from: ${src}`);
     }
 
-    const options = {
+    const metadata = await Image(src, {
       widths,
       formats: ['webp', 'jpeg'],
       urlPath: '/assets/img/',
       outputDir: './dist/assets/img/',
-    };
-
-    eleventyImage(src, options);
-
-    let metadata = eleventyImage.statsSync(src, options);
+    });
 
     const lowsrc = metadata.jpeg[0];
 
@@ -33,5 +29,4 @@ module.exports = {
           decoding="async">
       </picture>`;
   },
-
 };
