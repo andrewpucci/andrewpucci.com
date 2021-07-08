@@ -145,22 +145,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
-    <a href="#bd-1-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-1.png", "Screenshot of Binary Defense Vision interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
-    </a>
-    <div class="modal fade" id="bd-1-modal" tabindex="-1" aria-labelledby="bd-1-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="bd-1-modal-title">Screenshot of Binary Defense Vision interface</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {% image "./src/site/img/bd-1.png", "", "img-fluid" %}
-          </div>
-        </div>
-      </div>
-    </div>
+    {% expandableImage "bd-1", "./src/site/img/bd-1.png", "Screenshot of Binary Defense Vision interface" %}
   </div>
   <div class="col">
     <ol>
@@ -174,22 +159,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
-    <a href="#bd-2-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-2.jpg", "Hand drawn sketch of user interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
-    </a>
-    <div class="modal fade" id="bd-2-modal" tabindex="-1" aria-labelledby="bd-2-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="bd-2-modal-title">Hand drawn sketch of user interface</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {% image "./src/site/img/bd-2.jpg", "", "img-fluid" %}
-          </div>
-        </div>
-      </div>
-    </div>
+    {% expandableImage "bd-2", "./src/site/img/bd-2.jpg", "Hand drawn sketch of user interface" %}
   </div>
   <div class="col">
     <p>Once I identified the issues to address, I sketched out some ideas to help me decide on a design direction. I took some of these sketches, like the ones shown above, to both the development team and to a few In-House SOC Analysts to get feedback. This early feedback from developers and users was especially helpful, it prompted changes in the design even before I produced more high-fidelity mockups.</p>
@@ -200,22 +170,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
-    <a href="#bd-3-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-3.png", "Mockup of user interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
-    </a>
-    <div class="modal fade" id="bd-3-modal" tabindex="-1" aria-labelledby="bd-3-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="bd-3-modal-title">Mockup of user interface</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {% image "./src/site/img/bd-3.png", "", "img-fluid" %}
-          </div>
-        </div>
-      </div>
-    </div>
+    {% expandableImage "bd-3", "./src/site/img/bd-3.png", "Mockup of user interface" %}
   </div>
   <div class="col">
     <p>To help aid users in navigation, I moved the primary navigation to the left side of the screen and highlighted the current section. I also created a new contextual navigation along the top to help identify to which customer the data belonged.</p>
@@ -228,22 +183,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
-    <a href="#bd-4-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-4.png", "Screenshot of user interface with new theme applied", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
-    </a>
-    <div class="modal fade" id="bd-4-modal" tabindex="-1" aria-labelledby="bd-4-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="bd-4-modal-title">Screenshot of user interface with new theme applied</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {% image "./src/site/img/bd-4.png", "", "img-fluid" %}
-          </div>
-        </div>
-      </div>
-    </div>
+    {% expandableImage "bd-4", "./src/site/img/bd-4.png", "Screenshot of user interface with new theme applied" %}
   </div>
   <div class="col">
     <p>As the development team began to work on implementing the changes, we ran into a few snags. It turned out that the front-end was not in good shape. Based on an old version of Bootstrap and patched over with custom styles, it was hard to get the desired results.</p>
@@ -256,22 +196,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 
 <div class="row row-cols-1 row-cols-lg-2 g-3 mb-3">
   <div class="col">
-    <a href="#bd-5-modal" data-bs-toggle="modal">
-      {% image "./src/site/img/bd-5.png", "Screenshot of user interface", "img-fluid img-thumbnail", "629", [629, 1258, null] %}
-    </a>
-    <div class="modal fade" id="bd-5-modal" tabindex="-1" aria-labelledby="bd-5-modal-title" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="bd-5-modal-title">Screenshot of user interface upon project completion</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {% image "./src/site/img/bd-5.png", "", "img-fluid" %}
-          </div>
-        </div>
-      </div>
-    </div>
+    {% expandableImage "bd-5", "./src/site/img/bd-5.png", "Screenshot of user interface" %}
   </div>
   <div class="col">
     <p>A few months later, I worked with two front-end engineers to bring the design vision to realization. In the meantime, the company brand was also redesigned and the custom theme was updated to comply.</p>
