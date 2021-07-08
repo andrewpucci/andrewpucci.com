@@ -1,6 +1,5 @@
 const filters = require('./src/utils/filters.js');
-const shortcodes = require('./src/utils/shortcodes.js');
-const pairedShortcodes = require('./src/utils/paired-shortcodes.js');
+const asyncShortcodes = require('./src/utils/async-shortcodes.js');
 
 module.exports = function(config) {
 
@@ -12,14 +11,9 @@ module.exports = function(config) {
     config.addFilter(filterName, filters[filterName]);
   });
 
-  // Add shortcodes
-  Object.keys(shortcodes).forEach((shortcodeName) => {
-    config.addNunjucksShortcode(shortcodeName, shortcodes[shortcodeName]);
-  });
-
-  // Add paired shortcodes
-  Object.keys(pairedShortcodes).forEach((shortcodeName) => {
-    config.addPairedNunjucksShortcode(shortcodeName, pairedShortcodes[shortcodeName]);
+  // Add async shortcodes
+  Object.keys(asyncShortcodes).forEach((shortcodeName) => {
+    config.addNunjucksAsyncShortcode(shortcodeName, asyncShortcodes[shortcodeName]);
   });
 
   // Minify the HTML output
