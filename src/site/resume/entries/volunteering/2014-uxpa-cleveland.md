@@ -1,5 +1,5 @@
 ---
-title: Secretary & Webmaster
+title: President
 organization: UXPA Cleveland
 organizationUrl: https://uxpacleveland.org/
 location: Cleveland, OH
