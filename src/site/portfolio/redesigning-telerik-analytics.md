@@ -1,7 +1,7 @@
 ---
 layout: artifact
 title: Redesigning Telerik Analytics - Andrew Pucci
-description: Portfolio piece showing the process used to design Telerik Analytics.
+description: Real-time application analytics to grow user engagement and improve user experience.
 name: redesigning-telerik-analytics
 hero: ./src/site/img/card-img/analytics-design.png
 downloadFile: /assets/files/redesigning-telerik-analytics.pdf
