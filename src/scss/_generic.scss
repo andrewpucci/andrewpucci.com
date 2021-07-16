@@ -24,8 +24,9 @@ body {
 .banner-image {
   object-fit: cover;
   width: 100%;
-  min-height: 24rem;
-  max-height: 50vh;
+  min-height: 45vh;
+  max-height: 45vh;
+  filter: blur(0.3125rem) grayscale(100%) opacity(30%);
 }
 
 blockquote {
@@ -41,5 +42,4 @@ blockquote {
 .hero-image {
   min-height: 25vh;
   max-height: 34vh;
-  filter: blur(0.3125rem) grayscale(100%) opacity(30%);
 }
