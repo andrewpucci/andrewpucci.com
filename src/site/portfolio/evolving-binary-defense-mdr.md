@@ -152,6 +152,7 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
       <li>Users had trouble quickly understanding where they were in the application and which customer they were triaging.</li>
       <li>A few key actions were hidden in this hamburger menu making them hard to find for new users and slow to get to for power users.</li>
       <li>The matching text color here and in the table below caused confusion, only one was a link.</li>
+    </ol>
   </div>
 </div>
 
