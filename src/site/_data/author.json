@@ -1,6 +1,6 @@
 {
   "name": "Andrew Pucci",
-  "occupation": "User Experience Design Manager",
+  "occupation": "User Experience Design Lead",
   "location": "Pittsburgh, PA",
   "avatar": "avatar.jpg",
   "pronouns": "he/his",
@@ -24,7 +24,10 @@
   ],
   "tools": [
     "Adobe XD",
+    "Axure RP",
+    "Miro",
     "Balsamiq",
+    "Figma",
     "Adobe Illustrator",
     "Sketch",
     "InVision",
