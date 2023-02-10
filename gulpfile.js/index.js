@@ -2,8 +2,6 @@ const {
   src, dest, parallel, watch,
 } = require('gulp');
 const del = require('delete');
-const env = require('gulp-environment');
-const sourcemaps = require('gulp-sourcemaps');
 const concat = require('gulp-concat');
 const terser = require('gulp-terser');
 const sass = require('gulp-sass')(require('sass'));
@@ -28,34 +26,28 @@ const cleanScripts = (cb) => {
 };
 
 const css = (cb) => {
-  src(project.paths.styles.custom.src)
-    .pipe(env.if.development(sourcemaps.init()))
+  src(project.paths.styles.custom.src, { sourcemaps: true })
     .pipe(sass({
       outputStyle: 'compressed',
     }).on('error', sass.logError))
     .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(env.if.development(sourcemaps.write('.')))
-    .pipe(dest(project.paths.styles.custom.dest));
+    .pipe(dest(project.paths.styles.custom.dest, { sourcemaps: '.' }));
   cb();
 };
 
 const cssDeps = (cb) => {
-  src(project.paths.styles.deps.src)
-    .pipe(env.if.development(sourcemaps.init()))
+  src(project.paths.styles.deps.src, { sourcemaps: true })
     .pipe(concat('deps.css'))
     .pipe(postcss([cssnano()]))
-    .pipe(env.if.development(sourcemaps.write('.')))
-    .pipe(dest(project.paths.styles.deps.dest));
+    .pipe(dest(project.paths.styles.deps.dest, { sourcemaps: '.' }));
   cb();
 };
 
 const scripts = (cb) => {
-  src(project.paths.scripts.deps.src)
-    .pipe(env.if.development(sourcemaps.init()))
+  src(project.paths.scripts.deps.src, { sourcemaps: true })
     .pipe(concat('deps.js'))
-    .pipe(env.if.production(terser()))
-    .pipe(env.if.development(sourcemaps.write('.')))
-    .pipe(dest(project.paths.scripts.deps.dest));
+    .pipe(terser())
+    .pipe(dest(project.paths.scripts.deps.dest, { sourcemaps: '.' }));
   cb();
 };
 
