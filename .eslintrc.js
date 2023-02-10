@@ -13,7 +13,7 @@ module.exports = {
     'mocha',
     'security',
   ],
-  "rules": {
-    "mocha/no-exclusive-tests": "error"
-  }
+  rules: {
+    'mocha/no-exclusive-tests': 'error',
+  },
 };
