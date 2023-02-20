@@ -1175,6 +1175,26 @@ electron-to-chromium@^1.4.284:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.292.tgz#e3a3dca3780c8ce01e2c1866b5ec2fbe31c423e3"
   integrity sha512-ESWOSyJy5odDlE8wvh5NNAMORv4r6assPwIPGHEMWrWD0SONXcG/xT+9aD9CQyeRwyYDPo6dJT4Bbeg5uevVQQ==
 
+eleventy-introspector@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/eleventy-introspector/-/eleventy-introspector-1.0.2.tgz#3fc0d1023ba8f6d5896a7a9218731adbd2ffe96e"
+  integrity sha512-AYRw/VSNuEHaTHyKxLLD4x3uJRoMLofokcuRXdr0C7sn/MiagXaTBP3xv7mW9026g6NaOvxIQJGzAwE7IgZttw==
+
+eleventy-plugin-output-path@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/eleventy-plugin-output-path/-/eleventy-plugin-output-path-1.2.1.tgz#de847b6f99f665aa9581ff6160ba47af913f10e4"
+  integrity sha512-Ku0VaDh0kEoASSrwvTEv1MIxDY2CXxfM4Vpmby9Xh35E0Zm/3KatufNtzMVayN6Ni8Px9tDrXa5/Rg4VHx2H6g==
+  dependencies:
+    eleventy-introspector "^1.0.2"
+
+eleventy-plugin-rev@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/eleventy-plugin-rev/-/eleventy-plugin-rev-1.1.1.tgz#8c1c7475e9dcedcbdf285fdf709f1e874b999cfd"
+  integrity sha512-aSYYwG/n+vO8NGQGrd2ssyJRcd6D1gDsI8ye6XJSOegvlVLO0jNCbSnkcdFTA3NuU87FDy3B44XsdOt9kL/BUA==
+  dependencies:
+    eleventy-plugin-output-path "^1.2.1"
+    kleur "^4.1.5"
+
 eleventy-sass@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/eleventy-sass/-/eleventy-sass-2.2.1.tgz#6865f820b5aff8734d076aafd57fdf870d010a4a"

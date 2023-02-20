@@ -1,3 +1,4 @@
+const pluginRev = require('eleventy-plugin-rev');
 const eleventySass = require('eleventy-sass');
 const postcss = require('postcss');
 const autoprefixer = require('autoprefixer');
@@ -7,12 +8,14 @@ const asyncShortcodes = require('./src/utils/async-shortcodes.js');
 
 module.exports = function(eleventyConfig) {
 
+  eleventyConfig.addPlugin(pluginRev);
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
       style: 'compressed',
       sourceMap: true
     },
-    postcss: postcss([autoprefixer, cssnano])
+    postcss: postcss([autoprefixer, cssnano]),
+    rev: true,
   });
 
   // Add utility filters
@@ -52,7 +55,6 @@ module.exports = function(eleventyConfig) {
   // Pass some assets right through
   eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');
   eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*');
-  eleventyConfig.addPassthroughCopy({ './node_modules/@fortawesome/fontawesome-free/css/svg-with-js.css': 'assets/styles/deps.css' });
   eleventyConfig.addPassthroughCopy('./src/site/humans.txt');
   eleventyConfig.addPassthroughCopy('./src/site/robots.txt');
 
