@@ -42,10 +42,10 @@ I joined the Binary Defense product team as the first designer. To bring the pro
       <div class="card-body">
         <div class="row mx-0 h-100">
           <div class="col-auto text-primary ps-1 fs-3" aria-hidden="true">
-            <i class="fas fa-laptop fa-fw h-100">
+            <i class="fas fa-laptop fa-fw h-100"></i>
           </div>
           <div class="col">
-            <h3 class="h5 card-title"></i>Event Collection</h3>
+            <h3 class="h5 card-title">Event Collection</h3>
             <p class="card-text">An agent collects event data from endpoints across customer networks.</p>
           </div>
         </div>
@@ -57,7 +57,7 @@ I joined the Binary Defense product team as the first designer. To bring the pro
       <div class="card-body">
         <div class="row mx-0 h-100">
           <div class="col-auto text-primary ps-1 fs-3" aria-hidden="true">
-            <i class="fas fa-robot fa-fw h-100">
+            <i class="fas fa-robot fa-fw h-100"></i>
           </div>
           <div class="col">
             <h3 class="h5 card-title">Event Correlation</h3>
@@ -72,7 +72,7 @@ I joined the Binary Defense product team as the first designer. To bring the pro
       <div class="card-body">
         <div class="row mx-0 h-100">
           <div class="col-auto text-primary ps-1 fs-3" aria-hidden="true">
-            <i class="fas fa-bell fa-fw h-100">
+            <i class="fas fa-bell fa-fw h-100"></i>
           </div>
           <div class="col">
             <h3 class="h5 card-title">Alarm Production</h3>
@@ -87,7 +87,7 @@ I joined the Binary Defense product team as the first designer. To bring the pro
       <div class="card-body">
         <div class="row mx-0 h-100">
           <div class="col-auto text-primary ps-1 fs-3" aria-hidden="true">
-            <i class="fas fa-microscope fa-fw h-100">
+            <i class="fas fa-microscope fa-fw h-100"></i>
           </div>
           <div class="col">
             <h3 class="h5 card-title">Investigation</h3>
@@ -102,7 +102,7 @@ I joined the Binary Defense product team as the first designer. To bring the pro
       <div class="card-body">
         <div class="row mx-0 h-100">
           <div class="col-auto text-primary ps-1 fs-3" aria-hidden="true">
-            <i class="fas fa-phone-alt fa-fw h-100">
+            <i class="fas fa-phone-alt fa-fw h-100"></i>
           </div>
           <div class="col">
             <h3 class="h5 card-title">Escalation</h3>
@@ -117,7 +117,7 @@ I joined the Binary Defense product team as the first designer. To bring the pro
       <div class="card-body">
         <div class="row mx-0 h-100">
           <div class="col-auto text-primary ps-1 fs-3" aria-hidden="true">
-            <i class="fas fa-lock fa-fw h-100">
+            <i class="fas fa-lock fa-fw h-100"></i>
           </div>
           <div class="col">
             <h3 class="h5 card-title">Remediation</h3>
