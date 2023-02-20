@@ -55,6 +55,7 @@ module.exports = function(eleventyConfig) {
   // Pass some assets right through
   eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');
   eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*');
+  eleventyConfig.addPassthroughCopy('./src/site/assets/favicon-32x32.png');
   eleventyConfig.addPassthroughCopy('./src/site/humans.txt');
   eleventyConfig.addPassthroughCopy('./src/site/robots.txt');
 
