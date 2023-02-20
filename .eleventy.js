@@ -1,10 +1,22 @@
+const pluginRev = require('eleventy-plugin-rev');
+const eleventySass = require('eleventy-sass');
+const postcss = require('postcss');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
 const filters = require('./src/utils/filters.js');
 const asyncShortcodes = require('./src/utils/async-shortcodes.js');
 
 module.exports = function(eleventyConfig) {
 
-  // Use .eleventyignore instead of .gitignore to specify what should be ignored by Eleventy processing
-  eleventyConfig.setUseGitIgnore(false);
+  eleventyConfig.addPlugin(pluginRev);
+  eleventyConfig.addPlugin(eleventySass, {
+    sass: {
+      style: 'compressed',
+      sourceMap: true
+    },
+    postcss: postcss([autoprefixer, cssnano]),
+    rev: true,
+  });
 
   // Add utility filters
   Object.keys(filters).forEach((filterName) => {
@@ -15,9 +27,6 @@ module.exports = function(eleventyConfig) {
   Object.keys(asyncShortcodes).forEach((shortcodeName) => {
     eleventyConfig.addNunjucksAsyncShortcode(shortcodeName, asyncShortcodes[shortcodeName]);
   });
-
-  // Minify the HTML output
-  eleventyConfig.addTransform('htmlmin', require('./src/utils/minify-html.js'));
 
   // Collections
   const collections = ['work', 'education', 'speaking', 'volunteering'];
@@ -40,14 +49,14 @@ module.exports = function(eleventyConfig) {
     });
   });
 
+  // Minify the HTML output
+  eleventyConfig.addTransform('minify', require('./src/utils/minify.js'));
+
   // Pass some assets right through
-  eleventyConfig.addPassthroughCopy('./src/site/assets');
+  eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');
+  eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*');
   eleventyConfig.addPassthroughCopy('./src/site/humans.txt');
   eleventyConfig.addPassthroughCopy('./src/site/robots.txt');
-
-  // Watch for SCSS changes to pass through
-  eleventyConfig.addWatchTarget("./src/site/assets/css");
-  eleventyConfig.addWatchTarget("./src/site/assets/js");
 
   return {
     dir: {
