@@ -6,8 +6,8 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "rimraf dist && NODE_ENV=development eleventy --serve",
-    "prod": "yarn updatedb && NODE_ENV=production eleventy",
-    "build": "yarn updatedb && NODE_ENV=development eleventy",
+    "prod": "yarn updatedb && rimraf dist && NODE_ENV=production eleventy",
+    "build": "yarn updatedb && rimraf dist && NODE_ENV=development eleventy",
     "updatedb": "yarn browserslist --update-db"
   },
   "repository": {
