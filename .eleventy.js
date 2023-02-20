@@ -7,9 +7,6 @@ const asyncShortcodes = require('./src/utils/async-shortcodes.js');
 
 module.exports = function(eleventyConfig) {
 
-  // Use .eleventyignore instead of .gitignore to specify what should be ignored by Eleventy processing
-  eleventyConfig.setUseGitIgnore(false);
-
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
       style: 'compressed',
