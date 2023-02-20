@@ -2,6 +2,4 @@ node_modules
 dist
 .env
 yarn-error.log
-src/site/assets/js/*
-src/site/assets/css/*
 .cache/*

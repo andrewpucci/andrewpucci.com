@@ -5,5 +5,5 @@
 
 /* SITE */
   Standards: CSS3, HTML5
-  Components: Eleventy, Gulp, Bootstrap
+  Components: Eleventy, Bootstrap
   Software: VS Code, GitHub Desktop
