@@ -11,6 +11,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(pluginRev);
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
+      loadPaths: ["node_modules"],
       style: 'compressed',
       sourceMap: true
     },
