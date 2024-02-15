@@ -14,11 +14,11 @@ nvm use
 ```
 3.  Install dependencies
 ```
-yarn install
+npm ci
 ```
 4.  Run development mode
 ```
-yarn dev
+npm run dev
 ```
 
 ### Customization
