@@ -1,6 +1,6 @@
 {
   "name": "andrewpucci.com",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "A personal portfolio site for Andrew Pucci",
   "author": "Andrew Pucci",
   "license": "GPL-3.0",
@@ -17,29 +17,29 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.2"
+    "bootstrap": "^5.3.3"
   },
   "devDependencies": {
     "@11ty/eleventy": "^2.0.1",
     "@11ty/eleventy-img": "^4.0.2",
-    "autoprefixer": "^10.4.17",
-    "cssnano": "^6.0.3",
-    "dotenv": "^16.4.4",
+    "autoprefixer": "^10.4.19",
+    "cssnano": "^6.1.1",
+    "dotenv": "^16.4.5",
     "eleventy-plugin-rev": "^2.0.0",
     "eleventy-sass": "^2.2.4",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-security": "^2.1.1",
     "html-minifier": "^4.0.0",
     "luxon": "^3.4.4",
-    "postcss": "^8.4.35",
+    "postcss": "^8.4.38",
     "rimraf": "^5.0.5",
-    "sass": "^1.70.0",
+    "sass": "^1.72.0",
     "stylelint": "^16.2.1",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-order": "^6.0.4",
-    "stylelint-scss": "^6.1.0",
-    "terser": "^5.27.1"
+    "stylelint-scss": "^6.2.1",
+    "terser": "^5.29.2"
   }
 }
