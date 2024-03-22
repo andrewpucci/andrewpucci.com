@@ -8,6 +8,8 @@ const asyncShortcodes = require('./src/utils/async-shortcodes.js');
 
 module.exports = function(eleventyConfig) {
 
+  eleventyConfig.setUseGitIgnore(false);
+
   eleventyConfig.addPlugin(pluginRev);
   eleventyConfig.addPlugin(eleventySass, {
     sass: {

@@ -3,4 +3,4 @@ dist
 .env
 yarn-error.log
 .cache/*
-src/site/assets/styles/_variables.scss
+src/site/_tokens/**/*.json

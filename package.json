@@ -5,10 +5,16 @@
   "author": "Andrew Pucci",
   "license": "GPL-3.0",
   "scripts": {
-    "dev": "npm run updatedb && rimraf dist && NODE_ENV=development eleventy --serve",
-    "prod": "npm run updatedb && rimraf dist && NODE_ENV=production eleventy",
-    "build": "npm run updatedb && rimraf dist && NODE_ENV=development eleventy",
-    "updatedb": "npx update-browserslist-db@latest"
+    "build:updatedb": "npx update-browserslist-db@latest",
+    "build:clean": "rimraf dist",
+    "build:tokens": "npx style-dictionary build -c './styledictionary.config.json'",
+    "build": "run-s build:**",
+    "run:dev:tokens": "npx onchange 'src/site/_tokens/**/*.json' -- npm run build:tokens",
+    "run:dev:server": "NODE_ENV=development eleventy --serve",
+    "run:dev": "run-p run:dev:**",
+    "run:prod": "NODE_ENV=production eleventy",
+    "dev": "run-s build run:dev",
+    "prod": "run-s build run:prod"
   },
   "repository": {
     "type": "git",
@@ -33,9 +39,12 @@
     "eslint-plugin-security": "^2.1.1",
     "html-minifier": "^4.0.0",
     "luxon": "^3.4.4",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
     "postcss": "^8.4.38",
     "rimraf": "^5.0.5",
     "sass": "^1.72.0",
+    "style-dictionary": "^3.9.2",
     "stylelint": "^16.2.1",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-order": "^6.0.4",
