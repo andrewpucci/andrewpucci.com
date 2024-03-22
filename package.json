@@ -7,7 +7,7 @@
   "scripts": {
     "build:updatedb": "npx update-browserslist-db@latest",
     "build:clean": "rimraf dist",
-    "build:tokens": "npx style-dictionary build -c './styledictionary.config.json'",
+    "build:tokens": "npx style-dictionary build -c './styledictionary.config.js'",
     "build": "run-s build:**",
     "run:dev:tokens": "npx onchange 'src/site/_tokens/**/*.json' -- npm run build:tokens",
     "run:dev:server": "NODE_ENV=development eleventy --serve",
