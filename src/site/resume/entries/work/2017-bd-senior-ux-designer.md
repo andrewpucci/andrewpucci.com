@@ -1,5 +1,5 @@
 ---
-title: Senior UX Designer
+title: Senior User Experience Designer
 organization: Binary Defense
 organizationUrl: https://www.binarydefense.com
 location: Remote (Company HQ in Stow, OH)
