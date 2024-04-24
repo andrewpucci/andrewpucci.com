@@ -1,6 +1,5 @@
 /* TEAM */
   Andrew Pucci -- Designer & Developer
-  Twitter: @AndrewRPucci
   Website: https://www.andrewpucci.com
 
 /* SITE */
