@@ -1,3 +1,4 @@
+@use "sass:map";
 @use "sass:math";
 
 $spacer: $font-size-base;
@@ -30,9 +31,9 @@ body {
 }
 
 blockquote {
-  padding-left: map-get($spacers, 3);
-  margin: map-get($spacers, 3) 0;
-  border-left: map-get($spacers, 2) solid $primary;
+  padding-left: map.get($spacers, 3);
+  margin: map.get($spacers, 3) 0;
+  border-left: map.get($spacers, 2) solid $primary;
 }
 
 .card-img-top {
