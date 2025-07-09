@@ -1,25 +1,31 @@
-const { DateTime } = require('luxon');
+import { DateTime } from 'luxon';
 
-module.exports = {
-  dateToFormat(date, format) {
-    return DateTime.fromJSDate(date, { zone: 'utc' }).toFormat(
-      String(format),
-    );
-  },
+export const dateToFormat = (date, format) => {
+  return DateTime.fromJSDate(date, { zone: 'utc' }).toFormat(
+    String(format),
+  );
+};
 
-  obfuscate(str) {
-    const chars = [];
-    for (let i = str.length - 1; i >= 0; i--) {
-      chars.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
-    }
-    return chars.join('');
-  },
+export const obfuscate = (str) => {
+  const chars = [];
+  for (let i = str.length - 1; i >= 0; i--) {
+    chars.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
+  }
+  return chars.join('');
+};
 
-  stripSpaces(str) {
-    return str.replace(/\s/g, '');
-  },
+export const stripSpaces = (str) => {
+  return str.replace(/\s/g, '');
+};
 
-  stripProtocol(str) {
-    return str.replace(/(^\w+:|^)\/\//, '');
-  },
+export const stripProtocol = (str) => {
+  return str.replace(/(^\w+:|^)\/\//, '');
+};
+
+// For backward compatibility
+export default {
+  dateToFormat,
+  obfuscate,
+  stripSpaces,
+  stripProtocol
 };
