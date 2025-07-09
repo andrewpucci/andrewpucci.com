@@ -1,33 +1,41 @@
-const pluginRev = require('eleventy-plugin-rev');
-const eleventySass = require('eleventy-sass');
-const postcss = require('postcss');
-const autoprefixer = require('autoprefixer');
-const cssnano = require('cssnano');
-const filters = require('./src/utils/filters.js');
-const asyncShortcodes = require('./src/utils/async-shortcodes.js');
+import pluginRev from 'eleventy-plugin-rev';
+import eleventySass from 'eleventy-sass';
+import postcss from 'postcss';
+import autoprefixer from 'autoprefixer';
+import cssnano from 'cssnano';
+import { dateToFormat, obfuscate, stripSpaces, stripProtocol } from './src/utils/filters.js';
+import { image, card, expandableImage } from './src/utils/async-shortcodes.js';
+import minify from './src/utils/minify.js';
 
-module.exports = function(eleventyConfig) {
-
+export default function(eleventyConfig) {
+  // Add revisioning plugin
   eleventyConfig.addPlugin(pluginRev);
+  
+  // Configure and add Sass plugin
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
       loadPaths: ["node_modules"],
       style: 'compressed',
-      sourceMap: true
+      sourceMap: true,
+      quietDeps: true // Suppress deprecation warnings
     },
-    postcss: postcss([autoprefixer, cssnano]),
+    postcss: postcss([
+      autoprefixer(),
+      cssnano({ preset: 'default' })
+    ]),
     rev: true,
   });
 
   // Add utility filters
-  Object.keys(filters).forEach((filterName) => {
-    eleventyConfig.addFilter(filterName, filters[filterName]);
-  });
+  eleventyConfig.addFilter('dateToFormat', dateToFormat);
+  eleventyConfig.addFilter('obfuscate', obfuscate);
+  eleventyConfig.addFilter('stripSpaces', stripSpaces);
+  eleventyConfig.addFilter('stripProtocol', stripProtocol);
 
   // Add async shortcodes
-  Object.keys(asyncShortcodes).forEach((shortcodeName) => {
-    eleventyConfig.addNunjucksAsyncShortcode(shortcodeName, asyncShortcodes[shortcodeName]);
-  });
+  eleventyConfig.addNunjucksAsyncShortcode('image', image);
+  eleventyConfig.addNunjucksAsyncShortcode('card', card);
+  eleventyConfig.addNunjucksAsyncShortcode('expandableImage', expandableImage);
 
   // Collections
   const collections = ['work', 'education', 'speaking', 'volunteering'];
@@ -51,7 +59,7 @@ module.exports = function(eleventyConfig) {
   });
 
   // Minify the HTML output
-  eleventyConfig.addTransform('minify', require('./src/utils/minify.js'));
+  eleventyConfig.addTransform('minify', minify);
 
   // Pass some assets right through
   eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');
@@ -67,8 +75,8 @@ module.exports = function(eleventyConfig) {
       output: 'dist',
       data: '_data',
     },
-    templateFormats : ['njk', 'md'],
-    htmlTemplateEngine : 'njk',
-    markdownTemplateEngine : 'njk',
+    templateFormats: ['njk', 'md'],
+    htmlTemplateEngine: 'njk',
+    markdownTemplateEngine: 'njk',
   };
 };

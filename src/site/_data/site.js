@@ -1,5 +1,7 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
 
-module.exports = {
-  rootUrl: process.env.ROOT_URL,
+dotenv.config();
+
+export default {
+  rootUrl: process.env.ROOT_URL
 };
