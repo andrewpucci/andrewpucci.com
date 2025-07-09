@@ -8,19 +8,18 @@
           <div class="carousel-item active">
             <div class="row">
         {% elif counter % 3 == 1 %}
-          <div class="carousel-item">
-            <div class="row">
-        {% endif %}
-              <div class="col-lg-4 d-flex mb-3 mb-lg-0">
-                {% card card.title, card.content, card.url, card.imgurl, card.title, "card-img-top h-auto", "410", [410, 820, null] %}
-        {% if counter % 3 == 0 %}
-              </div>
-            </div>
-        {% endif %}
-      {% endif %}
-      {% if counter % 3 != 0 and loop.last %}
-            </div>
           </div>
+        </div>
+        <div class="carousel-item">
+          <div class="row">
+        {% endif %}
+        <div class="col-lg-4 d-flex mb-3 mb-lg-0">
+          {% card card.title, card.content, card.url, card.imgurl, card.title, "card-img-top h-auto", "410", [410, 820, null] %}
+        </div>
+        {% if loop.last %}
+          </div>
+        </div>
+        {% endif %}
       {% endif %}
     {% endfor %}
   </div>

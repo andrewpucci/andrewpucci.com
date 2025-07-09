@@ -1,12 +1,14 @@
-const { minify } = require('html-minifier');
+import { minify as htmlMinifier } from 'html-minifier-terser';
 
-module.exports = async (content) => {
+const minify = async (content) => {
   if (process.env.NODE_ENV !== 'production') {
     return content;
   }
-  return minify(content, {
+  return await htmlMinifier(content, {
     useShortDoctype: true,
     removeComments: true,
     collapseWhitespace: true,
   });
 };
+
+export default minify;

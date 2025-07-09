@@ -6,9 +6,10 @@ layout: base.njk
     <article>
       {{ content | safe }}
       <div class="row d-flex flex-wrap">
-        {% for card in cards %}
+        {% for item in cards %}
         <div class="col-md-6 col-lg-4 d-flex mb-3">
-          {% card card.title, card.content, card.url, card.imgurl, card.title, "card-img-top h-auto", "410", [410, 820, null] %}
+          {% card item.title, item.content, item.url, item.imgurl, item.title, "card-img-top h-auto", "410", [410, 820, null] %}
+        </div>
         {% endfor %}
       </div>
     </article>

@@ -1,14 +1,18 @@
 {
   "name": "andrewpucci.com",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "A personal portfolio site for Andrew Pucci",
   "author": "Andrew Pucci",
+  "type": "module",
   "license": "GPL-3.0",
   "scripts": {
     "dev": "npm run updatedb && rimraf dist && NODE_ENV=development eleventy --serve",
     "prod": "npm run updatedb && rimraf dist && NODE_ENV=production eleventy",
     "build": "npm run updatedb && rimraf dist && NODE_ENV=development eleventy",
     "updatedb": "npx update-browserslist-db@latest"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   },
   "repository": {
     "type": "git",
@@ -20,18 +24,18 @@
     "bootstrap": "^5.3.3"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^2.0.1",
-    "@11ty/eleventy-img": "^4.0.2",
+    "@11ty/eleventy": "3.1.2",
+    "@11ty/eleventy-img": "^6.0.4",
     "autoprefixer": "^10.4.19",
     "cssnano": "^6.1.1",
     "dotenv": "^16.4.5",
     "eleventy-plugin-rev": "^2.0.0",
-    "eleventy-sass": "^2.2.4",
+    "eleventy-sass": "^3.0.0-beta.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-security": "^2.1.1",
-    "html-minifier": "^4.0.0",
+    "html-minifier-terser": "^7.2.0",
     "luxon": "^3.4.4",
     "postcss": "^8.4.38",
     "rimraf": "^5.0.5",
