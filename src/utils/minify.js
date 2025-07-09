@@ -1,9 +1,8 @@
-const { extname } = require('path');
+import { extname } from 'path';
+import htmlmin from './min-html.js';
+import jsmin from './min-js.js';
 
-const htmlmin = require('./min-html');
-const jsmin = require('./min-js');
-
-module.exports = async (content, outputPath) => {
+const minify = async (content, outputPath) => {
   if (outputPath) {
     const ext = extname(outputPath);
     switch (ext) {
@@ -17,3 +16,5 @@ module.exports = async (content, outputPath) => {
   }
   return content;
 };
+
+export default minify;
