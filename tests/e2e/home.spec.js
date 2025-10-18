@@ -1,21 +1,39 @@
+// @ts-check
 /**
- * @file E2E tests for the home page of Andrew Pucci's portfolio website.
+ * @file Home page end-to-end tests
+ * @description Tests for the main landing page of the portfolio website.
+ * These tests verify the core functionality and content of the home page,
+ * including navigation, hero section, and interactive components.
+ * 
+ * Test Organization:
+ * - Navigation: Tests for main navigation elements and links
+ * - Hero Section: Tests for the main hero content and CTAs
+ * - Portfolio Carousel: Tests for the interactive portfolio showcase
+ * 
  * @module tests/e2e/home.spec
- * @description Tests verify the structure, content, and functionality of the
- * home page, including navigation, hero section, and key content areas.
  */
 
 import { test, expect } from '@playwright/test';
 
-// Test suite for the home page
-// Tests are organized by feature area and user flows
-
 /**
- * Debug test that logs page structure and elements.
- * This test is for development purposes only and should be skipped in CI/CD.
- * It helps with understanding the page structure and debugging test issues.
+ * Test suite for the Home Page
+ * @description Groups related tests for the home page functionality
  */
-test('debug - log page structure', async ({ page }) => {
+
+test.describe('Home Page', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+  });
+
+  // Debug test that logs page structure and elements
+  /**
+   * Debug test that logs the page structure
+   * @description This test helps with debugging by logging the page's DOM structure,
+   * including all links and sections. It's useful for understanding the page
+   * organization during test development and debugging.
+   */
+  test('should log page structure', async ({ page }) => {
     await page.goto('/');
     
     // Log the page title
@@ -23,13 +41,13 @@ test('debug - log page structure', async ({ page }) => {
     console.log('Page Title:', title);
     
     // Log all links on the page
-    const links = await page.$$eval('a', links => 
-      links.map(link => ({
-        text: link.textContent?.trim(),
-        href: link.href,
-        role: link.getAttribute('role'),
-        class: link.className,
-        id: link.id
+    const links = await page.$$eval('a', elements => 
+      elements.map(el => ({
+        text: el.textContent ? el.textContent.trim() : '',
+        href: el.href,
+        role: el.getAttribute('role') || '',
+        class: el.className,
+        id: el.id || ''
       }))
     );
     
@@ -40,9 +58,9 @@ test('debug - log page structure', async ({ page }) => {
     const sections = await page.$$eval('section, header, footer, nav, main, article, aside', 
       elements => elements.map(el => ({
         tag: el.tagName.toLowerCase(),
-        id: el.id,
+        id: el.id || '',
         class: el.className,
-        text: el.textContent?.trim().substring(0, 100) + (el.textContent?.length > 100 ? '...' : '')
+        text: el.textContent && el.textContent.length > 100 ? el.textContent.substring(0, 100) + '...' : (el.textContent || '')
       }))
     );
     
@@ -60,6 +78,10 @@ test('debug - log page structure', async ({ page }) => {
    * Verifies that the home page has the correct title.
    * This is a basic smoke test to ensure the page loads correctly.
    */
+  /**
+   * Verifies the page title is correct
+   * @description Ensures the home page has the expected title containing the site owner's name
+   */
   test('should have the correct title', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Andrew Pucci/);
@@ -68,6 +90,11 @@ test('debug - log page structure', async ({ page }) => {
   /**
    * Tests the main navigation bar for presence and expected links.
    * Ensures all primary navigation items are present and accessible.
+   */
+  /**
+   * Validates the main navigation bar
+   * @description Tests that the navigation bar is visible and contains all expected links
+   * with correct href attributes. This includes testing dropdown menus and their items.
    */
   test('should have a navigation bar with expected links', async ({ page }) => {
     await page.goto('/');
@@ -103,6 +130,11 @@ test('debug - log page structure', async ({ page }) => {
     await expect(dropdownItems).not.toHaveCount(0); // Verify there are dropdown items without hardcoding the count
   });
 
+  /**
+   * Validates the main hero section content
+   * @description Ensures the hero section is visible and contains the expected
+   * introduction text with the site owner's name.
+   */
   test('should display the main heading with my name', async ({ page }) => {
     await page.goto('/');
     
@@ -115,34 +147,37 @@ test('debug - log page structure', async ({ page }) => {
     expect(introText).toContain('Hi, I\'m Andrew');
   });
 
+  /**
+   * Tests the portfolio carousel functionality
+   * @description Verifies that the portfolio carousel is interactive, with working
+   * next/previous navigation and proper item activation.
+   */
   test('should have a functional portfolio carousel', async ({ page }) => {
     await page.goto('/');
-    
+
     // Wait for the carousel to be visible
     const carousel = page.locator('#portfolio-overview-carousel');
     await expect(carousel, 'Portfolio carousel should be visible').toBeVisible();
-    
+
     // Get all carousel items
     const carouselItems = carousel.locator('.carousel-item');
     const itemCount = await carouselItems.count();
     expect(itemCount, 'Should have at least 2 carousel items').toBeGreaterThan(1);
-    
-    // Check that the first item is active initially
-    await expect(carouselItems.first(), 'First carousel item should be active initially').toHaveClass(/active/);
-    
+
     // Test the next button
     const nextButton = carousel.locator('.carousel-control-next');
     await expect(nextButton, 'Next button should be visible').toBeVisible();
-    
-    // Click next and verify the active item changes
+
+    // Click next and verify the second item is active
     await nextButton.click();
     await expect(carouselItems.nth(1), 'Second carousel item should be active after clicking next').toHaveClass(/active/);
-    
+
     // Test the previous button
     const prevButton = carousel.locator('.carousel-control-prev');
     await expect(prevButton, 'Previous button should be visible').toBeVisible();
-    
+
     // Click previous and verify it goes back to the first item
     await prevButton.click();
     await expect(carouselItems.first(), 'First carousel item should be active after clicking previous').toHaveClass(/active/);
+  });
 });

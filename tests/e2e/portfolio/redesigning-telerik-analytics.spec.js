@@ -1,28 +1,42 @@
+// @ts-check
 /**
- * @file Test suite for the Redesigning Telerik Analytics portfolio page.
+ * @file Redesigning Telerik Analytics portfolio page tests
+ * @description End-to-end tests for the Telerik Analytics portfolio case study page.
+ * These tests verify the structure, content, and functionality of the portfolio page,
+ * including the hero section, project details, and interactive elements.
+ * 
+ * Test Organization:
+ * - Hero Section: Tests for the main header and key information
+ * - Project Team: Tests for team member information and links
+ * - Responsibilities & Tools: Tests for project details
+ * - Content Sections: Tests for various content sections
+ * - Media & Assets: Tests for images and downloadable content
+ * - Accessibility: Tests for accessibility best practices
+ * 
  * @module tests/e2e/portfolio/redesigning-telerik-analytics.spec
- * @description Tests verify the structure, content, and functionality of the
- * Redesigning Telerik Analytics project page, including metadata, layout,
- * and interactive elements.
  */
 
 import { test, expect } from '@playwright/test';
 
-// Test suite for the Redesigning Telerik Analytics portfolio page
-// Tests are organized by feature area and user flows
+/**
+ * Test suite for the Redesigning Telerik Analytics Portfolio Page
+ * @description Groups related tests for the portfolio page functionality
+ */
 
-// Setup: Runs before each test to ensure a clean state
-test.beforeEach(async ({ page }) => {
+test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/portfolio/redesigning-telerik-analytics/');
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
   });
 
   /**
-   * Verifies that the page has the correct title and metadata.
-   * This ensures proper SEO and helps with search engine visibility.
+   * Validates the page metadata
+   * @description Ensures the page has the correct title and meta description.
+   * This is a critical test as it verifies the page's main identification elements
+   * for SEO and browser tab display purposes.
    */
-  test('should have the correct title and metadata', async ({ page }) => {
+  test('should have correct page metadata', async ({ page }) => {
     // Check page title
     await expect(page).toHaveTitle('Redesigning Telerik Analytics - Andrew Pucci');
     
@@ -35,9 +49,13 @@ test.beforeEach(async ({ page }) => {
   });
 
   /**
-   * Validates the hero section's structure and content.
-   * Ensures the main title and hero image are properly displayed.
-   * Uses semantic selectors to be resilient to UI changes.
+   * Validates the hero section's visual elements
+   * @description Ensures the hero section displays the correct title and image.
+   * Uses semantic selectors for better test resilience against UI changes.
+   * 
+   * Test Steps:
+   * 1. Verify hero title is visible and contains expected text
+   * 2. Check hero image is visible and has valid source
    */
   test('should display the hero section with title and image', async ({ page }) => {
     // Check hero title
@@ -54,10 +72,14 @@ test.beforeEach(async ({ page }) => {
   });
 
   /**
-   * Tests the project team section, including:
-   * - Visibility of team section
-   * - Presence of team members
-   * - Validity of LinkedIn links (if present)
+   * Validates the project team section
+   * @description Tests the display of team members and their associated links.
+   * Verifies that team information is properly presented and interactive.
+   * 
+   * Test Cases:
+   * - Team section is visible
+   * - At least one team member is listed
+   * - LinkedIn links are valid (if present)
    */
   test('should display project team with links', async ({ page }) => {
     // Look for team section by icon or heading
@@ -84,8 +106,14 @@ test.beforeEach(async ({ page }) => {
   });
 
   /**
-   * Verifies the responsibilities and tools sections.
-   * Ensures that both sections are present and contain at least one item.
+   * Validates the responsibilities and tools sections
+   * @description Ensures the page includes sections for project responsibilities
+   * and tools used, each containing relevant content.
+   * 
+   * Test Cases:
+   * - Responsibilities section is present and has content
+   * - Tools section is present and has content
+   * - At least one item exists in each section
    */
   test('should list responsibilities and tools', async ({ page }) => {
     // Check for responsibilities section by icon or heading
@@ -103,11 +131,18 @@ test.beforeEach(async ({ page }) => {
   });
 
   /**
-   * Validates the presence of main content sections.
-   * The test is designed to be flexible and only requires at least one
-   * of the expected sections to be present.
+   * Validates the presence of main content sections
+   * @description Verifies that key content sections are present on the page.
+   * The test is designed to be flexible, only requiring one of the expected
+   * sections to be present to pass.
+   * 
+   * @example
+   * // Test will pass if any of these sections are found:
+   * // - Challenge
+   * // - The Telerik acquisition of EQATEC
+   * // - Rebranding the EQATEC interface
    */
-  test('should have main content sections', async ({ page }) => {
+  test('should have a project overview section', async ({ page }) => {
     const sections = [
       'Challenge',
       'The Telerik acquisition of EQATEC',
@@ -127,8 +162,13 @@ test.beforeEach(async ({ page }) => {
   });
 
   /**
-   * Tests for the presence of a downloadable case study.
-   * The test is skipped if no PDF link is found, as this is an optional feature.
+   * Validates the downloadable case study feature
+   * @description Tests for the presence and validity of a downloadable PDF case study.
+   * The test is skipped if no PDF link is found, treating it as an optional feature.
+   * 
+   * Test Cases:
+   * - Download link is visible (if present)
+   * - Link points to a PDF file
    */
   test('should have a downloadable case study', async ({ page }) => {
     // Look for any PDF link that might be the download
@@ -144,8 +184,15 @@ test.beforeEach(async ({ page }) => {
   });
 
   /**
-   * Accessibility test to ensure images have proper alt text.
-   * Only checks visible images and allows some images to be decorative.
+   * Validates image accessibility
+   * @description Ensures that images have appropriate alt text for accessibility.
+   * This test verifies that at least one image has descriptive alt text,
+   * while allowing for some images to be decorative (empty alt text).
+   * 
+   * Accessibility Standards:
+   * - Informative images must have descriptive alt text
+   * - Decorative images should have empty alt text ("")
+   * - The test passes if at least one image has alt text
    */
   test('should have images with proper alt text', async ({ page }) => {
     // Get all images that are not in hidden elements
@@ -167,3 +214,4 @@ test.beforeEach(async ({ page }) => {
       test.skip(true, 'No images found on the page');
     }
   });
+});
