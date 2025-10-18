@@ -7,17 +7,15 @@
 
 import { test, expect } from '@playwright/test';
 
+// Test suite for the home page
+// Tests are organized by feature area and user flows
+
 /**
- * Test suite for the home page.
- * Tests are organized by feature area and user flows.
+ * Debug test that logs page structure and elements.
+ * This test is for development purposes only and should be skipped in CI/CD.
+ * It helps with understanding the page structure and debugging test issues.
  */
-test.describe('Home Page', () => {
-  /**
-   * Debug test that logs page structure and elements.
-   * This test is for development purposes only and should be skipped in CI/CD.
-   * It helps with understanding the page structure and debugging test issues.
-   */
-  test('debug - log page structure', async ({ page }) => {
+test('debug - log page structure', async ({ page }) => {
     await page.goto('/');
     
     // Log the page title
@@ -147,5 +145,4 @@ test.describe('Home Page', () => {
     // Click previous and verify it goes back to the first item
     await prevButton.click();
     await expect(carouselItems.first(), 'First carousel item should be active after clicking previous').toHaveClass(/active/);
-  });
 });

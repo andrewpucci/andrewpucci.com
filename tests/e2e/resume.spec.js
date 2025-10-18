@@ -7,16 +7,11 @@
 
 import { test, expect } from '@playwright/test';
 
-/**
- * Test suite for the resume page.
- * Tests are organized by section of the resume to ensure comprehensive coverage.
- */
-test.describe('Resume Page', () => {
-  /**
-   * Runs before each test to ensure a clean state.
-   * Navigates to the resume page and waits for it to be fully loaded.
-   */
-  test.beforeEach(async ({ page }) => {
+// Test suite for the resume page
+// Tests are organized by section of the resume to ensure comprehensive coverage
+
+// Setup: Runs before each test to ensure a clean state
+test.beforeEach(async ({ page }) => {
     await page.goto('/resume/');
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
@@ -142,4 +137,3 @@ test.describe('Resume Page', () => {
     const entryCount = await entries.count();
     expect(entryCount, 'Should have education entries').toBeGreaterThan(0);
   });
-});

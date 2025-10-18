@@ -8,16 +8,11 @@
 
 import { test, expect } from '@playwright/test';
 
-/**
- * Test suite for the Redesigning Telerik Analytics portfolio page.
- * Tests are organized by feature area and user flows.
- */
-test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
-  /**
-   * Runs before each test to ensure a clean state.
-   * Navigates to the project page and waits for it to be fully loaded.
-   */
-  test.beforeEach(async ({ page }) => {
+// Test suite for the Redesigning Telerik Analytics portfolio page
+// Tests are organized by feature area and user flows
+
+// Setup: Runs before each test to ensure a clean state
+test.beforeEach(async ({ page }) => {
     await page.goto('/portfolio/redesigning-telerik-analytics/');
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
@@ -172,4 +167,3 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
       test.skip(true, 'No images found on the page');
     }
   });
-});
