@@ -30,11 +30,8 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
       
-    - name: Run unit tests
-      run: npm run test
-      
-    - name: Run E2E tests
-      run: npm run test:e2e -- --retries=2
+    - name: Run all tests
+      run: npm run test:ci
       
     - name: Upload test results
       if: always()
