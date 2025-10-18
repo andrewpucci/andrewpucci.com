@@ -1,5 +1,51 @@
-node_modules
-dist
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+.sass-cache/
+*.css.map
+
+# Environment variables
 .env
-yarn-error.log
-.cache/*
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Playwright
+playwright-report/
+playwright/.cache/
+test-results/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.suo
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+.cache/
+
+# Local development
+.netlify/

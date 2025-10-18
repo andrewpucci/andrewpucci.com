@@ -1,3 +1,10 @@
+/**
+ * @file Eleventy configuration
+ * @description Main configuration file for the Eleventy static site generator.
+ * Configures plugins, filters, shortcodes, collections, and build settings.
+ * @see {@link https://www.11ty.dev/docs/config/|Eleventy Configuration}
+ */
+
 import pluginRev from 'eleventy-plugin-rev';
 import eleventySass from 'eleventy-sass';
 import postcss from 'postcss';
@@ -7,43 +14,53 @@ import { dateToFormat, obfuscate, stripSpaces, stripProtocol } from './src/utils
 import { image, card, expandableImage } from './src/utils/async-shortcodes.js';
 import minify from './src/utils/minify.js';
 
+/**
+ * Eleventy configuration function
+ * @param {Object} eleventyConfig - The Eleventy configuration object
+ * @returns {Object} Configuration options for Eleventy
+ */
 export default function(eleventyConfig) {
-  // Add revisioning plugin
+  // Add revisioning plugin for cache busting
+  // Adds unique hashes to asset filenames to prevent stale caches
   eleventyConfig.addPlugin(pluginRev);
   
-  // Configure and add Sass plugin
+  // Configure and add Sass plugin for stylesheet processing
+  // Compiles Sass to CSS, adds vendor prefixes, and minifies output
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
-      loadPaths: ["node_modules"],
-      style: 'compressed',
-      sourceMap: true,
-      quietDeps: true // Suppress deprecation warnings
+      loadPaths: ["node_modules"],   // Allow importing from node_modules (e.g., Bootstrap)
+      style: 'compressed',           // Minify CSS output
+      sourceMap: true,               // Generate source maps for debugging
+      quietDeps: true                // Suppress deprecation warnings from dependencies
     },
     postcss: postcss([
-      autoprefixer(),
-      cssnano({ preset: 'default' })
+      autoprefixer(),                // Add vendor prefixes for browser compatibility
+      cssnano({ preset: 'default' }) // Further optimize and minify CSS
     ]),
-    rev: true,
+    rev: true, // Enable asset revisioning for cache busting
   });
 
-  // Add utility filters
-  eleventyConfig.addFilter('dateToFormat', dateToFormat);
-  eleventyConfig.addFilter('obfuscate', obfuscate);
-  eleventyConfig.addFilter('stripSpaces', stripSpaces);
-  eleventyConfig.addFilter('stripProtocol', stripProtocol);
+  // Register custom filters for use in templates
+  eleventyConfig.addFilter('dateToFormat', dateToFormat);     // Format dates with Luxon
+  eleventyConfig.addFilter('obfuscate', obfuscate);           // Obfuscate strings (e.g., emails)
+  eleventyConfig.addFilter('stripSpaces', stripSpaces);       // Remove all whitespace
+  eleventyConfig.addFilter('stripProtocol', stripProtocol);   // Remove protocol from URLs
 
-  // Add async shortcodes
-  eleventyConfig.addNunjucksAsyncShortcode('image', image);
-  eleventyConfig.addNunjucksAsyncShortcode('card', card);
-  eleventyConfig.addNunjucksAsyncShortcode('expandableImage', expandableImage);
+  // Register async shortcodes for use in Nunjucks templates
+  eleventyConfig.addNunjucksAsyncShortcode('image', image);                 // Responsive images
+  eleventyConfig.addNunjucksAsyncShortcode('card', card);                   // Bootstrap cards
+  eleventyConfig.addNunjucksAsyncShortcode('expandableImage', expandableImage); // Modal images
 
-  // Collections
+  // Create collections for resume entries
+  // Collections group related content for easy iteration in templates
   const collections = ['work', 'education', 'speaking', 'volunteering'];
   collections.forEach((name) => {
     eleventyConfig.addCollection(name, function (collection) {
+      // Match files in the collection's folder
       const folderRegex = new RegExp(`\/${name}\/`);
       const inEntryFolder = (item) => item.inputPath.match(folderRegex) !== null;
 
+      // Sort entries by start date (oldest first)
       const byStartDate = (a, b) => {
         if (a.data.start && b.data.start) {
           return a.data.start - b.data.start;
@@ -58,15 +75,16 @@ export default function(eleventyConfig) {
     });
   });
 
-  // Minify the HTML output
+  // Add minification transform for HTML and JavaScript
+  // This runs after templates are rendered but before files are written
   eleventyConfig.addTransform('minify', minify);
 
-  // Pass some assets right through
-  eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');
-  eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*');
-  eleventyConfig.addPassthroughCopy('./src/site/assets/favicon-32x32.png');
-  eleventyConfig.addPassthroughCopy('./src/site/humans.txt');
-  eleventyConfig.addPassthroughCopy('./src/site/robots.txt');
+  // Copy static assets directly to output without processing
+  eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');          // PDFs, documents
+  eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*');    // Web fonts
+  eleventyConfig.addPassthroughCopy('./src/site/assets/favicon-32x32.png'); // Favicon
+  eleventyConfig.addPassthroughCopy('./src/site/humans.txt');              // humans.txt
+  eleventyConfig.addPassthroughCopy('./src/site/robots.txt');              // robots.txt
 
   return {
     dir: {
