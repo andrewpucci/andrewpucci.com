@@ -22,7 +22,6 @@ import { test, expect } from '@playwright/test';
  * Test suite for the Redesigning Telerik Analytics Portfolio Page
  * @description Groups related tests for the portfolio page functionality
  */
-
 test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/portfolio/redesigning-telerik-analytics/');

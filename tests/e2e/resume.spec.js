@@ -21,7 +21,6 @@ import { test, expect } from '@playwright/test';
  * Test suite for the Resume Page
  * @description Groups related tests for the resume page functionality
  */
-
 test.describe('Resume Page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/resume/');

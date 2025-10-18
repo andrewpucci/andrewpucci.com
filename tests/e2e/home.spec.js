@@ -19,7 +19,6 @@ import { test, expect } from '@playwright/test';
  * Test suite for the Home Page
  * @description Groups related tests for the home page functionality
  */
-
 test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
