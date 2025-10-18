@@ -89,6 +89,7 @@ Write straightforward code that conveys its intent clearly. Minimize abstraction
  * functionName(input)
  * // Returns: expected output
  */
+```
 
 ## Testing Standards
 
