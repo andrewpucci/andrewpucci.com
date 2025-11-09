@@ -57,8 +57,11 @@ export default function(eleventyConfig) {
   collections.forEach((name) => {
     eleventyConfig.addCollection(name, function (collection) {
       // Match files in the collection's folder
-      const folderRegex = new RegExp(`\/${name}\/`);
-      const inEntryFolder = (item) => item.inputPath.match(folderRegex) !== null;
+      // Create a simple string check instead of regex for better security
+      const inEntryFolder = (item) => {
+        const pathParts = item.inputPath.split('/');
+        return pathParts.includes(name);
+      };
 
       // Sort entries by start date (oldest first)
       const byStartDate = (a, b) => {

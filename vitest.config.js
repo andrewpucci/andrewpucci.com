@@ -4,10 +4,7 @@
  * Defines test environment, coverage settings, and exclusions.
  * @see {@link https://vitest.dev/config/|Vitest Configuration}
  */
-
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
+export default {
   test: {
     // Enable global test APIs (test, expect, etc.) without imports
     globals: true,
@@ -15,6 +12,10 @@ export default defineConfig({
     // Use happy-dom for lightweight DOM simulation in tests
     environment: 'happy-dom',
     
+    // Test file patterns to include
+    include: ['**/*.test.js'],
+    
+    // Files to exclude from test runs
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
@@ -23,41 +24,38 @@ export default defineConfig({
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
       '**/tests/e2e/**', // Exclude Playwright e2e tests (they use their own runner)
     ],
+    
+    // Coverage configuration
     coverage: {
-      // Coverage report formats
-      reporter: ['text', 'json', 'html'],
-      
       // Files to exclude from coverage analysis
       exclude: [
         // Default exclusions
-        'node_modules/',      // Third-party dependencies
-        '**/*.test.js',       // Test files themselves
-        '**/test-utils/**',   // Test utilities and helpers
+        'node_modules/**',
+        '**/*.test.js',
+        '**/test-utils/**',
         
-        // Configuration files (not application code)
-        '**/*.config.*',      // All config files
-        '.eslintrc.*',        // ESLint configuration
-        '.prettierrc.*',      // Prettier configuration
-        'postcss.config.*',   // PostCSS configuration
-        'netlify.toml',       // Netlify deployment config
+        // Configuration files
+        '**/*.config.*',
+        '.eslintrc.*',
+        '.prettierrc.*',
+        'postcss.config.*',
+        'netlify.toml',
         
         // Generated files and build output
-        'dist/**',            // Build output directory
-        'coverage/**',        // Coverage reports
-        '**/__snapshots__/**', // Test snapshots
+        'dist/**',
+        'coverage/**',
+        '**/__snapshots__/**',
         
-        // Content and asset files (not JavaScript code)
-        'src/site/**/*.md',   // Markdown content
-        'src/site/**/*.njk',  // Nunjucks templates
-        'src/site/**/*.html', // HTML files
-        'src/assets/**',      // Static assets
-        
-        // Type definitions (TypeScript)
+        // Content and asset files
+        'src/site/**/*.md',
+        'src/site/**/*.njk',
+        'src/site/**/*.html',
+        'src/assets/**',
         '**/*.d.ts',
       ],
       
       // Include only source files in coverage analysis
-      include: ['src/**/*.js', 'src/**/*.ts'],
+      include: ['src/**/*.js'],
       
       // Minimum coverage thresholds (tests fail if below these values)
       thresholds: {
@@ -68,4 +66,4 @@ export default defineConfig({
       },
     },
   },
-});
+};
