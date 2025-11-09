@@ -18,9 +18,19 @@ import { DateTime } from 'luxon';
  * @see {@link https://moment.github.io/luxon/#/formatting|Luxon formatting tokens}
  */
 export const dateToFormat = (date, format) => {
-  return DateTime.fromJSDate(date, { zone: 'utc' }).toFormat(
-    String(format),
-  );
+  try {
+    // If date is not a valid date, try to create a date from it
+    const dateObj = date instanceof Date && !isNaN(date) ? date : new Date(date);
+    
+    // Check if the date is valid
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+      return 'Invalid DateTime';
+    }
+    
+    return DateTime.fromJSDate(dateObj, { zone: 'utc' }).toFormat(String(format));
+  } catch {
+    return 'Invalid DateTime';
+  }
 };
 
 /**
@@ -34,9 +44,18 @@ export const dateToFormat = (date, format) => {
  * readable by browsers. The browser will decode the entities back to the original text.
  */
 export const obfuscate = (str) => {
+  if (typeof str !== 'string') {
+    return '';
+  }
+  
   const chars = [];
-  for (let i = str.length - 1; i >= 0; i--) {
-    chars.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
+  // Use a for...of loop to safely iterate over string characters
+  for (const char of str) {
+    // Get the code point of the first character
+    const codePoint = char.codePointAt(0);
+    if (codePoint !== undefined) {
+      chars.push(`&#${codePoint};`);
+    }
   }
   return chars.join('');
 };
@@ -51,9 +70,7 @@ export const obfuscate = (str) => {
  * @description Removes spaces, tabs, newlines, and other whitespace characters.
  * Useful for creating IDs or class names from user-provided text.
  */
-export const stripSpaces = (str) => {
-  return str.replace(/\s/g, '');
-};
+export const stripSpaces = (str) => str.replace(/\s/g, '');
 
 /**
  * Removes the protocol (http://, https://, etc.) from a URL
@@ -65,9 +82,7 @@ export const stripSpaces = (str) => {
  * @description Useful for displaying URLs in a cleaner format or for
  * protocol-relative URLs. Handles both http and https protocols.
  */
-export const stripProtocol = (str) => {
-  return str.replace(/(^\w+:|^)\/\//, '');
-};
+export const stripProtocol = (str) => str.replace(/(^\w+:|^)\/\//, '');
 
 // For backward compatibility
 export default {

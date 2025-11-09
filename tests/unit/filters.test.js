@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { dateToFormat, obfuscate, stripSpaces, stripProtocol } from '../../src/utils/filters.js';
 
 describe('filters', () => {
@@ -16,6 +16,7 @@ describe('filters', () => {
 
   describe('obfuscate', () => {
     it('should obfuscate a string by converting characters to HTML entities', () => {
+      // eslint-disable-next-line security/detect-unsafe-regex
       expect(obfuscate('test@example.com')).toMatch(/^(&#\d+;)+$/);
       expect(obfuscate('test@example.com')).toContain('&#116;'); // 't' in ASCII
     });

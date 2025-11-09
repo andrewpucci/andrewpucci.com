@@ -14,7 +14,7 @@ export const image = async (src, alt, cls, sizes = '100vw', widths = [null]) => 
     outputDir: './dist/assets/img/',
   });
 
-  const lowsrc = metadata.jpeg[0];
+  const [lowsrc] = metadata.jpeg;
 
   return `<picture>
     ${Object.values(metadata).map((imageFormat) => `  <source type="${imageFormat[0].sourceType}" srcset="${imageFormat.map((entry) => entry.srcset).join(', ')}" sizes="${sizes}">`).join('\n')}

@@ -1,14 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import minify from '../../src/utils/minify.js';
 
 // Mock the path module with the original implementation but override extname
-vi.mock('path', async () => {
-  const actual = await vi.importActual('path');
+vi.mock('path', async (importOriginal) => {
+  const actual = await importOriginal();
   return {
     ...actual,
     extname: (path) => {
       // Simple extension extractor for testing
       const match = path.match(/\.([^.]+)$/i);
       return match ? `.${match[1].toLowerCase()}` : '';
+    },
+    default: {
+      ...actual.default,
+      extname: (path) => {
+        const match = path.match(/\.([^.]+)$/i);
+        return match ? `.${match[1].toLowerCase()}` : '';
+      }
     }
   };
 });
@@ -21,9 +29,6 @@ vi.mock('../../src/utils/min-html.js', () => ({
 vi.mock('../../src/utils/min-js.js', () => ({
   default: (content) => `minified-js:${content}`
 }));
-
-// Import the minify function after setting up mocks
-import minify from '../../src/utils/minify.js';
 
 describe('minify utility', () => {
   let originalConsoleError;

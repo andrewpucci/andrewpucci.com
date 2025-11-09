@@ -82,7 +82,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    */
   test('should display project team with links', async ({ page }) => {
     // Look for team section by icon or heading
-    let teamSection = page.locator('h2:has-text("Team"), h3:has-text("Team"), .fa-users').first();
+    const teamSection = page.locator('h2:has-text("Team"), h3:has-text("Team"), .fa-users').first();
     await expect(teamSection).toBeVisible();
     
     // Check team members list is not empty
