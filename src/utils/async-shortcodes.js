@@ -21,9 +21,7 @@ import * as img from './image.js';
  * @description Uses @11ty/eleventy-img to generate optimized, responsive images
  * with multiple sizes and formats (WebP, JPEG).
  */
-export const image = async (imgSrc, imgAlt, imgCls, imgSizes, imgWidths) => {
-  return img.image(imgSrc, imgAlt, imgCls, imgSizes, imgWidths);
-};
+export const image = async (imgSrc, imgAlt, imgCls, imgSizes, imgWidths) => img.image(imgSrc, imgAlt, imgCls, imgSizes, imgWidths);
 
 /**
  * Generates a Bootstrap card component with an image
