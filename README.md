@@ -4,15 +4,15 @@ This is the public portfolio site for Andrew Pucci, a UX Designer with developme
 
 ## Tech Stack
 
-- **Static Site Generator**: [Eleventy](https://www.11ty.dev/) v3.1.2
-- **Frontend Framework**: [Bootstrap](https://getbootstrap.com/) v5.3.7
+- **Static Site Generator**: [Eleventy](https://www.11ty.dev/)
+- **Frontend Framework**: [Bootstrap](https://getbootstrap.com/)
 - **Styling**: Sass with PostCSS (Autoprefixer, cssnano)
-- **Icons**: Font Awesome v7.1.0
+- **Icons**: Font Awesome
 - **Testing**: 
-  - Unit Tests: [Vitest](https://vitest.dev/) v3.2.4
-  - E2E Tests: [Playwright](https://playwright.dev/) v1.56.1
+  - Unit Tests: [Vitest](https://vitest.dev/)
+  - E2E Tests: [Playwright](https://playwright.dev/)
 - **Deployment**: [Netlify](https://www.netlify.com/)
-- **Node Version**: 22.x (see `.nvmrc`)
+- **Node Version**: 22.x (see `.nvmrc` and `package.json` for exact versions)
 
 ## Project Structure
 
@@ -44,32 +44,34 @@ andrewpucci.com/
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone the repository** and navigate to the project directory:
    ```bash
    git clone https://github.com/andrewpucci/andrewpucci.com.git
    cd andrewpucci.com
    ```
 
-2. **Install Node.js** (if using nvm)
+2. **Install Node.js** (if using nvm):
    ```bash
    nvm use
    ```
 
-3. **Install dependencies**
+3. **Install dependencies**:
    ```bash
    npm ci
    ```
 
-4. **Set up environment variables**
+4. **Set up environment variables**:
    ```bash
    cp .env-sample .env
    ```
+   
    Edit `.env` and set `ROOT_URL` to your local or deployed URL.
 
 ### Development
 
+Start the development server with live reload:
+
 ```bash
-# Start development server with live reload
 npm run dev
 ```
 
@@ -77,8 +79,9 @@ The site will be available at `http://localhost:8080`.
 
 ### Building for Production
 
+Build the optimized production site:
+
 ```bash
-# Build optimized production site
 npm run prod
 ```
 
@@ -90,17 +93,23 @@ The built site will be in the `dist/` directory.
 
 Unit tests cover custom Eleventy filters, shortcodes, and utility functions.
 
+Run all unit tests:
 ```bash
-# Run all unit tests
 npm test
+```
 
-# Run tests in watch mode
+Run tests in watch mode:
+```bash
 npm run test:watch
+```
 
-# Generate coverage report
+Generate coverage report:
+```bash
 npm run test:coverage
+```
 
-# Run tests with UI
+Run tests with UI:
+```bash
 npm run test:ui
 ```
 
@@ -110,14 +119,18 @@ See [tests/unit/README.md](tests/unit/README.md) for more details.
 
 E2E tests verify critical user flows and page content using Playwright.
 
+Run all E2E tests:
 ```bash
-# Run all E2E tests
 npm run test:e2e
+```
 
-# Run E2E tests in UI mode (for debugging)
+Run E2E tests in UI mode (for debugging):
+```bash
 npm run test:e2e:ui
+```
 
-# View test report
+View test report:
+```bash
 npm run test:e2e:report
 ```
 
@@ -125,8 +138,9 @@ See [tests/e2e/README.md](tests/e2e/README.md) for more details.
 
 ### Running All Tests
 
+Run both unit and E2E tests (CI mode):
+
 ```bash
-# Run both unit and E2E tests (CI mode)
 npm run test:ci
 ```
 
