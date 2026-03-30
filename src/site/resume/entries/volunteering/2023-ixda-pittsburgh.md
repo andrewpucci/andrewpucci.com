@@ -1,5 +1,5 @@
 ---
-title: "Co-Chair"
+title: 'Co-Chair'
 organization: IxDA Pittsburgh
 organizationUrl: https://www.ixdapgh.org/
 location: Pittsburgh, PA

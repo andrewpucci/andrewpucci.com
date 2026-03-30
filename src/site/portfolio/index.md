@@ -3,6 +3,7 @@ layout: collection
 title: User Experience Design Portfolio - Andrew Pucci
 description: Portfolio showing Andrew Pucci's user experience design work.
 ---
+
 # My Work
 
 As a software engineering student, I spent the better part of my senior year working with a group of colleagues on a project to help doctors diagnose Parkinsonian tremor. Not once during the project did we have access to the patients or doctors who were intended to be the users of the application. This concerned me. If I couldn't see someone using the software I was creating, how would I know it would be successful?

@@ -4,7 +4,7 @@
  * @description End-to-end tests for the Telerik Analytics portfolio case study page.
  * These tests verify the structure, content, and functionality of the portfolio page,
  * including the hero section, project details, and interactive elements.
- * 
+ *
  * Test Organization:
  * - Hero Section: Tests for the main header and key information
  * - Project Team: Tests for team member information and links
@@ -12,7 +12,7 @@
  * - Content Sections: Tests for various content sections
  * - Media & Assets: Tests for images and downloadable content
  * - Accessibility: Tests for accessibility best practices
- * 
+ *
  * @module tests/e2e/portfolio/redesigning-telerik-analytics.spec
  */
 
@@ -38,7 +38,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
   test('should have correct page metadata', async ({ page }) => {
     // Check page title
     await expect(page).toHaveTitle('Redesigning Telerik Analytics - Andrew Pucci');
-    
+
     // Check meta description
     const metaDescription = page.locator('meta[name="description"]');
     await expect(metaDescription).toHaveAttribute(
@@ -51,7 +51,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    * Validates the hero section's visual elements
    * @description Ensures the hero section displays the correct title and image.
    * Uses semantic selectors for better test resilience against UI changes.
-   * 
+   *
    * Test Steps:
    * 1. Verify hero title is visible and contains expected text
    * 2. Check hero image is visible and has valid source
@@ -60,11 +60,11 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
     // Check hero title
     const heroTitle = page.locator('h1').first();
     await expect(heroTitle).toContainText('Redesigning Telerik Analytics');
-    
+
     // Check hero image is visible with the correct alt text
     const heroImage = page.locator('img[alt="Redesigning Telerik Analytics"]').first();
     await expect(heroImage).toBeVisible();
-    
+
     // Verify image source exists
     const imageSrc = await heroImage.getAttribute('src');
     expect(imageSrc).toBeTruthy();
@@ -74,7 +74,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    * Validates the project team section
    * @description Tests the display of team members and their associated links.
    * Verifies that team information is properly presented and interactive.
-   * 
+   *
    * Test Cases:
    * - Team section is visible
    * - At least one team member is listed
@@ -84,16 +84,16 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
     // Look for team section by icon or heading
     const teamSection = page.locator('h2:has-text("Team"), h3:has-text("Team"), .fa-users').first();
     await expect(teamSection).toBeVisible();
-    
+
     // Check team members list is not empty
     const teamItems = page.locator('ul:has(li:has-text("Andrew Pucci")) li');
     const teamCount = await teamItems.count();
     expect(teamCount).toBeGreaterThan(0);
-    
+
     // Check LinkedIn links (if any)
     const linkedInLinks = page.locator('a[href*="linkedin.com"]');
     const linkCount = await linkedInLinks.count();
-    
+
     if (linkCount > 0) {
       for (let i = 0; i < linkCount; i++) {
         const link = linkedInLinks.nth(i);
@@ -108,7 +108,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    * Validates the responsibilities and tools sections
    * @description Ensures the page includes sections for project responsibilities
    * and tools used, each containing relevant content.
-   * 
+   *
    * Test Cases:
    * - Responsibilities section is present and has content
    * - Tools section is present and has content
@@ -116,13 +116,19 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    */
   test('should list responsibilities and tools', async ({ page }) => {
     // Check for responsibilities section by icon or heading
-    const responsibilitiesSection = page.locator('h2:has-text("Responsibilities"), h3:has-text("Responsibilities"), .fa-clipboard-list').first();
+    const responsibilitiesSection = page
+      .locator(
+        'h2:has-text("Responsibilities"), h3:has-text("Responsibilities"), .fa-clipboard-list'
+      )
+      .first();
     await expect(responsibilitiesSection).toBeVisible();
-    
+
     // Check for tools section by icon or heading
-    const toolsSection = page.locator('h2:has-text("Tools"), h3:has-text("Tools"), .fa-wrench').first();
+    const toolsSection = page
+      .locator('h2:has-text("Tools"), h3:has-text("Tools"), .fa-wrench')
+      .first();
     await expect(toolsSection).toBeVisible();
-    
+
     // Check for at least one list item in either section
     const listItems = page.locator('ul:has(li)');
     const itemCount = await listItems.count();
@@ -134,7 +140,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    * @description Verifies that key content sections are present on the page.
    * The test is designed to be flexible, only requiring one of the expected
    * sections to be present to pass.
-   * 
+   *
    * @example
    * // Test will pass if any of these sections are found:
    * // - Challenge
@@ -145,14 +151,14 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
     const sections = [
       'Challenge',
       'The Telerik acquisition of EQATEC',
-      'Rebranding the EQATEC interface'
+      'Rebranding the EQATEC interface',
     ];
 
     // Check for at least one section to be present
     let foundSections = 0;
     for (const section of sections) {
       const sectionHeader = page.locator(`h2:has-text("${section}"), h3:has-text("${section}")`);
-      if (await sectionHeader.count() > 0) {
+      if ((await sectionHeader.count()) > 0) {
         await expect(sectionHeader, `Section '${section}' should be visible`).toBeVisible();
         foundSections++;
       }
@@ -164,7 +170,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    * Validates the downloadable case study feature
    * @description Tests for the presence and validity of a downloadable PDF case study.
    * The test is skipped if no PDF link is found, treating it as an optional feature.
-   * 
+   *
    * Test Cases:
    * - Download link is visible (if present)
    * - Link points to a PDF file
@@ -172,13 +178,13 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
   test('should have a downloadable case study', async ({ page }) => {
     // Look for any PDF link that might be the download
     const downloadLink = page.locator('a[href$=".pdf"]').first();
-    if (await downloadLink.count() > 0) {
+    if ((await downloadLink.count()) > 0) {
       await expect(downloadLink, 'Download link should be visible').toBeVisible();
       const href = await downloadLink.getAttribute('href');
       expect(href, 'Should link to a PDF file').toMatch(/\.pdf$/i);
     } else {
       // If no PDF link, mark as skipped instead of failed
-      test.skip(!await downloadLink.isVisible(), 'No download link found, skipping test');
+      test.skip(!(await downloadLink.isVisible()), 'No download link found, skipping test');
     }
   });
 
@@ -187,7 +193,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
    * @description Ensures that images have appropriate alt text for accessibility.
    * This test verifies that at least one image has descriptive alt text,
    * while allowing for some images to be decorative (empty alt text).
-   * 
+   *
    * Accessibility Standards:
    * - Informative images must have descriptive alt text
    * - Decorative images should have empty alt text ("")
@@ -197,7 +203,7 @@ test.describe('Redesigning Telerik Analytics Portfolio Page', () => {
     // Get all images that are not in hidden elements
     const images = page.locator('img:visible');
     const imageCount = await images.count();
-    
+
     if (imageCount > 0) {
       let imagesWithAlt = 0;
       for (let i = 0; i < imageCount; i++) {

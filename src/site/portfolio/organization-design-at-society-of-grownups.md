@@ -82,20 +82,20 @@ To help with this, I proposed a leadership structure to the CEO and other leader
 
 A person chosen by the Pod Committee who:
 
-* Works with Workstream Leads to assemble the Pod
-* Works with Strategy & Finance to ensure business rigor
-* Works with Legal & Compliance throughout Pod lifetime
-* Works with the Pod to set and track goals and timelines for projects
-* Reports updates and metrics on a weekly basis
-* Facilitates feedback with Pod Members on a regular basis
+- Works with Workstream Leads to assemble the Pod
+- Works with Strategy & Finance to ensure business rigor
+- Works with Legal & Compliance throughout Pod lifetime
+- Works with the Pod to set and track goals and timelines for projects
+- Reports updates and metrics on a weekly basis
+- Facilitates feedback with Pod Members on a regular basis
 
 ### Pod Member
 
 A person appointed by the Pod Leader who:
 
-* Completes work according to the timeline and goals set by the Pod Lead
-* Works with Workstream and Pod Leads to convey interest in working with Pods
-* Seeks and provides periodic feedback
+- Completes work according to the timeline and goals set by the Pod Lead
+- Works with Workstream and Pod Leads to convey interest in working with Pods
+- Seeks and provides periodic feedback
 
 ## Circles
 

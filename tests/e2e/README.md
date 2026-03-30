@@ -15,6 +15,7 @@ tests/e2e/
 ## Running Tests
 
 ### Prerequisites
+
 - Node.js 16+
 - npm 8+
 - Playwright browsers installed (`npx playwright install`)
@@ -38,16 +39,19 @@ npx playwright show-report
 ## Test Strategy
 
 ### Home Page Tests (`home.spec.js`)
+
 - Verifies the home page loads correctly
 - Checks for essential sections (header, hero, about, etc.)
 - Validates navigation links
 
 ### Resume Page Tests (`resume.spec.js`)
+
 - Validates resume sections (Experience, Education, etc.)
 - Checks for downloadable resume link
 - Verifies contact information
 
 ### Portfolio Project Tests (`portfolio/*.spec.js`)
+
 - Validates project-specific content
 - Checks for project metadata (team, tools, responsibilities)
 - Verifies images and media content
@@ -56,6 +60,7 @@ npx playwright show-report
 ## Best Practices
 
 ### Writing Tests
+
 1. **Be Resilient**:
    - Use semantic selectors (prefer `getByRole` and `getByText` over CSS selectors)
    - Avoid testing implementation details
@@ -72,6 +77,7 @@ npx playwright show-report
    - Group related tests with `test.describe`
 
 ### Debugging Tests
+
 - Use `test.only` to run a single test
 - Add `await page.pause()` to pause test execution
 - Use `--debug` flag for step-by-step debugging
@@ -80,13 +86,17 @@ npx playwright show-report
 ## Common Issues
 
 ### Flaky Tests
+
 If a test is flaky (sometimes passes, sometimes fails):
+
 1. Check for elements that might load asynchronously
 2. Add proper waiting mechanisms (`waitForSelector`, `waitForLoadState`)
 3. Make selectors more specific to avoid false positives
 
 ### Test Failures
+
 When a test fails:
+
 1. Check the error message and stack trace
 2. Look at the failure screenshot in the HTML report
 3. Verify if the UI has changed and the test needs updating
@@ -108,13 +118,14 @@ The workflow will automatically fail if any tests fail, helping to prevent deplo
 1. **GitHub Actions UI**: Go to the "Actions" tab in the GitHub repository to see the status of recent workflow runs.
 2. **Test Artifacts**: Download the `playwright-report` artifact from a completed workflow run to view detailed test results and screenshots.
 3. **Local Testing**: To run the same tests locally, use:
+
    ```bash
    # Run all tests
    npm run test:ci
-   
+
    # Run only unit tests
    npm test
-   
+
    # Run only E2E tests
    npm run test:e2e
    ```
@@ -184,25 +195,28 @@ test.describe('Feature Name', () => {
 ### Recommended Selectors (in order of preference)
 
 1. **User-facing attributes**
+
    ```javascript
-   page.getByRole('button', { name: 'Submit' })
-   page.getByText('Welcome')
-   page.getByLabel('Email')
-   page.getByPlaceholder('Enter email')
+   page.getByRole('button', { name: 'Submit' });
+   page.getByText('Welcome');
+   page.getByLabel('Email');
+   page.getByPlaceholder('Enter email');
    ```
 
 2. **Test IDs** (when semantic selectors aren't available)
+
    ```javascript
-   page.getByTestId('submit-button')
+   page.getByTestId('submit-button');
    ```
 
 3. **CSS Selectors** (as a last resort)
    ```javascript
-   page.locator('.specific-class')
-   page.locator('#unique-id')
+   page.locator('.specific-class');
+   page.locator('#unique-id');
    ```
 
 ### Avoid
+
 - XPath selectors (brittle and hard to read)
 - Overly specific CSS selectors (`.parent > .child > .grandchild`)
 - Selectors based on implementation details
@@ -210,6 +224,7 @@ test.describe('Feature Name', () => {
 ## Common Test Patterns
 
 ### Navigation and Page Load
+
 ```javascript
 test('should navigate to page', async ({ page }) => {
   await page.goto('/about');
@@ -219,6 +234,7 @@ test('should navigate to page', async ({ page }) => {
 ```
 
 ### Form Interactions
+
 ```javascript
 test('should submit form', async ({ page }) => {
   await page.getByLabel('Email').fill('user@example.com');
@@ -228,6 +244,7 @@ test('should submit form', async ({ page }) => {
 ```
 
 ### Checking Visibility
+
 ```javascript
 test('should show element', async ({ page }) => {
   const element = page.getByRole('heading', { name: 'Title' });
@@ -236,20 +253,22 @@ test('should show element', async ({ page }) => {
 ```
 
 ### Waiting for Elements
+
 ```javascript
 test('should wait for dynamic content', async ({ page }) => {
   // Wait for specific element
   await page.waitForSelector('.dynamic-content');
-  
+
   // Wait for network to be idle
   await page.waitForLoadState('networkidle');
-  
+
   // Wait for specific condition
   await page.waitForFunction(() => document.querySelectorAll('.item').length > 5);
 });
 ```
 
 ### Testing Links
+
 ```javascript
 test('should have correct link', async ({ page }) => {
   const link = page.getByRole('link', { name: 'Portfolio' });
@@ -258,21 +277,23 @@ test('should have correct link', async ({ page }) => {
 ```
 
 ### Testing Images
+
 ```javascript
 test('should display image with alt text', async ({ page }) => {
   const image = page.getByAltText('Project screenshot');
   await expect(image).toBeVisible();
-  
+
   const src = await image.getAttribute('src');
   expect(src).toBeTruthy();
 });
 ```
 
 ### Testing Responsive Behavior
+
 ```javascript
 test('should adapt to mobile viewport', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
-  
+
   const mobileMenu = page.getByRole('button', { name: 'Menu' });
   await expect(mobileMenu).toBeVisible();
 });
@@ -281,6 +302,7 @@ test('should adapt to mobile viewport', async ({ page }) => {
 ## Handling Flaky Tests
 
 ### Use Proper Waits
+
 ```javascript
 // Bad: Arbitrary timeout
 await page.waitForTimeout(1000);
@@ -291,7 +313,9 @@ await expect(element).toBeVisible();
 ```
 
 ### Use Auto-waiting
+
 Playwright automatically waits for elements to be actionable:
+
 ```javascript
 // These automatically wait for the element to be ready
 await page.click('button');
@@ -299,6 +323,7 @@ await page.fill('input', 'text');
 ```
 
 ### Retry Assertions
+
 ```javascript
 // Playwright retries assertions automatically
 await expect(page.getByText('Loading...')).not.toBeVisible();
@@ -308,11 +333,12 @@ await expect(page.getByText('Content loaded')).toBeVisible();
 ## Accessibility Testing
 
 ### Check for Alt Text
+
 ```javascript
 test('images should have alt text', async ({ page }) => {
   const images = page.locator('img:visible');
   const count = await images.count();
-  
+
   for (let i = 0; i < count; i++) {
     const alt = await images.nth(i).getAttribute('alt');
     expect(alt).toBeTruthy();
@@ -321,6 +347,7 @@ test('images should have alt text', async ({ page }) => {
 ```
 
 ### Check for ARIA Labels
+
 ```javascript
 test('interactive elements should have labels', async ({ page }) => {
   const button = page.getByRole('button', { name: 'Submit' });
@@ -329,6 +356,7 @@ test('interactive elements should have labels', async ({ page }) => {
 ```
 
 ### Keyboard Navigation
+
 ```javascript
 test('should be keyboard navigable', async ({ page }) => {
   await page.keyboard.press('Tab');
@@ -345,7 +373,7 @@ test('should load quickly', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
   const loadTime = Date.now() - start;
-  
+
   expect(loadTime).toBeLessThan(3000); // Should load in under 3 seconds
 });
 ```
@@ -353,17 +381,20 @@ test('should load quickly', async ({ page }) => {
 ## Debugging Failed Tests
 
 ### View Test Report
+
 ```bash
 npm run test:e2e:report
 ```
 
 The HTML report includes:
+
 - Test results and timing
 - Screenshots of failures
 - Traces for debugging
 - Error messages and stack traces
 
 ### Run in Debug Mode
+
 ```bash
 npm run test:e2e:debug
 ```
@@ -371,6 +402,7 @@ npm run test:e2e:debug
 This opens Playwright Inspector for step-by-step debugging.
 
 ### Run in UI Mode
+
 ```bash
 npm run test:e2e:ui
 ```
@@ -378,16 +410,17 @@ npm run test:e2e:ui
 This provides an interactive UI for running and debugging tests.
 
 ### Add Debug Statements
+
 ```javascript
 test('debug test', async ({ page }) => {
   await page.goto('/');
-  
+
   // Pause execution
   await page.pause();
-  
+
   // Take screenshot
   await page.screenshot({ path: 'debug.png' });
-  
+
   // Log page content
   const content = await page.content();
   console.log(content);
@@ -397,23 +430,25 @@ test('debug test', async ({ page }) => {
 ## Test Organization Tips
 
 ### Group Related Tests
+
 ```javascript
 test.describe('Navigation', () => {
   test.describe('Desktop', () => {
     test('should show full menu', async ({ page }) => {...});
   });
-  
+
   test.describe('Mobile', () => {
     test.beforeEach(async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
     });
-    
+
     test('should show hamburger menu', async ({ page }) => {...});
   });
 });
 ```
 
 ### Use Fixtures for Common Setup
+
 ```javascript
 test.beforeEach(async ({ page }) => {
   // Common setup for all tests in this describe block
@@ -423,6 +458,7 @@ test.beforeEach(async ({ page }) => {
 ```
 
 ### Skip Tests Conditionally
+
 ```javascript
 test('desktop only feature', async ({ page, browserName }) => {
   test.skip(browserName === 'webkit', 'Not supported on Safari');
@@ -435,6 +471,7 @@ test('desktop only feature', async ({ page, browserName }) => {
 ### GitHub Actions Workflow
 
 The CI pipeline (`.github/workflows/ci.yml`) runs E2E tests with:
+
 - **Retries**: 2 automatic retries on failure
 - **Parallel Execution**: Disabled in CI (1 worker) for stability
 - **Browser Installation**: Automatic via `playwright install --with-deps`
@@ -450,6 +487,7 @@ The CI pipeline (`.github/workflows/ci.yml`) runs E2E tests with:
 ### Local CI Simulation
 
 To run tests exactly as CI does:
+
 ```bash
 CI=true npm run test:e2e -- --retries=2 --workers=1
 ```

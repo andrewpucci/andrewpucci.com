@@ -15,17 +15,20 @@ Whenever possible, aim for solutions that balance clarity with performance, fact
 ## JavaScript and Node.js Conventions
 
 ### ES Modules
+
 - Use ES module syntax (`import`/`export`) throughout the codebase
 - Always include `.js` extensions in import statements
 - Use named exports for utilities and functions
 - Provide default exports for backward compatibility when appropriate
 
 ### Async/Await
+
 - Prefer `async`/`await` over Promise chains for better readability
 - Always mark functions as `async` when they return Promises
 - Handle errors with try/catch blocks in async functions
 
 ### Function Declarations
+
 - Use `const` with arrow functions for utility functions
 - Use named function expressions for configuration functions (e.g., Eleventy config)
 - Keep functions small and focused on a single responsibility
@@ -54,6 +57,7 @@ Write straightforward code that conveys its intent clearly. Minimize abstraction
 ## Documentation Standards
 
 ### JSDoc Requirements
+
 - Add file-level JSDoc to every module with `@file`, `@description`, and `@module` tags
 - Document all exported functions with:
   - `@param` for each parameter with type and description
@@ -64,6 +68,7 @@ Write straightforward code that conveys its intent clearly. Minimize abstraction
 - Use `@description` to explain the "why" not just the "what"
 
 ### Inline Comments
+
 - Add inline comments for:
   - Complex logic that isn't immediately obvious
   - Configuration options and their purpose
@@ -74,6 +79,7 @@ Write straightforward code that conveys its intent clearly. Minimize abstraction
 - Keep comments concise but informative
 
 ### Example Format
+
 ```javascript
 /**
  * @file Brief description of the file's purpose
@@ -94,17 +100,20 @@ Write straightforward code that conveys its intent clearly. Minimize abstraction
 ## Testing Standards
 
 ### Test Organization
+
 - Use `describe` blocks to group related tests
 - Use descriptive test names that explain the expected behavior
 - Follow the Arrange-Act-Assert pattern
 - One assertion per test when possible
 
 ### Test File Structure
+
 - Add file-level JSDoc with `@file` and `@module` tags
 - Add JSDoc to `describe` blocks explaining what's being tested
 - Add JSDoc to complex test cases explaining the test strategy
 
 ### Naming Conventions
+
 - Test files: `*.test.js` for unit tests, `*.spec.js` for E2E tests
 - Test descriptions: Use "should" statements (e.g., "should format date correctly")
 - Avoid generic names like "works" or "is correct"
@@ -112,18 +121,21 @@ Write straightforward code that conveys its intent clearly. Minimize abstraction
 ## Eleventy Static Site Generator
 
 ### Configuration
+
 - Register plugins before filters and shortcodes
 - Group related configurations together (filters, shortcodes, collections)
 - Add inline comments explaining each plugin's purpose
 - Document collection sorting logic
 
 ### Filters and Shortcodes
+
 - Filters should be pure functions when possible
 - Async shortcodes must be registered with `addNunjucksAsyncShortcode`
 - Always validate required parameters (e.g., alt text for images)
 - Throw descriptive errors for missing required parameters
 
 ### File Organization
+
 - Utility functions in `src/utils/`
 - Content in `src/site/`
 - Templates in `src/site/_layouts/`
@@ -196,12 +208,14 @@ Maintain clarity in your codebase; address performance bottlenecks only after co
 Follow best practices for handling external resources. For example, use `with` statements where applicable.
 
 ### Environment-Specific Optimizations
+
 - Only minify in production environments (check `NODE_ENV`)
 - Use lazy loading for images (`loading="lazy"`)
 - Generate multiple image sizes for responsive images
 - Enable asset revisioning for cache busting
 
 ### Build Performance
+
 - Use passthrough copy for static assets that don't need processing
 - Configure Sass to suppress deprecation warnings from dependencies
 - Enable source maps in development, disable in production
@@ -239,12 +253,14 @@ Commit Prefixes:
 ## Configuration Files
 
 ### Inline Documentation
+
 - Add comments for every configuration option
 - Explain the purpose and impact of each setting
 - Document environment-specific settings (CI vs local)
 - Include links to official documentation for complex options
 
 ### Structure
+
 - Group related settings together
 - Use consistent comment alignment for readability
 - Explain rationale for non-obvious choices (e.g., "single worker in CI for stability")
@@ -252,12 +268,14 @@ Commit Prefixes:
 ## Security and Accessibility
 
 ### Security
+
 - Validate and sanitize user inputs
 - Use Content Security Policy headers
 - Obfuscate sensitive information (e.g., email addresses)
 - Follow security plugin recommendations (eslint-plugin-security)
 
 ### Accessibility
+
 - Always provide alt text for images (throw error if missing)
 - Use semantic HTML elements
 - Include ARIA labels for interactive elements
@@ -267,17 +285,20 @@ Commit Prefixes:
 ## Project-Specific Patterns
 
 ### Bootstrap Integration
+
 - Use Bootstrap 5 classes for styling
 - Leverage Bootstrap components (cards, modals, etc.)
 - Use stretched-link for clickable card areas
 - Follow Bootstrap's responsive breakpoints
 
 ### Image Handling
+
 - Use @11ty/eleventy-img for all images
 - Generate WebP and JPEG formats
 - Provide multiple widths for responsive images
 - Include width and height attributes to prevent layout shift
 
 ### Backward Compatibility
+
 - Export both named and default exports from utility modules
 - Maintain existing API signatures when refactoring

@@ -26,22 +26,22 @@ const minify = async (content, outputPath) => {
   // Only minify if we have an output path
   if (outputPath) {
     const ext = extname(outputPath);
-    
+
     switch (ext) {
       case '.html':
         // Minify HTML files (removes whitespace, comments, etc.)
         return htmlmin(content, outputPath);
-      
+
       case '.js':
         // Minify JavaScript files (uses Terser for optimization)
         return jsmin(content, outputPath);
-      
+
       default:
         // Return content unchanged for other file types
         return content;
     }
   }
-  
+
   // Return content unchanged if no output path provided
   return content;
 };
