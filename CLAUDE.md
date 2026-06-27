@@ -57,12 +57,12 @@ Four resume collections are auto-created in `.eleventy.js` from folder name: `wo
 
 ### Custom utilities (`src/utils/`)
 
-| File | Purpose |
-|------|---------|
-| `filters.js` | Nunjucks filters: `dateToFormat` (Luxon), `obfuscate` (HTML entities for emails), `stripSpaces`, `stripProtocol` |
-| `async-shortcodes.js` | Nunjucks async shortcodes: `image`, `card`, `expandableImage` |
-| `image.js` | `@11ty/eleventy-img` wrapper generating WebP + JPEG at multiple widths |
-| `minify.js` | Eleventy transform calling `min-html.js` / `min-js.js` |
+| File                  | Purpose                                                                                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `filters.js`          | Nunjucks filters: `dateToFormat` (Luxon), `obfuscate` (HTML entities for emails), `stripSpaces`, `stripProtocol` |
+| `async-shortcodes.js` | Nunjucks async shortcodes: `image`, `card`, `expandableImage`                                                    |
+| `image.js`            | `@11ty/eleventy-img` wrapper generating WebP + JPEG at multiple widths                                           |
+| `minify.js`           | Eleventy transform calling `min-html.js` / `min-js.js`                                                           |
 
 When adding a filter or shortcode, implement it in the appropriate `src/utils/` file and register it in `.eleventy.js`.
 
