@@ -1,5 +1,5 @@
 ---
-title: "From Red to Green and the Confusion Between: An Exploration of Color Accessibility"
+title: 'From Red to Green and the Confusion Between: An Exploration of Color Accessibility'
 organization: DESCO
 organizationUrl: https://thisisdesco.com/
 location: Sacramento, CA

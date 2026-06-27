@@ -9,8 +9,8 @@ vi.mock('@11ty/eleventy-img', () => ({
     const { widths, formats } = options;
     const metadata = {};
 
-    formats.forEach(format => {
-      metadata[format] = widths.map(width => ({
+    formats.forEach((format) => {
+      metadata[format] = widths.map((width) => ({
         sourceType: `image/${format}`,
         srcset: width ? `${src}?w=${width}&format=${format} ${width}w` : `${src}?format=${format}`,
         url: width ? `${src}?w=${width}&format=${format}` : `${src}?format=${format}`,
@@ -20,7 +20,7 @@ vi.mock('@11ty/eleventy-img', () => ({
     });
 
     return metadata;
-  })
+  }),
 }));
 
 describe('image utility', () => {
@@ -30,7 +30,7 @@ describe('image utility', () => {
 
   it('should generate responsive image markup with default parameters', async () => {
     const result = await image('test.jpg', 'Test alt');
-    
+
     expect(result).toContain('<picture>');
     expect(result).toContain('<source type="image/webp"');
     expect(result).toContain('<source type="image/jpeg"');
@@ -45,15 +45,20 @@ describe('image utility', () => {
   });
 
   it('should use the provided sizes attribute', async () => {
-    const result = await image('test.jpg', 'Test alt', 'test-class', '(max-width: 600px) 100vw, 50vw');
+    const result = await image(
+      'test.jpg',
+      'Test alt',
+      'test-class',
+      '(max-width: 600px) 100vw, 50vw'
+    );
     expect(result).toContain('sizes="(max-width: 600px) 100vw, 50vw"');
   });
 
   it('should use the provided widths', async () => {
     const customWidths = [300, 600, 900];
     const result = await image('test.jpg', 'Test alt', 'test-class', '100vw', customWidths);
-    
-    customWidths.forEach(width => {
+
+    customWidths.forEach((width) => {
       expect(result).toContain(`w=${width}`);
     });
   });

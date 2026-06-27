@@ -66,11 +66,13 @@ Tests are configured in `vitest.config.js`:
 ## Test Conventions
 
 ### File Naming
+
 - Test files use the pattern `*.test.js`
 - Test filenames should match or describe what they test
 - Keep test files in the `tests/unit/` directory
 
 ### Test Structure
+
 ```javascript
 import { describe, it, expect } from 'vitest';
 import { functionToTest } from '../../src/utils/filters.js';
@@ -90,23 +92,25 @@ describe('functionToTest', () => {
 ### Best Practices
 
 1. **Descriptive Test Names**: Use clear, descriptive names that explain what is being tested
+
    ```javascript
    // Good
    it('should format date as MM/DD/YYYY when given a valid date string', () => {...});
-   
+
    // Bad
    it('works', () => {...});
    ```
 
 2. **Arrange-Act-Assert Pattern**: Structure tests clearly
+
    ```javascript
    it('should calculate total price', () => {
      // Arrange
      const items = [{ price: 10 }, { price: 20 }];
-     
+
      // Act
      const total = calculateTotal(items);
-     
+
      // Assert
      expect(total).toBe(30);
    });
@@ -118,10 +122,10 @@ describe('functionToTest', () => {
 
 5. **Use Appropriate Matchers**: Choose the right assertion for clarity
    ```javascript
-   expect(value).toBe(5);           // Strict equality
-   expect(obj).toEqual({ a: 1 });   // Deep equality
-   expect(arr).toContain('item');   // Array contains
-   expect(fn).toThrow();            // Function throws
+   expect(value).toBe(5); // Strict equality
+   expect(obj).toEqual({ a: 1 }); // Deep equality
+   expect(arr).toContain('item'); // Array contains
+   expect(fn).toThrow(); // Function throws
    ```
 
 ## Writing New Tests
@@ -129,17 +133,20 @@ describe('functionToTest', () => {
 ### Step-by-Step Guide
 
 1. **Create a test file**
+
    ```bash
    touch tests/unit/my-feature.test.js
    ```
 
 2. **Import dependencies**
+
    ```javascript
    import { describe, it, expect } from 'vitest';
    import { myFunction } from '../../src/utils/my-feature.js';
    ```
 
 3. **Write test cases**
+
    ```javascript
    describe('myFunction', () => {
      it('should handle normal input', () => {
@@ -186,12 +193,14 @@ it('should use mocked function', () => {
 ## Coverage Requirements
 
 The project maintains a minimum coverage threshold of 80% for:
+
 - **Lines**: 80%
 - **Functions**: 80%
 - **Branches**: 80%
 - **Statements**: 80%
 
 To check coverage:
+
 ```bash
 npm run test:coverage
 ```
@@ -201,6 +210,7 @@ Coverage reports are generated in the `coverage/` directory.
 ## Debugging Tests
 
 ### Console Logging
+
 ```javascript
 it('should debug output', () => {
   const result = myFunction(input);
@@ -210,6 +220,7 @@ it('should debug output', () => {
 ```
 
 ### Running Specific Tests
+
 ```javascript
 // Run only this test
 it.only('should run only this test', () => {...});
@@ -219,13 +230,17 @@ it.skip('should skip this test', () => {...});
 ```
 
 ### Watch Mode
+
 Watch mode automatically re-runs tests when files change:
+
 ```bash
 npm run test:watch
 ```
 
 ### Interactive UI
+
 Vitest UI provides a visual interface for debugging:
+
 ```bash
 npm run test:ui
 ```
@@ -233,6 +248,7 @@ npm run test:ui
 ## Common Testing Patterns
 
 ### Testing Filters
+
 ```javascript
 import { dateToFormat } from '../../src/utils/filters.js';
 
@@ -245,6 +261,7 @@ describe('dateToFormat', () => {
 ```
 
 ### Testing Shortcodes
+
 ```javascript
 import { image } from '../../src/utils/async-shortcodes.js';
 
@@ -258,6 +275,7 @@ describe('image shortcode', () => {
 ```
 
 ### Testing Transformations
+
 ```javascript
 import minify from '../../src/utils/minify.js';
 
@@ -273,16 +291,19 @@ describe('minify transform', () => {
 ## Troubleshooting
 
 ### Tests Not Running
+
 - Ensure test files match the `*.test.js` pattern
 - Check that test files are not in the `tests/e2e/` directory (excluded from Vitest)
-- Verify Node.js version matches project requirements (22.x)
+- Verify Node.js version matches project requirements (24.x)
 
 ### Import Errors
+
 - Ensure you're using ES modules syntax (`import`/`export`)
 - Check that file paths are correct and include `.js` extensions
 - Verify `package.json` has `"type": "module"`
 
 ### Coverage Not Meeting Threshold
+
 - Run `npm run test:coverage` to see detailed coverage report
 - Add tests for uncovered lines/branches
 - Check `vitest.config.js` for coverage exclusions

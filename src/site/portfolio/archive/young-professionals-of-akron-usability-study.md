@@ -195,6 +195,7 @@ In general, the participants were able to successfully complete the three tasks.
 </table>
 
 Although participants were generally successful in completing each of the tasks, the difficulty with task 1 is discernable when the amount of time spent on the tasks is viewed. This table indicates the amount of time spent on each task by each participant.
+
 <table>
   <tr>
     <th>&nbsp;</th>
@@ -266,6 +267,7 @@ While there were a small number of participants in our study, some common trends
 The biggest barrier to successful completion of this task can be easily identified as a labeling issue in the global navigation bar. Most participants did not easily identify that descriptions and photos of past events would be located in the section labeled The Library. All of the participants first looked in other sections of the site before trying The Library section, which was usually attempted in desperation.
 
 Here are the paths that each participant followed to find the descriptions and photos of past events.
+
 <table>
   <tr>
     <th>Participant 1</th>

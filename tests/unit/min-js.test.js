@@ -4,7 +4,7 @@ import { minify as terserMinify } from 'terser';
 
 // Mock the terser module
 vi.mock('terser', () => ({
-  minify: vi.fn().mockResolvedValue({ code: 'minified:code' })
+  minify: vi.fn().mockResolvedValue({ code: 'minified:code' }),
 }));
 
 describe('min-js', () => {

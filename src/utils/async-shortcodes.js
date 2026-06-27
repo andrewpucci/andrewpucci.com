@@ -21,7 +21,8 @@ import * as img from './image.js';
  * @description Uses @11ty/eleventy-img to generate optimized, responsive images
  * with multiple sizes and formats (WebP, JPEG).
  */
-export const image = async (imgSrc, imgAlt, imgCls, imgSizes, imgWidths) => img.image(imgSrc, imgAlt, imgCls, imgSizes, imgWidths);
+export const image = async (imgSrc, imgAlt, imgCls, imgSizes, imgWidths) =>
+  img.image(imgSrc, imgAlt, imgCls, imgSizes, imgWidths);
 
 /**
  * Generates a Bootstrap card component with an image
@@ -46,10 +47,19 @@ export const image = async (imgSrc, imgAlt, imgCls, imgSizes, imgWidths) => img.
  * @description Creates a Bootstrap 5 card with a responsive image, title, content,
  * and a "Read more" link with a stretched-link for the entire card to be clickable.
  */
-export const card = async (cardTitle, cardContent, cardURL, imgSrc, imgAlt, imgCls, imgSizes, imgWidths) => {
+export const card = async (
+  cardTitle,
+  cardContent,
+  cardURL,
+  imgSrc,
+  imgAlt,
+  imgCls,
+  imgSizes,
+  imgWidths
+) => {
   // Generate optimized responsive image for the card
   const cardImg = await img.image(imgSrc, imgAlt, imgCls, imgSizes, imgWidths);
-  
+
   return `<div class="card">
     ${cardImg}
     <div class="card-body">
@@ -77,8 +87,12 @@ export const card = async (cardTitle, cardContent, cardURL, imgSrc, imgAlt, imgC
  */
 export const expandableImage = async (imgName, imgSrc, imgAlt) => {
   // Generate thumbnail image (optimized for quick loading)
-  const thumbImage = await img.image(imgSrc, imgAlt, 'img-fluid img-thumbnail', '629', [629, 1258, null]);
-  
+  const thumbImage = await img.image(imgSrc, imgAlt, 'img-fluid img-thumbnail', '629', [
+    629,
+    1258,
+    null,
+  ]);
+
   // Generate full-size image for modal (higher quality)
   const fullImage = await img.image(imgSrc, '', 'img-fluid');
 
@@ -104,5 +118,5 @@ export const expandableImage = async (imgName, imgSrc, imgAlt) => {
 export default {
   image,
   card,
-  expandableImage
+  expandableImage,
 };

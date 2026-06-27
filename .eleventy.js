@@ -19,36 +19,37 @@ import minify from './src/utils/minify.js';
  * @param {Object} eleventyConfig - The Eleventy configuration object
  * @returns {Object} Configuration options for Eleventy
  */
-export default function(eleventyConfig) {
+export default function (eleventyConfig) {
   // Add revisioning plugin for cache busting
   // Adds unique hashes to asset filenames to prevent stale caches
   eleventyConfig.addPlugin(pluginRev);
-  
+
   // Configure and add Sass plugin for stylesheet processing
   // Compiles Sass to CSS, adds vendor prefixes, and minifies output
   eleventyConfig.addPlugin(eleventySass, {
     sass: {
-      loadPaths: ["node_modules"],   // Allow importing from node_modules (e.g., Bootstrap)
-      style: 'compressed',           // Minify CSS output
-      sourceMap: true,               // Generate source maps for debugging
-      quietDeps: true                // Suppress deprecation warnings from dependencies
+      loadPaths: ['node_modules'], // Allow importing from node_modules (e.g., Bootstrap)
+      style: 'compressed', // Minify CSS output
+      sourceMap: true, // Generate source maps for debugging
+      quietDeps: true, // Suppress deprecation warnings from dependencies
+      silenceDeprecations: ['import'], // Keep current @import setup without log spam
     },
     postcss: postcss([
-      autoprefixer(),                // Add vendor prefixes for browser compatibility
-      cssnano({ preset: 'default' }) // Further optimize and minify CSS
+      autoprefixer(), // Add vendor prefixes for browser compatibility
+      cssnano({ preset: 'default' }), // Further optimize and minify CSS
     ]),
     rev: true, // Enable asset revisioning for cache busting
   });
 
   // Register custom filters for use in templates
-  eleventyConfig.addFilter('dateToFormat', dateToFormat);     // Format dates with Luxon
-  eleventyConfig.addFilter('obfuscate', obfuscate);           // Obfuscate strings (e.g., emails)
-  eleventyConfig.addFilter('stripSpaces', stripSpaces);       // Remove all whitespace
-  eleventyConfig.addFilter('stripProtocol', stripProtocol);   // Remove protocol from URLs
+  eleventyConfig.addFilter('dateToFormat', dateToFormat); // Format dates with Luxon
+  eleventyConfig.addFilter('obfuscate', obfuscate); // Obfuscate strings (e.g., emails)
+  eleventyConfig.addFilter('stripSpaces', stripSpaces); // Remove all whitespace
+  eleventyConfig.addFilter('stripProtocol', stripProtocol); // Remove protocol from URLs
 
   // Register async shortcodes for use in Nunjucks templates
-  eleventyConfig.addNunjucksAsyncShortcode('image', image);                 // Responsive images
-  eleventyConfig.addNunjucksAsyncShortcode('card', card);                   // Bootstrap cards
+  eleventyConfig.addNunjucksAsyncShortcode('image', image); // Responsive images
+  eleventyConfig.addNunjucksAsyncShortcode('card', card); // Bootstrap cards
   eleventyConfig.addNunjucksAsyncShortcode('expandableImage', expandableImage); // Modal images
 
   // Create collections for resume entries
@@ -71,10 +72,7 @@ export default function(eleventyConfig) {
         return 0;
       };
 
-      return collection
-        .getAllSorted()
-        .filter(inEntryFolder)
-        .sort(byStartDate);
+      return collection.getAllSorted().filter(inEntryFolder).sort(byStartDate);
     });
   });
 
@@ -83,11 +81,11 @@ export default function(eleventyConfig) {
   eleventyConfig.addTransform('minify', minify);
 
   // Copy static assets directly to output without processing
-  eleventyConfig.addPassthroughCopy('./src/site/assets/files/*');          // PDFs, documents
-  eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*');    // Web fonts
+  eleventyConfig.addPassthroughCopy('./src/site/assets/files/*'); // PDFs, documents
+  eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*'); // Web fonts
   eleventyConfig.addPassthroughCopy('./src/site/assets/favicon-32x32.png'); // Favicon
-  eleventyConfig.addPassthroughCopy('./src/site/humans.txt');              // humans.txt
-  eleventyConfig.addPassthroughCopy('./src/site/robots.txt');              // robots.txt
+  eleventyConfig.addPassthroughCopy('./src/site/humans.txt'); // humans.txt
+  eleventyConfig.addPassthroughCopy('./src/site/robots.txt'); // robots.txt
 
   return {
     dir: {
@@ -100,4 +98,4 @@ export default function(eleventyConfig) {
     htmlTemplateEngine: 'njk',
     markdownTemplateEngine: 'njk',
   };
-};
+}

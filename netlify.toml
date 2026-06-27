@@ -1,24 +1,24 @@
 [[headers]]
-  for = "/*"
-  [headers.values]
-    Permissions-Policy = "interest-cohort=()"
-    cache-control = "public,max-age=60"
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "SAMEORIGIN"
-    Referrer-Policy = "no-referrer-when-downgrade"
-    Report-To = '''{
+for = "/*"
+[headers.values]
+Permissions-Policy = "interest-cohort=()"
+cache-control = "public,max-age=60"
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "SAMEORIGIN"
+Referrer-Policy = "no-referrer-when-downgrade"
+Report-To = '''{
       "group":"default",
       "max_age":31536000,
       "endpoints":[
         {"url":"https://andrewpucci.report-uri.com/a/d/g"}
       ],
       "include_subdomains":true}'''
-    NEL = '''{
+NEL = '''{
       "report_to":"default",
       "max_age":31536000,
       "include_subdomains":true
     }'''
-    Content-Security-Policy = '''
+Content-Security-Policy = '''
       default-src 'none';
       script-src 'self';
       style-src 'self';
@@ -38,12 +38,12 @@
       report-uri https://andrewpucci.report-uri.com/r/d/csp/enforce;'''
 
 [[headers]]
-  for = "/*.*"
-  [headers.values]
-  cache-control = "public,max-age=360000"
+for = "/*.*"
+[headers.values]
+cache-control = "public,max-age=360000"
 
 [[redirects]]
-  from = "/shotplot"
-  to = "https://shotplot.app"
-  status = 301
-  force = true
+from = "/shotplot"
+to = "https://shotplot.app"
+status = 301
+force = true
