@@ -21,12 +21,12 @@ export const dateToFormat = (date, format) => {
   try {
     // If date is not a valid date, try to create a date from it
     const dateObj = date instanceof Date && !isNaN(date) ? date : new Date(date);
-    
+
     // Check if the date is valid
     if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
       return 'Invalid DateTime';
     }
-    
+
     return DateTime.fromJSDate(dateObj, { zone: 'utc' }).toFormat(String(format));
   } catch {
     return 'Invalid DateTime';
@@ -47,7 +47,7 @@ export const obfuscate = (str) => {
   if (typeof str !== 'string') {
     return '';
   }
-  
+
   const chars = [];
   // Use a for...of loop to safely iterate over string characters
   for (const char of str) {
@@ -89,5 +89,5 @@ export default {
   dateToFormat,
   obfuscate,
   stripSpaces,
-  stripProtocol
+  stripProtocol,
 };

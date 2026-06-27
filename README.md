@@ -8,11 +8,11 @@ This is the public portfolio site for Andrew Pucci, a UX Designer with developme
 - **Frontend Framework**: [Bootstrap](https://getbootstrap.com/)
 - **Styling**: Sass with PostCSS (Autoprefixer, cssnano)
 - **Icons**: Font Awesome
-- **Testing**: 
+- **Testing**:
   - Unit Tests: [Vitest](https://vitest.dev/)
   - E2E Tests: [Playwright](https://playwright.dev/)
 - **Deployment**: [Netlify](https://www.netlify.com/)
-- **Node Version**: 22.x (see `.nvmrc` and `package.json` for exact versions)
+- **Node Version**: 24.x LTS (see `.tool-versions` and `package.json` for exact versions)
 
 ## Project Structure
 
@@ -39,32 +39,36 @@ andrewpucci.com/
 
 ### Prerequisites
 
-- Node.js 22.x or higher (use `nvm use` to switch to the correct version)
+- Node.js 24.x or higher (use `asdf install` to switch to the version in `.tool-versions`)
 - npm 8.x or higher
 
 ### Installation
 
 1. **Clone the repository** and navigate to the project directory:
+
    ```bash
    git clone https://github.com/andrewpucci/andrewpucci.com.git
    cd andrewpucci.com
    ```
 
-2. **Install Node.js** (if using nvm):
+2. **Install Node.js** (using asdf):
+
    ```bash
-   nvm use
+   asdf install
    ```
 
 3. **Install dependencies**:
+
    ```bash
    npm ci
    ```
 
 4. **Set up environment variables**:
+
    ```bash
    cp .env-sample .env
    ```
-   
+
    Edit `.env` and set `ROOT_URL` to your local or deployed URL.
 
 ### Development
@@ -94,21 +98,25 @@ The built site will be in the `dist/` directory.
 Unit tests cover custom Eleventy filters, shortcodes, and utility functions.
 
 Run all unit tests:
+
 ```bash
 npm test
 ```
 
 Run tests in watch mode:
+
 ```bash
 npm run test:watch
 ```
 
 Generate coverage report:
+
 ```bash
 npm run test:coverage
 ```
 
 Run tests with UI:
+
 ```bash
 npm run test:ui
 ```
@@ -120,16 +128,19 @@ See [tests/unit/README.md](tests/unit/README.md) for more details.
 E2E tests verify critical user flows and page content using Playwright.
 
 Run all E2E tests:
+
 ```bash
 npm run test:e2e
 ```
 
 Run E2E tests in UI mode (for debugging):
+
 ```bash
 npm run test:e2e:ui
 ```
 
 View test report:
+
 ```bash
 npm run test:e2e:report
 ```
@@ -152,17 +163,19 @@ The site is automatically deployed to Netlify when changes are pushed to the `ma
 
 - **Build Command**: `npm run prod`
 - **Publish Directory**: `dist`
-- **Node Version**: 22.x (specified in `.nvmrc`)
+- **Node Version**: 24.x (specified in `.tool-versions`)
 
 See `netlify.toml` for detailed configuration.
 
 ## CI/CD
 
 GitHub Actions runs automated tests on:
+
 - All pull requests to `main`
 - All pushes to `main`
 
 The CI pipeline:
+
 1. Installs dependencies
 2. Runs unit tests
 3. Runs E2E tests with retries
@@ -173,7 +186,7 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml) for the full workflow.
 ## Key Features
 
 - **Responsive Design**: Mobile-first design using Bootstrap 5
-- **Performance Optimized**: 
+- **Performance Optimized**:
   - Asset revisioning for cache busting
   - Image optimization with `@11ty/eleventy-img`
   - HTML/CSS/JS minification

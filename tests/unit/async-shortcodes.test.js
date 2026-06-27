@@ -4,7 +4,7 @@ import * as imgUtils from '../../src/utils/image.js';
 
 // Mock the image module
 vi.mock('../../src/utils/image.js', () => ({
-  image: vi.fn().mockResolvedValue('<img src="mocked.jpg" alt="mocked">')
+  image: vi.fn().mockResolvedValue('<img src="mocked.jpg" alt="mocked">'),
 }));
 
 describe('async-shortcodes', () => {
@@ -46,7 +46,7 @@ describe('async-shortcodes', () => {
         '100vw',
         [100, 200]
       );
-      
+
       expect(result).toContain('Test Title');
       expect(result).toContain('Test content');
       expect(result).toContain('href="/test-url"');
@@ -57,15 +57,15 @@ describe('async-shortcodes', () => {
   describe('expandableImage', () => {
     it('should generate an expandable image component', async () => {
       const result = await expandableImage('test', 'test.jpg', 'Test image');
-      
+
       // Should call image twice - once for thumbnail, once for full image
       expect(imgUtils.image).toHaveBeenCalledTimes(2);
-      
+
       // Check for modal structure
       expect(result).toContain('data-bs-toggle="modal"');
       expect(result).toContain('id="test-modal"');
       expect(result).toContain('modal-fullscreen');
-      
+
       // Should include the alt text in the modal title
       expect(result).toContain('Test image');
     });

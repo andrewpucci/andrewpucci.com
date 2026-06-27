@@ -24,7 +24,7 @@ eleventyExcludeFromCollections: true
 
 ## Challenge
 
-The Carnation City Mall website was not supplying critical information needed by its users. As part of a graduate school  study, my team was assigned to determine how the site could be of better use to their shoppers.
+The Carnation City Mall website was not supplying critical information needed by its users. As part of a graduate school study, my team was assigned to determine how the site could be of better use to their shoppers.
 
 ## Approach
 
@@ -33,6 +33,7 @@ The team first conducted a competitive analysis to get an understanding of how o
 ## Outcome
 
 The blueprints were used to build navigation models into wireframes for a reconstructed Carnation City Mall website.
+
 <div class="embed-responsive embed-responsive-4by3 mb-3">
   <iframe class="embed-responsive-item" src="https://docs.google.com/presentation/d/1dozqqSSYgg2DRtXlqsWifOQWcIqSQKXZsPMYR-oQ0YI/embed?start=true&loop=true&delayms=3000" frameborder="0" width="1365" height="1053" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true" title="Carnation City Mall website redesign presentation"></iframe>
 </div>

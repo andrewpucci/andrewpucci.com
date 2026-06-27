@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "semi": true,
+  "printWidth": 100,
+  "sortPackageJson": false,
+  "ignorePatterns": ["node_modules/", "dist/", "coverage/", "playwright-report/", "test-results/"]
+}

@@ -2,7 +2,6 @@ import Image from '@11ty/eleventy-img';
 
 // Perform image transformations
 export const image = async (src, alt, cls, sizes = '100vw', widths = [null]) => {
-
   if (alt === undefined) {
     throw new Error(`Missing \`alt\` on responsive image from: ${src}`);
   }
@@ -17,7 +16,12 @@ export const image = async (src, alt, cls, sizes = '100vw', widths = [null]) => 
   const [lowsrc] = metadata.jpeg;
 
   return `<picture>
-    ${Object.values(metadata).map((imageFormat) => `  <source type="${imageFormat[0].sourceType}" srcset="${imageFormat.map((entry) => entry.srcset).join(', ')}" sizes="${sizes}">`).join('\n')}
+    ${Object.values(metadata)
+      .map(
+        (imageFormat) =>
+          `  <source type="${imageFormat[0].sourceType}" srcset="${imageFormat.map((entry) => entry.srcset).join(', ')}" sizes="${sizes}">`
+      )
+      .join('\n')}
       <img
         src="${lowsrc.url}"
         width="${lowsrc.width}"
