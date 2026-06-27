@@ -37,7 +37,7 @@ export default {
         // Configuration files
         '**/*.config.*',
         '.eslintrc.*',
-        '.prettierrc.*',
+        '.oxfmtrc.*',
         'postcss.config.*',
         'netlify.toml',
 

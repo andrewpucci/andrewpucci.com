@@ -26,8 +26,8 @@
     "lint:fix": "npm run lint:oxlint:fix && npm run format",
     "lint:oxlint": "oxlint .",
     "lint:oxlint:fix": "oxlint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "lint:staged": "lint-staged",
     "updatedb": "npx update-browserslist-db@latest",
     "playwright:install": "npx playwright install"
@@ -64,9 +64,9 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-security": "^4.0.0",
     "happy-dom": "^20.8.9",
+    "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
     "postcss": "^8.5.15",
-    "prettier": "^3.9.0",
     "rimraf": "^6.1.3",
     "sass": "^1.101.0",
     "vitest": "^4.1.9"
