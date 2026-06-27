@@ -115,15 +115,6 @@
         "import/no-duplicates": "error"
       },
       "jsPlugins": ["eslint-plugin-security"],
-      "globals": {
-        "AudioWorkletGlobalScope": "readonly",
-        "AudioWorkletProcessor": "readonly",
-        "currentFrame": "readonly",
-        "currentTime": "readonly",
-        "registerProcessor": "readonly",
-        "sampleRate": "readonly",
-        "WorkletGlobalScope": "readonly"
-      },
       "env": {
         "es2026": true,
         "browser": true,

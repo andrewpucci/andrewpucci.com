@@ -12,7 +12,7 @@ This is the public portfolio site for Andrew Pucci, a UX Designer with developme
   - Unit Tests: [Vitest](https://vitest.dev/)
   - E2E Tests: [Playwright](https://playwright.dev/)
 - **Deployment**: [Netlify](https://www.netlify.com/)
-- **Node Version**: 22.x (see `.nvmrc` and `package.json` for exact versions)
+- **Node Version**: 24.x (see `.tool-versions` and `package.json` for exact versions)
 
 ## Project Structure
 
@@ -39,7 +39,7 @@ andrewpucci.com/
 
 ### Prerequisites
 
-- Node.js 22.x or higher (use `nvm use` to switch to the correct version)
+- Node.js 24.x or higher (use `mise install` or `asdf install` to switch to the version in `.tool-versions`)
 - npm 8.x or higher
 
 ### Installation
@@ -51,10 +51,11 @@ andrewpucci.com/
    cd andrewpucci.com
    ```
 
-2. **Install Node.js** (if using nvm):
+2. **Install Node.js** (if using mise or asdf):
 
    ```bash
-   nvm use
+   mise install
+   # or: asdf install
    ```
 
 3. **Install dependencies**:
@@ -163,7 +164,7 @@ The site is automatically deployed to Netlify when changes are pushed to the `ma
 
 - **Build Command**: `npm run prod`
 - **Publish Directory**: `dist`
-- **Node Version**: 22.x (specified in `.nvmrc`)
+- **Node Version**: 24.x (specified in `.tool-versions`)
 
 See `netlify.toml` for detailed configuration.
 
