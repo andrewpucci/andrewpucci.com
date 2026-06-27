@@ -12,7 +12,7 @@ This is the public portfolio site for Andrew Pucci, a UX Designer with developme
   - Unit Tests: [Vitest](https://vitest.dev/)
   - E2E Tests: [Playwright](https://playwright.dev/)
 - **Deployment**: [Netlify](https://www.netlify.com/)
-- **Node Version**: 24.x (see `.tool-versions` and `package.json` for exact versions)
+- **Node Version**: 24.x LTS (see `.tool-versions` and `package.json` for exact versions)
 
 ## Project Structure
 
@@ -39,7 +39,7 @@ andrewpucci.com/
 
 ### Prerequisites
 
-- Node.js 24.x or higher (use `mise install` or `asdf install` to switch to the version in `.tool-versions`)
+- Node.js 24.x or higher (use `asdf install` to switch to the version in `.tool-versions`)
 - npm 8.x or higher
 
 ### Installation
@@ -51,11 +51,10 @@ andrewpucci.com/
    cd andrewpucci.com
    ```
 
-2. **Install Node.js** (if using mise or asdf):
+2. **Install Node.js** (using asdf):
 
    ```bash
-   mise install
-   # or: asdf install
+   asdf install
    ```
 
 3. **Install dependencies**:

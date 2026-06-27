@@ -16,7 +16,7 @@ tests/e2e/
 
 ### Prerequisites
 
-- Node.js 16+
+- Node.js 24.x or higher
 - npm 8+
 - Playwright browsers installed (`npx playwright install`)
 

@@ -294,7 +294,7 @@ describe('minify transform', () => {
 
 - Ensure test files match the `*.test.js` pattern
 - Check that test files are not in the `tests/e2e/` directory (excluded from Vitest)
-- Verify Node.js version matches project requirements (22.x)
+- Verify Node.js version matches project requirements (24.x)
 
 ### Import Errors
 
