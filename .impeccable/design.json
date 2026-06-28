@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-28T00:00:00Z",
+  "title": "Design System: andrewpucci.com",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Precision Pink",
+        "canonical": "oklch(0.55 0.28 350)",
+        "tonalRamp": [
+          "oklch(0.15 0.28 350)",
+          "oklch(0.25 0.28 350)",
+          "oklch(0.35 0.28 350)",
+          "oklch(0.45 0.28 350)",
+          "oklch(0.55 0.28 350)",
+          "oklch(0.65 0.20 350)",
+          "oklch(0.78 0.12 350)",
+          "oklch(0.93 0.05 350)"
+        ]
+      },
+      "body-bg": {
+        "role": "neutral",
+        "displayName": "Body Background",
+        "canonical": "oklch(0.98 0.003 100)",
+        "tonalRamp": [
+          "oklch(0.35 0.003 100)",
+          "oklch(0.48 0.003 100)",
+          "oklch(0.60 0.003 100)",
+          "oklch(0.70 0.003 100)",
+          "oklch(0.80 0.003 100)",
+          "oklch(0.88 0.003 100)",
+          "oklch(0.94 0.003 100)",
+          "oklch(0.98 0.003 100)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface White",
+        "canonical": "oklch(1.0 0 0)",
+        "tonalRamp": [
+          "oklch(0.32 0 0)",
+          "oklch(0.45 0 0)",
+          "oklch(0.58 0 0)",
+          "oklch(0.68 0 0)",
+          "oklch(0.78 0 0)",
+          "oklch(0.87 0 0)",
+          "oklch(0.94 0 0)",
+          "oklch(1.0 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.18 0.008 250)",
+        "tonalRamp": [
+          "oklch(0.08 0.008 250)",
+          "oklch(0.18 0.008 250)",
+          "oklch(0.28 0.008 250)",
+          "oklch(0.38 0.008 250)",
+          "oklch(0.50 0.008 250)",
+          "oklch(0.62 0.008 250)",
+          "oklch(0.78 0.008 250)",
+          "oklch(0.93 0.008 250)"
+        ]
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "oklch(0.40 0.012 250)",
+        "tonalRamp": [
+          "oklch(0.10 0.012 250)",
+          "oklch(0.20 0.012 250)",
+          "oklch(0.30 0.012 250)",
+          "oklch(0.40 0.012 250)",
+          "oklch(0.52 0.012 250)",
+          "oklch(0.64 0.012 250)",
+          "oklch(0.78 0.012 250)",
+          "oklch(0.92 0.012 250)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only — the banner CTA. Never used for section titles or content headings."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "H1-level page titles and major resume section names. Fluid sizing."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section subheadings (H4–H6). Same size as body; hierarchy from weight alone."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All prose and content. 18px floor is non-negotiable."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav links, cite attributions, card metadata, small supplementary text."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "0.15s ease-in-out",
+        "purpose": "Color and border transitions on interactive elements (buttons, links, nav). Fast; never choreographic."
+      },
+      {
+        "name": "modal-entry",
+        "value": "scale(0.8) → scale(1), 0.3s ease-out",
+        "purpose": "Bootstrap modal entrance. Motion as depth cue — the one choreographic moment the system allows. Must have a prefers-reduced-motion fallback: instant appearance, no scale."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "576px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "992px" },
+      { "name": "xl", "value": "1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The only CTA button variant. Precision Pink, compact, direct.",
+      "html": "<button class=\"ds-btn-primary\">View Case Study</button>",
+      "css": ".ds-btn-primary { display: inline-block; background-color: #d42274; color: #ffffff; border: 1px solid #d42274; border-radius: 0.375rem; padding: 0.375rem 0.75rem; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 400; line-height: 1.5; cursor: pointer; text-decoration: none; transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }\n.ds-btn-primary:hover { background-color: #b31d63; border-color: #b31d63; }\n.ds-btn-primary:focus-visible { background-color: #b31d63; border-color: #b31d63; outline: 2px solid #d42274; outline-offset: 2px; }\n.ds-btn-primary:active { background-color: #9e1a56; border-color: #9e1a56; }\n@media (prefers-reduced-motion: reduce) { .ds-btn-primary { transition: none; } }"
+    },
+    {
+      "name": "Portfolio Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Project card. Grayscale image on top, title and summary below. Flat at rest.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-img-wrap\"><img class=\"ds-card-img\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect width='400' height='220' fill='%23d0d0d0'/%3E%3C/svg%3E\" alt=\"Project screenshot\"></div><div class=\"ds-card-body\"><h3 class=\"ds-card-title\">chroma11y</h3><p class=\"ds-card-text\">OKLCH-based accessibility color palette tool. Generates contrast-verified palettes for design systems.</p></div></div>",
+      "css": ".ds-card { background-color: #ffffff; border: 1px solid rgba(33,37,41,0.125); border-radius: 0.375rem; overflow: hidden; display: flex; flex-direction: column; }\n.ds-card-img-wrap { overflow: hidden; }\n.ds-card-img { width: 100%; height: auto; display: block; filter: grayscale(100%); transition: filter 0.2s ease-in-out; }\n.ds-card:hover .ds-card-img { filter: grayscale(70%); }\n.ds-card-body { padding: 1.125rem; flex: 1; }\n.ds-card-title { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: #212529; margin: 0 0 0.5rem; }\n.ds-card-text { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1rem; color: #495057; margin: 0; line-height: 1.5; }\n@media (prefers-reduced-motion: reduce) { .ds-card-img { transition: none; } }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link-default",
+      "description": "Fixed top nav. Avatar logo, links, optional download CTA. Frosted white, no shadow.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"/\"><div class=\"ds-nav-avatar\"></div></a><div class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\">About</a><a class=\"ds-nav-link\" href=\"#\">Résumé</a><a class=\"ds-nav-link ds-nav-link--active\" href=\"#\" aria-current=\"page\">Portfolio</a></div></nav>",
+      "css": ".ds-nav { background-color: rgba(255,255,255,0.98); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 1.5rem; }\n.ds-nav-brand { text-decoration: none; flex-shrink: 0; }\n.ds-nav-avatar { width: 42px; height: 42px; border-radius: 50%; background-color: #d0d0d0; }\n.ds-nav-links { display: flex; gap: 1rem; align-items: center; }\n.ds-nav-link { color: #212529; text-decoration: none; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 700; transition: color 0.15s ease-in-out; padding: 0.25rem 0; }\n.ds-nav-link:hover { color: #495057; }\n.ds-nav-link--active { color: #d42274; }\n.ds-nav-link:focus-visible { outline: 2px solid #d42274; outline-offset: 2px; border-radius: 0.25rem; }\n@media (prefers-reduced-motion: reduce) { .ds-nav-link { transition: none; } }"
+    },
+    {
+      "name": "Timeline Entry",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Résumé timeline. Vertical Ink rule, Precision Pink dot marker per entry, title + metadata + prose.",
+      "html": "<div class=\"ds-entrylist\"><div class=\"ds-entry-item\"><h3 class=\"ds-entry-title\">Principal UX Designer</h3><p class=\"ds-entry-meta\">Expel · 2022–Present</p><p class=\"ds-entry-body\">End-to-end ownership of the Expel Design System, from Figma component design through TypeScript implementation and token architecture.</p></div><div class=\"ds-entry-item\"><h3 class=\"ds-entry-title\">Senior UX Designer (contract)</h3><p class=\"ds-entry-meta\">Optum · 2021–2022</p></div></div>",
+      "css": ".ds-entrylist { position: relative; padding-left: 2.25rem; }\n.ds-entrylist::before { position: absolute; top: 1.7rem; bottom: 0; left: 1.1rem; width: 1px; content: ''; background: linear-gradient(to top, rgba(33,37,41,0) 0%, rgba(33,37,41,1) 4rem, rgba(33,37,41,1) 100%); }\n.ds-entry-item { position: relative; margin-bottom: 2rem; }\n.ds-entry-item::before { position: absolute; top: 0.45rem; left: -2.25rem; width: 0.625rem; height: 0.625rem; content: ''; background-color: #d42274; border-radius: 50%; transform: translateX(50%); }\n.ds-entry-title { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: #212529; margin: 0 0 0.25rem; }\n.ds-entry-meta { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; color: #495057; margin: 0 0 0.5rem; }\n.ds-entry-body { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; color: #212529; margin: 0; line-height: 1.5; }"
+    },
+    {
+      "name": "Footer",
+      "kind": "custom",
+      "refersTo": "footer-block",
+      "description": "Full-bleed Precision Pink footer. The site's one bold brand gesture. White text throughout.",
+      "html": "<footer class=\"ds-footer\"><div class=\"ds-footer-inner\"><div class=\"ds-footer-section\"><h2 class=\"ds-footer-heading\">About Me</h2><p class=\"ds-footer-body\">Principal UX designer at the intersection of design and engineering. <a class=\"ds-footer-link\" href=\"mailto:andrew@andrewpucci.com\">Get in touch!</a></p></div><div class=\"ds-footer-section\"><h2 class=\"ds-footer-heading\">Connect</h2><ul class=\"ds-footer-list\"><li><a class=\"ds-footer-link\" href=\"#\">LinkedIn</a></li></ul></div></div><p class=\"ds-footer-legal\">&copy; 2026 Andrew Pucci.</p></footer>",
+      "css": ".ds-footer { background-color: #d42274; padding: 3.375rem 1.5rem 2rem; color: #ffffff; }\n.ds-footer-inner { display: flex; gap: 3rem; flex-wrap: wrap; margin-bottom: 2rem; }\n.ds-footer-section { flex: 1; min-width: 200px; }\n.ds-footer-heading { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: #ffffff; margin: 0 0 0.75rem; }\n.ds-footer-body { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; color: #ffffff; margin: 0; line-height: 1.5; }\n.ds-footer-link { color: #ffffff; text-decoration: none; }\n.ds-footer-link:hover { text-decoration: underline; }\n.ds-footer-link:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; border-radius: 0.25rem; }\n.ds-footer-list { list-style: none; padding: 0; margin: 0; }\n.ds-footer-list li { margin-bottom: 0.25rem; }\n.ds-footer-legal { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; color: rgba(255,255,255,0.8); margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Principal Review",
+    "overview": "One saturated accent, large body text, flat surfaces. The design doesn't compete with the content; it makes room for it. Case studies, open-source projects, design system work, and a career history carry the pages.\n\nThe primary audience is hiring managers and design leads at enterprise tech companies evaluating principal-level candidates. A secondary audience is engineering leads and design systems leads looking for a collaborator with both design judgment and engineering depth. Both scan before they read. Hierarchy matters more than novelty.\n\nThree aesthetics this explicitly avoids: off-the-shelf Bootstrap defaults, the Dribbble shot grid, and creative-agency portfolio mode. One brand color, used deliberately. Everything else is structure and text.\n\nAccessibility is a design constraint built into component decisions from the start, not a checklist applied afterward. Color is never the sole carrier of meaning. Every interactive state has a non-color indicator. Every component is keyboard reachable. Motion is conditional on user preference.\n\nBootstrap 5 is the current foundation — a transitional dependency. The goal is a purpose-built token pipeline: DTCG-format tokens built with Terrazzo, generating CSS custom properties used throughout, mirroring the architecture of the Expel Design System (EDS). The site is itself an exhibit of that work in progress.",
+    "keyCharacteristics": [
+      "One saturated brand accent; all other surfaces neutral or white",
+      "Single typeface differentiated by weight only — no second family, no display font",
+      "Large base type (1.125rem / 18px) for readability and authority",
+      "Full-bleed Precision Pink footer as the site's one bold gesture",
+      "Flat by default; no decorative elevation or shadow",
+      "Accessible by default: visible focus, non-color state indicators, reduced-motion support",
+      "Terrazzo token pipeline as the target architecture; Bootstrap is transitional"
+    ],
+    "rules": [
+      {
+        "name": "The Full-Bleed Commitment Rule",
+        "body": "When Precision Pink appears as a background, it claims the entire surface. Partial pink panels, tinted card backgrounds, and faint rose washes are prohibited. The color either owns the surface or steps aside entirely.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Accent Rule",
+        "body": "Precision Pink marks what matters: the active state, the call to action, the dot that anchors each timeline entry. If two things on the same screen are pink, one of them is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Non-Color Meaning Rule",
+        "body": "No state change may be communicated by color alone. Active nav links use Precision Pink and a weight or underline change. Focus rings are visible and high-contrast. Error states pair color with an icon or text label.",
+        "section": "colors"
+      },
+      {
+        "name": "The Contrast Floor",
+        "body": "4.5:1 minimum for body text on all backgrounds. 3:1 for large text. White text on Precision Pink clears 4.5:1 and must be verified any time the pink value changes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Weight-Only Hierarchy Rule",
+        "body": "This system has one typeface and two weights. Scale and weight carry all hierarchy. Never introduce a second typeface, a display serif, or monospace to add variety — that constraint is the system's voice.",
+        "section": "typography"
+      },
+      {
+        "name": "The Large Body Rule",
+        "body": "Body text is 1.125rem (18px). Never reduce it below 1rem for any content meant to be read.",
+        "section": "typography"
+      },
+      {
+        "name": "The Semantic Structure Rule",
+        "body": "Heading levels reflect document outline, not visual size. Interactive elements are buttons or links, not divs with click handlers. Form fields have visible labels. Images have meaningful alt text or explicit alt=\"\" when decorative.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Shadows do not appear on resting elements. If an element needs a shadow to look elevated, the layout, color, or spacing is not doing its job. Shadows may appear as hover-state feedback only.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Motion Preference Rule",
+        "body": "Animations and transitions respect prefers-reduced-motion: reduce. The reduced-motion fallback is an instant transition or a simple fade — never a removed affordance. Content does not disappear or become inaccessible for users with motion sensitivity.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Visible Focus Rule",
+        "body": "Every interactive element must have a visible focus indicator. Current standard: 2px Precision Pink outline at 2px offset. Never suppress the default focus ring without replacing it with something equally visible.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Use Precision Pink for active states, the primary CTA, and the footer background — and nothing else. Its scarcity is its value.",
+      "Hold body text at 1.125rem minimum. Never reduce content text below 1rem on any surface.",
+      "Let the case studies, open-source projects, and career history carry pages. Visual restraint is intentional; the work is the product.",
+      "Meet 4.5:1 contrast for body text and 3:1 for large text on all backgrounds. White text on Precision Pink must be verified any time the color value changes.",
+      "Pair every color-based state change with a non-color indicator. Color alone is not enough.",
+      "Include a prefers-reduced-motion fallback for every animation. Instant transitions are fine; invisible or inaccessible content is not.",
+      "Render the footer as a full-bleed Precision Pink block. No partial pink panels, no pink strips.",
+      "Apply filter: grayscale(100%) to portfolio card images. Grayscale is a system decision, not a placeholder.",
+      "Keep type hierarchy to weight and scale. IBM Plex Sans at two weights is the full palette.",
+      "Define new design values as DTCG-format tokens built with Terrazzo. When a component is rebuilt from Bootstrap, wire it to the token pipeline rather than carrying Bootstrap variables forward."
+    ],
+    "donts": [
+      "Let the site look like it came out of a Bootstrap template. Any element that reads as Bootstrap default needs a deliberate treatment applied.",
+      "Carry Bootstrap variables forward when rebuilding a component. When a component moves off Bootstrap, it uses Terrazzo-generated CSS custom properties, not Bootstrap's $spacer, $primary, or utility classes.",
+      "Turn portfolio pages into a Dribbble shot gallery. Case studies need context, process narrative, and decision rationale — not image grids optimized for visual impressiveness.",
+      "Let the tone go corporate. 'Want to chat? Get in touch!' is the register. Formal biography copy and achievement-stacking bullet points are not.",
+      "Introduce scroll-driven animations, type reveals, parallax effects, or motion that signals 'creative agency portfolio.' Motion should be functional only.",
+      "Use border-left or border-right greater than 1px as a colored decorative stripe. The current blockquote uses a 9px Precision Pink left border — this is design debt to resolve, not a pattern to continue.",
+      "Replace IBM Plex Sans without deliberate selection from a real type catalog. Do not default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface.",
+      "Add color complexity. No secondary accent, no gradient, no multi-color palette. One pink, one near-white, two grays, one surface white."
+    ]
+  }
+}
