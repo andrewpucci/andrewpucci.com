@@ -81,11 +81,26 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headline only — the banner CTA. Never used for section titles or content headings." },
-      "headline": { "displayName": "Headline", "purpose": "H1-level page titles and major resume section names. Fluid sizing." },
-      "title": { "displayName": "Title", "purpose": "Section subheadings (H4–H6). Same size as body; hierarchy from weight alone." },
-      "body": { "displayName": "Body", "purpose": "All prose and content. 18px floor is non-negotiable." },
-      "label": { "displayName": "Label", "purpose": "Nav links, cite attributions, card metadata, small supplementary text." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only — the banner CTA. Never used for section titles or content headings."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "H1-level page titles and major resume section names. Fluid sizing."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section subheadings (H4–H6). Same size as body; hierarchy from weight alone."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All prose and content. 18px floor is non-negotiable."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav links, cite attributions, card metadata, small supplementary text."
+      }
     },
     "shadows": [],
     "motion": [
