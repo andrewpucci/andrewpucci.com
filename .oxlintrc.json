@@ -20,7 +20,7 @@
   ],
   "overrides": [
     {
-      "files": ["**/*.js"],
+      "files": ["**/*.{js,mjs,cjs}"],
       "rules": {
         "constructor-super": "error",
         "for-direction": "error",
@@ -124,13 +124,24 @@
       "plugins": ["import"]
     },
     {
-      "files": ["**/*.test.js", "**/tests/**/*.js", "**/__tests__/**/*.js"],
+      "files": [
+        "**/*.test.{js,mjs,cjs}",
+        "**/tests/**/*.{js,mjs,cjs}",
+        "**/__tests__/**/*.{js,mjs,cjs}"
+      ],
       "rules": {
         "no-unused-expressions": "off"
       },
       "env": {
         "jest": true,
         "mocha": true
+      }
+    },
+    {
+      "files": ["**/*.cjs"],
+      "rules": {
+        "import/no-commonjs": "off",
+        "import/no-amd": "off"
       }
     }
   ]

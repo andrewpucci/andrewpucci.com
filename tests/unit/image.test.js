@@ -7,19 +7,21 @@ vi.mock('@11ty/eleventy-img', () => ({
   default: vi.fn().mockImplementation((src, options) => {
     // Return mock metadata based on input
     const { widths, formats } = options;
-    const metadata = {};
 
-    formats.forEach((format) => {
-      metadata[format] = widths.map((width) => ({
-        sourceType: `image/${format}`,
-        srcset: width ? `${src}?w=${width}&format=${format} ${width}w` : `${src}?format=${format}`,
-        url: width ? `${src}?w=${width}&format=${format}` : `${src}?format=${format}`,
-        width: width || 800, // default width if not specified
-        height: width ? Math.round(width * 0.75) : 600, // 4:3 aspect ratio
-      }));
-    });
-
-    return metadata;
+    return Object.fromEntries(
+      formats.map((format) => [
+        format,
+        widths.map((width) => ({
+          sourceType: `image/${format}`,
+          srcset: width
+            ? `${src}?w=${width}&format=${format} ${width}w`
+            : `${src}?format=${format}`,
+          url: width ? `${src}?w=${width}&format=${format}` : `${src}?format=${format}`,
+          width: width || 800,
+          height: width ? Math.round(width * 0.75) : 600,
+        })),
+      ])
+    );
   }),
 }));
 
