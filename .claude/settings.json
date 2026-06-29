@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node '.claude/scripts/lint-on-save.mjs'",
+            "timeout": 10,
+            "statusMessage": "Linting saved file"
+          }
+        ]
+      }
+    ]
+  }
+}
