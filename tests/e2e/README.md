@@ -4,10 +4,12 @@ This directory contains Playwright end-to-end tests for the Andrew Pucci portfol
 
 ## Test Structure
 
-```
+```text
 tests/e2e/
 ├── home.spec.js           # Tests for the home page
 ├── resume.spec.js         # Tests for the resume page
+├── contact.spec.js        # Tests for the contact form
+├── a11y.spec.js           # axe-core (ADR-0002) + usability hygiene (ADR-0001) across every route
 └── portfolio/            # Tests for portfolio project pages
     └── redesigning-telerik-analytics.spec.js  # Tests for Telerik Analytics project page
 ```
@@ -132,16 +134,16 @@ The workflow will automatically fail if any tests fail, helping to prevent deplo
 
 ## Playwright Configuration
 
-The Playwright configuration is in `playwright.config.js`:
+The Playwright configuration is in `playwright.config.ts`:
 
 ### Key Settings
 
 - **Test Directory**: `./tests/e2e`
-- **Base URL**: `http://localhost:8080` (configurable via `TEST_BASE_URL` env var)
+- **Base URL**: `http://localhost:4173` (configurable via `TEST_BASE_URL` env var)
 - **Browsers**: Chromium, Firefox, and WebKit (all desktop configurations)
 - **Retries**: 2 retries in CI, 0 locally
 - **Workers**: 1 worker in CI (sequential), parallel locally
-- **Web Server**: Automatically starts dev server on port 8080
+- **Web Server**: Runs `npm run build && npm run preview` (the actual Cloudflare Pages build via `wrangler pages dev`, not the Vite dev server) so tests exercise what ships
 - **Screenshots**: Captured only on failure
 - **Traces**: Captured on first retry
 
@@ -210,6 +212,7 @@ test.describe('Feature Name', () => {
    ```
 
 3. **CSS Selectors** (as a last resort)
+
    ```javascript
    page.locator('.specific-class');
    page.locator('#unique-id');
