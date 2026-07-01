@@ -104,7 +104,12 @@
   }
 
   .hero__headline span {
-    font: var(--typography-headline);
+    /* See src/routes/+page.svelte's .hero__headline for why this composes
+       a clamp() from paired tokens instead of using --typography-headline. */
+    font-family: var(--font-family-sans);
+    font-weight: var(--font-weight-bold);
+    font-size: clamp(var(--font-size-headline-min), calc(1.175rem + 1.5vw), var(--font-size-headline-max));
+    line-height: var(--font-lineheight-snug);
     color: var(--color-surface-default);
     background: var(--color-gray-900);
     padding-inline: var(--space-2);
