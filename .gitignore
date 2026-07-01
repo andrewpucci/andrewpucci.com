@@ -18,6 +18,9 @@ worker-configuration.d.ts
 storybook-static/
 *storybook.log
 
+# Terrazzo-generated token output (source of truth is tokens/tokens.json)
+src/lib/tokens/tokens.css
+
 # Environment variables
 .env
 .env.local

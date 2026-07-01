@@ -35,3 +35,8 @@ Three tiers:
 - The DTCG spec hit v1.0 stable in October 2025. The format is finalized.
 - Terrazzo's Vite plugin means tokens regenerate automatically during `vite dev` when the token JSON changes.
 - Terrazzo scored 5.3 on OpenSSF Scorecard, low enough to require the exception process described in ADR-0003. Accepted as a documented exception there.
+
+## Amendments
+
+- **No `@terrazzo/vite` package exists.** Terrazzo ships as a CLI (`@terrazzo/cli` + `@terrazzo/plugin-css`) driven by `terrazzo.config.js`, not a first-party Vite plugin. The "runs as a Vite plugin" behavior is provided by a small in-repo wrapper (`vite-plugin-terrazzo.ts`) that shells out to the CLI on `buildStart` and watches `tokens/tokens.json` for changes in dev, calling `server.ws.send({ type: 'full-reload' })` after a rebuild. Functionally equivalent to what this ADR describes; the package name was wrong.
+- **DTCG `dimension` tokens can't hold a fluid `clamp()` expression** (a dimension is a single value + unit, e.g. `{ "value": 1.125, "unit": "rem" }`). The Display and Headline type-scale entries needed their fluid min/max split into two separate dimension tokens (`font.size.display-min`/`-max`, `font.size.headline-min`/`-max`) instead of one token holding the clamp string. The `typography` composite token's `fontSize` references the `-min` value as the nominal size; the actual fluid `clamp()` rule is assembled in component CSS from the paired tokens (see ADR-0007).
