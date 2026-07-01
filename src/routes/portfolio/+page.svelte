@@ -35,6 +35,7 @@
     <a href="/contact/">get in touch</a>!
   </p>
 
+  <h2 class="visually-hidden">Projects</h2>
   <ul class="portfolio-index__grid">
     {#each cards as card (card.url)}
       <li>
