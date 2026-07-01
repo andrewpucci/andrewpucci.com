@@ -142,11 +142,10 @@
       flex-direction: row;
       align-items: center;
       width: auto;
-      margin-inline-start: auto;
     }
 
     .nav__download {
-      margin-inline-start: var(--space-2);
+      margin-inline-start: auto;
     }
   }
 </style>
