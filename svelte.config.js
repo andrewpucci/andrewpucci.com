@@ -18,14 +18,17 @@ const config = {
       mode: 'auto',
       directives: {
         'default-src': ['none'],
-        'script-src': ['self'],
+        // challenges.cloudflare.com: the contact form's Turnstile widget
+        // (ADR-0005). The one deliberate, documented CSP exception ADR-0003
+        // calls for when adding a third-party script.
+        'script-src': ['self', 'https://challenges.cloudflare.com'],
         'style-src': ['self'],
         'img-src': ['self', 'data:'],
         'font-src': ['self'],
         'connect-src': ['self'],
         'media-src': ['none'],
         'object-src': ['none'],
-        'frame-src': ['none'],
+        'frame-src': ['https://challenges.cloudflare.com'],
         'worker-src': ['none'],
         'frame-ancestors': ['none'],
         'form-action': ['self'],
