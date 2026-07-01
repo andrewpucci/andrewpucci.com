@@ -3,42 +3,42 @@
     "title": "Evolving Binary Defense MDR",
     "imgSrc": "/img/card/evolving-binary-defense-mdr.jpg",
     "imgAlt": "",
-    "url": "/portfolio/evolving-binary-defense-mdr",
+    "url": "/portfolio/evolving-binary-defense-mdr/",
     "content": "Researching user workflows to design improvements to the UI of an information security SaaS application."
   },
   {
-    "title": "Employee Onboarding at Society of Grownups",
+    "title": "Employee Onboarding at Society of Grownups",
     "imgSrc": "/img/card/employee-onboarding.png",
     "imgAlt": "",
-    "url": "/portfolio/employee-onboarding-at-society-of-grownups",
+    "url": "/portfolio/employee-onboarding-at-society-of-grownups/",
     "content": "Process design to improve new employee experience at Society of Grownups."
   },
   {
-    "title": "Organization Design at Society of Grownups",
+    "title": "Organization Design at Society of Grownups",
     "imgSrc": "/img/card/society-of-grownups-organization.jpg",
     "imgAlt": "",
-    "url": "/portfolio/organization-design-at-society-of-grownups",
+    "url": "/portfolio/organization-design-at-society-of-grownups/",
     "content": "Development of organization design to improve communication at Society of Grownups."
   },
   {
-    "title": "Redesigning Telerik Analytics",
+    "title": "Redesigning Telerik Analytics",
     "imgSrc": "/img/card/analytics-design.png",
     "imgAlt": "",
-    "url": "/portfolio/redesigning-telerik-analytics",
+    "url": "/portfolio/redesigning-telerik-analytics/",
     "content": "Real-time application analytics to grow user engagement and improve user experience."
   },
   {
     "title": "Improving Telerik Product Documentation",
     "imgSrc": "/img/card/kendoui-docs.png",
     "imgAlt": "",
-    "url": "/portfolio/improving-telerik-product-documentation",
+    "url": "/portfolio/improving-telerik-product-documentation/",
     "content": "Making documentation and knowledgebases for Telerik frameworks easier for developers to understand."
   },
   {
     "title": "LunchBoat Mobile App Interaction Flow",
     "imgSrc": "/img/card/lunchboat-interactionflow.png",
     "imgAlt": "",
-    "url": "/portfolio/lunchboat-mobile-app-interaction-flow",
+    "url": "/portfolio/lunchboat-mobile-app-interaction-flow/",
     "content": "Have you been running into coworkers while out for lunch? We built an app to help facilitate that."
   }
 ]
