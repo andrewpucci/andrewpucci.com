@@ -64,3 +64,8 @@ All pages ship a strict set of security headers via a `_headers` file in the Clo
 - The security posture is testable: security headers can be verified in Playwright E2E tests and audited with tools like Mozilla Observatory.
 - `npm audit` failures block CI. The team (one person) is responsible for resolving or explicitly accepting findings before merging.
 - The contact form Worker needs rate limiting logic written explicitly. Cloudflare's built-in rate limiting rules can supplement the Worker-level check.
+
+## Amendments
+
+- **Nonce-based CSP doesn't work with a fully prerendered site.** SvelteKit throws a build error if `kit.csp.mode` is `'nonce'` while prerendering — a nonce baked into a static HTML file at build time and served identically to every visitor isn't a nonce. `kit.csp.mode` is set to `'auto'` instead: hash-based CSP for prerendered pages (all of them today), nonce-based for any route rendered per-request in the future (the contact form action, if it ever needs an inline script). Same "no `unsafe-inline`" guarantee, correct mechanism for static output.
+- **CSP for prerendered pages ships as a `<meta http-equiv="Content-Security-Policy">` tag, not an HTTP header**, since static files served by Cloudflare Pages have no per-request handler to attach a header to. This has one real gap: `frame-ancestors` is silently ignored by browsers when set via `<meta>` (HTTP-header-only directive). `X-Frame-Options: DENY` in `static/_headers` covers the same clickjacking protection as a working fallback. The other fixed-value headers (`Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) also live in `static/_headers` since they don't vary per page and don't need kit's per-page hash computation.
