@@ -13,7 +13,7 @@
         am eager to grow teams who build engaging, usable, and accessible products and lead cross-functional
         projects from inception through post-release iteration. I have experience working across multiple industries
         and in companies ranging in maturity from early-stage startups to Fortune 500 enterprises. Want to chat?
-        <a href="mailto:{author.email}">Get in touch!</a>
+        <a href="/contact/">Get in touch!</a>
       </p>
     </div>
 
