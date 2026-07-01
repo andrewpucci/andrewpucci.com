@@ -104,7 +104,10 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,ts,svelte}": [
+    "*.svelte": [
+      "oxlint --fix"
+    ],
+    "*.{js,mjs,cjs,ts}": [
       "oxlint --fix",
       "oxfmt"
     ],
