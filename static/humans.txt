@@ -1,0 +1,8 @@
+/* TEAM */
+  Andrew Pucci -- Designer & Developer
+  Website: https://www.andrewpucci.com
+
+/* SITE */
+  Standards: CSS3, HTML5
+  Components: SvelteKit, Terrazzo
+  Software: VS Code, GitHub Desktop

@@ -1,22 +1,30 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { HTMLButtonAttributes } from 'svelte/elements';
+  import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
-  interface Props extends HTMLButtonAttributes {
-    variant?: 'primary';
-    children: Snippet;
-  }
+  type Props = { variant?: 'primary'; children: Snippet } & (
+    | ({ href?: undefined } & HTMLButtonAttributes)
+    | ({ href: HTMLAnchorAttributes['href'] } & Omit<HTMLAnchorAttributes, 'href'>)
+  );
 
-  let { variant = 'primary', children, ...rest }: Props = $props();
+  let { variant = 'primary', href, children, ...rest }: Props = $props();
 </script>
 
-<button class="button button--{variant}" {...rest}>
-  {@render children()}
-</button>
+{#if href}
+  <a class="button button--{variant}" {href} {...rest as Omit<HTMLAnchorAttributes, 'href'>}>
+    {@render children()}
+  </a>
+{:else}
+  <button class="button button--{variant}" {...rest as HTMLButtonAttributes}>
+    {@render children()}
+  </button>
+{/if}
 
 <style>
   .button--primary {
+    display: inline-block;
     cursor: pointer;
+    text-decoration: none;
     font: var(--typography-body);
     color: var(--button-primary-foreground);
     background: var(--button-primary-background);
