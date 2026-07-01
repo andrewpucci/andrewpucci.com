@@ -1,7 +1,6 @@
 <script lang="ts">
   import PortfolioCard from '$lib/components/PortfolioCard/PortfolioCard.svelte';
   import { cards } from '$lib/content/cards';
-  import { author } from '$lib/content/author';
 </script>
 
 <svelte:head>
@@ -33,7 +32,7 @@
   <p>
     Shown below are some examples of the work I've done. I'd love to talk with you about my experience, especially if
     I might be able to help you with a problem you're working through. Feel free to
-    <a href="mailto:{author.email}">get in touch</a>!
+    <a href="/contact/">get in touch</a>!
   </p>
 
   <ul class="portfolio-index__grid">
