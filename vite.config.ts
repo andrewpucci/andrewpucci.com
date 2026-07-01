@@ -1,8 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
-import { mdsvex } from 'mdsvex';
-import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,24 +8,12 @@ import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
+// `sveltekit()` is called with no arguments so it (and every other tool that
+// loads Svelte config the classic way, e.g. Storybook's SvelteKit framework)
+// reads the single source of truth in svelte.config.js.
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [
-    sveltekit({
-      compilerOptions: {
-        // Force runes mode for the project, except for libraries. Can be removed in svelte 6.
-        runes: ({ filename }) =>
-          filename.split(/[/\\]/).includes('node_modules') ? undefined : true,
-      },
-      adapter: adapter(),
-      preprocess: [
-        mdsvex({
-          extensions: ['.svx', '.md'],
-        }),
-      ],
-      extensions: ['.svelte', '.svx', '.md'],
-    }),
-  ],
+  plugins: [sveltekit()],
   test: {
     globals: true,
     expect: {
