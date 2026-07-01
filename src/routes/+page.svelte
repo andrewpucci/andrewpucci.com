@@ -110,7 +110,14 @@
   }
 
   .hero__headline span {
-    font: var(--typography-display);
+    /* DTCG dimension tokens can't hold a fluid clamp() (see ADR-0006's
+       amendment), so the min/max are tokenized separately and the clamp
+       itself -- including the non-tokenized vw interpolation term from
+       DESIGN.md -- is composed here. */
+    font-family: var(--font-family-sans);
+    font-weight: var(--font-weight-bold);
+    font-size: clamp(var(--font-size-display-min), calc(1.475rem + 2.7vw), var(--font-size-display-max));
+    line-height: var(--font-lineheight-tight);
     color: var(--color-surface-default);
     background: var(--color-gray-900);
     padding-inline: var(--space-2);
