@@ -5,6 +5,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { terrazzo } from './vite-plugin-terrazzo';
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,7 +14,7 @@ const dirname =
 // reads the single source of truth in svelte.config.js.
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [terrazzo(), sveltekit()],
   test: {
     globals: true,
     expect: {
