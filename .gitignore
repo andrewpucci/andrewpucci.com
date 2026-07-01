@@ -25,6 +25,7 @@ src/lib/tokens/tokens.css
 .env
 .env.local
 .env.*.local
+.dev.vars
 
 # Logs
 logs

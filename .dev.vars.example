@@ -1,0 +1,9 @@
+# Local secrets for the contact form Worker, read by wrangler (not Vite --
+# see .env-sample for the PUBLIC_/build-time vars). Copy to .dev.vars, which
+# is gitignored, before running `npm run preview` or `wrangler dev` locally.
+# In production these are set via `wrangler secret put <NAME>` or the
+# Cloudflare Pages dashboard, never committed.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+RESEND_API_KEY=re_123
+CONTACT_TO_EMAIL=hi@andrewpucci.com
+CONTACT_FROM_EMAIL=contact@andrewpucci.com

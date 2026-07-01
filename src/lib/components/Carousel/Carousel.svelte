@@ -14,7 +14,12 @@
 
   let activeIndex = $state(0);
   let prefersReducedMotion = $state(false);
-  let playing = $state(false);
+  // Best guess before the client effect below can check matchMedia (unavailable
+  // during SSR): assume motion is fine, matching the common case. The effect
+  // corrects this immediately on mount if the visitor actually prefers reduced
+  // motion. Guessing `false` here made the initial aria-label/aria-pressed lie
+  // about whether autoplay was actually about to start.
+  let playing = $state(autoplay);
 
   $effect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -79,6 +84,7 @@
           aria-roledescription="slide"
           aria-label={`${i + 1} of ${items.length}`}
           aria-hidden={i !== activeIndex}
+          inert={i !== activeIndex}
         >
           {@render item(entry, i)}
         </li>

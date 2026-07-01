@@ -25,6 +25,7 @@
   {:else}
     <form
       method="POST"
+      novalidate
       use:enhance={() => {
         submitting = true;
         return async ({ update }) => {

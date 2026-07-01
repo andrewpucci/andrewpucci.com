@@ -22,7 +22,16 @@ const config = {
         // (ADR-0005). The one deliberate, documented CSP exception ADR-0003
         // calls for when adding a third-party script.
         'script-src': ['self', 'https://challenges.cloudflare.com'],
-        'style-src': ['self'],
+        // 'unsafe-inline' here (not on script-src) is a deliberate, narrower
+        // exception: Svelte compiles directives like style:transform into
+        // runtime element.style mutations (the Carousel's slide position,
+        // for one), and those values change per-interaction so they can't be
+        // pre-computed as a hash or covered by a nonce the way a fixed
+        // inline <script> can. Style injection's blast radius (defacement,
+        // narrow data exfiltration via selectors) is a different risk class
+        // than script injection, which is why script-src stays hash/nonce-only
+        // with no exception. See ADR-0003's amendment.
+        'style-src': ['self', 'unsafe-inline'],
         'img-src': ['self', 'data:'],
         'font-src': ['self'],
         'connect-src': ['self'],
