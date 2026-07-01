@@ -49,3 +49,16 @@
     <Button {...args}>Get in touch</Button>
   {/snippet}
 </Story>
+
+<Story
+  name="As a link"
+  play={async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const link = canvas.getByRole('link', { name: 'Download résumé' });
+    await expect(link).toHaveAttribute('href', '/files/andrew-pucci-resume.pdf');
+  }}
+>
+  {#snippet template()}
+    <Button href="/files/andrew-pucci-resume.pdf">Download résumé</Button>
+  {/snippet}
+</Story>
