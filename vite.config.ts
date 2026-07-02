@@ -2,6 +2,7 @@
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { enhancedImages } from '@sveltejs/enhanced-img';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
@@ -14,7 +15,9 @@ const dirname =
 // reads the single source of truth in svelte.config.js.
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [terrazzo(), sveltekit()],
+  // enhancedImages() must come before sveltekit() -- it's a Svelte
+  // preprocessor plugin that needs to see <enhanced:img> tags first.
+  plugins: [terrazzo(), enhancedImages(), sveltekit()],
   test: {
     globals: true,
     expect: {

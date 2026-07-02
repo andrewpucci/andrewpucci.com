@@ -8,8 +8,8 @@
     component: ExpandableImage,
     tags: ['autodocs'],
     args: {
-      src: '/img/card/analytics-design.png',
-      alt: 'Mockup of the redesigned Telerik Analytics installations dashboard',
+      src: '/img/portfolio/t-rta-1.png',
+      alt: 'Screenshot of the Silverlight EQATEC interface',
     },
   });
 </script>
@@ -21,7 +21,7 @@
   play={async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', {
-      name: 'Mockup of the redesigned Telerik Analytics installations dashboard',
+      name: 'Screenshot of the Silverlight EQATEC interface',
     });
     await userEvent.click(trigger);
     const dialog = canvas.getByRole('dialog');

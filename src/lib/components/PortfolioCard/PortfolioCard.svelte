@@ -1,12 +1,14 @@
 <script lang="ts">
   import Card from '$lib/components/Card/Card.svelte';
   import type { PortfolioCardData } from '$lib/types/portfolio';
+  import { portfolioImage } from '$lib/utils/portfolio-images';
 
   let { title, content, imgSrc, imgAlt, url }: PortfolioCardData = $props();
+  const image = $derived(portfolioImage(imgSrc));
 </script>
 
 <Card href={url} class="portfolio-card">
-  <img class="portfolio-card__image" src={imgSrc} alt={imgAlt} />
+  <enhanced:img class="portfolio-card__image" src={image} alt={imgAlt} sizes="min(384px, 100vw)" />
   <h3 class="portfolio-card__title">{title}</h3>
   <p class="portfolio-card__content">{content}</p>
 </Card>
