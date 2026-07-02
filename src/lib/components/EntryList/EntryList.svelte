@@ -26,15 +26,24 @@
     margin: 0;
     padding-inline-start: var(--space-3);
     list-style: none;
+    /* Vertical center of the title row within a ResumeEntry, measured from the
+       top of the <li>: the entry's own padding-block-start, plus the dates
+       row's height and margin (rendered first via ResumeEntry's `order: -1`),
+       plus half the title's own line height. Matches production, where the
+       dot sits beside the job title, not the date line above it. Depends on
+       ResumeEntry.svelte's structure -- update both if either changes. */
+    --timeline-marker-center: calc(
+      var(--space-3) + (0.9375rem * 1.5) + var(--space-1) +
+        (var(--typography-title-font-size) * var(--typography-title-line-height) / 2)
+    );
   }
 
   .entry-list::before {
     position: absolute;
     inset-inline-start: 1.1rem;
-    /* Matches .entry-list__item::before's own top offset + half its height, so
-       the rule starts at the first dot's vertical center instead of overshooting
-       above it into whatever heading precedes the list. */
-    top: calc(0.375em + var(--timeline-dot-size) / 2);
+    /* Matches .entry-list__item::before's own target center below, so the rule
+       starts at the first dot rather than overshooting above it. */
+    top: var(--timeline-marker-center);
     bottom: 0;
     display: block;
     width: 1px;
@@ -54,7 +63,7 @@
 
   .entry-list__item::before {
     position: absolute;
-    top: 0.375em;
+    top: calc(var(--timeline-marker-center) - var(--timeline-dot-size) / 2);
     inset-inline-start: 0;
     display: block;
     width: var(--timeline-dot-size);
