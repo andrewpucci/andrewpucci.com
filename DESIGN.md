@@ -9,28 +9,28 @@ colors:
   ink-secondary: "#495057"
 typography:
   display:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.975rem, calc(1.475rem + 2.7vw), 3.5rem)"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "normal"
   headline:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.375rem, calc(1.175rem + 1.5vw), 2.5rem)"
     fontWeight: 700
     lineHeight: 1.25
   title:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: 1.4
   body:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.4
@@ -127,9 +127,9 @@ One saturated color. Everything else neutral.
 
 ## 3. Typography
 
-**Display / Body Font:** IBM Plex Sans (self-hosted WOFF2, `font-display: swap`). Regular (400), Bold (700), and both italics.
+**Display / Body Font:** Atkinson Hyperlegible Next (self-hosted variable WOFF2 via Fontsource, `font-display: swap`). Weight axis 200-800; the site uses Regular (400) and Bold (700), plus italics. Chosen for the same reason it's used on chroma11y: it's designed to maximize character distinction (1/l/I, disambiguated numerals) over conventional elegance, which matters more on a portfolio a screen-reader or low-vision user is expected to actually read.
 
-**Character:** One family, two weights. Display and body copy are both IBM Plex Sans, differentiated by size and weight only. The single-family constraint is intentional, not a gap to fill.
+**Character:** One family, two weights. Display and body copy are both Atkinson Hyperlegible Next, differentiated by size and weight only. The single-family constraint is intentional, not a gap to fill.
 
 ### Hierarchy
 
@@ -218,7 +218,7 @@ Used on the résumé for work, education, speaking, and volunteering.
 - **Do** include a `prefers-reduced-motion` fallback for every animation. Instant transitions are fine; invisible or inaccessible content is not.
 - **Do** render the footer as a full-bleed Precision Pink block. No partial pink panels, no pink strips.
 - **Do** apply `filter: grayscale(100%)` to portfolio card images. Grayscale is a system decision, not a placeholder.
-- **Do** keep type hierarchy to weight and scale. IBM Plex Sans at two weights is the full palette.
+- **Do** keep type hierarchy to weight and scale. Atkinson Hyperlegible Next at two weights is the full palette.
 - **Do** define new design values as DTCG-format tokens built with Terrazzo. When a component is rebuilt from Bootstrap, wire it to the token pipeline rather than carrying Bootstrap variables forward.
 
 ### Don't
@@ -229,5 +229,5 @@ Used on the résumé for work, education, speaking, and volunteering.
 - **Don't** let the tone go corporate. "Want to chat? Get in touch!" is the register. Formal biography copy, third-person references, and achievement-stacking bullet points are not.
 - **Don't** introduce scroll-driven animations, type reveals, parallax effects, or motion that signals "creative agency portfolio." Motion should be functional: a state change, a transition, a hover response.
 - **Don't** use `border-left` or `border-right` greater than 1px as a colored decorative stripe on cards, callouts, or list items. The current blockquote uses a 9px left border in Precision Pink. That's design debt to resolve, not a pattern to continue. Replace with a background tint, indented padding, or typographic differentiation.
-- **Don't** replace IBM Plex Sans without deliberate selection from a real type catalog. Don't default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface. If a change is needed, choose for the brand.
+- **Don't** replace Atkinson Hyperlegible Next without deliberate selection from a real type catalog. Don't default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface. If a change is needed, choose for the brand.
 - **Don't** add color complexity. No secondary accent, no gradient, no multi-color palette. One pink, one near-white, two grays, one surface white.
