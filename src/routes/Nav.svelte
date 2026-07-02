@@ -120,9 +120,24 @@
     text-decoration: underline;
   }
 
+  .nav__dropdown {
+    position: relative;
+  }
+
   .nav__dropdown-menu {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
     margin: var(--space-1) 0 0;
-    padding-inline-start: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    min-width: 12rem;
+    background: var(--card-background);
+    border: 1px solid var(--card-border-color);
+    border-radius: var(--card-radius);
     list-style: none;
   }
 
