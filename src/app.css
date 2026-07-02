@@ -17,11 +17,23 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* body's own background only covers its content box; rubber-band overscroll
-       beyond the top or bottom of the page reveals html's background instead.
-       Match the footer (the last thing on every page) so overscrolling past it
-       doesn't cut to a mismatched white gap. */
+  }
+
+  /* body's own background only covers its content box; rubber-band overscroll
+     beyond the bottom of the page reveals html's background instead, which
+     otherwise defaults to white against the full-bleed pink footer every page
+     ends with. A uniform html background-color would fix that but wrongly
+     tints the *top* overscroll pink too (every route starts off-white). Pin a
+     block behind just the bottom edge instead, tall enough to cover any
+     realistic bounce distance. */
+  html::after {
+    content: '';
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    height: 12rem;
     background-color: var(--footer-background);
+    z-index: -1;
   }
 
   body {
