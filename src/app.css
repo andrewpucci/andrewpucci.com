@@ -53,7 +53,12 @@
 
 @layer base {
   @font-face {
-    font-display: swap;
+    /* 'optional' over 'swap': self-hosted + same-origin, so the font is
+       almost always ready in time; when it isn't, this skips the
+       fallback -> IBM Plex Sans swap entirely rather than reflowing text
+       after the fact, which is what was causing the resume page (the
+       most text-heavy route) to fail its CLS threshold. */
+    font-display: optional;
     font-family: 'IBM Plex Sans';
     font-style: normal;
     font-weight: 400;
@@ -61,7 +66,12 @@
   }
 
   @font-face {
-    font-display: swap;
+    /* 'optional' over 'swap': self-hosted + same-origin, so the font is
+       almost always ready in time; when it isn't, this skips the
+       fallback -> IBM Plex Sans swap entirely rather than reflowing text
+       after the fact, which is what was causing the resume page (the
+       most text-heavy route) to fail its CLS threshold. */
+    font-display: optional;
     font-family: 'IBM Plex Sans';
     font-style: italic;
     font-weight: 400;
@@ -69,7 +79,12 @@
   }
 
   @font-face {
-    font-display: swap;
+    /* 'optional' over 'swap': self-hosted + same-origin, so the font is
+       almost always ready in time; when it isn't, this skips the
+       fallback -> IBM Plex Sans swap entirely rather than reflowing text
+       after the fact, which is what was causing the resume page (the
+       most text-heavy route) to fail its CLS threshold. */
+    font-display: optional;
     font-family: 'IBM Plex Sans';
     font-style: normal;
     font-weight: 700;
@@ -77,7 +92,12 @@
   }
 
   @font-face {
-    font-display: swap;
+    /* 'optional' over 'swap': self-hosted + same-origin, so the font is
+       almost always ready in time; when it isn't, this skips the
+       fallback -> IBM Plex Sans swap entirely rather than reflowing text
+       after the fact, which is what was causing the resume page (the
+       most text-heavy route) to fail its CLS threshold. */
+    font-display: optional;
     font-family: 'IBM Plex Sans';
     font-style: italic;
     font-weight: 700;

@@ -11,7 +11,7 @@
       title: 'Evolving Binary Defense MDR',
       content:
         'Researching user workflows to design improvements to the UI of an information security SaaS application.',
-      imgSrc: '/img/card-img/evolving-binary-defense-mdr.jpg',
+      imgSrc: '/img/card/evolving-binary-defense-mdr.jpg',
       imgAlt: '',
       url: '/portfolio/evolving-binary-defense-mdr',
     },
