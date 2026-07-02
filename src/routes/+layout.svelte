@@ -37,6 +37,9 @@
   }
 
   main {
+    /* Grows to fill leftover space in body's flex column, pushing Footer to
+       the bottom of the viewport on pages shorter than it (see app.css). */
+    flex: 1;
     padding-block-start: 4.375rem;
   }
 </style>
