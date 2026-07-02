@@ -17,6 +17,11 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* body's own background only covers its content box; rubber-band overscroll
+       beyond the top or bottom of the page reveals html's background instead.
+       Match the footer (the last thing on every page) so overscrolling past it
+       doesn't cut to a mismatched white gap. */
+    background-color: var(--footer-background);
   }
 
   body {
