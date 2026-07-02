@@ -71,6 +71,16 @@
 
 @layer base {
   body {
+    /* Sticky footer: without this, a page shorter than the viewport leaves a
+       gap below the footer -- and with html::after's bottom-pinned overscroll
+       patch below, that gap showed as a stray floating pink bar rather than
+       actual overscroll. min-height plus a flex column with <main> set to
+       flex: 1 (+layout.svelte) guarantees the footer always reaches at least
+       the bottom of the viewport, so that gap can't occur in the first place. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
     font: var(--typography-body);
     color: var(--color-text-default);
     background-color: var(--color-surface-page);
