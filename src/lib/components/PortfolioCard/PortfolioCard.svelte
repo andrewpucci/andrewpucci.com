@@ -21,7 +21,16 @@
   .portfolio-card__image {
     /* Project screenshots are artifacts of the work, not the work itself (DESIGN.md). */
     filter: grayscale(100%);
+    /* The global img reset (app.css) sets max-width: 100%, which silently clamps
+       this back down to the card's content width and cancels the bleed below.
+       Override it so the +padding*2 overflow actually takes effect. */
+    max-width: none;
     width: calc(100% + var(--card-padding) * 2);
+    /* enhanced:img sets width/height attrs from the source file for CLS purposes;
+       without an explicit height here, the box keeps that fixed pixel height while
+       our CSS overrides width, distorting the image. `auto` re-derives height from
+       the overridden width via the intrinsic aspect ratio. */
+    height: auto;
     margin-inline: calc(var(--card-padding) * -1);
     margin-block-start: calc(var(--card-padding) * -1);
     margin-block-end: var(--space-2);
