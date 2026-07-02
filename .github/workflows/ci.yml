@@ -17,6 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Chromatic needs history to diff against a baseline
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -30,19 +32,61 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests
-        run: npx vitest run
+      # Covers both plain utility functions and Storybook interaction tests
+      # (the "storybook" Vitest project) -- there's no separate component
+      # test layer, per ADR-0010.
+      - name: Unit + Storybook interaction tests
+        run: npx vitest run --coverage
+
+      # ADR-0003: fail on high/critical, review moderate/low manually.
+      - name: npm audit
+        run: npm audit --audit-level=high
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: E2E tests
+      # playwright.config.ts's webServer runs `npm run build && npm run preview`
+      # itself, so this also exercises the real Cloudflare Pages build.
+      - name: E2E + accessibility tests
         run: npm run test:e2e -- --retries=2
 
-      - name: Upload test results
+      - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+      - name: Build
+        run: npm run build
+
+      # ADR-0001's thresholds, asserted via the lighthouse CLI directly
+      # rather than @lhci/cli (ADR-0010).
+      - name: Lighthouse
+        run: |
+          npm run preview &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4173 > /dev/null && break
+            sleep 2
+          done
+          npm run test:lighthouse
+          kill %1
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      # Requires the CHROMATIC_PROJECT_TOKEN repo secret (Storybook ->
+      # Manage -> Configure -> "Project token" on chromatic.com). Visual
+      # regression + the published Storybook URL, per ADR-0008. Skipped
+      # (not failed) until that secret is added, so the rest of CI isn't
+      # blocked on it in the meantime. `if:` can't reference `secrets.*`
+      # directly, hence the env-var indirection.
+      - name: Publish to Chromatic
+        if: ${{ env.CHROMATIC_PROJECT_TOKEN != '' }}
+        uses: chromaui/action@v1
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: storybook-static
