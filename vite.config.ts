@@ -34,6 +34,15 @@ export default defineConfig({
         'src/**/*.svelte',
         'src/**/*.d.ts',
         '.svelte-kit/**',
+        // Page-option declarations and thin universal loads: no branching
+        // logic to exercise, just SvelteKit configuration/glue. Real logic
+        // (case study lookup, the contact form action) lives elsewhere and
+        // stays covered.
+        'src/routes/**/+layout.ts',
+        'src/routes/**/+page.ts',
+        // Typed re-exports of static JSON, nothing to branch on.
+        'src/lib/content/author.ts',
+        'src/lib/content/cards.ts',
       ],
       thresholds: {
         lines: 80,
