@@ -31,7 +31,10 @@
   .entry-list::before {
     position: absolute;
     inset-inline-start: 1.1rem;
-    top: 0;
+    /* Matches .entry-list__item::before's own top offset + half its height, so
+       the rule starts at the first dot's vertical center instead of overshooting
+       above it into whatever heading precedes the list. */
+    top: calc(0.375em + var(--timeline-dot-size) / 2);
     bottom: 0;
     display: block;
     width: 1px;
