@@ -1,20 +1,23 @@
 <script lang="ts">
+  import type { Picture } from '@sveltejs/enhanced-img';
+
   interface Props {
     quote: string;
     authorName: string;
     authorRole: string;
     authorUrl?: string;
-    avatarSrc?: string;
+    /** An `?enhanced`-imported image module, not a plain path -- see the callers. */
+    avatar?: Picture;
   }
 
-  let { quote, authorName, authorRole, authorUrl, avatarSrc }: Props = $props();
+  let { quote, authorName, authorRole, authorUrl, avatar }: Props = $props();
 </script>
 
 <figure class="testimonial">
   <blockquote class="testimonial__quote">{quote}</blockquote>
   <figcaption class="testimonial__caption">
-    {#if avatarSrc}
-      <img class="testimonial__avatar" src={avatarSrc} alt="" width="40" height="40" />
+    {#if avatar}
+      <enhanced:img class="testimonial__avatar" src={avatar} alt="" sizes="40px" />
     {/if}
     {#if authorUrl}
       <a href={authorUrl} target="_blank" rel="noopener noreferrer">{authorName}</a>
@@ -43,6 +46,8 @@
   }
 
   .testimonial__avatar {
+    width: 40px;
+    height: 40px;
     border-radius: var(--radius-full);
   }
 </style>

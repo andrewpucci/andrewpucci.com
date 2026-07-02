@@ -3,6 +3,9 @@
   import PortfolioCard from '$lib/components/PortfolioCard/PortfolioCard.svelte';
   import TestimonialQuote from '$lib/components/TestimonialQuote/TestimonialQuote.svelte';
   import { cards } from '$lib/content/cards';
+  import heroSrc from '$lib/assets/img/background.jpg?enhanced';
+  import jaxAvatar from '$lib/assets/img/jaxheinzen.jpg?enhanced';
+  import nondiniAvatar from '$lib/assets/img/nondininaqui.jpg?enhanced';
 </script>
 
 <svelte:head>
@@ -14,7 +17,7 @@
 </svelte:head>
 
 <section class="hero">
-  <img class="hero__image" src="/img/background.jpg" alt="" />
+  <enhanced:img class="hero__image" src={heroSrc} alt="" sizes="100vw" fetchpriority="high" />
   <h1 class="hero__headline">
     <span>Hi, I'm Andrew. I grow teams who build engaging, usable, and accessible products.</span>
   </h1>
@@ -67,14 +70,14 @@
     authorName="Jax Heinzen"
     authorRole="Experience Research & Design, Binary Defense"
     authorUrl="https://www.linkedin.com/in/jacquelineheinzen/"
-    avatarSrc="/img/jaxheinzen.jpg"
+    avatar={jaxAvatar}
   />
   <TestimonialQuote
     quote="Andrew took on a variety of responsibilities at Society of Grownups–in true startup fashion. He not only supported and onboarded the technology team, but was instrumental in the launch of societyofgrownups.com. Andrew then moved into a bigger leadership role where he built the processes to attract, retain, and grow talent as the company expanded from 5 to 55 employees. Andrew's attitude is exemplary and his level of drive, grit, and initiative is truly incredible. Whether it was leading by example, analyzing and driving the metrics on employee satisfaction, Andrew is truly dedicated and gifted."
     authorName="Nondini Naqui"
     authorRole="CEO & President, Society of Grownups"
     authorUrl="https://www.linkedin.com/in/nondini/"
-    avatarSrc="/img/nondininaqui.jpg"
+    avatar={nondiniAvatar}
   />
 </section>
 

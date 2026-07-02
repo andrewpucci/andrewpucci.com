@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import Button from '$lib/components/Button/Button.svelte';
   import { cards } from '$lib/content/cards';
+  import avatarSrc from '$lib/assets/img/avatar.png?enhanced';
 
   let open = $state(false);
 
@@ -11,8 +12,8 @@
 
 <nav class="nav" aria-label="Primary">
   <div class="nav__row">
-    <a href="/" class="nav__brand">
-      <img class="nav__avatar" src="/img/avatar.png" alt="Andrew Pucci" width="42" height="42" />
+    <a href="/" class="nav__brand" aria-label="Andrew Pucci, home">
+      <enhanced:img class="nav__avatar" src={avatarSrc} alt="" sizes="42px" />
     </a>
 
     <button
@@ -76,6 +77,8 @@
   }
 
   .nav__avatar {
+    width: 42px;
+    height: 42px;
     border-radius: var(--radius-full);
   }
 
