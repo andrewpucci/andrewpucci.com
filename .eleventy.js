@@ -80,12 +80,23 @@ export default function (eleventyConfig) {
   // This runs after templates are rendered but before files are written
   eleventyConfig.addTransform('minify', minify);
 
-  // Copy static assets directly to output without processing
-  eleventyConfig.addPassthroughCopy('./src/site/assets/files/*'); // PDFs, documents
+  // Copy only the downloadable PDFs that are linked from the site.
+  const downloadableFiles = [
+    './src/site/assets/files/andrew-pucci-resume.pdf',
+    './src/site/assets/files/employee-onboarding-at-society-of-grownups.pdf',
+    './src/site/assets/files/evolving-binary-defense-mdr.pdf',
+    './src/site/assets/files/organization-design-at-society-of-grownups.pdf',
+    './src/site/assets/files/redesigning-telerik-analytics.pdf',
+  ];
+  downloadableFiles.forEach((file) => eleventyConfig.addPassthroughCopy(file));
   eleventyConfig.addPassthroughCopy('./src/site/assets/fonts/*.woff*'); // Web fonts
   eleventyConfig.addPassthroughCopy('./src/site/assets/favicon-32x32.png'); // Favicon
   eleventyConfig.addPassthroughCopy('./src/site/humans.txt'); // humans.txt
   eleventyConfig.addPassthroughCopy('./src/site/robots.txt'); // robots.txt
+  // Cloudflare Pages host config is canonical at the repo root so both the
+  // SvelteKit shipping build and the retained legacy Eleventy build can use it.
+  eleventyConfig.addPassthroughCopy('./_headers');
+  eleventyConfig.addPassthroughCopy('./_redirects');
 
   return {
     dir: {

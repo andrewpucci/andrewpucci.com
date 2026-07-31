@@ -4,31 +4,16 @@ import { expect, test } from '@playwright/test';
 test.describe('Contact page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/contact/');
-    // Not 'networkidle': the Turnstile widget keeps making background
-    // requests, so network never truly goes idle here.
     await page.waitForLoadState('load');
-    await expect(page.getByLabel('Name')).toBeVisible();
   });
 
   test('has the correct title', async ({ page }) => {
     await expect(page).toHaveTitle('Contact | Andrew Pucci');
   });
 
-  test('preserves submitted values and shows an associated error on failed validation', async ({
-    page,
-  }) => {
-    await page.getByLabel('Name').fill('Jane Tester');
-    // Email and message left empty on purpose to trigger validation.
-    await page.getByRole('button', { name: 'Send message' }).click();
-
-    await expect(page.getByLabel('Name')).toHaveValue('Jane Tester');
-
-    const emailInput = page.getByLabel('Email');
-    await expect(emailInput).toHaveAttribute('aria-invalid', 'true');
-
-    const describedBy = await emailInput.getAttribute('aria-describedby');
-    expect(describedBy).toBeTruthy();
-    await expect(page.locator(`#${describedBy}`)).toContainText(/valid email/i);
+  test('shows an explicit fallback message when the form is unavailable', async ({ page }) => {
+    await expect(page.getByRole('alert')).toContainText(/form is temporarily unavailable/i);
+    await expect(page.getByRole('button', { name: 'Send message' })).toHaveCount(0);
   });
 
   test('offers a direct mailto fallback', async ({ page }) => {

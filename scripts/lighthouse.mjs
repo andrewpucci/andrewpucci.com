@@ -16,22 +16,44 @@ const ROUTES = [
   '/contact/',
 ];
 
-const CATEGORY_THRESHOLDS = {
-  performance: 0.9,
-  'best-practices': 0.9,
-  seo: 0.9,
-};
+const CATEGORY_THRESHOLDS = [
+  { key: 'performance', threshold: 0.9 },
+  { key: 'best-practices', threshold: 0.9 },
+  { key: 'seo', threshold: 0.9 },
+];
 
 // INP is a field metric (real user interactions over a session) that a
 // single lab-based Lighthouse run can't measure directly. Total Blocking
 // Time is the standard lab proxy Lighthouse itself recommends for
 // responsiveness; used here against the same 200ms threshold ADR-0001 sets
 // for INP.
-const METRIC_THRESHOLDS = {
-  'largest-contentful-paint': { label: 'LCP', unit: 'ms', max: 2500 },
-  'cumulative-layout-shift': { label: 'CLS', unit: '', max: 0.1 },
-  'total-blocking-time': { label: 'TBT (INP proxy)', unit: 'ms', max: 200 },
-};
+const METRIC_THRESHOLDS = [
+  { auditId: 'largest-contentful-paint', label: 'LCP', unit: 'ms', max: 2500 },
+  { auditId: 'cumulative-layout-shift', label: 'CLS', unit: '', max: 0.1 },
+  { auditId: 'total-blocking-time', label: 'TBT (INP proxy)', unit: 'ms', max: 200 },
+];
+
+function getCategoryScore(categories, key) {
+  switch (key) {
+    case 'performance':
+      return categories.performance.score ?? 0;
+    case 'best-practices':
+      return categories['best-practices'].score ?? 0;
+    case 'seo':
+      return categories.seo.score ?? 0;
+  }
+}
+
+function getAuditValue(audits, auditId) {
+  switch (auditId) {
+    case 'largest-contentful-paint':
+      return audits['largest-contentful-paint']?.numericValue;
+    case 'cumulative-layout-shift':
+      return audits['cumulative-layout-shift']?.numericValue;
+    case 'total-blocking-time':
+      return audits['total-blocking-time']?.numericValue;
+  }
+}
 
 async function auditRoute(port, route) {
   const url = `${BASE_URL}${route}`;
@@ -46,15 +68,15 @@ async function auditRoute(port, route) {
   let ok = true;
   console.log(`\n${route}`);
 
-  for (const [key, threshold] of Object.entries(CATEGORY_THRESHOLDS)) {
-    const score = categories[key].score ?? 0;
+  for (const { key, threshold } of CATEGORY_THRESHOLDS) {
+    const score = getCategoryScore(categories, key);
     const pass = score >= threshold;
     if (!pass) ok = false;
     console.log(`  ${pass ? '✔' : '✗'} ${key}: ${Math.round(score * 100)} (>= ${threshold * 100})`);
   }
 
-  for (const [auditId, { label, unit, max }] of Object.entries(METRIC_THRESHOLDS)) {
-    const value = audits[auditId]?.numericValue;
+  for (const { auditId, label, unit, max } of METRIC_THRESHOLDS) {
+    const value = getAuditValue(audits, auditId);
     const pass = typeof value === 'number' && value <= max;
     if (!pass) ok = false;
     console.log(`  ${pass ? '✔' : '✗'} ${label}: ${value?.toFixed(2)}${unit} (<= ${max}${unit})`);

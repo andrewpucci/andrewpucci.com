@@ -1,23 +1,23 @@
----
-title: Improving Telerik Product Documentation - Andrew Pucci
-description: Portfolio piece showing how Telerik product documentation was improved with interviews.
-hero: /img/card/kendoui-docs.png
-heroTitle: Improving Telerik Product Documentation
-team:
-  - name: Andrew Pucci (me!)
-  - name: Craig Palenshus
-    link: https://www.linkedin.com/in/craig-palenshus-5b07b33/
-  - name: Telerik Support Team
-responsibilities:
-  - Remote Interviews
-  - Competitive Analysis
-  - Wireframes
-tools:
-  - name: Doodle (for participant scheduling)
-  - name: Skype
-  - name: Camtasia
-  - name: Balsamiq
----
+<script module>
+  export const metadata = {
+    title: 'Improving Telerik Product Documentation - Andrew Pucci',
+    description: 'Portfolio piece showing how Telerik product documentation was improved with interviews.',
+    hero: '/img/card/kendoui-docs.png',
+    heroTitle: 'Improving Telerik Product Documentation',
+    team: [
+      { name: 'Andrew Pucci (me!)' },
+      { name: 'Craig Palenshus', link: 'https://www.linkedin.com/in/craig-palenshus-5b07b33/' },
+      { name: 'Telerik Support Team' },
+    ],
+    responsibilities: ['Remote Interviews', 'Competitive Analysis', 'Wireframes'],
+    tools: [
+      { name: 'Doodle (for participant scheduling)' },
+      { name: 'Skype' },
+      { name: 'Camtasia' },
+      { name: 'Balsamiq' },
+    ],
+  };
+</script>
 
 <script>
   import ExpandableImage from '$lib/components/ExpandableImage/ExpandableImage.svelte';
