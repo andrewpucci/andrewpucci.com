@@ -18,7 +18,7 @@ Unit tests run with Vitest and `happy-dom`; E2E coverage uses Playwright. Mainta
 
 ## Commit & Pull Request Guidelines
 
-Recent history favors short, imperative commit messages, often with a prefix like `fix:` or `refactor:` and an issue or PR reference when relevant. Keep commits focused and explain user-visible changes in the PR description. Link the related issue, note any environment or content migrations, and include screenshots for layout or styling changes. Before requesting review, run `npm run test:ci`.
+Recent history favors short, imperative commit messages, often with a prefix like `fix:` or `refactor:` and an issue or PR reference when relevant. PR titles should follow the same pattern, ideally `type: summary` or `type(scope): summary`, with types like `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, and `chore`. Branch names should prefer `type/short-kebab-case-summary`, such as `feat/add-pr-template`. The repository now provides a default PR body template in `.github/pull_request_template.md`; use it and fill in the sections for motivation, change summary, issue linkage, testing, visuals, and risk notes. Keep commits focused and explain user-visible changes in the PR description. Link the related issue, note any environment or content migrations, and include screenshots for layout or styling changes. Before requesting review, run `npm run test:ci`.
 
 ## Configuration & Content Notes
 
