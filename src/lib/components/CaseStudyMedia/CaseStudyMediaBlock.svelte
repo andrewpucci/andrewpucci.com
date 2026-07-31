@@ -11,7 +11,7 @@
 </script>
 
 {#snippet mediaPane()}
-  <div class="media">
+  <div class="case-study-media-block__media">
     {#if media}
       {@render media()}
     {/if}
@@ -19,7 +19,7 @@
 {/snippet}
 
 {#snippet bodyPane()}
-  <div class="body">
+  <div class="case-study-media-block__body">
     {#if children}
       {@render children()}
     {/if}
@@ -28,7 +28,7 @@
 
 <!-- `reverse` swaps DOM order rather than flipping the grid visually, so focus
      order keeps following the visual reading order (ADR-0002). -->
-<div class="case-study-media-block">
+<div class:case-study-media-block--reverse={reverse} class="case-study-media-block">
   {#if reverse}
     {@render bodyPane()}
     {@render mediaPane()}
