@@ -39,7 +39,6 @@ export default {
         '.eslintrc.*',
         '.oxfmtrc.*',
         'postcss.config.*',
-        'netlify.toml',
 
         // Generated files and build output
         'dist/**',

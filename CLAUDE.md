@@ -12,7 +12,7 @@ npm run dev
 npm run serve
 
 # Production build
-npm run prod
+npm run build
 
 # Lint and unit tests (what CI runs first)
 npm test

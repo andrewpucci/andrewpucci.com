@@ -7,8 +7,7 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "npm run updatedb && rimraf dist && NODE_ENV=development eleventy --serve",
-    "prod": "npm run updatedb && rimraf dist && NODE_ENV=production eleventy",
-    "build": "npm run updatedb && rimraf dist && NODE_ENV=development eleventy",
+    "build": "rimraf dist && NODE_ENV=production eleventy",
     "serve": "npx @11ty/eleventy --serve --port=8080",
     "test": "npm run lint && vitest run",
     "test:watch": "vitest",

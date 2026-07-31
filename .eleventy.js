@@ -86,6 +86,8 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/site/assets/favicon-32x32.png'); // Favicon
   eleventyConfig.addPassthroughCopy('./src/site/humans.txt'); // humans.txt
   eleventyConfig.addPassthroughCopy('./src/site/robots.txt'); // robots.txt
+  eleventyConfig.addPassthroughCopy('./src/site/_headers'); // Cloudflare Pages headers
+  eleventyConfig.addPassthroughCopy('./src/site/_redirects'); // Cloudflare Pages redirects
 
   return {
     dir: {
