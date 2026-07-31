@@ -109,6 +109,7 @@
   }
 
   .close {
+  .close {
     cursor: pointer;
     background: var(--color-surface-default);
     border: 1px solid var(--color-border-subtle);
