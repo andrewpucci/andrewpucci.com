@@ -30,63 +30,63 @@
 </script>
 
 <nav class="nav" aria-label="Primary">
-  <div class="row">
-    <a href="/" class="brand" aria-label="Andrew Pucci, home">
-      <enhanced:img class="avatar" src={avatarSrc} alt="" sizes="42px" />
+  <div class="nav__row">
+    <a href="/" class="nav__brand" aria-label="Andrew Pucci, home">
+      <enhanced:img class="nav__avatar" src={avatarSrc} alt="" sizes="42px" />
     </a>
 
-    <Collapsible.Root class="mobile" open={mobileNavOpen} onOpenChange={handleMobileNavChange}>
+    <Collapsible.Root class="nav__mobile" open={mobileNavOpen} onOpenChange={handleMobileNavChange}>
       <Collapsible.Trigger
         type="button"
-        class="toggle"
+        class="nav__toggle"
         aria-controls="nav-links"
         aria-label="Toggle navigation"
       >
         ☰
       </Collapsible.Trigger>
 
-      <Collapsible.Content class="mobile-links" id="nav-links">
-        <a href="/" class="link" aria-current={page.url.pathname === '/' ? 'page' : undefined}>
+      <Collapsible.Content class="nav__mobile-links" id="nav-links">
+        <a href="/" class="nav__link" aria-current={page.url.pathname === '/' ? 'page' : undefined}>
           About
         </a>
         <a
           href="/resume/"
-          class="link"
+          class="nav__link"
           aria-current={page.url.pathname === '/resume/' ? 'page' : undefined}
         >
           Résumé
         </a>
 
-        <Collapsible.Root bind:open={mobilePortfolioOpen} class="mobile-submenu">
+        <Collapsible.Root bind:open={mobilePortfolioOpen} class="nav__mobile-submenu">
           <Collapsible.Trigger
             type="button"
-            class="link submenu-trigger"
+            class="nav__link nav__submenu-trigger"
             aria-current={isPortfolioRoute ? 'page' : undefined}
           >
             <span>Portfolio</span>
             <span aria-hidden="true">{mobilePortfolioOpen ? '−' : '+'}</span>
           </Collapsible.Trigger>
 
-          <Collapsible.Content class="mobile-submenu-content">
+          <Collapsible.Content class="nav__mobile-submenu-content">
             {#each portfolioLinks as link (link.href)}
-              <a href={link.href} class="submenu-link">{link.label}</a>
+              <a href={link.href} class="nav__submenu-link">{link.label}</a>
             {/each}
           </Collapsible.Content>
         </Collapsible.Root>
 
         {#if downloadFile}
-          <div class="download download-mobile">
+          <div class="nav__download nav__download--mobile">
             <Button href={downloadFile} target="_blank" rel="noopener noreferrer">Download</Button>
           </div>
         {/if}
       </Collapsible.Content>
     </Collapsible.Root>
 
-    <div class="desktop-links">
-      <a href="/" class="link" aria-current={page.url.pathname === '/' ? 'page' : undefined}>About</a>
+    <div class="nav__desktop-links">
+      <a href="/" class="nav__link" aria-current={page.url.pathname === '/' ? 'page' : undefined}>About</a>
       <a
         href="/resume/"
-        class="link"
+        class="nav__link"
         aria-current={page.url.pathname === '/resume/' ? 'page' : undefined}
       >
         Résumé
@@ -95,17 +95,17 @@
       <DropdownMenu.Root>
         <DropdownMenu.Trigger
           type="button"
-          class="link dropdown-trigger"
+          class="nav__link nav__dropdown-trigger"
           aria-current={isPortfolioRoute ? 'page' : undefined}
         >
           Portfolio
         </DropdownMenu.Trigger>
 
-        <DropdownMenu.Content class="dropdown-menu" sideOffset={10}>
+        <DropdownMenu.Content class="nav__dropdown-menu" sideOffset={10}>
           {#each portfolioLinks as link (link.href)}
             <DropdownMenu.Item textValue={link.label}>
               {#snippet child({ props })}
-                <a {...props} href={link.href} class="dropdown-link">{link.label}</a>
+                <a {...props} href={link.href} class="nav__dropdown-link">{link.label}</a>
               {/snippet}
             </DropdownMenu.Item>
           {/each}
@@ -113,7 +113,7 @@
       </DropdownMenu.Root>
 
       {#if downloadFile}
-        <div class="download">
+        <div class="nav__download">
           <Button href={downloadFile} target="_blank" rel="noopener noreferrer">Download</Button>
         </div>
       {/if}
@@ -132,7 +132,7 @@
     padding-block: var(--space-2);
   }
 
-  .row {
+  .nav__row {
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -141,28 +141,28 @@
     padding-inline: var(--space-3);
   }
 
-  .brand {
+  .nav__brand {
     flex-shrink: 0;
   }
 
-  .avatar {
+  .nav__avatar {
     width: 42px;
     height: 42px;
     border-radius: var(--radius-full);
   }
 
-  .mobile {
+  .nav__mobile {
     margin-inline-start: auto;
   }
 
-  .toggle {
+  .nav__toggle {
     cursor: pointer;
     background: none;
     border: none;
     font-size: 1.5rem;
   }
 
-  .mobile-links {
+  .nav__mobile-links {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -175,14 +175,14 @@
     border-radius: var(--card-radius);
   }
 
-  .desktop-links {
+  .nav__desktop-links {
     display: none;
     align-items: center;
     gap: var(--space-3);
     margin-inline-start: auto;
   }
 
-  .link {
+  .nav__link {
     font: var(--typography-label);
     color: var(--nav-link-color-default);
     cursor: pointer;
@@ -191,16 +191,16 @@
     padding: 0;
   }
 
-  .link:hover {
+  .nav__link:hover {
     color: var(--nav-link-color-hover);
   }
 
-  .link[aria-current='page'] {
+  .nav__link[aria-current='page'] {
     color: var(--nav-link-color-active);
     text-decoration: underline;
   }
 
-  .submenu-trigger {
+  .nav__submenu-trigger {
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
@@ -208,11 +208,11 @@
     width: 100%;
   }
 
-  .mobile-submenu {
+  .nav__mobile-submenu {
     width: 100%;
   }
 
-  .mobile-submenu-content {
+  .nav__mobile-submenu-content {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -222,24 +222,24 @@
     border-inline-start: 1px solid var(--card-border-color);
   }
 
-  .submenu-link {
+  .nav__submenu-link {
     font: var(--typography-label);
     color: var(--nav-link-color-default);
   }
 
-  .submenu-link:hover,
-  .dropdown-link:hover,
-  .dropdown-link[data-highlighted] {
+  .nav__submenu-link:hover,
+  .nav__dropdown-link:hover,
+  .nav__dropdown-link[data-highlighted] {
     color: var(--nav-link-color-hover);
   }
 
-  .submenu-link[aria-current='page'],
-  .dropdown-link[aria-current='page'],
-  .dropdown-trigger[data-state='open'] {
+  .nav__submenu-link[aria-current='page'],
+  .nav__dropdown-link[aria-current='page'],
+  .nav__dropdown-trigger[data-state='open'] {
     color: var(--nav-link-color-active);
   }
 
-  .dropdown-menu {
+  .nav__dropdown-menu {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -251,7 +251,7 @@
     box-shadow: 0 1rem 2rem color-mix(in srgb, var(--color-text-default) 10%, transparent);
   }
 
-  .dropdown-link {
+  .nav__dropdown-link {
     display: block;
     font: var(--typography-label);
     color: var(--nav-link-color-default);
@@ -259,16 +259,16 @@
     outline: none;
   }
 
-  .download-mobile {
+  .nav__download--mobile {
     width: 100%;
   }
 
   @media (min-width: 62rem) {
-    .mobile {
+    .nav__mobile {
       display: none;
     }
 
-    .desktop-links {
+    .nav__desktop-links {
       display: flex;
     }
   }
