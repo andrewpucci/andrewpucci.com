@@ -161,6 +161,7 @@ This repo is prepared for deployment on Cloudflare Pages.
 
 ### Cloudflare Pages Configuration
 
+- This repository uses [`wrangler.jsonc`](wrangler.jsonc) as the source of truth for Pages build output configuration.
 - **Framework preset**: None / Eleventy-compatible static site
 - **Build command**: `npm run build`
 - **Build output directory**: `dist`
@@ -209,6 +210,16 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml) for the full workflow.
 5. Push to GitHub and create a pull request
 6. Wait for CI checks to pass
 7. Merge to `main` after review
+
+### Pull Request Conventions
+
+- GitHub will preload the PR body from [`.github/pull_request_template.md`](.github/pull_request_template.md).
+- Fill out the template sections for `Why`, `What Changed`, `Related`, `Testing`, `Visuals`, `Risks`, and the final checklist.
+- PR titles should use a Conventional Commit style summary such as `feat: add PR template` or `fix: correct sitemap generation`.
+- Prefer these PR title types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`.
+- Keep PR titles short, imperative, and focused on one change.
+- Branch names should use `type/short-kebab-case-summary`, for example `feat/add-pr-template` or `docs/update-resume`.
+- Use the same type set for branch names where practical. Automation branches from tools like Dependabot can keep their tool-generated names.
 
 ## Customization
 
