@@ -76,7 +76,9 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 ## Key research findings
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia slot="media" src="/img/portfolio/bd-1.png" alt="Screenshot of Binary Defense Vision interface" expandable />
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/bd-1.png" alt="Screenshot of Binary Defense Vision interface" expandable />
+  {/snippet}
   <ol>
     <li>Users had trouble quickly understanding where they were in the application and which customer they were triaging.</li>
     <li>A few key actions were hidden in this hamburger menu making them hard to find for new users and slow to get to for power users.</li>
@@ -87,14 +89,18 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 ## Ideation
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia slot="media" src="/img/portfolio/bd-2.jpg" alt="Hand drawn sketch of user interface" expandable />
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/bd-2.jpg" alt="Hand drawn sketch of user interface" expandable />
+  {/snippet}
   <p>Once I identified the issues to address, I sketched out some ideas to help me decide on a design direction. I took some of these sketches, like the ones shown above, to both the development team and to a few In-House SOC Analysts to get feedback. This early feedback from developers and users was especially helpful, it prompted changes in the design even before I produced more high-fidelity mockups.</p>
 </CaseStudyMediaBlock>
 
 ## High-fidelity mockups
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia slot="media" src="/img/portfolio/bd-3.png" alt="Mockup of user interface" expandable />
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/bd-3.png" alt="Mockup of user interface" expandable />
+  {/snippet}
   <p>To help aid users in navigation, I moved the primary navigation to the left side of the screen and highlighted the current section. I also created a new contextual navigation along the top to help identify to which customer the data belonged.</p>
   <p>The page name and available actions moved below the contextual navigation which gave us more room to expose buttons previously hidden in the hamburger menu. To take action on more than one alarm at once, we added checkboxes to the beginning of each row.</p>
   <p>Once again, I brought these mockups to the development team and a few In-House SOC Analysts for feedback. After a few tweaks, we agreed to move forward.</p>
@@ -103,12 +109,13 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 ## Incremental progress
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia
-    slot="media"
-    src="/img/portfolio/bd-4.png"
-    alt="Screenshot of user interface with new theme applied"
-    expandable
-  />
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/bd-4.png"
+      alt="Screenshot of user interface with new theme applied"
+      expandable
+    />
+  {/snippet}
   <p>As the development team began to work on implementing the changes, we ran into a few snags. It turned out that the front-end was not in good shape. Based on an old version of Bootstrap and patched over with custom styles, it was hard to get the desired results.</p>
   <p>At this point, we realized that this required a complete rework of the frontend. Since the developers were busy with feature work, I stepped up to build a custom Bootstrap 4 theme. I also made sure our color palette was accessible.</p>
   <p>Before we could get to the interface changes I had mocked up, the theme needed applied throughout the product.</p>
@@ -117,7 +124,9 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 ## Realizing the design vision
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia slot="media" src="/img/portfolio/bd-5.png" alt="Screenshot of user interface" expandable />
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/bd-5.png" alt="Screenshot of user interface" expandable />
+  {/snippet}
   <p>A few months later, I worked with two front-end engineers to bring the design vision to realization. In the meantime, the company brand was also redesigned and the custom theme was updated to comply.</p>
   <p>At this point, I performed usability studies with In-House SOC Analysts to determine whether the updated interface solved the issues surfaced in research. The analysts were extremely pleased with the update. And even though we weren't focusing much on our paid customer users at this point, we received glowing feedback from many of them, as well.</p>
 </CaseStudyMediaBlock>

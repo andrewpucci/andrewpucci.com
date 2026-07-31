@@ -21,6 +21,8 @@
   import CaseStudyMediaGallery from '$lib/components/CaseStudyMedia/CaseStudyMediaGallery.svelte';
 </script>
 
+<p class="lead">LunchBoat was a lightweight mobile app concept for coordinating office lunches without the usual hallway guesswork.</p>
+
 ## Challenge
 
 Have you ever gone to lunch, only to realize that your co-worker is already in line a few people ahead of you? In our office, this happened way too often, so we decided to create an app to make it easier to find out what everyone had planned for lunch.
@@ -28,6 +30,8 @@ Have you ever gone to lunch, only to realize that your co-worker is already in l
 ## Approach
 
 A few co-workers and I headed straight to the whiteboard to figure out what information was needed to help make sharing lunch easier. Once we had a good idea what was needed, I took to the sketchpad and started drawing out some interaction design ideas, which were then translated into interaction flows using Balsamiq.
+
+## Interaction flow artifacts
 
 <CaseStudyMediaGallery>
   <CaseStudyMedia src="/img/portfolio/lunchboat-sketch1.jpg" alt="Conceptual sketch of LunchBoat interface" expandable />

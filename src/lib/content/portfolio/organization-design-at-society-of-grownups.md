@@ -38,13 +38,14 @@ To help with this, I proposed a leadership structure to the CEO and other leader
 ## Workstreams
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia
-    slot="media"
-    src="/img/portfolio/sog-od-1.png"
-    alt="Diagram of workstreams with leads outlined"
-    caption="Workstreams depicted by color, leads outlined"
-    expandable
-  />
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/sog-od-1.png"
+      alt="Diagram of workstreams with leads outlined"
+      caption="Workstreams depicted by color, leads outlined"
+      expandable
+    />
+  {/snippet}
   <p>Workstreams are groups of people who share a common role in the company. For instance, the design workstream included brand designers, UX designers, and classroom materials designers.</p>
   <p>Workstream leads:</p>
   <ul>
@@ -59,13 +60,14 @@ To help with this, I proposed a leadership structure to the CEO and other leader
 ## Pods
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia
-    slot="media"
-    src="/img/portfolio/sog-od-2.png"
-    alt="Diagram of pods composed of multiple workstreams"
-    caption="Three pods consisting of members from multiple workstreams. Pod leaders do not need to be workstream leads."
-    expandable
-  />
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/sog-od-2.png"
+      alt="Diagram of pods composed of multiple workstreams"
+      caption="Three pods consisting of members from multiple workstreams. Pod leaders do not need to be workstream leads."
+      expandable
+    />
+  {/snippet}
   <p>Pods are groups of people working to accomplish a common goal. These groups typically include people from multiple workstreams achieving specific tasks or outcomes. In Scrum, a Pod is most like a Scrum Team.</p>
   <p>Ultimately, the direction of the company is the responsibility of the CEO. Building the basis for this direction is the purview of the Pod Committee, a group of Workstream Leads, members of the Strategy workstream, and Pod Leads. The Pod Committee handles oversight of pods including:</p>
   <ul>

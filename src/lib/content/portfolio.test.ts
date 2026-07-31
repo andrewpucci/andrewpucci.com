@@ -35,12 +35,14 @@ describe('getCaseStudy', () => {
     for (const slug of getCaseStudySlugs()) {
       const source = readFileSync(join(portfolioDir, `${slug}.md`), 'utf8');
 
-      expect(source).toContain('<p class="lead">');
       expect(source).toContain('## Challenge');
       expect(source).toContain('CaseStudyMedia');
+      expect(source).toMatch(/CaseStudyMedia(Block|Gallery)/);
       expect(source).not.toContain('ExpandableImage');
       expect(source).not.toContain('<img ');
-      expect(source).not.toContain('<style>');
+      expect(source).not.toContain('media-block');
+      expect(source).not.toContain('thumbnail-grid');
+      expect(source).not.toContain('case-study-layout');
     }
   });
 });

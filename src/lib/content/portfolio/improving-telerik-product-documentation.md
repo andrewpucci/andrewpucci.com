@@ -24,6 +24,8 @@
   import CaseStudyMediaGallery from '$lib/components/CaseStudyMedia/CaseStudyMediaGallery.svelte';
 </script>
 
+<p class="lead">This case study focuses on how Telerik's support and documentation experience could better help customers answer common product questions on their own.</p>
+
 ## Challenge
 
 It was discovered that some customers were having trouble finding what they were looking for when using online support tools such as the forums, documentation, and knowledgebases, causing an excessive burden on the support team, who routinely had to answer tickets dealing with material that was already available to the customer. This project was meant to help reduce the menial ticket load of the support staff.
@@ -31,6 +33,8 @@ It was discovered that some customers were having trouble finding what they were
 ## Approach
 
 I decided to try to understand more about the problem by recruiting for and performing remote interviews with customers. Talking with the customers uncovered some issues with the way people try to use the product documentation. I then performed a competitive analysis of other product documentation systems and sketched out wireframes for improvements.
+
+## Interface directions
 
 <CaseStudyMediaGallery>
   <CaseStudyMedia src="/img/portfolio/support-dashboard.png" alt="Mockup of documentation homepage" expandable />

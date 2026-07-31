@@ -33,12 +33,13 @@ When Telerik acquired EQATEC in early 2013, the goal was to transition the Silve
 ## The Telerik acquisition of EQATEC
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia
-    slot="media"
-    src="/img/portfolio/t-rta-1.png"
-    alt="Screenshot of the Silverlight EQATEC interface before the project"
-    expandable
-  />
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/t-rta-1.png"
+      alt="Screenshot of the Silverlight EQATEC interface before the project"
+      expandable
+    />
+  {/snippet}
   <p>Telerik acquired EQATEC to add application analytics to the suite of tools it offered. To offer a modern experience and a few long-awaited features, the interface technology needed to be updated. Silverlight was nearing end-of-life and was not available on popular mobile devices at the time.</p>
 </CaseStudyMediaBlock>
 
@@ -56,7 +57,9 @@ I then worked to translate each element of the interface to the new style using 
 ## Scope change
 
 <CaseStudyMediaBlock reverse>
-  <CaseStudyMedia slot="media" src="/img/portfolio/t-rta-4.png" alt="An in-progress version of the styleguide" expandable />
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/t-rta-4.png" alt="An in-progress version of the styleguide" expandable />
+  {/snippet}
   <p>Partway through the project, Telerik announced the upcoming release of Telerik Platform. This was a suite of products that enabled planning, development, and deployment of cross-platform and mobile applications. EQATEC was slated to add measurement as a new offering and was thus rebranded as Telerik Analytics.</p>
   <p>The Telerik Platform experience was being designed at company headquarters in Bulgaria. I took a trip to join other product designers at HQ to converge on a shared style guide, a precursor to what we would call a design system today.</p>
   <p>Once we finalized the style guide, I got to work updating the interface designs for Telerik Analytics.</p>
@@ -65,24 +68,26 @@ I then worked to translate each element of the interface to the new style using 
 ## Final rendering of the rebranded interface
 
 <CaseStudyMediaBlock>
-  <CaseStudyMedia
-    slot="media"
-    src="/img/portfolio/t-rta-5.png"
-    alt="Final rendering of redesigned installations dashboard"
-    expandable
-  />
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/t-rta-5.png"
+      alt="Final rendering of redesigned installations dashboard"
+      expandable
+    />
+  {/snippet}
   <p>I translated the Telerik Platform style guidelines to the new Telerik Analytics interface. Some aspects of the UI had no room for experimentation. For example, the top navigation was shared between all application in Platform and the interactions available there needed to be supported in our interface, as well.</p>
 </CaseStudyMediaBlock>
 
 ## Usability studies
 
 <CaseStudyMediaBlock reverse>
-  <CaseStudyMedia
-    slot="media"
-    src="/img/portfolio/t-rta-6.png"
-    alt="Rendering of a feature to create and edit custom dashboards"
-    expandable
-  />
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/t-rta-6.png"
+      alt="Rendering of a feature to create and edit custom dashboards"
+      expandable
+    />
+  {/snippet}
   <p>Each time I completed a rendering for each section of the interface, the developer would add it to the prototype. This was a completely functional prototype so we were able to get it in front of users to get feedback.</p>
   <p>Once we had a solid set of features prototyped out, I scheduled remote usability studies with a slate of beta testers. I asked each participant to perform a few of the actions we had identified as high priority. This study led to a few tweaks to the interface design that made those tasks easier to complete, confirmed by a follow up study.</p>
   <p>During these studies, I was also able to gather feedback about desired functionality. It became obvious that users needed a way to customize their dashboards so they could have an at-a-glance view of the data most important to them. A brief, high-level overview of that solution is shown below.</p>
