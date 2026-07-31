@@ -18,7 +18,7 @@ test.describe('Home page', () => {
     await expect(nav).toBeVisible();
     await expect(nav.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/');
     await expect(nav.getByRole('link', { name: 'Résumé' })).toHaveAttribute('href', '/resume/');
-    await expect(nav.getByText('Portfolio', { exact: true })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Portfolio' })).toBeVisible();
   });
 
   test('displays the hero headline', async ({ page }) => {
