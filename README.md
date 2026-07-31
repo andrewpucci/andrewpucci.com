@@ -161,6 +161,7 @@ This repo is prepared for deployment on Cloudflare Pages.
 
 ### Cloudflare Pages Configuration
 
+- This repository uses [`wrangler.jsonc`](wrangler.jsonc) as the source of truth for Pages build output configuration.
 - **Framework preset**: None / Eleventy-compatible static site
 - **Build command**: `npm run build`
 - **Build output directory**: `dist`
