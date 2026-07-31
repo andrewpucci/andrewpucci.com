@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import Button from '$lib/components/Button/Button.svelte';
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
@@ -9,6 +9,7 @@
 
   let { form }: { form: ActionData } = $props();
   let submitting = $state(false);
+  const turnstileSiteKey = env.PUBLIC_TURNSTILE_SITE_KEY;
 </script>
 
 <svelte:head>
@@ -50,7 +51,9 @@
       />
       <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
 
-      <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}></div>
+      {#if turnstileSiteKey}
+        <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+      {/if}
 
       <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
     </form>

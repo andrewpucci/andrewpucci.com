@@ -11,7 +11,7 @@ This is the public portfolio site for Andrew Pucci, a UX Designer with developme
 - **Testing**:
   - Unit Tests: [Vitest](https://vitest.dev/)
   - E2E Tests: [Playwright](https://playwright.dev/)
-- **Deployment**: [Netlify](https://www.netlify.com/)
+- **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/)
 - **Node Version**: 24.x LTS (see `.tool-versions` and `package.json` for exact versions)
 
 ## Project Structure
@@ -86,7 +86,7 @@ The site will be available at `http://localhost:8080`.
 Build the optimized production site:
 
 ```bash
-npm run prod
+npm run build
 ```
 
 The built site will be in the `dist/` directory.
@@ -157,15 +157,20 @@ npm run test:ci
 
 ## Deployment
 
-The site is automatically deployed to Netlify when changes are pushed to the `main` branch.
+This repo is prepared for deployment on Cloudflare Pages.
 
-### Netlify Configuration
+### Cloudflare Pages Configuration
 
-- **Build Command**: `npm run prod`
-- **Publish Directory**: `dist`
-- **Node Version**: 24.x (specified in `.tool-versions`)
+- **Framework preset**: None / Eleventy-compatible static site
+- **Build command**: `npm run build`
+- **Build output directory**: `dist`
+- **Production branch**: `main`
+- **Git integration**: Connect the repo in Cloudflare Pages so preview builds run on pull requests and production deploys run on merges to `main`
+- **Environment variables**:
+  - `ROOT_URL=https://andrewpucci.com` (or the final canonical production URL)
+  - `NODE_VERSION=24.18.0`
 
-See `netlify.toml` for detailed configuration.
+Host-specific routing and security headers live in [src/site/\_redirects](src/site/_redirects) and [src/site/\_headers](src/site/_headers), which Eleventy copies into the final `dist/` output for Cloudflare Pages.
 
 ## CI/CD
 
@@ -193,7 +198,7 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml) for the full workflow.
   - PostCSS with Autoprefixer and cssnano
 - **SEO Friendly**: Proper meta tags, semantic HTML, and structured data
 - **Accessibility**: ARIA labels, semantic markup, keyboard navigation
-- **Security**: Content Security Policy headers via Netlify
+- **Security**: Content Security Policy headers via Cloudflare Pages
 
 ## Development Workflow
 

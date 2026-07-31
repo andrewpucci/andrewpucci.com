@@ -2,19 +2,19 @@
 
 ## Project Structure & Module Organization
 
-This repository is an Eleventy v3 static site. Authoring source lives in `src/site/`, with shared data in `src/site/_data/`, layouts in `src/site/_layouts/`, reusable partials in `src/site/_includes/`, and Sass in `src/site/assets/styles/`. Custom Eleventy logic lives in `src/utils/` for filters, shortcodes, image helpers, and minification. Tests are split between `tests/unit/` for Vitest coverage and `tests/e2e/` for Playwright flows. Build output goes to `dist/` and should be treated as generated.
+This repository is a SvelteKit migration baseline that still carries the legacy Eleventy site for comparison and fallback validation. Active app code lives in `src/routes/` and `src/lib/`, with Svelte content in `src/lib/content/`, shared assets in `static/`, and design-token/build configuration at the repo root. The legacy Eleventy source remains in `src/site/` and `src/utils/`. Vitest coverage now lives in source-adjacent `*.test.ts` files plus the existing `tests/unit/` coverage, and Playwright coverage stays in `tests/e2e/`. Build output goes to `dist/` and should be treated as generated.
 
 ## Build, Test, and Development Commands
 
-Use `npm ci` to install dependencies. Run `npm run dev` for the local Eleventy server with a clean rebuild and live reload on `http://localhost:8080`. Use `npm run prod` for a production build and `npm run serve` to serve the current build without rebuilding. `npm test` runs the CI-style unit test and lint pass. `npm run test:e2e` runs Playwright against the local site, and `npm run test:ci` runs the full local validation path.
+Use `npm ci` to install dependencies. Run `npm run dev` for the active SvelteKit app, `npm run preview` to serve the built app, and `npm run check` for the SvelteKit typecheck path. Use `npm run legacy:dev` and `npm run legacy:build` when validating the retained Eleventy baseline on `http://localhost:8080`. `npm test` runs lint plus Vitest, `npm run test:e2e` runs Playwright, and `npm run test:ci` runs the full local validation path.
 
 ## Coding Style & Naming Conventions
 
-This is an ESM-only codebase; use `import`/`export`, not CommonJS. Formatting is enforced with `oxfmt`, and linting uses `oxlint`; run `npm run lint:fix` before opening a PR. Keep JavaScript, Nunjucks, and Markdown changes small and readable. Match existing file patterns such as `*.test.js` for unit tests, `*.spec.js` for E2E, and resume entries like `src/site/resume/entries/work/2022-expel-senior-ux-designer.md`.
+This is an ESM-only codebase; use `import`/`export`, not CommonJS. Formatting is enforced with `oxfmt`, and linting uses `oxlint`; run `npm run lint:fix` before opening a PR. Keep JavaScript, TypeScript, Svelte, Nunjucks, and Markdown changes small and readable. Match existing file patterns such as source-adjacent `*.test.ts` for SvelteKit unit tests, `tests/unit/*.test.js` for retained legacy unit coverage, `*.spec.js` for E2E, and resume entries like `src/lib/content/resume/work/2022-expel-senior-ux-designer.md`.
 
 ## Testing Guidelines
 
-Unit tests run with Vitest and `happy-dom`; E2E coverage uses Playwright. Maintain the existing 80% coverage threshold for lines, functions, branches, and statements with `npm run test:coverage`. Add or update unit tests when touching `src/utils/` or site data logic, and add E2E tests for navigation, page structure, or other visitor-facing behavior.
+Unit tests run with Vitest and `happy-dom`; E2E coverage uses Playwright. Maintain the existing 80% coverage threshold for lines, functions, branches, and statements with `npm run test:coverage`. Add or update unit tests when touching `src/utils/`, `src/lib/content/`, or server-side route logic, and add E2E tests for navigation, page structure, forms, or other visitor-facing behavior.
 
 ## Commit & Pull Request Guidelines
 
@@ -22,7 +22,7 @@ Recent history favors short, imperative commit messages, often with a prefix lik
 
 ## Configuration & Content Notes
 
-Copy `.env-sample` to `.env` and set `ROOT_URL` before local development or E2E testing. Do not commit secrets. When adding portfolio or resume content, prefer editing Markdown in `src/site/portfolio/` or `src/site/resume/entries/` rather than generated output.
+Copy `.env-sample` to `.env` and set `ROOT_URL` before local development or E2E testing. Do not commit secrets. When adding portfolio or resume content, prefer editing Markdown in `src/lib/content/portfolio/` or `src/lib/content/resume/` for the active SvelteKit site, and only touch `src/site/` when intentionally updating the retained legacy baseline.
 
 ## Agent skills
 

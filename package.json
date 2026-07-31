@@ -7,10 +7,10 @@
   "license": "GPL-3.0",
   "scripts": {
     "dev": "npm run tokens:build && vite dev",
-    "build": "wrangler types --check && npm run tokens:build && vite build",
+    "build": "npm run gen && npm run tokens:build && vite build",
     "preview": "wrangler pages dev .svelte-kit/cloudflare --port 4173",
     "prepare": "svelte-kit sync || echo ''",
-    "check": "wrangler types --check && npm run tokens:build && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "npm run gen && npm run tokens:build && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "gen": "wrangler types",
     "tokens:build": "tz build",
@@ -50,7 +50,7 @@
     "url": "https://github.com/andrewpucci/andrewpucci.com"
   },
   "dependencies": {
-    "@11ty/eleventy-img": "^6.0.4",
+    "@11ty/eleventy-img": "^7.0.0",
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.2.6",
     "@fortawesome/fontawesome-free": "^7.3.0",
     "@popperjs/core": "^2.11.8",
@@ -97,7 +97,7 @@
     "oxfmt": "^0.56.0",
     "oxlint": "^1.71.0",
     "playwright": "^1.61.1",
-    "postcss": "^8.5.15",
+    "postcss": "^8.5.25",
     "rimraf": "^6.1.3",
     "sass": "^1.101.0",
     "simple-git-hooks": "^2.13.1",
