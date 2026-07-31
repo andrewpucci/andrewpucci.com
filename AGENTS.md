@@ -6,7 +6,7 @@ This repository is an Eleventy v3 static site. Authoring source lives in `src/si
 
 ## Build, Test, and Development Commands
 
-Use `npm ci` to install dependencies. Run `npm run dev` for the local Eleventy server with a clean rebuild and live reload on `http://localhost:8080`. Use `npm run prod` for a production build and `npm run serve` to serve the current build without rebuilding. `npm test` runs the CI-style unit test and lint pass. `npm run test:e2e` runs Playwright against the local site, and `npm run test:ci` runs the full local validation path.
+Use `npm ci` to install dependencies. Run `npm run dev` for the local Eleventy server with a clean rebuild and live reload on `http://localhost:8080`. Use `npm run build` for a production build and `npm run serve` to serve the current build without rebuilding. `npm test` runs the CI-style unit test and lint pass. `npm run test:e2e` runs Playwright against the local site, and `npm run test:ci` runs the full local validation path.
 
 ## Coding Style & Naming Conventions
 
