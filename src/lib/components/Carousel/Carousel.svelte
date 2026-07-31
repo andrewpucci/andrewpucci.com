@@ -14,18 +14,13 @@
 
   let activeIndex = $state(0);
   let prefersReducedMotion = $state(false);
-  // Best guess before the client effect below can check matchMedia (unavailable
-  // during SSR): assume motion is fine, matching the common case. The effect
-  // corrects this immediately on mount if the visitor actually prefers reduced
-  // motion. Guessing `false` here made the initial aria-label/aria-pressed lie
-  // about whether autoplay was actually about to start.
-  let playing = $state(autoplay);
+  let manuallyPaused = $state(false);
+  let playing = $derived(autoplay && !prefersReducedMotion && !manuallyPaused);
 
   $effect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => {
       prefersReducedMotion = query.matches;
-      playing = autoplay && !query.matches;
     };
     update();
     query.addEventListener('change', update);
@@ -47,7 +42,7 @@
   }
 
   function togglePlaying() {
-    playing = !playing;
+    manuallyPaused = !manuallyPaused;
   }
 </script>
 
