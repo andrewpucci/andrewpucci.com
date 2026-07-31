@@ -9,7 +9,8 @@
 
   let { form }: { form: ActionData } = $props();
   let submitting = $state(false);
-  const turnstileSiteKey = env.PUBLIC_TURNSTILE_SITE_KEY;
+  const turnstileSiteKey = env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
+  const formAvailable = Boolean(turnstileSiteKey);
 </script>
 
 <svelte:head>
@@ -24,39 +25,43 @@
   {#if form?.success}
     <p class="contact__success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
   {:else}
-    <form
-      method="POST"
-      novalidate
-      use:enhance={() => {
-        submitting = true;
-        return async ({ update }) => {
-          await update();
-          submitting = false;
-        };
-      }}
-    >
-      {#if form?.errors?.form}
-        <p class="contact__form-error" role="alert">{form.errors.form}</p>
-      {/if}
+    {#if formAvailable}
+      <form
+        method="POST"
+        novalidate
+        use:enhance={() => {
+          submitting = true;
+          return async ({ update }) => {
+            await update();
+            submitting = false;
+          };
+        }}
+      >
+        {#if form?.errors?.form}
+          <p class="contact__form-error" role="alert">{form.errors.form}</p>
+        {/if}
 
-      <Input label="Name" name="name" autocomplete="name" required value={form?.values?.name ?? ''} error={form?.errors?.name} />
-      <Input
-        label="Email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required
-        value={form?.values?.email ?? ''}
-        error={form?.errors?.email}
-      />
-      <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
+        <Input label="Name" name="name" autocomplete="name" required value={form?.values?.name ?? ''} error={form?.errors?.name} />
+        <Input
+          label="Email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          value={form?.values?.email ?? ''}
+          error={form?.errors?.email}
+        />
+        <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
 
-      {#if turnstileSiteKey}
         <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
-      {/if}
 
-      <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
-    </form>
+        <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
+      </form>
+    {:else}
+      <p class="contact__form-error" role="alert">
+        The contact form is temporarily unavailable. Please email me directly instead.
+      </p>
+    {/if}
   {/if}
 
   <p class="contact__alt">

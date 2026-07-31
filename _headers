@@ -4,3 +4,18 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Report-To: {"group":"default","max_age":31536000,"endpoints":[{"url":"https://andrewpucci.report-uri.com/a/d/g"}],"include_subdomains":true}
+  NEL: {"report_to":"default","max_age":31536000,"include_subdomains":true}
+  Cache-Control: public, max-age=60
+
+/_app/*
+  Cache-Control: public, max-age=360000
+
+/files/*
+  Cache-Control: public, max-age=360000
+
+/img/*
+  Cache-Control: public, max-age=360000
+
+/fonts/*
+  Cache-Control: public, max-age=360000

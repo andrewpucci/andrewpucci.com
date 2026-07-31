@@ -161,16 +161,16 @@ This repo is prepared for deployment on Cloudflare Pages.
 
 ### Cloudflare Pages Configuration
 
-- **Framework preset**: None / Eleventy-compatible static site
+- **Framework preset**: None / custom build
 - **Build command**: `npm run build`
-- **Build output directory**: `dist`
+- **Build output directory**: `.svelte-kit/cloudflare`
 - **Production branch**: `main`
 - **Git integration**: Connect the repo in Cloudflare Pages so preview builds run on pull requests and production deploys run on merges to `main`
 - **Environment variables**:
-  - `ROOT_URL=https://andrewpucci.com` (or the final canonical production URL)
   - `NODE_VERSION=24.18.0`
+  - `PUBLIC_TURNSTILE_SITE_KEY=<your Cloudflare Turnstile site key>`
 
-Host-specific routing and security headers live in [src/site/\_redirects](src/site/_redirects) and [src/site/\_headers](src/site/_headers), which Eleventy copies into the final `dist/` output for Cloudflare Pages.
+Host-specific routing and security headers live in [\_redirects](_redirects) and [\_headers](_headers) at the repo root so Cloudflare Pages picks them up for the shipping SvelteKit build. `ROOT_URL` remains a legacy Eleventy env var used only by [src/site/\_data/site.js](src/site/_data/site.js).
 
 ## CI/CD
 
