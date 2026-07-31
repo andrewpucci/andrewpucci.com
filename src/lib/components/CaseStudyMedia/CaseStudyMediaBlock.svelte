@@ -10,18 +10,32 @@
   let { reverse = false, media, children }: Props = $props();
 </script>
 
-<div class:case-study-media-block--reverse={reverse} class="case-study-media-block">
+{#snippet mediaPane()}
   <div class="case-study-media-block__media">
     {#if media}
       {@render media()}
     {/if}
   </div>
+{/snippet}
 
+{#snippet bodyPane()}
   <div class="case-study-media-block__body">
     {#if children}
       {@render children()}
     {/if}
   </div>
+{/snippet}
+
+<!-- `reverse` swaps DOM order rather than flipping the grid visually, so focus
+     order keeps following the visual reading order (ADR-0002). -->
+<div class="case-study-media-block">
+  {#if reverse}
+    {@render bodyPane()}
+    {@render mediaPane()}
+  {:else}
+    {@render mediaPane()}
+    {@render bodyPane()}
+  {/if}
 </div>
 
 <style>
@@ -35,14 +49,6 @@
     .case-study-media-block {
       grid-template-columns: 1fr 1fr;
       align-items: center;
-    }
-
-    .case-study-media-block--reverse {
-      direction: rtl;
-    }
-
-    .case-study-media-block--reverse > * {
-      direction: ltr;
     }
   }
 </style>

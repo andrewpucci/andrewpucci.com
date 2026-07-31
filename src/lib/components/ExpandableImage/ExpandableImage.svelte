@@ -25,7 +25,7 @@
       }}
     >
       <div class="expandable-image__header">
-        <Dialog.Title class="expandable-image__title">{alt}</Dialog.Title>
+        <Dialog.Title class="visually-hidden">{alt}</Dialog.Title>
         <Dialog.Close bind:ref={closeButton} class="expandable-image__close">Close</Dialog.Close>
       </div>
       <img src={src} alt="" />
@@ -87,18 +87,6 @@
     display: block;
     max-width: 100%;
     max-height: 80vh;
-  }
-
-  :global(.expandable-image__title) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 
   :global(.expandable-image__close) {
