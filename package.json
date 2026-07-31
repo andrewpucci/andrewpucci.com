@@ -39,7 +39,7 @@
     "url": "https://github.com/andrewpucci/andrewpucci.com"
   },
   "dependencies": {
-    "@11ty/eleventy-img": "^6.0.4",
+    "@11ty/eleventy-img": "^7.0.0",
     "@fortawesome/fontawesome-free": "^7.3.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8",
