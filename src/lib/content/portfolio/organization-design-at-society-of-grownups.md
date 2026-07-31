@@ -14,6 +14,11 @@
   };
 </script>
 
+<script>
+  import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
+  import CaseStudyMediaBlock from '$lib/components/CaseStudyMedia/CaseStudyMediaBlock.svelte';
+</script>
+
 <p class="lead">Society of Grownups was a MassMutual learning initiative founded to democratize financial literacy.</p>
 
 ## Challenge
@@ -32,40 +37,42 @@ To help with this, I proposed a leadership structure to the CEO and other leader
 
 ## Workstreams
 
-<div class="media-block">
-  <figure class="media-block__media">
-    <img src="/img/portfolio/sog-od-1.png" alt="" />
-    <figcaption>Workstreams depicted by color, leads outlined</figcaption>
-  </figure>
-  <div class="media-block__text">
-    <p>Workstreams are groups of people who share a common role in the company. For instance, the design workstream included brand designers, UX designers, and classroom materials designers.</p>
-    <p>Workstream leads:</p>
-    <ul>
-      <li>Understand how the business strategy will drive work demand from your Workstream, then hire as appropriate</li>
-      <li>Ensure Workstream members are part of the right Pod(s) both for the individual and the company as a whole through Pod Committee activities</li>
-      <li>Champion career development of Workstream members by focusing on their interests, needs, and desires</li>
-      <li>Initiate feedback process on a regular basis</li>
-    </ul>
-    <p>Workstream leads meet periodically to discuss growth-related challenges. The CEO handles hiring new workstream leads and setting the scope of any new workstream.</p>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia
+    slot="media"
+    src="/img/portfolio/sog-od-1.png"
+    alt="Diagram of workstreams with leads outlined"
+    caption="Workstreams depicted by color, leads outlined"
+    expandable
+  />
+  <p>Workstreams are groups of people who share a common role in the company. For instance, the design workstream included brand designers, UX designers, and classroom materials designers.</p>
+  <p>Workstream leads:</p>
+  <ul>
+    <li>Understand how the business strategy will drive work demand from your Workstream, then hire as appropriate</li>
+    <li>Ensure Workstream members are part of the right Pod(s) both for the individual and the company as a whole through Pod Committee activities</li>
+    <li>Champion career development of Workstream members by focusing on their interests, needs, and desires</li>
+    <li>Initiate feedback process on a regular basis</li>
+  </ul>
+  <p>Workstream leads meet periodically to discuss growth-related challenges. The CEO handles hiring new workstream leads and setting the scope of any new workstream.</p>
+</CaseStudyMediaBlock>
 
 ## Pods
 
-<div class="media-block">
-  <figure class="media-block__media">
-    <img src="/img/portfolio/sog-od-2.png" alt="" />
-    <figcaption>Three pods consisting of members from multiple workstreams. Pod leaders do not need to be workstream leads.</figcaption>
-  </figure>
-  <div class="media-block__text">
-    <p>Pods are groups of people working to accomplish a common goal. These groups typically include people from multiple workstreams achieving specific tasks or outcomes. In Scrum, a Pod is most like a Scrum Team.</p>
-    <p>Ultimately, the direction of the company is the responsibility of the CEO. Building the basis for this direction is the purview of the Pod Committee, a group of Workstream Leads, members of the Strategy workstream, and Pod Leads. The Pod Committee handles oversight of pods including:</p>
-    <ul>
-      <li>Meeting at least quarterly to assess business and staffing needs and adjusting Pods accordingly</li>
-      <li>Prioritizing business efforts including Pod projects, initiatives, and ongoing & future growth projects</li>
-    </ul>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia
+    slot="media"
+    src="/img/portfolio/sog-od-2.png"
+    alt="Diagram of pods composed of multiple workstreams"
+    caption="Three pods consisting of members from multiple workstreams. Pod leaders do not need to be workstream leads."
+    expandable
+  />
+  <p>Pods are groups of people working to accomplish a common goal. These groups typically include people from multiple workstreams achieving specific tasks or outcomes. In Scrum, a Pod is most like a Scrum Team.</p>
+  <p>Ultimately, the direction of the company is the responsibility of the CEO. Building the basis for this direction is the purview of the Pod Committee, a group of Workstream Leads, members of the Strategy workstream, and Pod Leads. The Pod Committee handles oversight of pods including:</p>
+  <ul>
+    <li>Meeting at least quarterly to assess business and staffing needs and adjusting Pods accordingly</li>
+    <li>Prioritizing business efforts including Pod projects, initiatives, and ongoing & future growth projects</li>
+  </ul>
+</CaseStudyMediaBlock>
 
 ### Pod Lead
 
@@ -101,33 +108,3 @@ A few months after the transition, the pod committee was happy with the improvem
 Challenges originated from this new structure, too. In particular, some people who were not part of the pod committee felt that they had no ability to provide input on the company direction. This was certainly a valid point and something we struggled with as we grew.
 
 We never reached the point where every project was lead by a pod lead. Unfortunately, there was a massive shift in prioritization from MassMutual and much of the company was let go. I would have liked to evolve this structure over time to help reduce confusion and increase agency even more.
-
-<style>
-  .media-block {
-    display: grid;
-    gap: var(--space-3);
-    margin-block: var(--space-3);
-  }
-
-  .media-block__media {
-    margin: 0;
-  }
-
-  .media-block__media img {
-    width: 100%;
-    border-radius: var(--radius-md);
-  }
-
-  .media-block__media figcaption {
-    margin-block-start: var(--space-1);
-    font-size: 0.9375rem;
-    color: var(--color-text-secondary);
-  }
-
-  @media (min-width: 62rem) {
-    .media-block {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-    }
-  }
-</style>

@@ -17,7 +17,8 @@
 </script>
 
 <script>
-  import ExpandableImage from '$lib/components/ExpandableImage/ExpandableImage.svelte';
+  import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
+  import CaseStudyMediaGallery from '$lib/components/CaseStudyMedia/CaseStudyMediaGallery.svelte';
 </script>
 
 ## Challenge
@@ -28,11 +29,15 @@ Have you ever gone to lunch, only to realize that your co-worker is already in l
 
 A few co-workers and I headed straight to the whiteboard to figure out what information was needed to help make sharing lunch easier. Once we had a good idea what was needed, I took to the sketchpad and started drawing out some interaction design ideas, which were then translated into interaction flows using Balsamiq.
 
-<div class="thumbnail-grid">
-  <ExpandableImage src="/img/portfolio/lunchboat-sketch1.jpg" alt="Conceptual sketch of LunchBoat interface" />
-  <ExpandableImage src="/img/portfolio/lunchboat-sketch2.jpg" alt="Rough sketch of LunchBoat user flow diagram" />
-  <ExpandableImage src="/img/portfolio/lunchboat-behaviorflow.png" alt="Mockup of screen interface flow diagram for LunchBoat" />
-</div>
+<CaseStudyMediaGallery>
+  <CaseStudyMedia src="/img/portfolio/lunchboat-sketch1.jpg" alt="Conceptual sketch of LunchBoat interface" expandable />
+  <CaseStudyMedia src="/img/portfolio/lunchboat-sketch2.jpg" alt="Rough sketch of LunchBoat user flow diagram" expandable />
+  <CaseStudyMedia
+    src="/img/portfolio/lunchboat-behaviorflow.png"
+    alt="Mockup of screen interface flow diagram for LunchBoat"
+    expandable
+  />
+</CaseStudyMediaGallery>
 
 ## Outcome
 
@@ -41,17 +46,3 @@ The project, named LunchBoat, was released to the [Apple AppStore](https://itune
 ## Lessons Learned
 
 Even though I was only primarily involved in the ideation phase of this project, I kept involved with the development team as it progressed. As usual, technical issues and revised business objectives sometimes got in the way of the original design direction. I made sure I was able to open my mind to the new constraints in order to brainstorm and test new design ideas.
-
-<style>
-  .thumbnail-grid {
-    display: grid;
-    gap: var(--space-3);
-    margin-block: var(--space-3);
-  }
-
-  @media (min-width: 48rem) {
-    .thumbnail-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-</style>

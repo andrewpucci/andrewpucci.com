@@ -20,7 +20,8 @@
 </script>
 
 <script>
-  import ExpandableImage from '$lib/components/ExpandableImage/ExpandableImage.svelte';
+  import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
+  import CaseStudyMediaGallery from '$lib/components/CaseStudyMedia/CaseStudyMediaGallery.svelte';
 </script>
 
 ## Challenge
@@ -31,14 +32,18 @@ It was discovered that some customers were having trouble finding what they were
 
 I decided to try to understand more about the problem by recruiting for and performing remote interviews with customers. Talking with the customers uncovered some issues with the way people try to use the product documentation. I then performed a competitive analysis of other product documentation systems and sketched out wireframes for improvements.
 
-<div class="thumbnail-grid">
-  <ExpandableImage src="/img/portfolio/support-dashboard.png" alt="Mockup of documentation homepage" />
-  <ExpandableImage src="/img/portfolio/support-documentation.png" alt="Mockup of documentation for a particular component" />
-  <ExpandableImage src="/img/portfolio/support-kb.png" alt="Mockup of the knowledgebase interface" />
-  <ExpandableImage src="/img/portfolio/support-plans.png" alt="Mockup of support plan pricing page" />
-  <ExpandableImage src="/img/portfolio/support-videos.png" alt="Mockup of video search in documentation" />
-  <ExpandableImage src="/img/portfolio/support-youraccount.png" alt="Mockup of updated account page" />
-</div>
+<CaseStudyMediaGallery>
+  <CaseStudyMedia src="/img/portfolio/support-dashboard.png" alt="Mockup of documentation homepage" expandable />
+  <CaseStudyMedia
+    src="/img/portfolio/support-documentation.png"
+    alt="Mockup of documentation for a particular component"
+    expandable
+  />
+  <CaseStudyMedia src="/img/portfolio/support-kb.png" alt="Mockup of the knowledgebase interface" expandable />
+  <CaseStudyMedia src="/img/portfolio/support-plans.png" alt="Mockup of support plan pricing page" expandable />
+  <CaseStudyMedia src="/img/portfolio/support-videos.png" alt="Mockup of video search in documentation" expandable />
+  <CaseStudyMedia src="/img/portfolio/support-youraccount.png" alt="Mockup of updated account page" expandable />
+</CaseStudyMediaGallery>
 
 ## Outcome
 
@@ -47,17 +52,3 @@ This project uncovered underlying issues that lead to a larger effort to signifi
 ## Lessons Learned
 
 During this project, I learned that customers were very specific with their needs when trying to find answers in the product documentation. One of the biggest challenges for me was to figure out ways to help users without them having to bounce back to search results but still optimize for the search-first frame of mind that most seemed to have.
-
-<style>
-  .thumbnail-grid {
-    display: grid;
-    gap: var(--space-3);
-    margin-block: var(--space-3);
-  }
-
-  @media (min-width: 48rem) {
-    .thumbnail-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-</style>

@@ -22,7 +22,8 @@
 </script>
 
 <script>
-  import ExpandableImage from '$lib/components/ExpandableImage/ExpandableImage.svelte';
+  import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
+  import CaseStudyMediaBlock from '$lib/components/CaseStudyMedia/CaseStudyMediaBlock.svelte';
 </script>
 
 <p class="lead">Binary Defense MDR (née Vision) is an endpoint protection solution that provides detection of and defense against attacks on corporate networks.</p>
@@ -33,28 +34,28 @@ I joined the Binary Defense product team as the first designer. To bring the pro
 
 ## How Binary Defense MDR works
 
-<dl class="process-steps">
-  <div class="process-steps__step">
+<dl class="case-study-steps">
+  <div class="case-study-steps__step">
     <dt>Event Collection</dt>
     <dd>An agent collects event data from endpoints across customer networks.</dd>
   </div>
-  <div class="process-steps__step">
+  <div class="case-study-steps__step">
     <dt>Event Correlation</dt>
     <dd>Custom algorithms correlate event data to surface potential threats.</dd>
   </div>
-  <div class="process-steps__step">
+  <div class="case-study-steps__step">
     <dt>Alarm Production</dt>
     <dd>Alarms are produced for potential malicious events.</dd>
   </div>
-  <div class="process-steps__step">
+  <div class="case-study-steps__step">
     <dt>Investigation</dt>
     <dd>Information from alarms is used to investigate suspicious network activity.</dd>
   </div>
-  <div class="process-steps__step">
+  <div class="case-study-steps__step">
     <dt>Escalation</dt>
     <dd>Upon determining high likelihood of true malicious activity, alarms are escalated.</dd>
   </div>
-  <div class="process-steps__step">
+  <div class="case-study-steps__step">
     <dt>Remediation</dt>
     <dd>Security experts take action to secure network.</dd>
   </div>
@@ -74,67 +75,52 @@ In this case study, I focus on the evolution of the Open Alarms interface, the m
 
 ## Key research findings
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/bd-1.png" alt="Screenshot of Binary Defense Vision interface" />
-  </div>
-  <div class="media-block__text">
-    <ol>
-      <li>Users had trouble quickly understanding where they were in the application and which customer they were triaging.</li>
-      <li>A few key actions were hidden in this hamburger menu making them hard to find for new users and slow to get to for power users.</li>
-      <li>The matching text color here and in the table below caused confusion, only one was a link.</li>
-    </ol>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia slot="media" src="/img/portfolio/bd-1.png" alt="Screenshot of Binary Defense Vision interface" expandable />
+  <ol>
+    <li>Users had trouble quickly understanding where they were in the application and which customer they were triaging.</li>
+    <li>A few key actions were hidden in this hamburger menu making them hard to find for new users and slow to get to for power users.</li>
+    <li>The matching text color here and in the table below caused confusion, only one was a link.</li>
+  </ol>
+</CaseStudyMediaBlock>
 
 ## Ideation
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/bd-2.jpg" alt="Hand drawn sketch of user interface" />
-  </div>
-  <div class="media-block__text">
-    <p>Once I identified the issues to address, I sketched out some ideas to help me decide on a design direction. I took some of these sketches, like the ones shown above, to both the development team and to a few In-House SOC Analysts to get feedback. This early feedback from developers and users was especially helpful, it prompted changes in the design even before I produced more high-fidelity mockups.</p>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia slot="media" src="/img/portfolio/bd-2.jpg" alt="Hand drawn sketch of user interface" expandable />
+  <p>Once I identified the issues to address, I sketched out some ideas to help me decide on a design direction. I took some of these sketches, like the ones shown above, to both the development team and to a few In-House SOC Analysts to get feedback. This early feedback from developers and users was especially helpful, it prompted changes in the design even before I produced more high-fidelity mockups.</p>
+</CaseStudyMediaBlock>
 
 ## High-fidelity mockups
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/bd-3.png" alt="Mockup of user interface" />
-  </div>
-  <div class="media-block__text">
-    <p>To help aid users in navigation, I moved the primary navigation to the left side of the screen and highlighted the current section. I also created a new contextual navigation along the top to help identify to which customer the data belonged.</p>
-    <p>The page name and available actions moved below the contextual navigation which gave us more room to expose buttons previously hidden in the hamburger menu. To take action on more than one alarm at once, we added checkboxes to the beginning of each row.</p>
-    <p>Once again, I brought these mockups to the development team and a few In-House SOC Analysts for feedback. After a few tweaks, we agreed to move forward.</p>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia slot="media" src="/img/portfolio/bd-3.png" alt="Mockup of user interface" expandable />
+  <p>To help aid users in navigation, I moved the primary navigation to the left side of the screen and highlighted the current section. I also created a new contextual navigation along the top to help identify to which customer the data belonged.</p>
+  <p>The page name and available actions moved below the contextual navigation which gave us more room to expose buttons previously hidden in the hamburger menu. To take action on more than one alarm at once, we added checkboxes to the beginning of each row.</p>
+  <p>Once again, I brought these mockups to the development team and a few In-House SOC Analysts for feedback. After a few tweaks, we agreed to move forward.</p>
+</CaseStudyMediaBlock>
 
 ## Incremental progress
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/bd-4.png" alt="Screenshot of user interface with new theme applied" />
-  </div>
-  <div class="media-block__text">
-    <p>As the development team began to work on implementing the changes, we ran into a few snags. It turned out that the front-end was not in good shape. Based on an old version of Bootstrap and patched over with custom styles, it was hard to get the desired results.</p>
-    <p>At this point, we realized that this required a complete rework of the frontend. Since the developers were busy with feature work, I stepped up to build a custom Bootstrap 4 theme. I also made sure our color palette was accessible.</p>
-    <p>Before we could get to the interface changes I had mocked up, the theme needed applied throughout the product.</p>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia
+    slot="media"
+    src="/img/portfolio/bd-4.png"
+    alt="Screenshot of user interface with new theme applied"
+    expandable
+  />
+  <p>As the development team began to work on implementing the changes, we ran into a few snags. It turned out that the front-end was not in good shape. Based on an old version of Bootstrap and patched over with custom styles, it was hard to get the desired results.</p>
+  <p>At this point, we realized that this required a complete rework of the frontend. Since the developers were busy with feature work, I stepped up to build a custom Bootstrap 4 theme. I also made sure our color palette was accessible.</p>
+  <p>Before we could get to the interface changes I had mocked up, the theme needed applied throughout the product.</p>
+</CaseStudyMediaBlock>
 
 ## Realizing the design vision
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/bd-5.png" alt="Screenshot of user interface" />
-  </div>
-  <div class="media-block__text">
-    <p>A few months later, I worked with two front-end engineers to bring the design vision to realization. In the meantime, the company brand was also redesigned and the custom theme was updated to comply.</p>
-    <p>At this point, I performed usability studies with In-House SOC Analysts to determine whether the updated interface solved the issues surfaced in research. The analysts were extremely pleased with the update. And even though we weren't focusing much on our paid customer users at this point, we received glowing feedback from many of them, as well.</p>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  <CaseStudyMedia slot="media" src="/img/portfolio/bd-5.png" alt="Screenshot of user interface" expandable />
+  <p>A few months later, I worked with two front-end engineers to bring the design vision to realization. In the meantime, the company brand was also redesigned and the custom theme was updated to comply.</p>
+  <p>At this point, I performed usability studies with In-House SOC Analysts to determine whether the updated interface solved the issues surfaced in research. The analysts were extremely pleased with the update. And even though we weren't focusing much on our paid customer users at this point, we received glowing feedback from many of them, as well.</p>
+</CaseStudyMediaBlock>
 
 ## Results
 
@@ -147,34 +133,23 @@ An area that I struggled with during this project was planning and scheduling th
 Some issues remained after this project. For instance, the pagination controls and row counts were not accessible without scrolling to the bottom of the screen. Also, it was hard for users to know if they had seen any alarms if they had to leave the interface and come back later. Fixes for these issues were planned for future releases.
 
 <style>
-  .media-block {
-    display: grid;
-    gap: var(--space-3);
-    margin-block: var(--space-3);
-  }
-
-  .process-steps {
+  .case-study-steps {
     display: grid;
     gap: var(--space-3);
     margin: var(--space-3) 0;
   }
 
-  .process-steps__step dt {
+  .case-study-steps__step dt {
     font: var(--typography-title);
   }
 
-  .process-steps__step dd {
+  .case-study-steps__step dd {
     margin: 0;
     color: var(--color-text-secondary);
   }
 
   @media (min-width: 62rem) {
-    .media-block {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-    }
-
-    .process-steps {
+    .case-study-steps {
       grid-template-columns: repeat(3, 1fr);
     }
   }
