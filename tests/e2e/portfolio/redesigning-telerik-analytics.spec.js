@@ -41,7 +41,18 @@ test.describe('Redesigning Telerik Analytics case study', () => {
     const trigger = page.getByRole('button', {
       name: /Screenshot of the Silverlight EQATEC interface/,
     });
-    await trigger.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    const closeButton = page.getByRole('button', { name: 'Close' });
+    await expect(closeButton).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(trigger).toBeFocused();
   });
 });
