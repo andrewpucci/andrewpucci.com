@@ -29,8 +29,8 @@ describe('getCaseStudy', () => {
     expect(getCaseStudy('does-not-exist')).toBeUndefined();
   });
 
-  it('keeps every live case study on shared body patterns', () => {
-    expect(caseStudyFiles.length).toBeGreaterThan(0);
+  it('keeps the six live case studies on shared body patterns', () => {
+    expect(caseStudyFiles).toHaveLength(6);
 
     for (const slug of getCaseStudySlugs()) {
       const source = readFileSync(join(portfolioDir, `${slug}.md`), 'utf8');
