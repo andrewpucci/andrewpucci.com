@@ -22,7 +22,8 @@ tools:
 ---
 
 <script>
-  import ExpandableImage from '$lib/components/ExpandableImage/ExpandableImage.svelte';
+  import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
+  import CaseStudyMediaBlock from '$lib/components/CaseStudyMedia/CaseStudyMediaBlock.svelte';
 </script>
 
 <p class="lead">Society of Grownups was a MassMutual learning initiative founded to democratize financial literacy.</p>
@@ -49,28 +50,28 @@ I decided to experiment with three separate changes:
 
 ## Onboarding checklist
 
-<div class="media-block">
-  <div class="media-block__text">
-    <p>At first, I created and shared a Google doc with the person responsible for the new hire and our IT contact. Most of the time, this worked well but there were a few drawbacks.</p>
-    <p>This process required a lot of active work from me to keep things updated, especially as we ramped up hiring. It was also a challenge to make sure that specific tasks were being followed up with on time. There was no accountability built into the document; it required regular follow up.</p>
-    <p>As we continued growing, we adopted Greenhouse Onboarding to help keep everyone on the same page. It had features to notify people when they need to complete tasks and kept me informed when things became past due. This quickly became essential and did a lot to improve the new employee experience.</p>
-  </div>
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/sog-eo-1.png" alt="Screenshot of a document outlining the new employee onboarding process" />
-  </div>
-</div>
+<CaseStudyMediaBlock reverse>
+  {#snippet media()}
+    <CaseStudyMedia
+      src="/img/portfolio/sog-eo-1.png"
+      alt="Screenshot of a document outlining the new employee onboarding process"
+      expandable
+    />
+  {/snippet}
+  <p>At first, I created and shared a Google doc with the person responsible for the new hire and our IT contact. Most of the time, this worked well but there were a few drawbacks.</p>
+  <p>This process required a lot of active work from me to keep things updated, especially as we ramped up hiring. It was also a challenge to make sure that specific tasks were being followed up with on time. There was no accountability built into the document; it required regular follow up.</p>
+  <p>As we continued growing, we adopted Greenhouse Onboarding to help keep everyone on the same page. It had features to notify people when they need to complete tasks and kept me informed when things became past due. This quickly became essential and did a lot to improve the new employee experience.</p>
+</CaseStudyMediaBlock>
 
 ## Equipment process improvements
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/sog-eo-2.jpg" alt="Multiple devices running iOS" />
-  </div>
-  <div class="media-block__text">
-    <p>We were having a hard time getting laptops, keyboards, mice, and phones for new employees fast enough. Especially since MassMutual did not use Macs and iPhones like we did, there was no equipment cache that we could draw from. We needed to buy equipment direct from Apple.</p>
-    <p>I worked with our IT support staff to develop a procurement plan that aligned with our hiring expectations. This helped build a small stockpile that enabled us to provision equipment quickly, even in times of rapid growth. This reduced (and in most cases eliminated) the time new hires spent waiting for equipment when they started.</p>
-  </div>
-</div>
+<CaseStudyMediaBlock>
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/sog-eo-2.jpg" alt="Multiple devices running iOS" />
+  {/snippet}
+  <p>We were having a hard time getting laptops, keyboards, mice, and phones for new employees fast enough. Especially since MassMutual did not use Macs and iPhones like we did, there was no equipment cache that we could draw from. We needed to buy equipment direct from Apple.</p>
+  <p>I worked with our IT support staff to develop a procurement plan that aligned with our hiring expectations. This helped build a small stockpile that enabled us to provision equipment quickly, even in times of rapid growth. This reduced (and in most cases eliminated) the time new hires spent waiting for equipment when they started.</p>
+</CaseStudyMediaBlock>
 
 ## Onboarding buddy program
 
@@ -82,28 +83,11 @@ I also founded an onboarding circle. This group of people helped refine the onbo
 
 ## Conclusion
 
-<div class="media-block">
-  <div class="media-block__media">
-    <ExpandableImage src="/img/portfolio/sog-eo-3.jpg" alt="Hanging advertisements on a wall" />
-  </div>
-  <div class="media-block__text">
-    <p>As we iterated on this process, we learned that we needed to help new employees understand the relationship between Society of Grownups and MassMutual.</p>
-    <p>Certain things that were MassMutual requirements did not fit the culture we had at Society of Grownups. I spent a lot of time speaking with the MassMutual HR department to help smooth those concerns out.</p>
-    <p>Overall, this project led me to dive deeper into process improvement and was the impetus to changing my title to Culture Architect.</p>
-  </div>
-</div>
-
-<style>
-  .media-block {
-    display: grid;
-    gap: var(--space-3);
-    margin-block: var(--space-3);
-  }
-
-  @media (min-width: 62rem) {
-    .media-block {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-    }
-  }
-</style>
+<CaseStudyMediaBlock>
+  {#snippet media()}
+    <CaseStudyMedia src="/img/portfolio/sog-eo-3.jpg" alt="Hanging advertisements on a wall" />
+  {/snippet}
+  <p>As we iterated on this process, we learned that we needed to help new employees understand the relationship between Society of Grownups and MassMutual.</p>
+  <p>Certain things that were MassMutual requirements did not fit the culture we had at Society of Grownups. I spent a lot of time speaking with the MassMutual HR department to help smooth those concerns out.</p>
+  <p>Overall, this project led me to dive deeper into process improvement and was the impetus to changing my title to Culture Architect.</p>
+</CaseStudyMediaBlock>

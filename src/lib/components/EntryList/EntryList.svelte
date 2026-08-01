@@ -14,7 +14,7 @@
 
 <ol class="entry-list" reversed>
   {#each displayOrder as entry (entry.title + entry.start)}
-    <li class="entry-list__item h-event">
+    <li class="item h-event">
       <ResumeEntry {...entry} />
     </li>
   {/each}
@@ -41,7 +41,7 @@
   .entry-list::before {
     position: absolute;
     inset-inline-start: 1.1rem;
-    /* Matches .entry-list__item::before's own target center below, so the rule
+    /* Matches .item::before's own target center below, so the rule
        starts at the first dot rather than overshooting above it. */
     top: var(--timeline-marker-center);
     bottom: 0;
@@ -56,12 +56,12 @@
     );
   }
 
-  .entry-list__item {
+  .item {
     position: relative;
     padding-inline-start: var(--space-3);
   }
 
-  .entry-list__item::before {
+  .item::before {
     position: absolute;
     top: calc(var(--timeline-marker-center) - var(--timeline-dot-size) / 2);
     inset-inline-start: 0;

@@ -17,15 +17,15 @@
 </svelte:head>
 
 <section class="hero">
-  <enhanced:img class="hero__image" src={heroSrc} alt="" sizes="100vw" fetchpriority="high" />
-  <h1 class="hero__headline">
+  <enhanced:img class="image" src={heroSrc} alt="" sizes="100vw" fetchpriority="high" />
+  <h1 class="headline">
     <span>Hi, I'm Andrew. I grow teams who build engaging, usable, and accessible products.</span>
   </h1>
 </section>
 
 <section class="icon-blocks">
   <div class="icon-block">
-    <svg class="icon-block__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -39,7 +39,7 @@
   </div>
 
   <div class="icon-block">
-    <svg class="icon-block__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="8 6 2 12 8 18" />
       <polyline points="16 6 22 12 16 18" />
     </svg>
@@ -51,7 +51,7 @@
   </div>
 
   <div class="icon-block">
-    <svg class="icon-block__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path
         d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
       />
@@ -95,7 +95,7 @@
     position: relative;
   }
 
-  .hero__image {
+  .image {
     width: 100%;
     min-height: 45vh;
     max-height: 45vh;
@@ -103,7 +103,7 @@
     filter: blur(0.3125rem) grayscale(100%) opacity(30%);
   }
 
-  .hero__headline {
+  .headline {
     position: absolute;
     inset: 0;
     display: flex;
@@ -112,7 +112,7 @@
     padding: var(--space-3);
   }
 
-  .hero__headline span {
+  .headline span {
     /* DTCG dimension tokens can't hold a fluid clamp() (see ADR-0006's
        amendment), so the min/max are tokenized separately and the clamp
        itself -- including the non-tokenized vw interpolation term from
@@ -138,7 +138,7 @@
     text-align: center;
   }
 
-  .icon-block__icon {
+  .icon {
     color: var(--color-brand-primary);
     width: 2.5rem;
     height: 2.5rem;
