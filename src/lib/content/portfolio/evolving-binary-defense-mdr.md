@@ -35,27 +35,27 @@ I joined the Binary Defense product team as the first designer. To bring the pro
 ## How Binary Defense MDR works
 
 <dl class="case-study-steps">
-  <div class="case-study-steps__step">
+  <div class="case-study-step">
     <dt>Event Collection</dt>
     <dd>An agent collects event data from endpoints across customer networks.</dd>
   </div>
-  <div class="case-study-steps__step">
+  <div class="case-study-step">
     <dt>Event Correlation</dt>
     <dd>Custom algorithms correlate event data to surface potential threats.</dd>
   </div>
-  <div class="case-study-steps__step">
+  <div class="case-study-step">
     <dt>Alarm Production</dt>
     <dd>Alarms are produced for potential malicious events.</dd>
   </div>
-  <div class="case-study-steps__step">
+  <div class="case-study-step">
     <dt>Investigation</dt>
     <dd>Information from alarms is used to investigate suspicious network activity.</dd>
   </div>
-  <div class="case-study-steps__step">
+  <div class="case-study-step">
     <dt>Escalation</dt>
     <dd>Upon determining high likelihood of true malicious activity, alarms are escalated.</dd>
   </div>
-  <div class="case-study-steps__step">
+  <div class="case-study-step">
     <dt>Remediation</dt>
     <dd>Security experts take action to secure network.</dd>
   </div>
@@ -148,11 +148,11 @@ Some issues remained after this project. For instance, the pagination controls a
     margin: var(--space-3) 0;
   }
 
-  .case-study-steps__step dt {
+  .case-study-step dt {
     font: var(--typography-title);
   }
 
-  .case-study-steps__step dd {
+  .case-study-step dd {
     margin: 0;
     color: var(--color-text-secondary);
   }

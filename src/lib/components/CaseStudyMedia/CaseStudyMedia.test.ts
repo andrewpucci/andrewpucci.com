@@ -45,7 +45,8 @@ describe('CaseStudyMediaBlock', () => {
 
   it('supports a reversed desktop layout', () => {
     expect(blockSource).toContain('reverse?: boolean;');
-    expect(blockSource).toContain('case-study-media-block--reverse');
+    expect(blockSource).toContain('{#if reverse}');
+    expect(blockSource).toContain('{@render bodyPane()}');
   });
 });
 
