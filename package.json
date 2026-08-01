@@ -54,6 +54,7 @@
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.2.6",
     "@fortawesome/fontawesome-free": "^7.3.0",
     "@popperjs/core": "^2.11.8",
+    "bits-ui": "^2.18.1",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.3.1",
     "html-minifier-terser": "^7.2.0",
@@ -107,7 +108,6 @@
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.9",
-    "vitest-browser-svelte": "^2.1.1",
     "wrangler": "^4.97.0"
   },
   "simple-git-hooks": {

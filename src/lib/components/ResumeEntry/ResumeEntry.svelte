@@ -17,10 +17,10 @@
 </script>
 
 <article class="resume-entry">
-  <div class="resume-entry__heading">
-    <h3 class="resume-entry__title p-name">{title}</h3>
+  <div class="heading">
+    <h3 class="title p-name">{title}</h3>
 
-    <p class="resume-entry__dates">
+    <p class="dates">
       <time class="dt-start" datetime={toISODate(start)}>{formatMonthYear(start)}</time>
       {#if end === 'present'}
         <span>–</span>
@@ -33,7 +33,7 @@
   </div>
 
   {#if organization}
-    <p class="resume-entry__org h-card">
+    <p class="org h-card">
       {#if organizationUrl}
         <a href={organizationUrl} class="p-name u-url" target="_blank" rel="noopener noreferrer">{organization}</a>
       {:else}
@@ -47,7 +47,7 @@
   {/if}
 
   {#if contentHtml}
-    <div class="resume-entry__summary p-summary">
+    <div class="summary p-summary">
       {@html contentHtml}
     </div>
   {/if}
@@ -58,16 +58,16 @@
     padding-block-start: var(--space-3);
   }
 
-  .resume-entry__heading {
+  .heading {
     display: flex;
     flex-direction: column;
   }
 
-  .resume-entry__title {
+  .title {
     font: var(--typography-title);
   }
 
-  .resume-entry__dates {
+  .dates {
     /* Dates lead visually while the heading stays first in reading/DOM order. */
     order: -1;
     margin-block-end: var(--space-1);
@@ -75,11 +75,11 @@
     color: var(--color-text-secondary);
   }
 
-  .resume-entry__org {
+  .org {
     font-size: 1.25rem;
   }
 
-  .resume-entry__org .p-name {
+  .org .p-name {
     color: var(--color-brand-primary);
   }
 </style>

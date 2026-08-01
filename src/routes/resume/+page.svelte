@@ -13,12 +13,12 @@
 </svelte:head>
 
 <div class="resume">
-  <header class="resume__header vcard h-card">
-    <div class="resume__name-row">
+  <header class="header vcard h-card">
+    <div class="name-row">
       <h1 class="p-name">{author.name}</h1>
       <em class="p-gender-identity">({author.pronouns})</em>
     </div>
-    <p class="resume__lead">
+    <p class="lead">
       <span class="p-job-title">{author.occupation}</span>
       <span aria-hidden="true">·</span>
       <span class="p-locality">{author.location}</span>
@@ -47,7 +47,7 @@
 
   <section aria-labelledby="skills-heading">
     <h2 id="skills-heading">Skills</h2>
-    <ul class="resume__pill-list">
+    <ul class="pill-list">
       {#each author.skills as skill (skill)}
         <li>{skill}</li>
       {/each}
@@ -56,7 +56,7 @@
 
   <section aria-labelledby="tools-heading">
     <h2 id="tools-heading">Tools</h2>
-    <ul class="resume__pill-list">
+    <ul class="pill-list">
       {#each author.tools as tool (tool)}
         <li>{tool}</li>
       {/each}
@@ -71,18 +71,18 @@
     padding: var(--space-3);
   }
 
-  .resume__header {
+  .header {
     margin-block-end: var(--space-4);
   }
 
-  .resume__name-row {
+  .name-row {
     display: flex;
     align-items: baseline;
     gap: var(--space-2);
     flex-wrap: wrap;
   }
 
-  .resume__lead {
+  .lead {
     font: var(--typography-title);
     color: var(--color-text-secondary);
   }
@@ -91,7 +91,7 @@
     margin-block-end: var(--space-4);
   }
 
-  .resume__pill-list {
+  .pill-list {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1);
@@ -100,7 +100,7 @@
     list-style: none;
   }
 
-  .resume__pill-list li {
+  .pill-list li {
     font: var(--typography-label);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border-subtle);

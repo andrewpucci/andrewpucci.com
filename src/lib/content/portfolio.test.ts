@@ -1,5 +1,12 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getCaseStudy, getCaseStudySlugs } from './portfolio';
+
+const portfolioDir = join(process.cwd(), 'src/lib/content/portfolio');
+const caseStudyFiles = readdirSync(portfolioDir)
+  .filter((file) => file.endsWith('.md'))
+  .sort();
 
 describe('getCaseStudySlugs', () => {
   it('lists every case study markdown file as a slug', () => {
@@ -20,5 +27,22 @@ describe('getCaseStudy', () => {
 
   it('returns undefined for an unknown slug', () => {
     expect(getCaseStudy('does-not-exist')).toBeUndefined();
+  });
+
+  it('keeps every live case study on shared body patterns', () => {
+    expect(caseStudyFiles.length).toBeGreaterThan(0);
+
+    for (const slug of getCaseStudySlugs()) {
+      const source = readFileSync(join(portfolioDir, `${slug}.md`), 'utf8');
+
+      expect(source).toContain('## Challenge');
+      expect(source).toContain('CaseStudyMedia');
+      expect(source).toMatch(/CaseStudyMedia(Block|Gallery)/);
+      expect(source).not.toContain('ExpandableImage');
+      expect(source).not.toContain('<img ');
+      expect(source).not.toContain('media-block');
+      expect(source).not.toContain('thumbnail-grid');
+      expect(source).not.toContain('case-study-layout');
+    }
   });
 });

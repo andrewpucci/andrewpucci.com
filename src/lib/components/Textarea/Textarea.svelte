@@ -13,17 +13,17 @@
 </script>
 
 <div class="field">
-  <label for={inputId} class="field__label">{label}</label>
+  <label for={inputId} class="label">{label}</label>
   <textarea
     id={inputId}
     {name}
-    class="field__input"
+    class="input"
     aria-invalid={error ? 'true' : undefined}
     aria-describedby={error ? errorId : undefined}
     {...rest}
   ></textarea>
   {#if error}
-    <p id={errorId} class="field__error">{error}</p>
+    <p id={errorId} class="error">{error}</p>
   {/if}
 </div>
 
@@ -34,12 +34,12 @@
     gap: var(--space-1);
   }
 
-  .field__label {
+  .label {
     font: var(--typography-label);
     color: var(--color-text-default);
   }
 
-  .field__input {
+  .input {
     font: var(--typography-body);
     color: var(--color-text-default);
     background: var(--color-surface-default);
@@ -51,11 +51,11 @@
     resize: vertical;
   }
 
-  .field__input[aria-invalid='true'] {
+  .input[aria-invalid='true'] {
     border-color: var(--color-brand-primary);
   }
 
-  .field__error {
+  .error {
     margin: 0;
     font-size: 0.9375rem;
     color: var(--color-brand-primary);
