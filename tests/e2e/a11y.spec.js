@@ -12,6 +12,14 @@ const routes = [
   '/portfolio/organization-design-at-society-of-grownups/',
   '/portfolio/improving-telerik-product-documentation/',
   '/portfolio/lunchboat-mobile-app-interaction-flow/',
+  '/portfolio/archive/bookmooch-social-networking-survey/',
+  '/portfolio/archive/carnation-city-mall-blueprints/',
+  '/portfolio/archive/employee-tool/',
+  '/portfolio/archive/local-yokel-foods-paper-prototype/',
+  '/portfolio/archive/revamping-course-registration/',
+  '/portfolio/archive/society-of-grownups-website/',
+  '/portfolio/archive/understanding-justcode-users/',
+  '/portfolio/archive/young-professionals-of-akron-usability-study/',
   '/contact/',
 ];
 
