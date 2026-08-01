@@ -10,31 +10,50 @@
   let closeButton = $state<HTMLButtonElement | null>(null);
 </script>
 
+<!-- Every delegated element is rendered through Bits UI's `child` snippet so it
+     lands in this component's scope and Svelte's scoped styles reach it. Styling
+     these from a `<style>` block any other way would need `:global()` (ADR-0007). -->
 <Dialog.Root>
-  <Dialog.Trigger class="expandable-image__trigger">
-    <img src={src} {alt} />
+  <Dialog.Trigger>
+    {#snippet child({ props })}
+      <button {...props} class="trigger">
+        <img src={src} {alt} />
+      </button>
+    {/snippet}
   </Dialog.Trigger>
 
   <Dialog.Portal>
-    <Dialog.Overlay class="expandable-image__overlay" />
+    <Dialog.Overlay>
+      {#snippet child({ props })}
+        <div {...props} class="overlay"></div>
+      {/snippet}
+    </Dialog.Overlay>
+
     <Dialog.Content
-      class="expandable-image__dialog"
       onOpenAutoFocus={(event) => {
         event.preventDefault();
         closeButton?.focus();
       }}
     >
-      <div class="expandable-image__header">
-        <Dialog.Title class="visually-hidden">{alt}</Dialog.Title>
-        <Dialog.Close bind:ref={closeButton} class="expandable-image__close">Close</Dialog.Close>
-      </div>
-      <img src={src} alt="" />
+      {#snippet child({ props })}
+        <div {...props} class="dialog">
+          <div class="header">
+            <Dialog.Title class="visually-hidden">{alt}</Dialog.Title>
+            <Dialog.Close>
+              {#snippet child({ props: closeProps })}
+                <button {...closeProps} bind:this={closeButton} class="close">Close</button>
+              {/snippet}
+            </Dialog.Close>
+          </div>
+          <img src={src} alt="" />
+        </div>
+      {/snippet}
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>
 
 <style>
-  :global(.expandable-image__trigger) {
+  .trigger {
     cursor: zoom-in;
     display: block;
     width: 100%;
@@ -43,22 +62,22 @@
     border: none;
   }
 
-  :global(.expandable-image__trigger img) {
+  .trigger img {
     width: 100%;
     border-radius: var(--radius-md);
   }
 
-  :global(.expandable-image__overlay) {
+  .overlay {
     position: fixed;
     inset: 0;
     background: color-mix(in srgb, var(--color-gray-900) 60%, transparent);
   }
 
-  :global(.expandable-image__overlay[data-state='closed']) {
+  .overlay[data-state='closed'] {
     display: none;
   }
 
-  :global(.expandable-image__dialog) {
+  .dialog {
     position: fixed;
     inset: 50% auto auto 50%;
     transform: translate(-50%, -50%);
@@ -73,23 +92,23 @@
     box-shadow: var(--shadow-lg);
   }
 
-  :global(.expandable-image__dialog[data-state='closed']) {
+  .dialog[data-state='closed'] {
     display: none;
   }
 
-  :global(.expandable-image__header) {
+  .header {
     display: flex;
     justify-content: flex-end;
     margin-block-end: var(--space-2);
   }
 
-  :global(.expandable-image__dialog img) {
+  .dialog img {
     display: block;
     max-width: 100%;
     max-height: 80vh;
   }
 
-  :global(.expandable-image__close) {
+  .close {
     cursor: pointer;
     background: var(--color-surface-default);
     border: 1px solid var(--color-border-subtle);
