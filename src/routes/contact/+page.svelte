@@ -23,7 +23,7 @@
   <h1>Get in touch</h1>
 
   {#if form?.success}
-    <p class="contact__success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
+    <p class="success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
   {:else}
     {#if formAvailable}
       <form
@@ -38,7 +38,7 @@
         }}
       >
         {#if form?.errors?.form}
-          <p class="contact__form-error" role="alert">{form.errors.form}</p>
+          <p class="form-error" role="alert">{form.errors.form}</p>
         {/if}
 
         <Input label="Name" name="name" autocomplete="name" required value={form?.values?.name ?? ''} error={form?.errors?.name} />
@@ -58,13 +58,13 @@
         <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
       </form>
     {:else}
-      <p class="contact__form-error" role="alert">
+      <p class="form-error" role="alert">
         The contact form is temporarily unavailable. Please email me directly instead.
       </p>
     {/if}
   {/if}
 
-  <p class="contact__alt">
+  <p class="alt">
     Prefer email? Reach me directly at <a href="mailto:{author.email}">{author.email}</a>.
   </p>
 </div>
@@ -83,15 +83,15 @@
     margin-block: var(--space-3);
   }
 
-  .contact__success {
+  .success {
     color: var(--color-text-default);
   }
 
-  .contact__form-error {
+  .form-error {
     color: var(--color-brand-primary);
   }
 
-  .contact__alt {
+  .alt {
     color: var(--color-text-secondary);
   }
 </style>

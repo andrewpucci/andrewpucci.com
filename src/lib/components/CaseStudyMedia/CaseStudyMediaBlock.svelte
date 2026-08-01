@@ -11,7 +11,7 @@
 </script>
 
 {#snippet mediaPane()}
-  <div class="case-study-media-block__media">
+  <div class="media">
     {#if media}
       {@render media()}
     {/if}
@@ -19,7 +19,7 @@
 {/snippet}
 
 {#snippet bodyPane()}
-  <div class="case-study-media-block__body">
+  <div class="body">
     {#if children}
       {@render children()}
     {/if}

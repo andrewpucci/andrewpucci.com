@@ -21,13 +21,13 @@
 
 <article>
   <div class="hero">
-    <enhanced:img class="hero__image" src={heroImage} alt="" sizes="100vw" />
-    <h1 class="hero__headline"><span>{data.metadata.heroTitle}</span></h1>
+    <enhanced:img class="image" src={heroImage} alt="" sizes="100vw" />
+    <h1 class="headline"><span>{data.metadata.heroTitle}</span></h1>
   </div>
 
   <div class="meta-blocks">
     <div class="meta-block">
-      <svg class="meta-block__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -42,7 +42,7 @@
     </div>
 
     <div class="meta-block">
-      <svg class="meta-block__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
         <rect x="9" y="3" width="6" height="4" rx="1" ry="1" />
       </svg>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="meta-block">
-      <svg class="meta-block__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path
           d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
         />
@@ -88,7 +88,7 @@
     position: relative;
   }
 
-  .hero__image {
+  .image {
     width: 100%;
     min-height: 25vh;
     max-height: 34vh;
@@ -96,7 +96,7 @@
     filter: blur(0.3125rem) grayscale(100%) opacity(30%);
   }
 
-  .hero__headline {
+  .headline {
     position: absolute;
     inset: 0;
     display: flex;
@@ -105,8 +105,8 @@
     padding: var(--space-3);
   }
 
-  .hero__headline span {
-    /* See src/routes/+page.svelte's .hero__headline for why this composes
+  .headline span {
+    /* See src/routes/+page.svelte's .headline for why this composes
        a clamp() from paired tokens instead of using --typography-headline. */
     font-family: var(--font-family-sans);
     font-weight: var(--font-weight-bold);
@@ -126,7 +126,7 @@
     text-align: center;
   }
 
-  .meta-block__icon {
+  .icon {
     color: var(--color-brand-primary);
     width: 2.5rem;
     height: 2.5rem;
@@ -158,11 +158,11 @@
     margin: var(--space-3) 0;
   }
 
-  .case-study-body :global(.case-study-steps__step dt) {
+  .case-study-body :global(.case-study-step dt) {
     font: var(--typography-title);
   }
 
-  .case-study-body :global(.case-study-steps__step dd) {
+  .case-study-body :global(.case-study-step dd) {
     margin: 0;
     color: var(--color-text-secondary);
   }
