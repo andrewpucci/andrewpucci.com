@@ -52,24 +52,9 @@ export default defineConfig({
       },
     },
     projects: [
-      {
-        extends: './vite.config.ts',
-        test: {
-          name: 'client',
-          browser: {
-            enabled: true,
-            provider: playwright(),
-            instances: [
-              {
-                browser: 'chromium',
-                headless: true,
-              },
-            ],
-          },
-          include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-          exclude: ['src/lib/server/**'],
-        },
-      },
+      // The template's browser-mode `client` project is deliberately absent: it is
+      // the separate Vitest component test layer ADR-0010 rules out. Component
+      // behavior is tested by Storybook `play()` functions, below.
       {
         extends: './vite.config.ts',
         test: {
