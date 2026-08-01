@@ -7,18 +7,17 @@
   const image = $derived(portfolioImage(imgSrc));
 </script>
 
-<Card href={url} class="portfolio-card">
-  <enhanced:img class="portfolio-card__image" src={image} alt={imgAlt} sizes="min(384px, 100vw)" />
-  <h3 class="portfolio-card__title">{title}</h3>
-  <p class="portfolio-card__content">{content}</p>
+<!-- `overflow` is passed as a style rather than a class because Card renders its own
+     element: a class set here lands in Card's scope, not ours, and styling it would
+     need a bare `:global()` (ADR-0007). It clips the image bleed set up below. -->
+<Card href={url} style="overflow: hidden">
+  <enhanced:img class="image" src={image} alt={imgAlt} sizes="min(384px, 100vw)" />
+  <h3 class="title">{title}</h3>
+  <p class="content">{content}</p>
 </Card>
 
 <style>
-  :global(.portfolio-card) {
-    overflow: hidden;
-  }
-
-  .portfolio-card__image {
+  .image {
     /* Project screenshots are artifacts of the work, not the work itself (DESIGN.md). */
     filter: grayscale(100%);
     /* The global img reset (app.css) sets max-width: 100%, which silently clamps
@@ -36,11 +35,11 @@
     margin-block-end: var(--space-2);
   }
 
-  .portfolio-card__title {
+  .title {
     font: var(--typography-title);
   }
 
-  .portfolio-card__content {
+  .content {
     color: var(--color-text-secondary);
   }
 </style>

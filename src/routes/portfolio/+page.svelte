@@ -36,7 +36,7 @@
   </p>
 
   <h2 class="visually-hidden">Projects</h2>
-  <ul class="portfolio-index__grid">
+  <ul class="grid">
     {#each cards as card (card.url)}
       <li>
         <PortfolioCard {...card} />
@@ -52,7 +52,7 @@
     padding: var(--space-3);
   }
 
-  .portfolio-index__grid {
+  .grid {
     display: grid;
     gap: var(--space-3);
     margin-block-start: var(--space-4);
@@ -61,13 +61,13 @@
   }
 
   @media (min-width: 48rem) {
-    .portfolio-index__grid {
+    .grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (min-width: 62rem) {
-    .portfolio-index__grid {
+    .grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }

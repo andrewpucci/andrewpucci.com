@@ -5,8 +5,8 @@
 </script>
 
 <footer class="footer">
-  <div class="footer__row">
-    <div class="footer__about">
+  <div class="row">
+    <div class="about">
       <h2>About Me</h2>
       <p>
         I am a user experience designer who has built a career around the intersection of design and development. I
@@ -17,9 +17,9 @@
       </p>
     </div>
 
-    <div class="footer__connect">
+    <div class="connect">
       <h2>Connect</h2>
-      <ul class="footer__social">
+      <ul class="social">
         {#each author.social as link (link.url)}
           <li><a href={link.url}>{link.name}</a></li>
         {/each}
@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <p class="footer__colophon">
+  <p class="colophon">
     &copy; {year} Andrew Pucci. Made with
     <a href="https://svelte.dev/">SvelteKit</a>, hosted on
     <a href="https://www.cloudflare.com/">Cloudflare</a>, source on
@@ -55,7 +55,7 @@
     text-decoration: underline;
   }
 
-  .footer__row {
+  .row {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-4);
@@ -64,21 +64,21 @@
     padding-inline: var(--space-3);
   }
 
-  .footer__about {
+  .about {
     flex: 3 1 20rem;
   }
 
-  .footer__connect {
+  .connect {
     flex: 1 1 12rem;
   }
 
-  .footer__social {
+  .social {
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
-  .footer__colophon {
+  .colophon {
     max-width: 75rem;
     margin-inline: auto;
     margin-block-start: var(--space-4);

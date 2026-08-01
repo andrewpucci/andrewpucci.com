@@ -20,14 +20,19 @@
   name="Opens and closes via keyboard"
   play={async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
     const trigger = canvas.getByRole('button', {
       name: 'Screenshot of the Silverlight EQATEC interface',
     });
-    await userEvent.click(trigger);
-    const dialog = canvas.getByRole('dialog');
+    await trigger.focus();
+    await expect(trigger).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
-    const closeButton = canvas.getByRole('button', { name: 'Close' });
-    await userEvent.click(closeButton);
+    const closeButton = page.getByRole('button', { name: 'Close' });
+    await expect(closeButton).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
     await expect(dialog).not.toBeVisible();
+    await expect(trigger).toHaveFocus();
   }}
 />

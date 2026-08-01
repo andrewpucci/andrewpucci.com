@@ -52,14 +52,14 @@
 </script>
 
 <section class="carousel" aria-roledescription="carousel" aria-label={label}>
-  <div class="carousel__controls">
-    <button type="button" class="carousel__control" onclick={goPrev} aria-label="Previous slide">
+  <div class="controls">
+    <button type="button" class="control" onclick={goPrev} aria-label="Previous slide">
       ‹
     </button>
     {#if autoplay && !prefersReducedMotion}
       <button
         type="button"
-        class="carousel__control"
+        class="control"
         onclick={togglePlaying}
         aria-pressed={playing}
         aria-label={playing ? 'Pause automatic slide rotation' : 'Play automatic slide rotation'}
@@ -67,20 +67,20 @@
         {playing ? '⏸' : '▶'}
       </button>
     {/if}
-    <button type="button" class="carousel__control" onclick={goNext} aria-label="Next slide">
+    <button type="button" class="control" onclick={goNext} aria-label="Next slide">
       ›
     </button>
   </div>
 
-  <div class="carousel__viewport">
+  <div class="viewport">
     <ul
-      class="carousel__track"
-      class:carousel__track--instant={prefersReducedMotion}
+      class="track"
+      class:instant={prefersReducedMotion}
       style:transform={`translateX(-${activeIndex * 100}%)`}
     >
       {#each items as entry, i (i)}
         <li
-          class="carousel__slide"
+          class="slide"
           aria-roledescription="slide"
           aria-label={`${i + 1} of ${items.length}`}
           aria-hidden={i !== activeIndex}
@@ -96,14 +96,14 @@
 </section>
 
 <style>
-  .carousel__controls {
+  .controls {
     display: flex;
     gap: var(--space-2);
     justify-content: flex-end;
     margin-block-end: var(--space-2);
   }
 
-  .carousel__control {
+  .control {
     cursor: pointer;
     color: var(--color-text-default);
     background: var(--color-surface-default);
@@ -115,15 +115,15 @@
     line-height: 1;
   }
 
-  .carousel__control:hover {
+  .control:hover {
     color: var(--color-brand-primary);
   }
 
-  .carousel__viewport {
+  .viewport {
     overflow: hidden;
   }
 
-  .carousel__track {
+  .track {
     display: flex;
     list-style: none;
     margin: 0;
@@ -131,11 +131,11 @@
     transition: transform 0.3s ease;
   }
 
-  .carousel__track--instant {
+  .track.instant {
     transition: none;
   }
 
-  .carousel__slide {
+  .slide {
     flex: 0 0 100%;
     min-width: 0;
   }

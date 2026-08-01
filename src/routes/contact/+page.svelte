@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import Button from '$lib/components/Button/Button.svelte';
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
@@ -9,6 +9,8 @@
 
   let { form }: { form: ActionData } = $props();
   let submitting = $state(false);
+  const turnstileSiteKey = env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
+  const formAvailable = Boolean(turnstileSiteKey);
 </script>
 
 <svelte:head>
@@ -21,42 +23,48 @@
   <h1>Get in touch</h1>
 
   {#if form?.success}
-    <p class="contact__success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
+    <p class="success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
   {:else}
-    <form
-      method="POST"
-      novalidate
-      use:enhance={() => {
-        submitting = true;
-        return async ({ update }) => {
-          await update();
-          submitting = false;
-        };
-      }}
-    >
-      {#if form?.errors?.form}
-        <p class="contact__form-error" role="alert">{form.errors.form}</p>
-      {/if}
+    {#if formAvailable}
+      <form
+        method="POST"
+        novalidate
+        use:enhance={() => {
+          submitting = true;
+          return async ({ update }) => {
+            await update();
+            submitting = false;
+          };
+        }}
+      >
+        {#if form?.errors?.form}
+          <p class="form-error" role="alert">{form.errors.form}</p>
+        {/if}
 
-      <Input label="Name" name="name" autocomplete="name" required value={form?.values?.name ?? ''} error={form?.errors?.name} />
-      <Input
-        label="Email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required
-        value={form?.values?.email ?? ''}
-        error={form?.errors?.email}
-      />
-      <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
+        <Input label="Name" name="name" autocomplete="name" required value={form?.values?.name ?? ''} error={form?.errors?.name} />
+        <Input
+          label="Email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          value={form?.values?.email ?? ''}
+          error={form?.errors?.email}
+        />
+        <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
 
-      <div class="cf-turnstile" data-sitekey={PUBLIC_TURNSTILE_SITE_KEY}></div>
+        <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
 
-      <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
-    </form>
+        <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
+      </form>
+    {:else}
+      <p class="form-error" role="alert">
+        The contact form is temporarily unavailable. Please email me directly instead.
+      </p>
+    {/if}
   {/if}
 
-  <p class="contact__alt">
+  <p class="alt">
     Prefer email? Reach me directly at <a href="mailto:{author.email}">{author.email}</a>.
   </p>
 </div>
@@ -75,15 +83,15 @@
     margin-block: var(--space-3);
   }
 
-  .contact__success {
+  .success {
     color: var(--color-text-default);
   }
 
-  .contact__form-error {
+  .form-error {
     color: var(--color-brand-primary);
   }
 
-  .contact__alt {
+  .alt {
     color: var(--color-text-secondary);
   }
 </style>
