@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { getArchiveCaseStudy, getArchiveCaseStudySlugs } from './archive';
+import {
+  buildArchiveEntries,
+  getArchiveCaseStudy,
+  getArchiveCaseStudySlugs,
+  type ArchiveCaseStudyRecord,
+} from './archive';
 
 describe('getArchiveCaseStudySlugs', () => {
   it('lists all eight archived case study slugs', () => {
@@ -51,5 +56,31 @@ describe('getArchiveCaseStudy', () => {
 
   it('returns undefined for an unknown archive slug', () => {
     expect(getArchiveCaseStudy('does-not-exist')).toBeUndefined();
+  });
+});
+
+describe('buildArchiveEntries', () => {
+  const metadataBySlug: ArchiveCaseStudyRecord = {
+    example: {
+      title: 'Example',
+      description: 'Example description',
+      hero: '/img/archive/card/example.png',
+      heroTitle: 'Example',
+      team: [],
+      responsibilities: [],
+      tools: [],
+    },
+  };
+
+  it('throws when a markdown file has no metadata entry', () => {
+    expect(() =>
+      buildArchiveEntries({ './archive/missing.md': '# Missing' }, metadataBySlug)
+    ).toThrow('Missing archive metadata for "missing".');
+  });
+
+  it('throws when metadata exists without a matching markdown file', () => {
+    expect(() => buildArchiveEntries({}, metadataBySlug)).toThrow(
+      'Missing archive markdown source for "example".'
+    );
   });
 });

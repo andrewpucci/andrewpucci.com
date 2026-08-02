@@ -32,6 +32,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       # Covers both plain utility functions and Storybook interaction tests
       # (the "storybook" Vitest project) -- there's no separate component
       # test layer, per ADR-0010.
@@ -41,9 +44,6 @@ jobs:
       # ADR-0003: fail on high/critical, review moderate/low manually.
       - name: npm audit
         run: npm audit --audit-level=high
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
 
       # playwright.config.ts's webServer runs `npm run build && npm run preview`
       # itself, so this also exercises the real Cloudflare Pages build.

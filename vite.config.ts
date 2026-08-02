@@ -60,7 +60,7 @@ export default defineConfig({
         test: {
           name: 'server',
           environment: 'happy-dom',
-          include: ['src/**/*.{test,spec}.{js,ts}', 'tests/unit/**/*.test.js'],
+          include: ['src/**/*.{test,spec}.{js,ts}'],
           exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
         },
       },
