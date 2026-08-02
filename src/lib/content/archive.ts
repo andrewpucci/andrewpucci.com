@@ -8,7 +8,7 @@ export interface ArchiveCaseStudy {
 
 type ArchiveCaseStudyRecord = Record<string, Omit<CaseStudyMetadata, 'slug'>>;
 
-const rawArchiveModules = import.meta.glob('../../site/portfolio/archive/*.md', {
+const rawArchiveModules = import.meta.glob('./archive/*.md', {
   eager: true,
   import: 'default',
   query: '?raw',
@@ -223,7 +223,7 @@ function transformLegacyArchiveMarkdown(raw: string): string {
 const archiveEntries = new Map<string, ArchiveCaseStudy>();
 
 for (const [path, raw] of Object.entries(rawArchiveModules)) {
-  const slug = path.replace('../../site/portfolio/archive/', '').replace(/\.md$/, '');
+  const slug = path.replace('./archive/', '').replace(/\.md$/, '');
   const metadata = archiveMetadata[slug];
 
   if (!metadata) {

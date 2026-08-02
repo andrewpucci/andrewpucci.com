@@ -1,6 +1,6 @@
 # End-to-End (E2E) Testing
 
-This directory contains Playwright end-to-end tests for the Andrew Pucci portfolio website. These tests ensure that critical user flows and content are functioning as expected.
+This directory contains Playwright end-to-end tests for the Andrew Pucci portfolio site. These tests cover critical user flows and rendering in the built SvelteKit app.
 
 ## Test Structure
 
@@ -29,7 +29,7 @@ tests/e2e/
 npm run test:e2e
 
 # Run a specific test file
-npm run test:e2e tests/e2e/resume.spec.js
+npm run test:e2e -- tests/e2e/resume.spec.js
 
 # Run tests in UI mode (for debugging)
 npx playwright test --ui
@@ -107,9 +107,9 @@ When a test fails:
 
 This project uses GitHub Actions for continuous integration. The CI pipeline is configured to:
 
-- Run on all pull requests targeting the `main` branch
-- Run on all direct pushes to the `main` branch
-- Execute both unit tests and end-to-end tests
+- Run on all pull requests targeting `main`
+- Run on all direct pushes to `main`
+- Execute Vitest, Playwright, Lighthouse, and Storybook checks
 - Cache dependencies for faster builds
 - Generate and upload test reports as artifacts
 
@@ -125,7 +125,7 @@ The workflow will automatically fail if any tests fail, helping to prevent deplo
    # Run all tests
    npm run test:ci
 
-   # Run only unit tests
+   # Run only Vitest
    npm test
 
    # Run only E2E tests

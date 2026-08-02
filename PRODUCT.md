@@ -16,7 +16,7 @@ Personal portfolio for Andrew Pucci, Principal UX Designer at Expel. Current wor
 
 The site needs to carry one story: a designer who builds things. Ships TypeScript, writes AST tooling, manages rebrand migrations, advises product teams on accessibility. Not a designer who makes wireframes and hands off.
 
-The site is also an exhibit of that work in progress. The goal is to build this portfolio's design system the same way Andrew builds EDS at Expel: tokens defined in DTCG format, built with Terrazzo, generating CSS custom properties used throughout. Bootstrap is the current foundation; moving away from it is part of the work, not incidental to it.
+The site is also an exhibit of that work in progress. The goal is to build this portfolio's design system the same way Andrew builds EDS at Expel: tokens defined in DTCG format, built with Terrazzo, generating CSS custom properties used throughout. The previous Bootstrap foundation has been retired; the site now needs to stay coherent as its own token-driven system rather than inheriting framework defaults.
 
 Success means a hiring manager finishes reading and believes Andrew can operate at principal level. Design judgment shows up in how the work gets built, not just what gets designed.
 
