@@ -14,7 +14,7 @@ npm run preview
 # Production SvelteKit build
 npm run build
 
-# Lint and unit tests
+# Lint and Vitest
 npm test
 
 # SvelteKit typecheck and generated env/runtime types
@@ -23,47 +23,33 @@ npm run check
 # Unit tests only in watch mode
 npm run test:watch
 
-# Run a single unit test file
-npx vitest run tests/unit/filters.test.js
+# Run a single Vitest file
+npx vitest run src/lib/content/archive.test.ts
 
 # E2E tests (auto-starts the built app on port 4173)
 npm run test:e2e
-
-# Retained legacy Eleventy validation path
-npm run legacy:build
 
 # Fix lint and formatting issues
 npm run lint:fix
 ```
 
-**Required env vars**: copy `.env-sample` to `.env`. `ROOT_URL` is still used by the retained legacy Eleventy site, and `PUBLIC_TURNSTILE_SITE_KEY` is required for the live contact form.
+**Required env vars**: copy `.env-sample` to `.env`. `PUBLIC_TURNSTILE_SITE_KEY` controls whether the contact form renders locally; the server-side contact secrets are only needed when exercising the live form action.
 
 ## Architecture
 
-This is a **SvelteKit** site deployed through Cloudflare Pages, with the previous Eleventy v3 site retained in-repo for comparison and fallback validation. Active app code lives in `src/routes/` and `src/lib/`; the legacy Eleventy source remains in `src/site/` and `src/utils/`. The shipping build output is `.svelte-kit/cloudflare`.
+This is a **SvelteKit** site deployed through Cloudflare Pages. Active app code lives in `src/routes/` and `src/lib/`. The shipping adapter output is `.svelte-kit/cloudflare`.
 
 ### SvelteKit + Cloudflare
 
 - Routes live in `src/routes/`, reusable UI and content loaders in `src/lib/`
-- Case studies are MDsvex-backed Markdown modules in `src/lib/content/portfolio/`
+- Portfolio and resume content live under `src/lib/content/`
+- Archived portfolio entries live under `src/lib/content/archive/` and are transformed at load time by `src/lib/content/archive.ts`
 - `wrangler.jsonc` declares `.svelte-kit/cloudflare` as the Pages build output and configures the contact-form rate limiter
 - Host-level headers and redirects live at the repo root in `_headers` and `_redirects`
 
-### Legacy Eleventy config (`.eleventy.js`)
-
-- **Input**: `src/site/`, **Output**: `dist/`
-- Keeps the previous Nunjucks/Markdown site runnable via `npm run legacy:*`
-- Still owns the old filters, shortcodes, and data files under `src/utils/` and `src/site/_data/`
-
-### Content and utilities
-
-- Active content lives in `src/lib/content/`
-- The legacy Eleventy data files still live in `src/site/_data/`; `site.js` is the remaining `ROOT_URL` consumer
-- Legacy Nunjucks filters and shortcodes still live under `src/utils/`
-
 ### Testing
 
-- **Unit tests** (Vitest + happy-dom): source-adjacent `*.test.ts` plus retained legacy tests in `tests/unit/`
+- **Vitest** (happy-dom + Storybook browser project): source-adjacent `*.test.ts` / `*.spec.ts`
 - **E2E tests** (Playwright): `tests/e2e/`. Playwright starts `npm run build && npm run preview`; tests hit `http://localhost:4173` by default (override with `TEST_BASE_URL`).
 
 ### Linting
