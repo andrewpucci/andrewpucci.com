@@ -6,7 +6,7 @@ export interface ArchiveCaseStudy {
   html: string;
 }
 
-type ArchiveCaseStudyRecord = Record<string, Omit<CaseStudyMetadata, 'slug'>>;
+export type ArchiveCaseStudyRecord = Record<string, Omit<CaseStudyMetadata, 'slug'>>;
 
 const rawArchiveModules = import.meta.glob('./archive/*.md', {
   eager: true,
@@ -220,25 +220,34 @@ function transformLegacyArchiveMarkdown(raw: string): string {
   return transformed;
 }
 
-const archiveEntries = new Map<string, ArchiveCaseStudy>();
+export function buildArchiveEntries(
+  rawModules: Record<string, string>,
+  metadataBySlug: ArchiveCaseStudyRecord
+): Map<string, ArchiveCaseStudy> {
+  const entries = new Map<string, ArchiveCaseStudy>();
 
-for (const [path, raw] of Object.entries(rawArchiveModules)) {
-  const slug = path.replace('./archive/', '').replace(/\.md$/, '');
-  const metadata = archiveMetadata[slug];
+  for (const [path, raw] of Object.entries(rawModules)) {
+    const slug = path.replace('./archive/', '').replace(/\.md$/, '');
+    const metadata = metadataBySlug[slug];
 
-  if (!metadata) {
-    throw new Error(`Missing archive metadata for "${slug}".`);
+    if (!metadata) {
+      throw new Error(`Missing archive metadata for "${slug}".`);
+    }
+
+    const html = marked.parse(transformLegacyArchiveMarkdown(raw)) as string;
+    entries.set(slug, { metadata: { ...metadata, slug }, html });
   }
 
-  const html = marked.parse(transformLegacyArchiveMarkdown(raw)) as string;
-  archiveEntries.set(slug, { metadata: { ...metadata, slug }, html });
+  for (const slug of Object.keys(metadataBySlug)) {
+    if (!entries.has(slug)) {
+      throw new Error(`Missing archive markdown source for "${slug}".`);
+    }
+  }
+
+  return entries;
 }
 
-for (const slug of Object.keys(archiveMetadata)) {
-  if (!archiveEntries.has(slug)) {
-    throw new Error(`Missing archive markdown source for "${slug}".`);
-  }
-}
+const archiveEntries = buildArchiveEntries(rawArchiveModules, archiveMetadata);
 
 export function getArchiveCaseStudy(slug: string): ArchiveCaseStudy | undefined {
   return archiveEntries.get(slug);

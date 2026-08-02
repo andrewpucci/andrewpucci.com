@@ -9,11 +9,18 @@ const modules = import.meta.glob('/src/lib/assets/img/card/*.{jpg,jpeg,png}', {
   query: { enhanced: true },
 }) as Record<string, { default: Picture }>;
 
-export function portfolioImage(path: string): Picture {
+export function pickPortfolioImage(
+  imageModules: Record<string, { default: Picture }>,
+  path: string
+): Picture {
   const filename = path.split('/').pop();
-  const entry = Object.entries(modules).find(([key]) => key.endsWith(`/${filename}`));
+  const entry = Object.entries(imageModules).find(([key]) => key.endsWith(`/${filename}`));
   if (!entry) {
     throw new Error(`No portfolio image found for "${path}". Checked src/lib/assets/img/card/.`);
   }
   return entry[1].default;
+}
+
+export function portfolioImage(path: string): Picture {
+  return pickPortfolioImage(modules, path);
 }
