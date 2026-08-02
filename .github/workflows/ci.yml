@@ -20,17 +20,17 @@ jobs:
         with:
           fetch-depth: 0 # Chromatic needs history to diff against a baseline
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: true
 
       - name: Install dependencies
-        run: npm ci
+        run: vp install
 
-      - name: Lint
-        run: npm run lint
+      - name: Check
+        run: vp check
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -39,16 +39,15 @@ jobs:
       # (the "storybook" Vitest project) -- there's no separate component
       # test layer, per ADR-0010.
       - name: Unit + Storybook interaction tests
-        run: npx vitest run --coverage
+        run: vp test run --coverage
 
       # ADR-0003: fail on high/critical, review moderate/low manually.
       - name: npm audit
         run: npm audit --audit-level=high
 
-      # playwright.config.ts's webServer runs `npm run build && npm run preview`
-      # itself, so this also exercises the real Cloudflare Pages build.
+      # playwright.config.ts's webServer runs `vp build && vp preview` itself.
       - name: E2E + accessibility tests
-        run: npm run test:e2e -- --retries=2
+        run: vp run test:e2e -- --retries=2
 
       - name: Upload Playwright report
         if: always()
@@ -59,22 +58,22 @@ jobs:
           retention-days: 7
 
       - name: Build
-        run: npm run build
+        run: vp build
 
       # ADR-0001's thresholds, asserted via the lighthouse CLI directly
       # rather than @lhci/cli (ADR-0010).
       - name: Lighthouse
         run: |
-          npm run preview &
+          vp preview &
           for i in $(seq 1 30); do
             curl -sf http://localhost:4173 > /dev/null && break
             sleep 2
           done
-          npm run test:lighthouse
+          vp run test:lighthouse
           kill %1
 
       - name: Build Storybook
-        run: npm run build-storybook
+        run: vp run build-storybook
 
       # Requires the CHROMATIC_PROJECT_TOKEN repo secret (Storybook ->
       # Manage -> Configure -> "Project token" on chromatic.com). Visual

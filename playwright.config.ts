@@ -18,10 +18,9 @@ export default defineConfig({
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {
-    // Tests run against the actual Cloudflare Pages build output (adapter's
-    // prerendering, headers, and the one live Worker route), not the Vite dev
-    // server, so what's tested is what ships.
-    command: 'npm run build && npm run preview',
+    // Tests run against the production build served through Vite preview, not
+    // the dev server, so failures reflect built output rather than HMR state.
+    command: 'vp build && vp preview',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',
