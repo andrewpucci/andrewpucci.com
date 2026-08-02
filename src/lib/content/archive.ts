@@ -153,7 +153,14 @@ const IMAGE_SHORTCODE_PATTERN =
   /\{%\s*image\s+"([^"]+)",\s*"([^"]*)"(?:,\s*"[^"]*")?(?:,\s*"[^"]*")?(?:,\s*\[[^\]]*])?\s*%}/g;
 const IFRAME_PATTERN = /<iframe[^>]*src="([^"]+)"[^>]*title="([^"]*)"[^>]*><\/iframe>/g;
 const BUTTON_PATTERN = /<button[\s\S]*?<\/button>/g;
+// The legacy tables open with a `<th>&nbsp;</th>` corner cell, which axe flags
+// as an empty header. The three occurrences sit above different row-header
+// columns (survey questions in one table, participant names in the other two),
+// so no single label is correct for all of them. An empty `<td>` is the correct
+// markup for the corner of a table with both row and column headers, and it
+// resolves the empty-header violation without inventing a wrong label.
 const EMPTY_TABLE_HEADER_PATTERN = /<th>&nbsp;<\/th>/g;
+const EMPTY_TABLE_HEADER_REPLACEMENT = '<td></td>';
 const LEGACY_ICON_REPLACEMENTS = [
   {
     pattern: /<i class="fas fa-check-circle fa-fw"><\/i>/g,
@@ -186,7 +193,12 @@ function stripFrontmatter(raw: string): string {
 }
 
 function imageShortcodeToHtml(_match: string, legacyPath: string, alt: string): string {
-  return `<img src="${toArchiveImagePath(legacyPath)}" alt="${escapeHtml(alt)}">`;
+  // These are raw multi-megabyte legacy screenshots served straight from
+  // static/, and the flattened carousel markup renders every slide at once
+  // rather than one at a time. Without lazy loading a single archive page
+  // eagerly downloads all of them (~21 MB on society-of-grownups-website).
+  const src = toArchiveImagePath(legacyPath);
+  return `<img src="${src}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async">`;
 }
 
 function iframeToLink(_match: string, src: string, title: string): string {
@@ -198,7 +210,7 @@ function transformLegacyArchiveMarkdown(raw: string): string {
   let transformed = stripFrontmatter(raw)
     .replace(IMAGE_SHORTCODE_PATTERN, imageShortcodeToHtml)
     .replace(IFRAME_PATTERN, iframeToLink)
-    .replace(EMPTY_TABLE_HEADER_PATTERN, '<th>Category</th>')
+    .replace(EMPTY_TABLE_HEADER_PATTERN, EMPTY_TABLE_HEADER_REPLACEMENT)
     .replace(BUTTON_PATTERN, '');
 
   for (const { pattern, replacement } of LEGACY_ICON_REPLACEMENTS) {

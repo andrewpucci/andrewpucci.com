@@ -38,9 +38,15 @@ describe('getArchiveCaseStudy', () => {
     const entry = getArchiveCaseStudy('young-professionals-of-akron-usability-study');
 
     expect(entry?.html).toContain('✓ = Successful');
-    expect(entry?.html).toContain('<th>Category</th>');
     expect(entry?.html).toContain('↓');
     expect(entry?.html).not.toContain('fa-check-circle');
+  });
+
+  it('rewrites the empty legacy table corner cell as a data cell, not a header', () => {
+    const entry = getArchiveCaseStudy('young-professionals-of-akron-usability-study');
+
+    expect(entry?.html).not.toContain('<th>&nbsp;</th>');
+    expect(entry?.html).toContain('<td></td>');
   });
 
   it('returns undefined for an unknown archive slug', () => {

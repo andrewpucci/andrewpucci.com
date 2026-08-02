@@ -1,7 +1,10 @@
 <script lang="ts">
+  import { portfolioImage } from '$lib/utils/portfolio-images';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
+
+  const heroImage = $derived(portfolioImage(data.metadata.hero));
 </script>
 
 <svelte:head>
@@ -12,7 +15,7 @@
 
 <article>
   <div class="hero">
-    <img class="hero__image" src={data.metadata.hero} alt="" />
+    <enhanced:img class="hero__image" src={heroImage} alt="" sizes="100vw" />
     <h1 class="hero__headline"><span>{data.metadata.heroTitle}</span></h1>
   </div>
 
