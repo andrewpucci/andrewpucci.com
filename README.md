@@ -1,272 +1,100 @@
 # andrewpucci.com
 
-This is the public portfolio site for Andrew Pucci, a UX Designer with development skills. The site showcases professional work, resume, and contact information.
+Andrew Pucci's public portfolio site. The app is built with SvelteKit and deployed to Cloudflare Pages.
 
 ## Tech Stack
 
-- **Static Site Generator**: [Eleventy](https://www.11ty.dev/)
-- **Frontend Framework**: [Bootstrap](https://getbootstrap.com/)
-- **Styling**: Sass with PostCSS (Autoprefixer, cssnano)
-- **Icons**: Font Awesome
-- **Testing**:
-  - Unit Tests: [Vitest](https://vitest.dev/)
-  - E2E Tests: [Playwright](https://playwright.dev/)
-- **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/)
-- **Node Version**: 24.x LTS (see `.tool-versions` and `package.json` for exact versions)
+- SvelteKit 2 with `adapter-cloudflare`
+- Svelte 5
+- Storybook 10
+- Vitest and Playwright
+- Terrazzo design tokens
+- Cloudflare Pages + Workers runtime for the contact form
 
 ## Project Structure
 
-```
-andrewpucci.com/
-├── .eleventy.js          # Eleventy configuration
-├── src/
-│   ├── site/            # Content and templates
-│   │   ├── _data/       # Global data files
-│   │   ├── _layouts/    # Page layouts (Nunjucks)
-│   │   ├── assets/      # Static assets (images, fonts, files)
-│   │   ├── portfolio/   # Portfolio project pages
-│   │   ├── resume/      # Resume content and entries
-│   │   └── index.md     # Home page
-│   └── utils/           # Custom filters, shortcodes, and utilities
-├── tests/
-│   ├── unit/            # Unit tests for utilities and filters
-│   └── e2e/             # End-to-end tests with Playwright
-├── dist/                # Build output (generated)
-└── playwright-report/   # Test reports (generated)
+```text
+src/
+├── lib/
+│   ├── assets/          # Bundled app assets
+│   ├── components/      # Reusable Svelte components
+│   ├── content/         # Portfolio, archive, resume, and author content loaders
+│   └── utils/           # Shared TypeScript utilities
+├── routes/              # SvelteKit routes
+static/                  # Public assets copied as-is
+tests/e2e/               # Playwright coverage
+tokens/                  # DTCG token source
 ```
 
 ## Getting Started
 
-### Prerequisites
+Prerequisites:
 
-- Node.js 24.x or higher (use `asdf install` to switch to the version in `.tool-versions`)
-- npm 8.x or higher
+- Node.js 24.x
+- npm 10+
 
-### Installation
-
-1. **Clone the repository** and navigate to the project directory:
-
-   ```bash
-   git clone https://github.com/andrewpucci/andrewpucci.com.git
-   cd andrewpucci.com
-   ```
-
-2. **Install Node.js** (using asdf):
-
-   ```bash
-   asdf install
-   ```
-
-3. **Install dependencies**:
-
-   ```bash
-   npm ci
-   ```
-
-4. **Set up environment variables**:
-
-   ```bash
-   cp .env-sample .env
-   ```
-
-   Edit `.env` and set `ROOT_URL` to your local or deployed URL.
-
-### Development
-
-Start the development server with live reload:
+Install dependencies and start the dev server:
 
 ```bash
+asdf install
+npm ci
 npm run dev
 ```
 
-The site will be available at `http://localhost:8080`.
+The Vite dev server runs on `http://localhost:5173` by default.
 
-### Building for Production
+If you want to exercise the contact form locally, copy `.env-sample` to `.env` and provide the Turnstile and email-related values shown there.
 
-Build the optimized production site:
+## Common Commands
 
 ```bash
+npm run dev
 npm run build
-```
-
-The built site will be in the `dist/` directory.
-
-## Testing
-
-### Unit Tests
-
-Unit tests cover custom Eleventy filters, shortcodes, and utility functions.
-
-Run all unit tests:
-
-```bash
+npm run preview
+npm run check
 npm test
-```
-
-Run tests in watch mode:
-
-```bash
-npm run test:watch
-```
-
-Generate coverage report:
-
-```bash
-npm run test:coverage
-```
-
-Run tests with UI:
-
-```bash
-npm run test:ui
-```
-
-See [tests/unit/README.md](tests/unit/README.md) for more details.
-
-### End-to-End Tests
-
-E2E tests verify critical user flows and page content using Playwright.
-
-Run all E2E tests:
-
-```bash
 npm run test:e2e
-```
-
-Run E2E tests in UI mode (for debugging):
-
-```bash
-npm run test:e2e:ui
-```
-
-View test report:
-
-```bash
-npm run test:e2e:report
-```
-
-See [tests/e2e/README.md](tests/e2e/README.md) for more details.
-
-### Running All Tests
-
-Run both unit and E2E tests (CI mode):
-
-```bash
 npm run test:ci
 ```
 
+`npm run preview` serves the built Cloudflare Pages output on `http://localhost:4173`.
+
+## Testing
+
+- `npm test`: lint + Vitest
+- `npm run test:coverage`: coverage report with the 80% threshold
+- `npm run test:e2e`: Playwright against the built app
+- `npm run test:ci`: local CI path
+
+See [tests/e2e/README.md](tests/e2e/README.md) for Playwright details.
+
 ## Deployment
 
-This repo is prepared for deployment on Cloudflare Pages.
+`wrangler.jsonc` is the source of truth for Cloudflare Pages configuration.
 
-### Cloudflare Pages Configuration
+- Build command: `npm run build`
+- Build output: `.svelte-kit/cloudflare`
+- Production branch: `main`
 
-- This repository uses [`wrangler.jsonc`](wrangler.jsonc) as the source of truth for Pages build output configuration.
-- **Framework preset**: None / Eleventy-compatible static site
-- **Build command**: `npm run build`
-- **Build output directory**: `dist`
-- **Production branch**: `main`
-- **Git integration**: Connect the repo in Cloudflare Pages so preview builds run on pull requests and production deploys run on merges to `main`
-- **Environment variables**:
-  - `ROOT_URL=https://andrewpucci.com` (or the final canonical production URL)
-  - `NODE_VERSION=24.18.0`
+Host-level routing and security headers live at the repo root in [\_redirects](_redirects) and [\_headers](_headers).
 
-Host-specific routing and security headers live in [src/site/\_redirects](src/site/_redirects) and [src/site/\_headers](src/site/_headers), which Eleventy copies into the final `dist/` output for Cloudflare Pages.
+## Content Notes
 
-## CI/CD
+- Active portfolio case studies: `src/lib/content/portfolio/`
+- Archived portfolio case studies: `src/lib/content/archive/`
+- Resume content: `src/lib/content/resume/`
+- Public files and screenshots: `static/`
 
-GitHub Actions runs automated tests on:
+## Workflow
 
-- All pull requests to `main`
-- All pushes to `main`
+Before opening a PR, run:
 
-The CI pipeline:
-
-1. Installs dependencies
-2. Runs unit tests
-3. Runs E2E tests with retries
-4. Uploads test reports as artifacts
-
-See [.github/workflows/ci.yml](.github/workflows/ci.yml) for the full workflow.
-
-## Key Features
-
-- **Responsive Design**: Mobile-first design using Bootstrap 5
-- **Performance Optimized**:
-  - Asset revisioning for cache busting
-  - Image optimization with `@11ty/eleventy-img`
-  - HTML/CSS/JS minification
-  - PostCSS with Autoprefixer and cssnano
-- **SEO Friendly**: Proper meta tags, semantic HTML, and structured data
-- **Accessibility**: ARIA labels, semantic markup, keyboard navigation
-- **Security**: Content Security Policy headers via Cloudflare Pages
-
-## Development Workflow
-
-1. Create a feature branch from `main`
-2. Make your changes
-3. Run tests locally: `npm run test:ci`
-4. Commit your changes with a descriptive message
-5. Push to GitHub and create a pull request
-6. Wait for CI checks to pass
-7. Merge to `main` after review
-
-### Pull Request Conventions
-
-- GitHub will preload the PR body from [`.github/pull_request_template.md`](.github/pull_request_template.md).
-- Fill out the template sections for `Why`, `What Changed`, `Related`, `Testing`, `Visuals`, `Risks`, and the final checklist.
-- PR titles should use a Conventional Commit style summary such as `feat: add PR template` or `fix: correct sitemap generation`.
-- Prefer these PR title types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`.
-- Keep PR titles short, imperative, and focused on one change.
-- Branch names should use `type/short-kebab-case-summary`, for example `feat/add-pr-template` or `docs/update-resume`.
-- Use the same type set for branch names where practical. Automation branches from tools like Dependabot can keep their tool-generated names.
-
-## Customization
-
-### Adding Portfolio Projects
-
-1. Create a new Markdown file in `src/site/portfolio/`
-2. Add frontmatter with project metadata
-3. Write project content using Markdown and Nunjucks shortcodes
-4. Add project images to `src/site/assets/images/portfolio/`
-
-### Modifying Styles
-
-1. Edit Sass files in `src/site/assets/styles/`
-2. The build process automatically compiles and optimizes CSS
-3. Use Bootstrap variables for consistency
-
-### Adding Custom Filters or Shortcodes
-
-1. Add your filter/shortcode to `src/utils/filters.js` or `src/utils/async-shortcodes.js`
-2. Register it in `.eleventy.js`
-3. Add unit tests in `tests/unit/`
-
-## Troubleshooting
-
-### Build Errors
-
-- **"Cannot find module"**: Run `npm ci` to reinstall dependencies
-- **Sass compilation errors**: Check for syntax errors in `.scss` files
-- **Image optimization errors**: Ensure images exist in the specified paths
-
-### Test Failures
-
-- **E2E tests failing locally**: Ensure dev server is running on port 8080
-- **Flaky E2E tests**: Check for async operations and add proper waits
-- **Unit test failures**: Verify that utility functions match expected behavior
-
-## Resources
-
-- [Eleventy Documentation](https://www.11ty.dev/docs/)
-- [Bootstrap Documentation](https://getbootstrap.com/docs/5.3/)
-- [Playwright Documentation](https://playwright.dev/)
-- [Vitest Documentation](https://vitest.dev/)
+```bash
+npm run lint
+npm run check
+npm run test:ci
+```
 
 ## License
 
-GPL-3.0 - See [LICENSE](LICENSE) for details.
-
-## Contact
-
-For questions or feedback, visit [andrewpucci.com](https://andrewpucci.com/?ref=github) or connect on [LinkedIn](https://www.linkedin.com/in/andrewpucci).
+GPL-3.0. See [LICENSE](LICENSE).

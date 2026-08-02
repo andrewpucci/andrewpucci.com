@@ -13,5 +13,5 @@
     "moduleResolution": "bundler",
     "types": ["./worker-configuration.d.ts"]
   },
-  "exclude": ["src/site/**", "src/utils/**", "tests/unit/**", "test-utils/**"]
+  "exclude": ["test-utils/**"]
 }
