@@ -4,6 +4,17 @@
   "compatibility_date": "2026-07-01",
   "compatibility_flags": ["nodejs_als"],
   "pages_build_output_dir": ".svelte-kit/cloudflare",
+  // Required at runtime by the contact form. Values stay in the Pages
+  // dashboard as encrypted secrets; this list validates local previews and
+  // keeps generated Cloudflare types aligned with the deployment contract.
+  "secrets": {
+    "required": [
+      "TURNSTILE_SECRET_KEY",
+      "RESEND_API_KEY",
+      "CONTACT_TO_EMAIL",
+      "CONTACT_FROM_EMAIL",
+    ],
+  },
   // Contact form abuse protection, independent of Resend's own limits (ADR-0003).
   // Declared entirely here -- no separate provisioning step, unlike KV/D1/R2.
   "ratelimits": [

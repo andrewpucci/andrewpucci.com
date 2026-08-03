@@ -27,7 +27,7 @@
     "test:e2e:ui": "env -u NO_COLOR playwright test --ui",
     "test:e2e:debug": "env -u NO_COLOR PWDEBUG=1 playwright test",
     "test:e2e:report": "playwright show-report",
-    "test:ci": "vp test run && vp run test:e2e -- --retries=2",
+    "test:ci": "npm run test:coverage && npm run test:e2e -- --retries=2",
     "test:lighthouse": "node scripts/lighthouse.mjs",
     "lint": "vp lint . && vp fmt --check",
     "lint:fix": "vp check --fix",
