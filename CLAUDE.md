@@ -17,8 +17,11 @@ vp preview
 # Production SvelteKit build
 vp build
 
-# Default static checks (format, lint, typecheck)
+# Default static checks (format, lint, TS typecheck)
 vp check
+
+# Svelte/TS typecheck -- `vp check` uses tsgolint, which skips .svelte files
+vp run check:svelte
 
 # Vitest suites
 vp test
@@ -50,7 +53,7 @@ This is a **SvelteKit** site deployed through Cloudflare Pages. Active app code 
 ### Testing
 
 - **Vitest** (happy-dom + Storybook browser project): source-adjacent `*.test.ts` / `*.spec.ts`
-- **E2E tests** (Playwright): `tests/e2e/`. Playwright starts `vp build && vp preview`; tests hit `http://localhost:4173` by default (override with `TEST_BASE_URL`).
+- **E2E tests** (Playwright): `tests/e2e/`. Playwright starts `npm run build && npm run preview:pages` (Wrangler, so `_headers`/`_redirects`/bindings apply -- `vp preview` serves none of them); tests hit `http://localhost:4173` by default (override with `TEST_BASE_URL`).
 
 ### Linting
 

@@ -32,6 +32,12 @@ jobs:
       - name: Check
         run: vp check
 
+      # `vp check` type-checks via tsgolint, which does not understand
+      # `.svelte` files -- svelte-check is still the only thing that covers
+      # the 35 components.
+      - name: Svelte type check
+        run: vp run check:svelte
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
@@ -45,7 +51,9 @@ jobs:
       - name: npm audit
         run: npm audit --audit-level=high
 
-      # playwright.config.ts's webServer runs `vp build && vp preview` itself.
+      # playwright.config.ts's webServer runs `npm run build && npm run
+      # preview:pages` itself (Wrangler, not `vp preview`), so this also
+      # exercises the real Cloudflare Pages build.
       - name: E2E + accessibility tests
         run: vp run test:e2e -- --retries=2
 
@@ -64,7 +72,7 @@ jobs:
       # rather than @lhci/cli (ADR-0010).
       - name: Lighthouse
         run: |
-          vp preview &
+          npm run preview:pages &
           for i in $(seq 1 30); do
             curl -sf http://localhost:4173 > /dev/null && break
             sleep 2

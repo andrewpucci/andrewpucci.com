@@ -4,9 +4,14 @@ import path from 'node:path';
 import type { Plugin } from 'vite';
 
 const TOKENS_SOURCE = path.resolve('tokens/tokens.json');
+const TERRAZZO_CONFIG = path.resolve('terrazzo.config.js');
 const TOKENS_OUTPUT = path.resolve('src/lib/tokens/tokens.css');
 const TERRAZZO_BIN = path.resolve('node_modules/.bin/tz');
 const TERRAZZO_BUILD_ACTIVE = 'TERRAZZO_BUILD_ACTIVE';
+
+// terrazzo.config.js decides the output filename and selectors, so a change
+// there invalidates tokens.css just as much as a change to tokens.json does.
+const TOKENS_INPUTS = [TOKENS_SOURCE, TERRAZZO_CONFIG];
 
 function runTerrazzoBuild() {
   execFileSync(TERRAZZO_BIN, ['build'], {
@@ -23,7 +28,11 @@ function needsTerrazzoBuild() {
     return true;
   }
 
-  return statSync(TOKENS_SOURCE).mtimeMs > statSync(TOKENS_OUTPUT).mtimeMs;
+  // `existsSync` guards each input so a missing/renamed source surfaces as
+  // the `tz build` CLI error rather than an ENOENT thrown out of Vite's
+  // config resolution.
+  const outputMtime = statSync(TOKENS_OUTPUT).mtimeMs;
+  return TOKENS_INPUTS.some((input) => !existsSync(input) || statSync(input).mtimeMs > outputMtime);
 }
 
 function ensureTerrazzoBuild() {

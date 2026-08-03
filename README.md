@@ -52,17 +52,23 @@ If you want to exercise the contact form locally, copy `.env-sample` to `.env` a
 vp dev
 vp build
 vp preview
+vp run preview:pages
 vp check
+vp run check:svelte
 vp test
 vp run test:e2e
 vp run test:ci
 ```
 
-`vp preview` serves the built app on `http://localhost:4173`.
+`vp preview` serves the built app on `http://localhost:4173` via a plain Node
+preview server: `_headers`, `_redirects`, and the Worker bindings are not
+applied. Use `vp run preview:pages` (Wrangler, same port) when you need the
+real Cloudflare Pages behavior -- that is what the E2E suite runs against.
 
 ## Testing
 
-- `vp check`: format, lint, and type checks
+- `vp check`: format, lint, and TypeScript type checks
+- `vp run check:svelte`: `svelte-check`, the only typecheck that covers `.svelte` files
 - `vp test run --coverage`: coverage report with the 80% threshold
 - `vp run test:e2e`: Playwright against the built app
 - `vp run test:ci`: local CI path
@@ -73,7 +79,7 @@ See [tests/e2e/README.md](tests/e2e/README.md) for Playwright details.
 
 `wrangler.jsonc` is the source of truth for Cloudflare Pages configuration.
 
-- Build command: `vp build`
+- Build command: `npm run build` (the Cloudflare Pages build image has no global `vp`; the `build` script resolves the `vp` binary from `node_modules/.bin`)
 - Build output: `.svelte-kit/cloudflare`
 - Production branch: `main`
 
@@ -92,6 +98,7 @@ Before opening a PR, run:
 
 ```bash
 vp check
+vp run check:svelte
 vp run test:ci
 ```
 
