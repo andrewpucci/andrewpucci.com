@@ -4,11 +4,12 @@
   "compatibility_date": "2026-07-01",
   "compatibility_flags": ["nodejs_als"],
   "pages_build_output_dir": ".svelte-kit/cloudflare",
-  // Required at runtime by the contact form. Values stay in the Pages
-  // dashboard as encrypted secrets; this list validates local previews and
-  // keeps generated Cloudflare types aligned with the deployment contract.
+  // Wrangler's local environment allowlist for the contact form. It includes
+  // the public runtime key so one .dev.vars file can exercise the full form;
+  // only the server-side values are encrypted secrets in the Pages dashboard.
   "secrets": {
     "required": [
+      "PUBLIC_TURNSTILE_SITE_KEY",
       "TURNSTILE_SECRET_KEY",
       "RESEND_API_KEY",
       "CONTACT_TO_EMAIL",
