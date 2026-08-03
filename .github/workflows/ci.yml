@@ -45,7 +45,9 @@ jobs:
       # (the "storybook" Vitest project) -- there's no separate component
       # test layer, per ADR-0010.
       - name: Unit + Storybook interaction tests
-        run: vp test run --coverage
+        # `npm run` resolves the local `vp` binary, which also resolves the
+        # locally-installed optional coverage provider.
+        run: npm run test:coverage
 
       # ADR-0003: fail on high/critical, review moderate/low manually.
       - name: npm audit

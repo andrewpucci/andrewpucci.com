@@ -17,12 +17,18 @@ function makeEvent(fields: Record<string, string>, platform?: App.Platform) {
 
 const validFields = { name: 'Jane Tester', email: 'jane@example.com', message: 'Hello there' };
 
-function makePlatform(overrides: { rateLimitOk?: boolean } = {}): App.Platform {
+function makePlatform(
+  overrides: { rateLimitOk?: boolean; rateLimiter?: false } = {}
+): App.Platform {
   return {
     env: {
-      CONTACT_FORM_RATE_LIMITER: {
-        limit: vi.fn().mockResolvedValue({ success: overrides.rateLimitOk ?? true }),
-      },
+      ...(overrides.rateLimiter === false
+        ? {}
+        : {
+            CONTACT_FORM_RATE_LIMITER: {
+              limit: vi.fn().mockResolvedValue({ success: overrides.rateLimitOk ?? true }),
+            },
+          }),
       TURNSTILE_SECRET_KEY: 'secret',
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
@@ -70,6 +76,15 @@ describe('contact form action: server-side checks', () => {
     const result = await actions.default!(makeEvent(validFields, platform));
     expect(result?.status).toBe(429);
     expect(result?.data?.errors?.form).toMatch(/too many requests/i);
+  });
+
+  it('falls through to Turnstile when the rate limit binding is absent', async () => {
+    // The deployed Pages runtime has no rate limit binding; an unguarded
+    // .limit() call made every production submission a 500.
+    const platform = makePlatform({ rateLimiter: false });
+    const result = await actions.default!(makeEvent(validFields, platform));
+    expect(result?.status).toBe(400);
+    expect(result?.data?.errors?.form).toMatch(/verification failed/i);
   });
 
   it('fails with 400 when no Turnstile token is present', async () => {
