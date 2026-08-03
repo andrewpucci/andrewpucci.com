@@ -22,6 +22,11 @@ tests/e2e/
 - Vite+ installed globally as `vp`
 - Playwright browsers installed (`npx playwright install`)
 
+Playwright builds the app and serves `.svelte-kit/cloudflare` with Wrangler via
+`npm run build && npm run preview:pages`. This is the Cloudflare Pages runtime,
+not the plain `vp preview` server. Copy `.dev.vars.example` to `.dev.vars` only
+when a local run must exercise the live contact form.
+
 ### Commands
 
 ```bash
@@ -115,6 +120,6 @@ The Playwright configuration is in `playwright.config.ts`:
 - **Browsers**: Chromium, Firefox, and WebKit
 - **Retries**: 2 in CI, 0 locally
 - **Workers**: 1 in CI, parallel locally
-- **Web Server**: Runs `vp build && vp preview`
+- **Web Server**: Runs `npm run build && npm run preview:pages`
 - **Screenshots**: Captured only on failure
 - **Traces**: Captured on first retry

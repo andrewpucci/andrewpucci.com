@@ -36,7 +36,7 @@ vp run test:e2e
 vp check --fix
 ```
 
-**Required env vars**: copy `.env-sample` to `.env`. `PUBLIC_TURNSTILE_SITE_KEY` controls whether the contact form renders locally; the server-side contact secrets are only needed when exercising the live form action.
+**Required env vars**: copy `.dev.vars.example` to `.dev.vars` before running `vp run preview:pages`. `PUBLIC_TURNSTILE_SITE_KEY` controls whether the contact form renders; the server-side contact secrets are only needed when exercising the live form action. `.dev.vars` is read by Wrangler only — under `vp dev` the form stays hidden until the same `PUBLIC_TURNSTILE_SITE_KEY` line from `.dev.vars.example` is also copied into `.env`.
 
 ## Architecture
 
@@ -47,7 +47,7 @@ This is a **SvelteKit** site deployed through Cloudflare Pages. Active app code 
 - Routes live in `src/routes/`, reusable UI and content loaders in `src/lib/`
 - Portfolio and resume content live under `src/lib/content/`
 - Archived portfolio entries live under `src/lib/content/archive/` and are transformed at load time by `src/lib/content/archive.ts`
-- `wrangler.jsonc` declares `.svelte-kit/cloudflare` as the Pages build output and configures the contact-form rate limiter
+- `wrangler.jsonc` declares `.svelte-kit/cloudflare` as the Pages build output. It does **not** configure a rate limiter: Pages Functions do not support the rate limit binding, so the contact action treats `CONTACT_FORM_RATE_LIMITER` as optional. See README.md's Deployment section for the open ADR-0003 gap.
 - Host-level headers and redirects live at the repo root in `_headers` and `_redirects`
 
 ### Testing

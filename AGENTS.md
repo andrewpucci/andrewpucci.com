@@ -22,7 +22,7 @@ Recent history favors short, imperative commit messages, often with a prefix lik
 
 ## Configuration & Content Notes
 
-Copy `.env-sample` to `.env` before exercising the contact form locally. Do not commit secrets. When adding portfolio or resume content, prefer editing Markdown in `src/lib/content/portfolio/`, `src/lib/content/archive/`, or `src/lib/content/resume/`.
+Copy `.dev.vars.example` to `.dev.vars` before exercising the contact form with `vp run preview:pages`; Wrangler reads `.dev.vars`, while `vp dev` reads `.env`, so copy the `PUBLIC_TURNSTILE_SITE_KEY` line from `.dev.vars.example` into `.env` too for the form to render under `vp dev`. Do not commit secrets. When adding portfolio or resume content, prefer editing Markdown in `src/lib/content/portfolio/`, `src/lib/content/archive/`, or `src/lib/content/resume/`.
 
 ## Agent skills
 

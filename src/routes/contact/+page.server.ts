@@ -53,9 +53,19 @@ export const actions: Actions = {
 
     const ip = getClientAddress();
 
-    const { success: withinLimit } = await env.CONTACT_FORM_RATE_LIMITER.limit({ key: ip });
-    if (!withinLimit) {
-      return fail(429, { errors: formError('Too many requests. Try again in a minute.'), values });
+    // Pages Functions do not support the rate limit binding, so this is absent
+    // in the deployed runtime -- calling it unguarded turned every production
+    // submission into a 500. Skipping it leaves Turnstile as the only abuse
+    // control here; see README.md's Deployment section for the ADR-0003 gap.
+    const rateLimiter = env.CONTACT_FORM_RATE_LIMITER;
+    if (rateLimiter) {
+      const { success: withinLimit } = await rateLimiter.limit({ key: ip });
+      if (!withinLimit) {
+        return fail(429, {
+          errors: formError('Too many requests. Try again in a minute.'),
+          values,
+        });
+      }
     }
 
     if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip))) {
