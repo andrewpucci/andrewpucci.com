@@ -12,8 +12,9 @@ Summarize the user-visible, architectural, or content changes in this PR.
 
 ## Testing
 
-- [ ] `npm run lint`
-- [ ] `npm run test:ci`
+- [ ] `vp check`
+- [ ] `vp run check:svelte`
+- [ ] `vp run test:ci`
 - [ ] Relevant tests
 - Notes:
 
