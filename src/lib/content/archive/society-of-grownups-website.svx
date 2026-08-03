@@ -1,31 +1,59 @@
----
-layout: artifact
-title: Society of Grownups Website - Andrew Pucci
-description: Portfolio piece showing the design process for the Society of Grownups website.
-name: society-of-grownups-website
-hero: ./src/site/img/card-img/grownup-goals.png
-heroTitle: Society of Grownups Website
-team:
-  - name: Andrew Pucci (me!)
-  - name: Kim Miller
-    link: https://www.linkedin.com/in/kim-miller-a14ba033/
-  - name: Michael Pelletier
-    link: https://www.linkedin.com/in/mkpelletier/
-  - name: Monica Hirst
-    link: https://www.linkedin.com/in/monica-hirst-8399318/
-  - name: Bocoup
-    link: https://bocoup.com/
-responsibilities:
-  - Mockups
-  - Prototypes
-  - Minor Development
-tools:
-  - name: Balsamiq
-  - name: Adobe Creative Cloud (mainly Photoshop)
-  - name: InVision
-  - name: HTML/CSS
-eleventyExcludeFromCollections: true
----
+<script module>
+  export const metadata = {
+  "title": "Society of Grownups Website - Andrew Pucci",
+  "description": "Portfolio piece showing the design process for the Society of Grownups website.",
+  "heroTitle": "Society of Grownups Website",
+  "team": [
+    {
+      "name": "Andrew Pucci (me!)"
+    },
+    {
+      "name": "Kim Miller",
+      "link": "https://www.linkedin.com/in/kim-miller-a14ba033/"
+    },
+    {
+      "name": "Michael Pelletier",
+      "link": "https://www.linkedin.com/in/mkpelletier/"
+    },
+    {
+      "name": "Monica Hirst",
+      "link": "https://www.linkedin.com/in/monica-hirst-8399318/"
+    },
+    {
+      "name": "Bocoup",
+      "link": "https://bocoup.com/"
+    }
+  ],
+  "responsibilities": [
+    "Mockups",
+    "Prototypes",
+    "Minor Development"
+  ],
+  "tools": [
+    {
+      "name": "Balsamiq"
+    },
+    {
+      "name": "Adobe Creative Cloud (mainly Photoshop)"
+    },
+    {
+      "name": "InVision"
+    },
+    {
+      "name": "HTML/CSS"
+    }
+  ],
+  "hero": "/img/archive/card/grownup-goals.png"
+};
+</script>
+
+<script>
+  import sog_1 from "$lib/assets/img/archive/sog-1.png?enhanced";
+  import sog_2 from "$lib/assets/img/archive/sog-2.png?enhanced";
+  import sog_3 from "$lib/assets/img/archive/sog-3.png?enhanced";
+  import sog_4 from "$lib/assets/img/archive/sog-4.png?enhanced";
+  import sog_5 from "$lib/assets/img/archive/sog-5.png?enhanced";
+</script>
 
 ## Challenge
 
@@ -43,37 +71,26 @@ This website won [The Webby Awards People's Voice](http://webbyawards.com/winner
 
 <div id="sog-carousel" class="carousel slide mb-3" data-bs-ride="carousel">
   <div class="carousel-indicators">
-    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></li>
-    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
-    <button type="button" data-bs-target="#sog-carousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      {% image "./src/site/img/sog-1.png", "Annotated screen design for user profile page", "d-block w-100 h-auto" %}
+      <enhanced:img src={sog_1} alt="Annotated screen design for user profile page" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
     <div class="carousel-item">
-      {% image "./src/site/img/sog-2.png", "Annotated screen design for user information gathering page", "d-block w-100 h-auto" %}
+      <enhanced:img src={sog_2} alt="Annotated screen design for user information gathering page" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
     <div class="carousel-item">
-      {% image "./src/site/img/sog-3.png", "Annotated screen design for grownup goals page", "d-block w-100 h-auto" %}
+      <enhanced:img src={sog_3} alt="Annotated screen design for grownup goals page" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
     <div class="carousel-item">
-      {% image "./src/site/img/sog-4.png", "Annotated screen design showing modal confirmation", "d-block w-100 h-auto" %}
+      <enhanced:img src={sog_4} alt="Annotated screen design showing modal confirmation" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
     <div class="carousel-item">
-      {% image "./src/site/img/sog-5.png", "Annotated screen design for income information gathering", "d-block w-100 h-auto" %}
+      <enhanced:img src={sog_5} alt="Annotated screen design for income information gathering" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
   </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#sog-carousel" role="button" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#sog-carousel" role="button" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
+
 </div>
 
 ## Lessons Learned

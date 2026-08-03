@@ -1,25 +1,47 @@
----
-layout: artifact
-title: Local Yokel Foods Paper Prototype - Andrew Pucci
-description: Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.
-name: local-yokel-foods-paper-prototype
-hero: ./src/site/img/card-img/paper-prototype.png
-heroTitle: Local Yokel Foods Paper Prototype
-team:
-  - name: Andrew Pucci (me!)
-  - name: Linda Hart
-  - name: Jeff Kreger
-    link: https://www.linkedin.com/in/jeffkreger/
-responsibilities:
-  - Wireframes
-  - Usability Study
-tools:
-  - name: Posterboard
-  - name: Sharpies
-  - name: Post-it notes
-  - name: Highlighters
-eleventyExcludeFromCollections: true
----
+<script module>
+  export const metadata = {
+  "title": "Local Yokel Foods Paper Prototype - Andrew Pucci",
+  "description": "Portfolio piece showing how a paper prototype was used to improve the Local Yokel Foods website.",
+  "heroTitle": "Local Yokel Foods Paper Prototype",
+  "team": [
+    {
+      "name": "Andrew Pucci (me!)"
+    },
+    {
+      "name": "Linda Hart"
+    },
+    {
+      "name": "Jeff Kreger",
+      "link": "https://www.linkedin.com/in/jeffkreger/"
+    }
+  ],
+  "responsibilities": [
+    "Wireframes",
+    "Usability Study"
+  ],
+  "tools": [
+    {
+      "name": "Posterboard"
+    },
+    {
+      "name": "Sharpies"
+    },
+    {
+      "name": "Post-it notes"
+    },
+    {
+      "name": "Highlighters"
+    }
+  ],
+  "hero": "/img/archive/card/paper-prototype.png"
+};
+</script>
+
+<script>
+  import pp_group7_1 from "$lib/assets/img/archive/pp_group7_1.jpg?enhanced";
+  import pp_group7_2 from "$lib/assets/img/archive/pp_group7_2.jpg?enhanced";
+  import pp_group7_3 from "$lib/assets/img/archive/pp_group7_3.jpg?enhanced";
+</script>
 
 ## Challenge
 
@@ -33,29 +55,20 @@ The paper prototype testing team consisted of a facilitator, who directed the us
 
 <div id="local-yokel-carousel" class="carousel slide mb-3" data-bs-ride="carousel">
   <div class="carousel-indicators">
-    <button type="button" data-bs-target="#local-yokel-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-    <button type="button" data-bs-target="#local-yokel-carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#local-yokel-carousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+
   </div>
   <div class="carousel-inner">
     <div class="carousel-item active">
-      {% image "./src/site/img/pp_group7_1.jpg", "Paper prototype including sample grocery list, credit card, and ID", "d-block w-100 h-auto" %}
+      <enhanced:img src={pp_group7_1} alt="Paper prototype including sample grocery list, credit card, and ID" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
     <div class="carousel-item">
-      {% image "./src/site/img/pp_group7_2.jpg", "Example of paper prototype testing in progress. Sticky notes and paper are layered to produce a cohesive mock interface", "d-block w-100 h-auto" %}
+      <enhanced:img src={pp_group7_2} alt="Example of paper prototype testing in progress. Sticky notes and paper are layered to produce a cohesive mock interface" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
     <div class="carousel-item">
-      {% image "./src/site/img/pp_group7_3.jpg", "Paper prototype of checkout process. Important pieces of the interface are filled in with pencil or overlaid with sticky notes", "d-block w-100 h-auto" %}
+      <enhanced:img src={pp_group7_3} alt="Paper prototype of checkout process. Important pieces of the interface are filled in with pencil or overlaid with sticky notes" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
     </div>
   </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#local-yokel-carousel" role="button" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#local-yokel-carousel" role="button" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
+
 </div>
 
 ## Outcome

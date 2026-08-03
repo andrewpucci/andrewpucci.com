@@ -53,7 +53,42 @@ test.describe('Archived portfolio pages', () => {
 
     await page.goto('/portfolio/archive/carnation-city-mall-blueprints/');
     await expect(
-      page.getByRole('link', { name: 'View Carnation City Mall website redesign presentation' })
+      page.getByRole('link', {
+        name: 'View Carnation City Mall website redesign presentation',
+      })
     ).toBeVisible();
+  });
+
+  test('reserves space for every archive body image', async ({ page }) => {
+    for (const slug of archiveSlugs) {
+      await page.goto(`/portfolio/archive/${slug}/`);
+
+      const images = page.locator('.archive-body img');
+      const imageCount = await images.count();
+
+      for (let index = 0; index < imageCount; index += 1) {
+        await expect(images.nth(index), `${slug} image ${index + 1}`).toHaveAttribute(
+          'width',
+          /\d+/
+        );
+        await expect(images.nth(index), `${slug} image ${index + 1}`).toHaveAttribute(
+          'height',
+          /\d+/
+        );
+      }
+    }
+  });
+
+  test('keeps flattened archive galleries visually stable', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Visual baselines are captured in Chromium.');
+
+    for (const slug of ['employee-tool', 'society-of-grownups-website']) {
+      await page.goto(`/portfolio/archive/${slug}/`);
+      const gallery = page.locator('.archive-body .carousel-inner');
+      await gallery.scrollIntoViewIfNeeded();
+      await expect(gallery).toHaveScreenshot(`${slug}-gallery.png`, {
+        animations: 'disabled',
+      });
+    }
   });
 });

@@ -8,13 +8,16 @@ import lighthouse from 'lighthouse';
 import { chromium } from 'playwright';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:4173';
-const ROUTES = [
+const DEFAULT_ROUTES = [
   '/',
   '/resume/',
   '/portfolio/',
   '/portfolio/redesigning-telerik-analytics/',
+  '/portfolio/archive/employee-tool/',
+  '/portfolio/archive/society-of-grownups-website/',
   '/contact/',
 ];
+const ROUTES = process.env.LIGHTHOUSE_ROUTES?.split(',') ?? DEFAULT_ROUTES;
 
 const CATEGORY_THRESHOLDS = {
   performance: 0.9,
@@ -32,6 +35,14 @@ const METRIC_THRESHOLDS = {
   'cumulative-layout-shift': { label: 'CLS', unit: '', max: 0.1 },
   'total-blocking-time': { label: 'TBT (INP proxy)', unit: 'ms', max: 200 },
 };
+function categoryThresholdsForRoute(route) {
+  // Archive case studies deliberately use noindex, so Lighthouse's SEO score
+  // is not meaningful for them. Their performance and usability budgets still
+  // apply exactly as they do to indexable pages.
+  return route.startsWith('/portfolio/archive/')
+    ? Object.entries(CATEGORY_THRESHOLDS).filter(([key]) => key !== 'seo')
+    : Object.entries(CATEGORY_THRESHOLDS);
+}
 
 async function auditRoute(port, route) {
   const url = `${BASE_URL}${route}`;
@@ -46,7 +57,7 @@ async function auditRoute(port, route) {
   let ok = true;
   console.log(`\n${route}`);
 
-  for (const [key, threshold] of Object.entries(CATEGORY_THRESHOLDS)) {
+  for (const [key, threshold] of categoryThresholdsForRoute(route)) {
     const score = categories[key].score ?? 0;
     const pass = score >= threshold;
     if (!pass) ok = false;
