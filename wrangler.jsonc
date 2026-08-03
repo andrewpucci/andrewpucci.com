@@ -4,25 +4,10 @@
   "compatibility_date": "2026-07-01",
   "compatibility_flags": ["nodejs_als"],
   "pages_build_output_dir": ".svelte-kit/cloudflare",
-  // Wrangler's local environment allowlist for the contact form. It includes
-  // the public runtime key so one .dev.vars file can exercise the full form;
-  // only the server-side values are encrypted secrets in the Pages dashboard.
-  "secrets": {
-    "required": [
-      "PUBLIC_TURNSTILE_SITE_KEY",
-      "TURNSTILE_SECRET_KEY",
-      "RESEND_API_KEY",
-      "CONTACT_TO_EMAIL",
-      "CONTACT_FROM_EMAIL",
-    ],
-  },
-  // Contact form abuse protection, independent of Resend's own limits (ADR-0003).
-  // Declared entirely here -- no separate provisioning step, unlike KV/D1/R2.
-  "ratelimits": [
-    {
-      "name": "CONTACT_FORM_RATE_LIMITER",
-      "namespace_id": "1001",
-      "simple": { "limit": 5, "period": 60 },
-    },
-  ],
+  // No "ratelimits" block: Pages Functions do not support the rate limit
+  // binding. Declaring it here bound CONTACT_FORM_RATE_LIMITER under local
+  // `wrangler pages dev` but not in the deployed Pages runtime, and that
+  // local-only fidelity gap is what hid the contact-form 500. The contact
+  // action now treats the binding as optional. ADR-0003 still calls for
+  // worker-level rate limiting -- see README.md's Deployment section.
 }

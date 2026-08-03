@@ -44,10 +44,14 @@ vp dev
 
 The dev server runs on `http://localhost:8080`.
 
-To exercise the contact form locally through the Cloudflare Pages runtime, copy
-`.dev.vars.example` to `.dev.vars` and provide the Turnstile and email-related
-values shown there. Do not create a `.env` file alongside it: Wrangler loads
-only one local environment file.
+To exercise the contact form locally through the Cloudflare Pages runtime
+(`vp run preview:pages`), copy `.dev.vars.example` to `.dev.vars` and provide
+the Turnstile and email-related values shown there.
+
+`vp dev` is a Vite server and never reads `.dev.vars`, so the contact form
+stays hidden there until `PUBLIC_TURNSTILE_SITE_KEY` is present in a `.env`
+file (also gitignored). The two files coexist safely: Wrangler prefers
+`.dev.vars` and only falls back to `.env` when `.dev.vars` is absent.
 
 ## Common Commands
 
@@ -102,8 +106,24 @@ environments in the Cloudflare Pages dashboard:
 | `CONTACT_TO_EMAIL`          | Encrypted secret     | Receives contact submissions.             |
 | `CONTACT_FROM_EMAIL`        | Encrypted secret     | Provides the verified Resend sender.      |
 
-`CONTACT_FORM_RATE_LIMITER` is the only non-variable contact-form binding; it
-is declared in `wrangler.jsonc` and does not need a dashboard value.
+### Contact-form rate limiting (open ADR-0003 gap)
+
+ADR-0003 calls for rate limiting enforced in the Worker, independent of
+Resend's own limits. That is **not in place on Cloudflare Pages today.** Pages
+Functions support only a
+[subset of bindings](https://developers.cloudflare.com/pages/functions/bindings/)
+and the [rate limit binding](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)
+is not among them, so `env.CONTACT_FORM_RATE_LIMITER` is undefined in the
+deployed runtime. A `ratelimits` block in `wrangler.jsonc` did not change that:
+the Pages build accepted it and deployed, but the binding never appeared at
+runtime, while local `wrangler pages dev` _did_ bind it — a fidelity gap that
+hid an unguarded `.limit()` call until every deployed submission returned 500.
+
+The action now treats the binding as optional, so Turnstile is the only
+server-side abuse control on the contact form. Closing the gap properly means
+one of: a zone-level [WAF rate limiting rule](https://developers.cloudflare.com/waf/rate-limiting-rules/),
+a KV- or Durable-Object-backed limiter (both are supported Pages bindings), or
+moving the project from Pages to Workers, where the native binding works.
 
 Host-level routing and security headers live at the repo root in [_redirects](_redirects) and [_headers](_headers).
 
