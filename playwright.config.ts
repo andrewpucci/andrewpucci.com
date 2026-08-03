@@ -19,9 +19,15 @@ export default defineConfig({
   ],
   webServer: {
     // Tests run against the actual Cloudflare Pages build output (adapter's
-    // prerendering, headers, and the one live Worker route), not the Vite dev
-    // server, so what's tested is what ships.
-    command: 'npm run build && npm run preview',
+    // prerendering, _headers, _redirects, and the one live Worker route), not
+    // the Vite dev or preview server, so what's tested is what ships.
+    // `vp preview` is a plain Node preview: it serves none of `_headers`,
+    // does not apply `_redirects`, and leaves `platform` undefined.
+    // Routed through `npm run` rather than bare `vp ...`: Playwright spawns
+    // webServer via /bin/sh without node_modules/.bin on PATH, so a bare `vp`
+    // exits 127 for anyone without the CLI installed globally. The scripts
+    // themselves are still the Vite+ surface (`build` -> `vp build`).
+    command: 'npm run build && npm run preview:pages',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',

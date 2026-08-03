@@ -5,32 +5,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Active SvelteKit development server
-npm run dev
+# Install dependencies
+vp install
 
-# Preview the built Cloudflare Pages output
-npm run preview
+# Active SvelteKit development server
+vp dev
+
+# Preview the built app locally
+vp preview
 
 # Production SvelteKit build
-npm run build
+vp build
 
-# Lint and Vitest
-npm test
+# Default static checks (format, lint, TS typecheck)
+vp check
 
-# SvelteKit typecheck and generated env/runtime types
-npm run check
+# Svelte/TS typecheck -- `vp check` uses tsgolint, which skips .svelte files
+vp run check:svelte
 
-# Unit tests only in watch mode
-npm run test:watch
+# Vitest suites
+vp test
 
 # Run a single Vitest file
-npx vitest run src/lib/content/archive.test.ts
+vp test run src/lib/content/archive.test.ts
 
 # E2E tests (auto-starts the built app on port 4173)
-npm run test:e2e
+vp run test:e2e
 
 # Fix lint and formatting issues
-npm run lint:fix
+vp check --fix
 ```
 
 **Required env vars**: copy `.env-sample` to `.env`. `PUBLIC_TURNSTILE_SITE_KEY` controls whether the contact form renders locally; the server-side contact secrets are only needed when exercising the live form action.
@@ -50,11 +53,11 @@ This is a **SvelteKit** site deployed through Cloudflare Pages. Active app code 
 ### Testing
 
 - **Vitest** (happy-dom + Storybook browser project): source-adjacent `*.test.ts` / `*.spec.ts`
-- **E2E tests** (Playwright): `tests/e2e/`. Playwright starts `npm run build && npm run preview`; tests hit `http://localhost:4173` by default (override with `TEST_BASE_URL`).
+- **E2E tests** (Playwright): `tests/e2e/`. Playwright starts `npm run build && npm run preview:pages` (Wrangler, so `_headers`/`_redirects`/bindings apply -- `vp preview` serves none of them); tests hit `http://localhost:4173` by default (override with `TEST_BASE_URL`).
 
 ### Linting
 
-Uses **oxlint** (not ESLint) with the config in `.oxlintrc.json`, and **oxfmt** for formatting (`.oxfmtrc.json`). ESM-only codebase — `import/no-commonjs` is enforced.
+Uses Vite+'s `vp lint` and `vp fmt`, configured in `vite.config.ts`. ESM-only codebase — `import/no-commonjs` is enforced.
 
 ## Agent skills
 

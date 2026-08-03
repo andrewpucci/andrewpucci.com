@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 import { actions } from './+page.server';
 
 function makeFormData(fields: Record<string, string>): FormData {

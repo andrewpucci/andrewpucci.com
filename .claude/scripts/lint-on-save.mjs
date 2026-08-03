@@ -28,12 +28,18 @@ const run = (bin, ...args) => {
   }
 };
 
+// Go through `vp` rather than the standalone `oxlint`/`oxfmt` binaries: the
+// lint/fmt configuration lives in the `lint` and `fmt` blocks of
+// vite.config.ts, which only the Vite+ CLI reads. The bare binaries fall back
+// to their own defaults (double quotes, printWidth 80, package.json key
+// sorting, the `correctness` category on) and rewrite files into a shape
+// `vp check` then rejects.
 const ext = extname(filePath);
-if (['.js', '.mjs', '.cjs'].includes(ext)) {
-  run('oxlint', '--fix');
-  run('oxfmt');
+if (['.js', '.mjs', '.cjs', '.ts', '.svelte'].includes(ext)) {
+  run('vp', 'lint', '--fix');
+  run('vp', 'fmt');
 } else if (['.json', '.scss', '.css', '.html'].includes(ext)) {
-  run('oxfmt');
+  run('vp', 'fmt');
 } else if (ext === '.md') {
   run('markdownlint-cli2', '--fix');
 }

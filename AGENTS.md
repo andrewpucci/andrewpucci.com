@@ -6,19 +6,19 @@ This repository is a SvelteKit site. Active app code lives in `src/routes/` and 
 
 ## Build, Test, and Development Commands
 
-Use `npm ci` to install dependencies. Run `npm run dev` for local development, `npm run preview` to serve the built Cloudflare Pages output, and `npm run check` for the SvelteKit typecheck path. `npm test` runs lint plus Vitest, `npm run test:e2e` runs Playwright, and `npm run test:ci` runs the full local validation path.
+Install the Vite+ CLI (`vp`) first, then use `vp install` for dependencies. Run `vp dev` for local development, `vp preview` to serve the built app, `vp check` for the default static validation path, `vp run check:svelte` for the Svelte/TypeScript typecheck that `vp check` cannot cover, and `vp test` for Vitest. Use `vp run test:e2e` for Playwright and `vp run test:ci` for the local regression path.
 
 ## Coding Style & Naming Conventions
 
-This is an ESM-only codebase; use `import`/`export`, not CommonJS. Formatting is enforced with `oxfmt`, and linting uses `oxlint`; run `npm run lint:fix` before opening a PR. Keep JavaScript, TypeScript, Svelte, and Markdown changes small and readable. Match existing file patterns such as source-adjacent `*.test.ts`, `*.stories.svelte`, `*.spec.js`, and resume entries like `src/lib/content/resume/work/2022-expel-senior-ux-designer.md`.
+This is an ESM-only codebase; use `import`/`export`, not CommonJS. Formatting and linting run through Vite+ (`vp fmt`/`vp lint`, configured in the `fmt` and `lint` blocks of `vite.config.ts`); run `vp check --fix` before opening a PR. Keep JavaScript, TypeScript, Svelte, and Markdown changes small and readable. Match existing file patterns such as source-adjacent `*.test.ts`, `*.stories.svelte`, `*.spec.js`, and resume entries like `src/lib/content/resume/work/2022-expel-senior-ux-designer.md`.
 
 ## Testing Guidelines
 
-Vitest runs non-rendering tests with `happy-dom`, and Storybook interaction tests run in Vitest's browser project; E2E coverage uses Playwright. Maintain the existing 80% coverage threshold for lines, functions, branches, and statements with `npm run test:coverage`. Add or update tests when touching `src/lib/content/`, server-side route logic, or reusable utilities, and add E2E tests for navigation, page structure, forms, or other visitor-facing behavior.
+Vitest runs non-rendering tests with `happy-dom`, and Storybook interaction tests run in Vitest's browser project; E2E coverage uses Playwright. Maintain the existing 80% coverage threshold for lines, functions, branches, and statements with `vp test run --coverage`. Add or update tests when touching `src/lib/content/`, server-side route logic, or reusable utilities, and add E2E tests for navigation, page structure, forms, or other visitor-facing behavior.
 
 ## Commit & Pull Request Guidelines
 
-Recent history favors short, imperative commit messages, often with a prefix like `fix:` or `refactor:` and an issue or PR reference when relevant. Keep commits focused and explain user-visible changes in the PR description. Link the related issue, note any environment or content migrations, and include screenshots for layout or styling changes. Before requesting review, run `npm run test:ci`.
+Recent history favors short, imperative commit messages, often with a prefix like `fix:` or `refactor:` and an issue or PR reference when relevant. Keep commits focused and explain user-visible changes in the PR description. Link the related issue, note any environment or content migrations, and include screenshots for layout or styling changes. Before requesting review, run `vp check` and `vp run test:ci`.
 
 ## Configuration & Content Notes
 
