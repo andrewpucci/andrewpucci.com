@@ -36,7 +36,7 @@ vp run test:e2e
 vp check --fix
 ```
 
-**Required env vars**: copy `.env-sample` to `.dev.vars` before running `vp run preview:pages`. Do not create `.env` alongside it. `PUBLIC_TURNSTILE_SITE_KEY` controls whether the contact form renders locally; the server-side contact secrets are only needed when exercising the live form action.
+**Required env vars**: copy `.dev.vars.example` to `.dev.vars` before running `vp run preview:pages`. Do not create `.env` alongside it. `PUBLIC_TURNSTILE_SITE_KEY` controls whether the contact form renders locally; the server-side contact secrets are only needed when exercising the live form action.
 
 ## Architecture
 

@@ -45,9 +45,9 @@ vp dev
 The dev server runs on `http://localhost:8080`.
 
 To exercise the contact form locally through the Cloudflare Pages runtime, copy
-`.env-sample` to `.dev.vars` and provide the Turnstile and email-related values
-shown there. Do not create a `.env` file alongside it: Wrangler loads only one
-local environment file.
+`.dev.vars.example` to `.dev.vars` and provide the Turnstile and email-related
+values shown there. Do not create a `.env` file alongside it: Wrangler loads
+only one local environment file.
 
 ## Common Commands
 

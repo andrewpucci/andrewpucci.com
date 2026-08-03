@@ -24,8 +24,8 @@ tests/e2e/
 
 Playwright builds the app and serves `.svelte-kit/cloudflare` with Wrangler via
 `npm run build && npm run preview:pages`. This is the Cloudflare Pages runtime,
-not the plain `vp preview` server. A `.dev.vars` file is only needed when a
-local run must exercise the live contact form.
+not the plain `vp preview` server. Copy `.dev.vars.example` to `.dev.vars` only
+when a local run must exercise the live contact form.
 
 ### Commands
 
