@@ -24,7 +24,10 @@
       "img",
       "script",
       "style",
-      "ExpandableImage"
+      "ExpandableImage",
+      "CaseStudyMedia",
+      "CaseStudyMediaBlock",
+      "CaseStudyMediaGallery"
     ]
   }
 }

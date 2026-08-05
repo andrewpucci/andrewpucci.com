@@ -1,25 +1,22 @@
----
-title: LunchBoat Mobile App Interaction Flow - Andrew Pucci
-description: Portfolio piece showing the ideation process for the LunchBoat mobile app.
-hero: /img/card/lunchboat-interactionflow.png
-heroTitle: LunchBoat Mobile App Interaction Flow
-team:
-  - name: Andrew Pucci (me!)
-  - name: Caitlin Steinert
-    link: https://www.linkedin.com/in/csteinert/
-  - name: Elaina Natario
-    link: https://www.linkedin.com/in/elainanatario/
-  - name: Thomas Mullaly
-    link: https://www.linkedin.com/in/tmullaly/
-  - name: Chris Wagner
-    link: https://www.linkedin.com/in/christopherawagner/
-responsibilities:
-  - User Flow
-tools:
-  - name: Whiteboard
-  - name: Sketchpad
-  - name: Balsamiq
----
+<!-- markdownlint-disable MD041 -->
+
+<script module>
+  export const metadata = {
+    title: 'LunchBoat Mobile App Interaction Flow - Andrew Pucci',
+    description: 'Portfolio piece showing the ideation process for the LunchBoat mobile app.',
+    hero: '/img/card/lunchboat-interactionflow.png',
+    heroTitle: 'LunchBoat Mobile App Interaction Flow',
+    team: [
+      { name: 'Andrew Pucci (me!)' },
+      { name: 'Caitlin Steinert', link: 'https://www.linkedin.com/in/csteinert/' },
+      { name: 'Elaina Natario', link: 'https://www.linkedin.com/in/elainanatario/' },
+      { name: 'Thomas Mullaly', link: 'https://www.linkedin.com/in/tmullaly/' },
+      { name: 'Chris Wagner', link: 'https://www.linkedin.com/in/christopherawagner/' },
+    ],
+    responsibilities: ['User Flow'],
+    tools: [{ name: 'Whiteboard' }, { name: 'Sketchpad' }, { name: 'Balsamiq' }],
+  };
+</script>
 
 <script>
   import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';

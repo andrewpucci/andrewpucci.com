@@ -1,25 +1,25 @@
----
-title: Employee Onboarding at Society of Grownups - Andrew Pucci
-description: Process design to improve new employee experience at Society of Grownups.
-hero: /img/card/employee-onboarding.png
-heroTitle: Employee Onboarding at Society of Grownups
-downloadFile: /files/employee-onboarding-at-society-of-grownups.pdf
-team:
-  - name: Andrew Pucci (designer)
-  - name: Nondini Naqui (stakeholder)
-    link: https://www.linkedin.com/in/nondini/
-  - name: Dianna Sawyer (content strategist)
-    link: https://www.linkedin.com/in/diannasawyer/
-responsibilities:
-  - Project Leadership
-  - Employee Research
-  - Process Documentation
-tools:
-  - name: Individual Interviews
-  - name: Task Analysis
-  - name: Google Docs
-    link: https://www.google.com/docs/about/
----
+<!-- markdownlint-disable MD041 -->
+
+<script module>
+  export const metadata = {
+    title: 'Employee Onboarding at Society of Grownups - Andrew Pucci',
+    description: 'Process design to improve new employee experience at Society of Grownups.',
+    hero: '/img/card/employee-onboarding.png',
+    heroTitle: 'Employee Onboarding at Society of Grownups',
+    downloadFile: '/files/employee-onboarding-at-society-of-grownups.pdf',
+    team: [
+      { name: 'Andrew Pucci (designer)' },
+      { name: 'Nondini Naqui (stakeholder)', link: 'https://www.linkedin.com/in/nondini/' },
+      { name: 'Dianna Sawyer (content strategist)', link: 'https://www.linkedin.com/in/diannasawyer/' },
+    ],
+    responsibilities: ['Project Leadership', 'Employee Research', 'Process Documentation'],
+    tools: [
+      { name: 'Individual Interviews' },
+      { name: 'Task Analysis' },
+      { name: 'Google Docs', link: 'https://www.google.com/docs/about/' },
+    ],
+  };
+</script>
 
 <script>
   import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
