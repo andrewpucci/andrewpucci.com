@@ -33,14 +33,8 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], launchOptions: argosLaunchOptions },
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'], launchOptions: argosLaunchOptions },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'], launchOptions: argosLaunchOptions },
-    },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {
     // Tests run against the actual Cloudflare Pages build output (adapter's

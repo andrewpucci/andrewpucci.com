@@ -54,18 +54,20 @@ async function auditRoute(port, route) {
   });
 
   const { categories, audits } = result.lhr;
+  const categoriesById = new Map(Object.entries(categories));
+  const auditsById = new Map(Object.entries(audits));
   let ok = true;
   console.log(`\n${route}`);
 
   for (const [key, threshold] of categoryThresholdsForRoute(route)) {
-    const score = categories[key].score ?? 0;
+    const score = categoriesById.get(key)?.score ?? 0;
     const pass = score >= threshold;
     if (!pass) ok = false;
     console.log(`  ${pass ? '✔' : '✗'} ${key}: ${Math.round(score * 100)} (>= ${threshold * 100})`);
   }
 
   for (const [auditId, { label, unit, max }] of Object.entries(METRIC_THRESHOLDS)) {
-    const value = audits[auditId]?.numericValue;
+    const value = auditsById.get(auditId)?.numericValue;
     const pass = typeof value === 'number' && value <= max;
     if (!pass) ok = false;
     console.log(`  ${pass ? '✔' : '✗'} ${label}: ${value?.toFixed(2)}${unit} (<= ${max}${unit})`);
