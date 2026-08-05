@@ -25,6 +25,9 @@ export default defineConfig({
   ],
   use: {
     baseURL: env.TEST_BASE_URL || 'http://localhost:4173',
+    // Argos injects a helper script to normalize captured pages. Bypass CSP
+    // only in its trusted CI upload run; the production build keeps its CSP.
+    bypassCSP: shouldUploadArgos,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

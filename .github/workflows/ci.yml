@@ -64,6 +64,10 @@ jobs:
           # repository token is configured.
           ARGOS_UPLOAD: ${{ secrets.ARGOS_TOKEN != '' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false) && 'true' || 'false' }}
           ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+          # Cloudflare's documented public Turnstile test key makes the form
+          # available for client-side E2E validation. It cannot verify a real
+          # challenge and has no production authority.
+          PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
 
       - name: Upload Playwright report
         if: always()
