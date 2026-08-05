@@ -109,7 +109,7 @@ jobs:
       # preview:pages` itself (Wrangler, not `vp preview`), so this also
       # exercises the real Cloudflare Pages build.
       - name: E2E + accessibility tests
-        run: vp run test:e2e -- --project=${{ matrix.browser }} --retries=2
+        run: npm run test:e2e -- --project=${{ matrix.browser }} --retries=2
         env:
           # Fork PRs cannot access repository secrets. Functional checks run
           # everywhere; trusted PRs and main pushes upload to Argos once its
