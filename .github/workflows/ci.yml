@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, feat/sveltekit-migration]
 
 jobs:
   test:
@@ -58,6 +58,12 @@ jobs:
       # exercises the real Cloudflare Pages build.
       - name: E2E + accessibility tests
         run: vp run test:e2e -- --retries=2
+        env:
+          # Fork PRs cannot access repository secrets. Functional checks run
+          # everywhere; trusted PRs and main pushes upload to Argos once its
+          # repository token is configured.
+          ARGOS_UPLOAD: ${{ secrets.ARGOS_TOKEN != '' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false) && 'true' || 'false' }}
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
 
       - name: Upload Playwright report
         if: always()

@@ -1,5 +1,6 @@
 // @ts-check
 import { expect, test } from '@playwright/test';
+import { argosScreenshot } from '@argos-ci/playwright';
 
 const archiveSlugs = [
   'bookmooch-social-networking-survey',
@@ -79,15 +80,16 @@ test.describe('Archived portfolio pages', () => {
     }
   });
 
-  test('keeps flattened archive galleries visually stable', async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'Visual baselines are captured in Chromium.');
+  test('uploads flattened archive galleries for visual review', async ({ page }, testInfo) => {
+    test.skip(process.env.ARGOS_UPLOAD !== 'true', 'Argos uploads are disabled.');
 
     for (const slug of ['employee-tool', 'society-of-grownups-website']) {
       await page.goto(`/portfolio/archive/${slug}/`);
       const gallery = page.locator('.archive-body .carousel-inner');
       await gallery.scrollIntoViewIfNeeded();
-      await expect(gallery).toHaveScreenshot(`${slug}-gallery.png`, {
-        animations: 'disabled',
+      await expect(gallery).toBeVisible();
+      await argosScreenshot(page, `${slug}-gallery-${testInfo.project.name}`, {
+        element: gallery,
       });
     }
   });
