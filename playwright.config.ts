@@ -5,6 +5,9 @@ import { createArgosReporterOptions } from '@argos-ci/playwright/reporter';
 import { env } from 'node:process';
 
 const shouldUploadArgos = env.ARGOS_UPLOAD === 'true';
+const argosLaunchOptions = {
+  args: ['--disable-lcd-text', '--font-render-hinting=none'],
+};
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -26,9 +29,18 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], launchOptions: argosLaunchOptions },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'], launchOptions: argosLaunchOptions },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'], launchOptions: argosLaunchOptions },
+    },
   ],
   webServer: {
     // Tests run against the actual Cloudflare Pages build output (adapter's
