@@ -5,6 +5,7 @@
 // against the thresholds, and exit non-zero if any fail.
 import { launch } from 'chrome-launcher';
 import lighthouse from 'lighthouse';
+import { computeMedianRun } from 'lighthouse/core/lib/median-run.js';
 import { chromium } from 'playwright';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:4173';
@@ -18,6 +19,7 @@ const DEFAULT_ROUTES = [
   '/contact/',
 ];
 const ROUTES = process.env.LIGHTHOUSE_ROUTES?.split(',') ?? DEFAULT_ROUTES;
+const RUNS_PER_ROUTE = Number.parseInt(process.env.LIGHTHOUSE_RUNS ?? '5', 10);
 
 const CATEGORY_THRESHOLDS = {
   performance: 0.9,
@@ -46,18 +48,22 @@ function categoryThresholdsForRoute(route) {
 
 async function auditRoute(port, route) {
   const url = `${BASE_URL}${route}`;
-  const result = await lighthouse(url, {
-    port,
-    output: 'json',
-    onlyCategories: ['performance', 'best-practices', 'seo'],
-    logLevel: 'error',
-  });
+  const runs = [];
+  for (let run = 0; run < RUNS_PER_ROUTE; run += 1) {
+    const result = await lighthouse(url, {
+      port,
+      output: 'json',
+      onlyCategories: ['performance', 'best-practices', 'seo'],
+      logLevel: 'error',
+    });
+    runs.push(result.lhr);
+  }
 
-  const { categories, audits } = result.lhr;
+  const { categories, audits } = computeMedianRun(runs);
   const categoriesById = new Map(Object.entries(categories));
   const auditsById = new Map(Object.entries(audits));
   let ok = true;
-  console.log(`\n${route}`);
+  console.log(`\n${route} (median of ${RUNS_PER_ROUTE} runs)`);
 
   for (const [key, threshold] of categoryThresholdsForRoute(route)) {
     const score = categoriesById.get(key)?.score ?? 0;
@@ -77,6 +83,10 @@ async function auditRoute(port, route) {
 }
 
 async function main() {
+  if (!Number.isInteger(RUNS_PER_ROUTE) || RUNS_PER_ROUTE < 1) {
+    throw new Error('LIGHTHOUSE_RUNS must be a positive integer.');
+  }
+
   const chrome = await launch({
     chromePath: chromium.executablePath(),
     chromeFlags: ['--headless=new', '--no-sandbox'],
