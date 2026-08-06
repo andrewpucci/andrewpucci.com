@@ -3,6 +3,20 @@
 @import '$lib/tokens/tokens.css' layer(tokens);
 @import '@fontsource-variable/atkinson-hyperlegible-next' layer(base);
 
+/* Keep text visible while the self-hosted Atkinson font is loading without
+   allowing the eventual swap to reflow the page. These values match Arial's
+   average English character width and line metrics to Atkinson Hyperlegible
+   Next Regular. The remaining system-ui fallback is used when Arial is not
+   locally available. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Fallback';
+  src: local('Arial');
+  size-adjust: 99.455173%;
+  ascent-override: 98.939046%;
+  descent-override: 31.773108%;
+  line-gap-override: 0%;
+}
+
 @layer reset {
   *,
   *::before,

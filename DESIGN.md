@@ -9,28 +9,28 @@ colors:
   ink-secondary: "#495057"
 typography:
   display:
-    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.975rem, calc(1.475rem + 2.7vw), 3.5rem)"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "normal"
   headline:
-    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.375rem, calc(1.175rem + 1.5vw), 2.5rem)"
     fontWeight: 700
     lineHeight: 1.25
   title:
-    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: 1.4
   body:
-    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "'Atkinson Hyperlegible Next Variable', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.4
