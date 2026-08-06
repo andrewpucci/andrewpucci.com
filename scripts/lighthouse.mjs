@@ -4,8 +4,10 @@
 // @lhci/cli, so this is that: run Lighthouse against each route, compare
 // against the thresholds, and exit non-zero if any fail.
 import { launch } from 'chrome-launcher';
+import { mkdir, writeFile } from 'node:fs/promises';
 import lighthouse from 'lighthouse';
 import { computeMedianRun } from 'lighthouse/core/lib/median-run.js';
+import { join } from 'node:path';
 import { chromium } from 'playwright';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:4173';
@@ -20,6 +22,7 @@ const DEFAULT_ROUTES = [
 ];
 const ROUTES = process.env.LIGHTHOUSE_ROUTES?.split(',') ?? DEFAULT_ROUTES;
 const RUNS_PER_ROUTE = Number.parseInt(process.env.LIGHTHOUSE_RUNS ?? '5', 10);
+const REPORT_DIR = process.env.LIGHTHOUSE_REPORT_DIR ?? 'lighthouse-reports';
 
 const CATEGORY_THRESHOLDS = {
   performance: 0.9,
@@ -57,6 +60,8 @@ async function auditRoute(port, route) {
       logLevel: 'error',
     });
     runs.push(result.lhr);
+    const filename = `${route.replaceAll('/', '_') || 'home'}-${run + 1}.json`;
+    await writeFile(join(REPORT_DIR, filename), JSON.stringify(result.lhr));
   }
 
   const { categories, audits } = computeMedianRun(runs);
@@ -86,6 +91,7 @@ async function main() {
   if (!Number.isInteger(RUNS_PER_ROUTE) || RUNS_PER_ROUTE < 1) {
     throw new Error('LIGHTHOUSE_RUNS must be a positive integer.');
   }
+  await mkdir(REPORT_DIR, { recursive: true });
 
   const chrome = await launch({
     chromePath: chromium.executablePath(),

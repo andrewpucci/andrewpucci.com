@@ -64,6 +64,14 @@ jobs:
           vp run test:lighthouse
           kill %1
 
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports/
+          retention-days: 7
+
       - name: Build Storybook
         run: vp run build-storybook
 
