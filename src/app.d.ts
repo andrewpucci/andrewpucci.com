@@ -9,7 +9,7 @@ declare global {
     // and the rate limit binding is not in it, so this is undefined in the
     // deployed Pages runtime. Bound only when running as a Worker.
     CONTACT_FORM_RATE_LIMITER?: RateLimit;
-    TURNSTILE_SECRET_KEY: string;
+    TURNSTILE_SECRET: string;
     RESEND_API_KEY: string;
     CONTACT_TO_EMAIL: string;
     CONTACT_FROM_EMAIL: string;

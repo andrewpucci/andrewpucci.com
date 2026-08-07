@@ -68,7 +68,7 @@ export const actions: Actions = {
       }
     }
 
-    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip))) {
+    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET, ip))) {
       return fail(400, { errors: formError('Verification failed. Please try again.'), values });
     }
 
