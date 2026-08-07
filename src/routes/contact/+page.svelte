@@ -55,7 +55,7 @@
         />
         <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
 
-        <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+        <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-action="turnstile-spin-v2"></div>
 
         <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
       </form>
