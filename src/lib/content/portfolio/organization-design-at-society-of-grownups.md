@@ -1,21 +1,20 @@
----
-title: Organization Design at Society of Grownups - Andrew Pucci
-description: Development of organization design to improve communication at Society of Grownups.
-hero: /img/card/society-of-grownups-organization.jpg
-heroTitle: Organization Design at Society of Grownups
-downloadFile: /files/organization-design-at-society-of-grownups.pdf
-team:
-  - name: Andrew Pucci (designer)
-  - name: Nondini Naqui (stakeholder)
-    link: https://www.linkedin.com/in/nondini/
-responsibilities:
-  - Project Leadership
-  - Employee Research
-  - Process Documentation
-tools:
-  - name: Individual Interviews
-  - name: Task Analysis
----
+<!-- markdownlint-disable MD041 -->
+
+<script module>
+  export const metadata = {
+    title: 'Organization Design at Society of Grownups - Andrew Pucci',
+    description: 'Development of organization design to improve communication at Society of Grownups.',
+    hero: '/img/card/society-of-grownups-organization.jpg',
+    heroTitle: 'Organization Design at Society of Grownups',
+    downloadFile: '/files/organization-design-at-society-of-grownups.pdf',
+    team: [
+      { name: 'Andrew Pucci (designer)' },
+      { name: 'Nondini Naqui (stakeholder)', link: 'https://www.linkedin.com/in/nondini/' },
+    ],
+    responsibilities: ['Project Leadership', 'Employee Research', 'Process Documentation'],
+    tools: [{ name: 'Individual Interviews' }, { name: 'Task Analysis' }],
+  };
+</script>
 
 <script>
   import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';

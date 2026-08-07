@@ -4,26 +4,30 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, feat/sveltekit-migration]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [24.x]
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0 # Chromatic needs history to diff against a baseline
 
       - name: Set up Vite+
         uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24.x
           cache: true
 
       - name: Install dependencies
@@ -39,7 +43,9 @@ jobs:
         run: vp run check:svelte
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        # Storybook's browser project runs only in Chromium. The other browser
+        # engines are installed in their own E2E matrix jobs below.
+        run: npx playwright install --with-deps chromium
 
       # Covers both plain utility functions and Storybook interaction tests
       # (the "storybook" Vitest project) -- there's no separate component
@@ -52,35 +58,6 @@ jobs:
       # ADR-0003: fail on high/critical, review moderate/low manually.
       - name: npm audit
         run: npm audit --audit-level=high
-
-      # playwright.config.ts's webServer runs `npm run build && npm run
-      # preview:pages` itself (Wrangler, not `vp preview`), so this also
-      # exercises the real Cloudflare Pages build.
-      - name: E2E + accessibility tests
-        run: vp run test:e2e -- --retries=2
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
-
-      - name: Build
-        run: vp build
-
-      # ADR-0001's thresholds, asserted via the lighthouse CLI directly
-      # rather than @lhci/cli (ADR-0010).
-      - name: Lighthouse
-        run: |
-          npm run preview:pages &
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4173 > /dev/null && break
-            sleep 2
-          done
-          vp run test:lighthouse
-          kill %1
 
       - name: Build Storybook
         run: vp run build-storybook
@@ -99,3 +76,154 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           storybookBuildDir: storybook-static
+
+  performance:
+    name: Performance regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The regression gate builds the PR base (or previous main commit)
+          # on the same runner so hardware variance affects both samples.
+          fetch-depth: 0
+
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: 24.x
+          cache: true
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build current commit
+        run: vp build
+
+      - name: Audit current commit
+        env:
+          LIGHTHOUSE_LCP_MODE: warn
+          LIGHTHOUSE_REPORT_DIR: lighthouse-reports/current
+          PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+        run: |
+          npm run preview:pages &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4173 > /dev/null && break
+            sleep 2
+          done
+          curl -sf http://localhost:4173 > /dev/null
+          npm run test:lighthouse
+
+      - name: Resolve performance baseline
+        id: lighthouse-base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]] && git cat-file -e "${BASE_SHA}^{commit}"; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "No base commit is available; skipping the relative LCP gate."
+          fi
+
+      - name: Build performance baseline
+        if: steps.lighthouse-base.outputs.available == 'true'
+        env:
+          BASE_SHA: ${{ steps.lighthouse-base.outputs.sha }}
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/lighthouse-base" "$BASE_SHA"
+          cd "$RUNNER_TEMP/lighthouse-base"
+          vp install
+          vp build
+
+      - name: Audit performance baseline
+        if: steps.lighthouse-base.outputs.available == 'true'
+        env:
+          LIGHTHOUSE_LCP_MODE: warn
+          LIGHTHOUSE_REPORT_DIR: lighthouse-reports/base
+          LIGHTHOUSE_THRESHOLD_MODE: warn
+          PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+          TEST_BASE_URL: http://localhost:4174
+        run: |
+          # Serve both builds with the current commit's pinned Wrangler so the
+          # comparison changes the application revision, not the test harness.
+          npx wrangler pages dev "$RUNNER_TEMP/lighthouse-base/.svelte-kit/cloudflare" --port 4174 \
+            --binding PUBLIC_TURNSTILE_SITE_KEY="$PUBLIC_TURNSTILE_SITE_KEY" &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4174 > /dev/null && break
+            sleep 2
+          done
+          curl -sf http://localhost:4174 > /dev/null
+          npm run test:lighthouse
+
+      - name: Compare LCP with baseline
+        if: steps.lighthouse-base.outputs.available == 'true'
+        run: npm run test:lighthouse:regression
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports/
+          retention-days: 7
+
+  e2e:
+    name: E2E (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: 24.x
+          cache: true
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      # playwright.config.ts's webServer runs `npm run build && npm run
+      # preview:pages` itself (Wrangler, not `vp preview`), so this also
+      # exercises the real Cloudflare Pages build.
+      - name: E2E + accessibility tests
+        run: npm run test:e2e -- --project=${{ matrix.browser }} --retries=2
+        env:
+          # Fork PRs cannot access repository secrets. Functional checks run
+          # everywhere; trusted PRs and main pushes upload to Argos once its
+          # repository token is configured.
+          ARGOS_UPLOAD: ${{ matrix.browser == 'chromium' && secrets.ARGOS_TOKEN != '' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false) && 'true' || 'false' }}
+          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
+          # Cloudflare's documented public Turnstile test key makes the form
+          # available for client-side E2E validation. It cannot verify a real
+          # challenge and has no production authority.
+          PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            ~/.config/.wrangler/logs/
+          retention-days: 7

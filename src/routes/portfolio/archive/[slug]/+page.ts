@@ -13,6 +13,5 @@ export const load: PageLoad = ({ params }) => {
 
   return {
     metadata: entry.metadata,
-    html: entry.html,
   };
 };

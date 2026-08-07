@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { getArchiveCaseStudy } from '$lib/content/archive';
   import { portfolioImage } from '$lib/utils/portfolio-images';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
 
+  const entry = $derived(getArchiveCaseStudy(data.metadata.slug)!);
+  const ArchiveCaseStudyBody = $derived(entry.Component);
   const heroImage = $derived(portfolioImage(data.metadata.hero));
 </script>
 
@@ -49,7 +52,7 @@
   </div>
 
   <div class="archive-body">
-    {@html data.html}
+    <ArchiveCaseStudyBody />
   </div>
 </article>
 
@@ -115,6 +118,7 @@
     max-width: 100%;
     height: auto;
     margin-block: var(--space-3);
+    background: var(--color-surface-default);
   }
 
   .archive-body :global(.carousel-inner),

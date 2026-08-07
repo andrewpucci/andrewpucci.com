@@ -1,7 +1,49 @@
 @layer reset, tokens, base, components, utilities;
 
 @import '$lib/tokens/tokens.css' layer(tokens);
-@import '@fontsource-variable/atkinson-hyperlegible-next' layer(base);
+
+/* Preloading in +layout makes this available for the initial render on the
+   common path. `optional` keeps the metric-matched fallback in place when a
+   slow connection misses that window, avoiding a late font-swap reflow. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url('@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url('@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Keep text visible while the self-hosted Atkinson font is loading without
+   allowing the eventual swap to reflow the page. These values match Arial's
+   average English character width and line metrics to Atkinson Hyperlegible
+   Next Regular. Liberation Sans has the same measured averages and metrics as
+   Arial, and is installed on the Linux Playwright runners; system-ui remains
+   the final fallback when neither local font is available. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Fallback';
+  src: local('Arial'), local('Liberation Sans');
+  size-adjust: 99.455173%;
+  ascent-override: 98.939046%;
+  descent-override: 31.773108%;
+  line-gap-override: 0%;
+}
 
 @layer reset {
   *,

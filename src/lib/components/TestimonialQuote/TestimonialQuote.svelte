@@ -17,7 +17,7 @@
   <blockquote class="quote">{quote}</blockquote>
   <figcaption class="caption">
     {#if avatar}
-      <enhanced:img class="avatar" src={avatar} alt="" sizes="40px" />
+      <enhanced:img class="avatar" src={avatar} alt="" sizes="40px" loading="lazy" decoding="async" />
     {/if}
     {#if authorUrl}
       <a href={authorUrl} target="_blank" rel="noopener noreferrer">{authorName}</a>
