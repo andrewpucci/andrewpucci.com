@@ -113,33 +113,19 @@ cap-height trimming is independently desired and visually approved.
 
 ## Ranked recommendation
 
-1. **Add a generated, static metric-matched fallback face; retain `swap`; then
-   preload only normal Latin.** This preserves immediate readable text and
-   ensures the preferred Atkinson face is used whenever it can load, while
-   addressing both vertical shift and line-wrap changes. It has small CSS and
-   verification cost, but must be regenerated if the font or fallback changes.
-   This is the best fit for an accessibility-focused body typeface and the
-   observed swap CLS.
-
-   Implementation note: the PR's mobile Lighthouse run showed the 34 KB font
-   preload competing with the 31 KB high-priority hero LCP image. The matched
-   fallback remains in use, but the preload was removed so the font no longer
-   occupies the image's critical request budget. Reconsider it only after a
-   real-user performance measurement shows that it improves, rather than harms,
-   the initial render.
-
-2. **If measurements still show a late font swap, use preload + `optional` for
-   the normal Latin face.** Chrome specifically recommends this pairing to
-   eliminate layout jank. Tradeoff: a cold, slow-network visit may remain in
-   the system fallback. This is best when stability and fast content outweigh
-   guaranteed first-visit typeface identity.
-3. **Use `fallback` rather than `swap` only if product prefers a time-bounded
+1. **Use preload + `optional` for the normal Latin face.** The measured
+   fallback still rewrapped some résumé content after metric overrides, while
+   the home LCP changed by only a few milliseconds. Chrome specifically
+   recommends this pairing to eliminate layout jank. Tradeoff: a cold,
+   slow-network visit may remain in the system fallback. This is best when
+   stability and fast content outweigh guaranteed first-visit typeface identity.
+2. **Use `fallback` rather than `swap` only if product prefers a time-bounded
    compromise.** It reduces long-tail late swaps but is less deterministic
    than `optional` and has browser-dependent timing.
-4. **Add `font-synthesis: none` after importing the genuine italic face.**
+3. **Add `font-synthesis: none` after importing the genuine italic face.**
    This protects the font design but does not fix CLS; importing italic adds a
    resource only when italic content requires it.
-5. **Adopt Capsize globally only as a separate typography initiative.** It can
+4. **Adopt Capsize globally only as a separate typography initiative.** It can
    create very precise rhythm and supply metrics, but it risks broad visual
    changes and is disproportionate to this loading-specific defect.
 
