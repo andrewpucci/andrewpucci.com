@@ -1,6 +1,5 @@
 <script lang="ts">
   import '../app.css';
-  import atkinsonLatinUrl from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
   import Nav from './Nav.svelte';
   import Footer from './Footer.svelte';
 
@@ -9,7 +8,6 @@
 
 <svelte:head>
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="preload" href={atkinsonLatinUrl} as="font" type="font/woff2" crossorigin="anonymous" />
 </svelte:head>
 
 <a href="#main-content" class="skip-link">Skip to content</a>

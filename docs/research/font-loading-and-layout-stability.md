@@ -115,6 +115,14 @@ cap-height trimming is independently desired and visually approved.
    verification cost, but must be regenerated if the font or fallback changes.
    This is the best fit for an accessibility-focused body typeface and the
    observed swap CLS.
+
+   Implementation note: the PR's mobile Lighthouse run showed the 34 KB font
+   preload competing with the 31 KB high-priority hero LCP image. The matched
+   fallback remains in use, but the preload was removed so the font no longer
+   occupies the image's critical request budget. Reconsider it only after a
+   real-user performance measurement shows that it improves, rather than harms,
+   the initial render.
+
 2. **If measurements still show a late font swap, use preload + `optional` for
    the normal Latin face.** Chrome specifically recommends this pairing to
    eliminate layout jank. Tradeoff: a cold, slow-network visit may remain in
