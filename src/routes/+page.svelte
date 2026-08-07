@@ -85,7 +85,7 @@
   <h2 id="portfolio-heading">Portfolio</h2>
   <Carousel items={cards} label="Portfolio projects" autoplay={true}>
     {#snippet item(card)}
-      <PortfolioCard {...card} />
+      <PortfolioCard {...card} imageLoading="lazy" />
     {/snippet}
   </Carousel>
 </section>
@@ -151,12 +151,16 @@
     max-width: 75rem;
     margin-inline: auto;
     padding: var(--space-5) var(--space-3);
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 62.5rem;
   }
 
   .portfolio {
     max-width: 75rem;
     margin-inline: auto;
     padding: 0 var(--space-3) var(--space-5);
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 32rem;
   }
 
   @media (min-width: 62rem) {
@@ -166,6 +170,11 @@
 
     .testimonials {
       grid-template-columns: repeat(2, 1fr);
+      contain-intrinsic-block-size: auto 23.3125rem;
+    }
+
+    .portfolio {
+      contain-intrinsic-block-size: auto 59.25rem;
     }
   }
 </style>

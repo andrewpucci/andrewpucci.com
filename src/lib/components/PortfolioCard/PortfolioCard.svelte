@@ -3,7 +3,11 @@
   import type { PortfolioCardData } from '$lib/types/portfolio';
   import { portfolioImage } from '$lib/utils/portfolio-images';
 
-  let { title, content, imgSrc, imgAlt, url }: PortfolioCardData = $props();
+  interface Props extends PortfolioCardData {
+    imageLoading?: 'eager' | 'lazy';
+  }
+
+  let { title, content, imgSrc, imgAlt, url, imageLoading }: Props = $props();
   const image = $derived(portfolioImage(imgSrc));
 </script>
 
@@ -11,7 +15,14 @@
      element: a class set here lands in Card's scope, not ours, and styling it would
      need a bare `:global()` (ADR-0007). It clips the image bleed set up below. -->
 <Card href={url} style="overflow: hidden">
-  <enhanced:img class="image" src={image} alt={imgAlt} sizes="min(384px, 100vw)" />
+  <enhanced:img
+    class="image"
+    src={image}
+    alt={imgAlt}
+    sizes="min(384px, 100vw)"
+    loading={imageLoading}
+    decoding={imageLoading === 'lazy' ? 'async' : undefined}
+  />
   <h3 class="title">{title}</h3>
   <p class="content">{content}</p>
 </Card>
