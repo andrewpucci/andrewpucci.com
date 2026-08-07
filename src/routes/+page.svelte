@@ -17,7 +17,7 @@
 </svelte:head>
 
 <section class="hero">
-  <enhanced:img class="image" src={heroSrc} alt="" sizes="100vw" fetchpriority="high" />
+  <enhanced:img class="image" src={heroSrc} alt="" sizes="720px" fetchpriority="high" />
   <h1 class="headline">
     <span>Hi, I'm Andrew. I grow teams who build engaging, usable, and accessible products.</span>
   </h1>
