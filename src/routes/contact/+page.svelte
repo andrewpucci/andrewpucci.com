@@ -16,7 +16,9 @@
 <svelte:head>
   <title>Contact | Andrew Pucci</title>
   <meta name="description" content="Get in touch with Andrew Pucci." />
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  {#if formAvailable}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  {/if}
 </svelte:head>
 
 <div class="contact">

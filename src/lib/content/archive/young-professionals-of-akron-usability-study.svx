@@ -1,22 +1,39 @@
----
-layout: artifact
-title: Young Professionals of Akron Usability Study - Andrew Pucci
-description: Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.
-name: young-professionals-of-akron-usability-study
-hero: ./src/site/img/card-img/ypa-eyetracking.png
-heroTitle: Young Professionals of Akron Usability Study
-team:
-  - name: Andrew Pucci (me!)
-  - name: Heather Knable
-    link: https://www.linkedin.com/in/heather-johnson-9289a750/
-  - name: Tess Megla
-    link: https://www.linkedin.com/in/tessweavermegla
-responsibilities:
-  - Usability Study
-tools:
-  - name: Tobii (Eyetracking)
-eleventyExcludeFromCollections: true
----
+<script module>
+  export const metadata = {
+  "title": "Young Professionals of Akron Usability Study - Andrew Pucci",
+  "description": "Portfolio piece showing how eye-tracking was used to improve the Young Professionals of Akron website.",
+  "heroTitle": "Young Professionals of Akron Usability Study",
+  "team": [
+    {
+      "name": "Andrew Pucci (me!)"
+    },
+    {
+      "name": "Heather Knable",
+      "link": "https://www.linkedin.com/in/heather-johnson-9289a750/"
+    },
+    {
+      "name": "Tess Megla",
+      "link": "https://www.linkedin.com/in/tessweavermegla"
+    }
+  ],
+  "responsibilities": [
+    "Usability Study"
+  ],
+  "tools": [
+    {
+      "name": "Tobii (Eyetracking)"
+    }
+  ],
+  "hero": "/img/archive/card/ypa-eyetracking.png"
+};
+</script>
+
+<script>
+  import figure1_thumb from "$lib/assets/img/archive/figure1-thumb.png?enhanced";
+  import figure2 from "$lib/assets/img/archive/figure2.png?enhanced";
+  import figure3 from "$lib/assets/img/archive/figure3.png?enhanced";
+  import figure4 from "$lib/assets/img/archive/figure4.png?enhanced";
+</script>
 
 ### Goals of Testing
 
@@ -62,8 +79,9 @@ The participants used in the test were made up of a convenient sample of people 
 This table indicates responses to the pre-test questionnaire. For the first four questions, participants were asked to indicate their level on a scale of 1 to 5 (1 = low use, 5 = regular use) the results were as follows:
 
 <table>
+  <tbody>
   <tr>
-    <th>&nbsp;</th>
+    <td></td>
     <th>Participant 1</th>
     <th>Participant 2</th>
     <th>Participant 3</th>
@@ -118,6 +136,7 @@ This table indicates responses to the pre-test questionnaire. For the first four
     <td>No</td>
     <td>No</td>
   </tr>
+</tbody>
 </table>
 
 These results indicate that each participant was familiar with computers, hardware, Internet browsing, email and online forms. In addition to standard computer use skills, each of the available participants was familiar with usability studies methodologies and the Tobii software used to conduct the test. This was because of their participation in the Usability I course that they participated in.
@@ -155,36 +174,37 @@ All of the data was collected and assessed for usefulness. As a result, not all 
 In general, the participants were able to successfully complete the three tasks. This table indicates successful completion of tasks for each participant.
 
 <table>
-  <caption><i class="fas fa-check-circle fa-fw"></i> = Successful <i class="fas fa-times-circle fa-fw"></i> = Unsuccessful</caption>
+  <caption>✓ = Successful ✕ = Unsuccessful</caption>
+  <tbody>
   <tr>
-    <th>&nbsp;</th>
+    <td></td>
     <th>Task 1: Locate descriptions and pictures of past events</th>
     <th>Task 2: Locate the newsletter sign-up form</th>
     <th>Task 3: Email YPA a question using the site</th>
   </tr>
   <tr>
     <th>Participant 1</th>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
   </tr>
   <tr>
     <th>Participant 2</th>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
   </tr>
   <tr>
     <th>Participant 3</th>
-    <td><i class="fas fa-times-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td>✕</td>
+    <td>✓</td>
+    <td>✓</td>
   </tr>
   <tr>
     <th>Participant 4</th>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
-    <td><i class="fas fa-times-circle fa-fw"></i></td>
-    <td><i class="fas fa-check-circle fa-fw"></i></td>
+    <td>✓</td>
+    <td>✕</td>
+    <td>✓</td>
   </tr>
   <tr>
     <th>Percentage of Participants Successful</th>
@@ -192,13 +212,15 @@ In general, the participants were able to successfully complete the three tasks.
     <td>75%</td>
     <td>100%</td>
   </tr>
+</tbody>
 </table>
 
 Although participants were generally successful in completing each of the tasks, the difficulty with task 1 is discernable when the amount of time spent on the tasks is viewed. This table indicates the amount of time spent on each task by each participant.
 
 <table>
+  <tbody>
   <tr>
-    <th>&nbsp;</th>
+    <td></td>
     <th>Task 1: Locate descriptions and pictures of past events</th>
     <th>Task 2: Locate the newsletter sign-up form</th>
     <th>Task 3: Email YPA a question using the site</th>
@@ -252,6 +274,7 @@ Although participants were generally successful in completing each of the tasks,
     <td>0:06</td>
   </tr>
 
+</tbody>
 </table>
 
 As you can see from the large amounts of time that participants required to complete task 1 (locate descriptions and pictures of past events), participants encountered some difficulty with this task. Task 2 (locate the newsletter and event notification sign-up form) also caused some difficulty for users as evidenced by the time-on-task measurements. Task 3 was easily and successfully completed by all four participants.
@@ -269,6 +292,7 @@ The biggest barrier to successful completion of this task can be easily identifi
 Here are the paths that each participant followed to find the descriptions and photos of past events.
 
 <table>
+  <tbody>
   <tr>
     <th>Participant 1</th>
     <th>Participant 2</th>
@@ -278,66 +302,66 @@ Here are the paths that each participant followed to find the descriptions and p
   <tr>
     <td>
       Home<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Clicked the event listed below News and Events<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       See All 2010 Events<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       The Library
     </td>
     <td>
       Home<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Save the Date<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       See All 2010 Events<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Date on Calendar<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Back<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Community Happenings<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       The Library
     </td>
     <td>
       Home<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Attempted to click News and Events (not a link)<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       We Are YPA<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Welcome<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Community Happenings<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Free Tour (sublink)<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Welcome<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Save the Date<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Welcome<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Aborted task
     </td>
     <td>
       Home<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Attempted to click News and Events (not a link)<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Save the Date<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Calendar scrolled<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Links to other sites<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Welcome<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       News Articles<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       Community Happenings<br>
-      <i class="fas fa-arrow-down fa-fw"></i><br>
+      ↓<br>
       The Library
     </td>
   </tr>
@@ -347,6 +371,7 @@ Here are the paths that each participant followed to find the descriptions and p
     <td>Time: 4 m 49 s</td>
     <td>Time: 3 m 10 s</td>
   </tr>
+</tbody>
 </table>
 
 Here are some of the comments that participants made while completing task 1:
@@ -369,7 +394,7 @@ Task 2 also helped identify another issue with the overall site – the Flash-ba
 In fact, most of the participants disregarded the Flash-based graphic upon first view of the site. A heat map (below) that shows where the participants focused their attentions supports the finding that the Flash graphic was nearly ignored. As you can see, the graphic was not the subject of much attention (the red hotspots indicate the most focused attention).
 
 <figure>
-  {% image "./src/site/img/figure1-thumb.png", "", "img-fluid" %}
+  <enhanced:img src={figure1_thumb} alt="" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   <figcaption>Figure 1: Heatmap showing inattention to Flash graphics</figcaption>
 </figure>
 
@@ -389,21 +414,21 @@ Through observation, note-taking, and reviewing the recordings of the test sessi
 - Most users were confused by text that looks clickable because it is colored blue. However, the color was used for emphasis and not because the text was a link. This screen capture shows an example of the deceptive text formatting that participants commented about.
 
 <figure>
-  {% image "./src/site/img/figure2.png", "", "img-fluid" %}
+  <enhanced:img src={figure2} alt="" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   <figcaption>Figure 2: Blue text looks clickable, but isn't</figcaption>
 </figure>
 
 - There were graphics throughout the site (forward pointing arrows) that appeared to be links. Some users tried to click but got no response. The capture below shows one such useless arrow.
 
 <figure>
-  {% image "./src/site/img/figure3.png", "", "img-fluid" %}
+  <enhanced:img src={figure3} alt="" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   <figcaption>Figure 3: Graphics shaped like arrows invoked clicks, but were not clickable</figcaption>
 </figure>
 
 - Each participant tried to click on News and Events in the sidebar on the site’s home page. Only the event listed underneath the News and Events text is navigable. This capture indicates where the participants attempted to click without success (yellow circles indicate click attempts).
 
 <figure>
-  {% image "./src/site/img/figure4.png", "", "img-fluid" %}
+  <enhanced:img src={figure4} alt="" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   <figcaption>Figure 4: News & Events is not clickable</figcaption>
 </figure>
 

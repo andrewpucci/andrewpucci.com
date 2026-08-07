@@ -1,26 +1,48 @@
----
-layout: artifact
-title: Understanding JustCode Users - Andrew Pucci
-description: Portfolio piece showing how surveys and interviews were used to understand JustCode users.
-name: understanding-justcode-users
-hero: ./src/site/img/card-img/improving-justcode.png
-heroTitle: Understanding JustCode Users
-team:
-  - name: Andrew Pucci (me!)
-  - name: Chris Sells
-    link: https://www.linkedin.com/in/csells/
-responsibilities:
-  - Participant Recruitment
-  - Usability Studies
-  - Wireframes
-tools:
-  - name: Qualtrics
-  - name: Doodle (for participant scheduling)
-  - name: Skype and join.me
-  - name: Camtasia
-  - name: Photoshop
-eleventyExcludeFromCollections: true
----
+<script module>
+  export const metadata = {
+  "title": "Understanding JustCode Users - Andrew Pucci",
+  "description": "Portfolio piece showing how surveys and interviews were used to understand JustCode users.",
+  "heroTitle": "Understanding JustCode Users",
+  "team": [
+    {
+      "name": "Andrew Pucci (me!)"
+    },
+    {
+      "name": "Chris Sells",
+      "link": "https://www.linkedin.com/in/csells/"
+    }
+  ],
+  "responsibilities": [
+    "Participant Recruitment",
+    "Usability Studies",
+    "Wireframes"
+  ],
+  "tools": [
+    {
+      "name": "Qualtrics"
+    },
+    {
+      "name": "Doodle (for participant scheduling)"
+    },
+    {
+      "name": "Skype and join.me"
+    },
+    {
+      "name": "Camtasia"
+    },
+    {
+      "name": "Photoshop"
+    }
+  ],
+  "hero": "/img/archive/card/improving-justcode.png"
+};
+</script>
+
+<script>
+  import justcode_freeformtextanalysis from "$lib/assets/img/archive/justcode-freeformtextanalysis.jpg?enhanced";
+  import justcode_telerikprofile from "$lib/assets/img/archive/justcode-telerikprofile.png?enhanced";
+  import justcode_vampanel from "$lib/assets/img/archive/justcode-vampanel.png?enhanced";
+</script>
 
 ## Challenge
 
@@ -34,13 +56,13 @@ Once I understood which features were causing the most confusion, I designed and
 
 <div class="row">
   <div class="col-lg-4">
-    {% image "./src/site/img/justcode-freeformtextanalysis.jpg", "Whiteboard with affinity diagram made of Post-it notes", "img-fluid mb-3 mb-lg-0" %}
+    <enhanced:img src={justcode_freeformtextanalysis} alt="Whiteboard with affinity diagram made of Post-it notes" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   </div>
   <div class="col-lg-4 mb-3 mb-lg-0">
-    {% image "./src/site/img/justcode-telerikprofile.png", "Screenshot of Telerik Account page", "img-fluid mb-3 mb-lg-0" %}
+    <enhanced:img src={justcode_telerikprofile} alt="Screenshot of Telerik Account page" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   </div>
   <div class="col-lg-4 mb-3 mb-lg-0">
-    {% image "./src/site/img/justcode-vampanel.png", "Screenshot of Visual Studio showing mockup of JustCode Visual Aid Menu", "img-fluid" %}
+    <enhanced:img src={justcode_vampanel} alt="Screenshot of Visual Studio showing mockup of JustCode Visual Aid Menu" sizes="(min-width: 48rem) 48rem, calc(100vw - 2 * var(--space-3))" />
   </div>
 </div>
 

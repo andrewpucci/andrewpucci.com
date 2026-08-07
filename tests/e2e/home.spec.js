@@ -25,6 +25,16 @@ test.describe('Home page', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText("Hi, I'm Andrew");
   });
 
+  test('defers below-the-fold rendering and images', async ({ page }) => {
+    const testimonials = page.locator('section.testimonials');
+    await expect(testimonials).toHaveCSS('content-visibility', 'auto');
+    await expect(testimonials.locator('img').first()).toHaveAttribute('loading', 'lazy');
+
+    const portfolio = page.locator('section.portfolio');
+    await expect(portfolio).toHaveCSS('content-visibility', 'auto');
+    await expect(portfolio.locator('img').first()).toHaveAttribute('loading', 'lazy');
+  });
+
   test('the skip link is the first focusable element', async ({ page, browserName }) => {
     // Safari/WebKit doesn't include links in the default Tab order unless the
     // user has "Full Keyboard Access" enabled -- a real macOS platform

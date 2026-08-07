@@ -1,19 +1,41 @@
+/// <reference types="node" />
+
 import { defineConfig, devices } from '@playwright/test';
+import { createArgosReporterOptions } from '@argos-ci/playwright/reporter';
+import { env } from 'node:process';
+
+const shouldUploadArgos = env.ARGOS_UPLOAD === 'true';
+const argosLaunchOptions = {
+  args: ['--disable-lcd-text', '--font-render-hinting=none'],
+};
 
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  forbidOnly: !!env.CI,
+  retries: env.CI ? 2 : 0,
+  workers: env.CI ? 1 : undefined,
+  reporter: [
+    [env.CI ? 'dot' : 'list'],
+    [
+      '@argos-ci/playwright/reporter',
+      createArgosReporterOptions({ uploadToArgos: shouldUploadArgos }),
+    ],
+    ['html', { outputFolder: 'playwright-report' }],
+  ],
   use: {
-    baseURL: process.env.TEST_BASE_URL || 'http://localhost:4173',
+    baseURL: env.TEST_BASE_URL || 'http://localhost:4173',
+    // Argos injects a helper script to normalize captured pages. Bypass CSP
+    // only in its trusted CI upload run; the production build keeps its CSP.
+    bypassCSP: shouldUploadArgos,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], launchOptions: argosLaunchOptions },
+    },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],
@@ -29,7 +51,7 @@ export default defineConfig({
     // themselves are still the Vite+ surface (`build` -> `vp build`).
     command: 'npm run build && npm run preview:pages',
     url: 'http://localhost:4173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !env.CI,
     stdout: 'ignore',
     stderr: 'pipe',
     timeout: 120_000,

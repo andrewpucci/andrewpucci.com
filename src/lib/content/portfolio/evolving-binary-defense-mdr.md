@@ -1,30 +1,28 @@
----
-title: Evolving Binary Defense MDR - Andrew Pucci
-description: Researching user workflows to design improvements to the UI of an information security SaaS application.
-hero: /img/card/evolving-binary-defense-mdr.jpg
-heroTitle: Evolving Binary Defense MDR
-downloadFile: /files/evolving-binary-defense-mdr.pdf
-team:
-  - name: Andrew Pucci (lead designer)
-  - name: Jimmy Byrd (lead developer)
-    link: https://www.linkedin.com/in/jimmy-byrd-664aa64b/
-  - name: Binary Defense Development Team
-responsibilities:
-  - Generative User Research
-  - Interaction & Visual Design
-  - Front-end Development
-tools:
-  - name: Adobe XD
-    link: https://www.adobe.com/products/xd.html
-  - name: Bootstrap
-    link: https://getbootstrap.com/
-  - name: axe DevTools browser extension
-    link: https://www.deque.com/axe/devtools/
-  - name: Tanaguru Contrast Finder
-    link: https://contrast-finder.tanaguru.com/
-  - name: ColorBox
-    link: https://colorbox.io/
----
+<!-- markdownlint-disable MD041 -->
+
+<script module>
+  export const metadata = {
+    title: 'Evolving Binary Defense MDR - Andrew Pucci',
+    description:
+      'Researching user workflows to design improvements to the UI of an information security SaaS application.',
+    hero: '/img/card/evolving-binary-defense-mdr.jpg',
+    heroTitle: 'Evolving Binary Defense MDR',
+    downloadFile: '/files/evolving-binary-defense-mdr.pdf',
+    team: [
+      { name: 'Andrew Pucci (lead designer)' },
+      { name: 'Jimmy Byrd (lead developer)', link: 'https://www.linkedin.com/in/jimmy-byrd-664aa64b/' },
+      { name: 'Binary Defense Development Team' },
+    ],
+    responsibilities: ['Generative User Research', 'Interaction & Visual Design', 'Front-end Development'],
+    tools: [
+      { name: 'Adobe XD', link: 'https://www.adobe.com/products/xd.html' },
+      { name: 'Bootstrap', link: 'https://getbootstrap.com/' },
+      { name: 'axe DevTools browser extension', link: 'https://www.deque.com/axe/devtools/' },
+      { name: 'Tanaguru Contrast Finder', link: 'https://contrast-finder.tanaguru.com/' },
+      { name: 'ColorBox', link: 'https://colorbox.io/' },
+    ],
+  };
+</script>
 
 <script>
   import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';

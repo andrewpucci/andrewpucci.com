@@ -1,26 +1,40 @@
----
-layout: artifact
-title: Revamping Course Registration  - Andrew Pucci
-description: Portfolio piece showing the process used to revamp academic course registration.
-name: revamping-course-registration
-hero: ./src/site/img/card-img/course-selection.png
-heroTitle: Revamping Course Registration
-team:
-  - name: Andrew Pucci (me!)
-  - name: Brian Buirge
-    link: https://www.linkedin.com/in/brian-buirge-4255368/
-  - name: Nisha Somnath
-    link: https://www.linkedin.com/in/nisom/
-responsibilities:
-  - Persona Development
-  - User Flows
-  - Interactive Prototype
-tools:
-  - name: LovelyCharts
-  - name: OpenOffice Draw & Impress
-  - name: Axure RP
-eleventyExcludeFromCollections: true
----
+<script module>
+  export const metadata = {
+  "title": "Revamping Course Registration  - Andrew Pucci",
+  "description": "Portfolio piece showing the process used to revamp academic course registration.",
+  "heroTitle": "Revamping Course Registration",
+  "team": [
+    {
+      "name": "Andrew Pucci (me!)"
+    },
+    {
+      "name": "Brian Buirge",
+      "link": "https://www.linkedin.com/in/brian-buirge-4255368/"
+    },
+    {
+      "name": "Nisha Somnath",
+      "link": "https://www.linkedin.com/in/nisom/"
+    }
+  ],
+  "responsibilities": [
+    "Persona Development",
+    "User Flows",
+    "Interactive Prototype"
+  ],
+  "tools": [
+    {
+      "name": "LovelyCharts"
+    },
+    {
+      "name": "OpenOffice Draw & Impress"
+    },
+    {
+      "name": "Axure RP"
+    }
+  ],
+  "hero": "/img/archive/card/course-selection.png"
+};
+</script>
 
 ## Challenge
 
@@ -38,7 +52,7 @@ When we were comfortable with our experience design direction, we created high-f
 I also [presented](http://www.slideshare.net/andrewrpucci/ixda-cleveland-ux-show-tell-oct-2011) the project process and outcomes at an IxDA Cleveland meeting.
 
 <div class="embed-responsive embed-responsive-4by3 mb-3">
-  <iframe class="embed-responsive-item" src="https://docs.google.com/presentation/d/1pysSKJNCSWJojZDcBSQOe25DPdZuNfill93RR9w96zA/embed?start=true&loop=true&delayms=3000" frameborder="0" width="1058" height="823" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true" title="Slides for presentation of course registration redesign at IxDA Cleveland"></iframe>
+  <p><a href="https://docs.google.com/presentation/d/1pysSKJNCSWJojZDcBSQOe25DPdZuNfill93RR9w96zA/embed?start=true&loop=true&delayms=3000">View Slides for presentation of course registration redesign at IxDA Cleveland</a></p>
 </div>
 
 ## Lessons Learned

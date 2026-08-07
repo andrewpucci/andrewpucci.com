@@ -1,24 +1,27 @@
----
-title: Redesigning Telerik Analytics - Andrew Pucci
-description: Real-time application analytics to grow user engagement and improve user experience.
-hero: /img/card/analytics-design.png
-heroTitle: Redesigning Telerik Analytics
-downloadFile: /files/redesigning-telerik-analytics.pdf
-team:
-  - name: Andrew Pucci (lead designer)
-  - name: Thomas Høst Andersen (lead developer)
-    link: https://www.linkedin.com/in/thomas-høst-andersen-a98502/
-  - name: Kostadin Kushlev (design lead)
-    link: https://www.linkedin.com/in/kostadinkushlev/
-responsibilities:
-  - Visual Design
-  - Interaction Design
-tools:
-  - name: Adobe Illustrator
-    link: https://www.adobe.com/products/illustrator.html
-  - name: Skype
-    link: https://www.skype.com/en/
----
+<!-- markdownlint-disable MD041 -->
+
+<script module>
+  export const metadata = {
+    title: 'Redesigning Telerik Analytics - Andrew Pucci',
+    description: 'Real-time application analytics to grow user engagement and improve user experience.',
+    hero: '/img/card/analytics-design.png',
+    heroTitle: 'Redesigning Telerik Analytics',
+    downloadFile: '/files/redesigning-telerik-analytics.pdf',
+    team: [
+      { name: 'Andrew Pucci (lead designer)' },
+      {
+        name: 'Thomas Høst Andersen (lead developer)',
+        link: 'https://www.linkedin.com/in/thomas-høst-andersen-a98502/',
+      },
+      { name: 'Kostadin Kushlev (design lead)', link: 'https://www.linkedin.com/in/kostadinkushlev/' },
+    ],
+    responsibilities: ['Visual Design', 'Interaction Design'],
+    tools: [
+      { name: 'Adobe Illustrator', link: 'https://www.adobe.com/products/illustrator.html' },
+      { name: 'Skype', link: 'https://www.skype.com/en/' },
+    ],
+  };
+</script>
 
 <script>
   import CaseStudyMedia from '$lib/components/CaseStudyMedia/CaseStudyMedia.svelte';
