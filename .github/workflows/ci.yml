@@ -6,10 +6,18 @@ on:
   pull_request:
     branches: [main, feat/sveltekit-migration]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v5
@@ -35,7 +43,9 @@ jobs:
         run: vp run check:svelte
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        # Storybook's browser project runs only in Chromium. The other browser
+        # engines are installed in their own E2E matrix jobs below.
+        run: npx playwright install --with-deps chromium
 
       # Covers both plain utility functions and Storybook interaction tests
       # (the "storybook" Vitest project) -- there's no separate component
@@ -57,12 +67,16 @@ jobs:
       - name: Lighthouse
         run: |
           npm run preview:pages &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in $(seq 1 30); do
             curl -sf http://localhost:4173 > /dev/null && break
             sleep 2
           done
+          # Fail with the server's own diagnostics if it never became ready,
+          # rather than continuing into an opaque Lighthouse connection error.
+          curl -sf http://localhost:4173 > /dev/null
           vp run test:lighthouse
-          kill %1
 
       - name: Upload Lighthouse reports
         if: always()
@@ -93,8 +107,10 @@ jobs:
   e2e:
     name: E2E (${{ matrix.browser }})
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     strategy:
+      fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
 
