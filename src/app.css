@@ -6,11 +6,12 @@
 /* Keep text visible while the self-hosted Atkinson font is loading without
    allowing the eventual swap to reflow the page. These values match Arial's
    average English character width and line metrics to Atkinson Hyperlegible
-   Next Regular. The remaining system-ui fallback is used when Arial is not
-   locally available. */
+   Next Regular. Liberation Sans has the same measured averages and metrics as
+   Arial, and is installed on the Linux Playwright runners; system-ui remains
+   the final fallback when neither local font is available. */
 @font-face {
   font-family: 'Atkinson Hyperlegible Fallback';
-  src: local('Arial');
+  src: local('Arial'), local('Liberation Sans');
   size-adjust: 99.455173%;
   ascent-override: 98.939046%;
   descent-override: 31.773108%;

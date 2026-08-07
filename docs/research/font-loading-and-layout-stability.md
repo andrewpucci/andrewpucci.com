@@ -76,6 +76,11 @@ Playwright browser matrix. MDN currently marks individual metric descriptors
 as not Baseline, so keep the unmodified generic fallback as the progressive
 fallback for browsers that do not apply them.
 
+The implementation lists Arial and Liberation Sans as local sources for the
+same fallback face. Their measured English average advances and vertical
+metrics produce identical override values, while Liberation Sans is available
+on the Linux Playwright runners where Arial is not.
+
 ### `font-synthesis`
 
 `font-synthesis` controls whether the browser manufactures a missing bold,
