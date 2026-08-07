@@ -9,9 +9,9 @@ const config = {
   },
   kit: {
     adapter: adapter(),
-    // Inline the site's small route CSS chunks to avoid render-blocking
-    // requests. Keep this above the largest current page stylesheet.
-    inlineStyleThreshold: 12_000,
+    // Inline only tiny component styles without putting shared or route CSS
+    // in every HTML response.
+    inlineStyleThreshold: 1_000,
     // 'auto' resolves to hash-based CSP for prerendered pages (everything
     // today) and nonce-based CSP for any route rendered per-request in the
     // future (the contact form action). Nonces alone can't work here: kit

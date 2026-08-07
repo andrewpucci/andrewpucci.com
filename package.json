@@ -29,6 +29,7 @@
     "test:e2e:report": "playwright show-report",
     "test:ci": "npm run test:coverage && npm run test:e2e -- --retries=2",
     "test:lighthouse": "node scripts/lighthouse.mjs",
+    "test:lighthouse:regression": "node scripts/lighthouse-regression.mjs",
     "lint": "vp lint . && vp fmt --check",
     "lint:fix": "vp check --fix",
     "lint:oxlint": "vp lint .",
