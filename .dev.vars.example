@@ -7,7 +7,7 @@
 # Cloudflare's published always-passes Turnstile test keys, so a fresh copy of
 # this file renders and submits a working widget locally.
 PUBLIC_TURNSTILE_SITE_KEY='1x00000000000000000000AA'
-TURNSTILE_SECRET_KEY='1x0000000000000000000000000000000AA'
+TURNSTILE_SECRET='1x0000000000000000000000000000000AA'
 
 # Replace these before a local run actually sends mail.
 RESEND_API_KEY='re_your_api_key'
