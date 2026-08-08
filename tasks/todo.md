@@ -35,14 +35,14 @@ Source: [tasks/plan.md](plan.md), [SPEC.md](../SPEC.md)
 
 **Acceptance criteria:**
 
-- [ ] `wrangler.jsonc` declares the `kv_namespaces` binding (no `migrations` block needed — that's DO-specific)
-- [ ] The stale top-of-file comment explaining why rate limiting is absent is removed or rewritten to reflect the new binding
-- [ ] `app.d.ts`'s `Env.CONTACT_FORM_RATE_LIMITER` type is replaced with `KVNamespace`, non-optional
+- [x] `wrangler.jsonc` declares the `kv_namespaces` binding (no `migrations` block needed — that's DO-specific)
+- [x] The stale top-of-file comment explaining why rate limiting is absent is removed or rewritten to reflect the new binding
+- [x] `app.d.ts`'s `Env.CONTACT_FORM_RATE_LIMITER` type is replaced with `KVNamespace`, non-optional
 
 **Verification:**
 
-- [ ] Build succeeds: `vp check`
-- [ ] Manual check: `vp run preview:pages` starts cleanly and the KV binding resolves (no "binding not found" error in Wrangler output)
+- [x] Build succeeds: `vp check`
+- [x] Manual check: `vp run preview:pages` starts cleanly and the KV binding resolves (no "binding not found" error in Wrangler output)
 
 **Dependencies:** Task 1
 
@@ -61,15 +61,15 @@ Source: [tasks/plan.md](plan.md), [SPEC.md](../SPEC.md)
 
 **Acceptance criteria:**
 
-- [ ] A 6th submission from the same IP within 60 seconds returns `fail(429, ...)` with the existing "Too many requests" message
-- [ ] A KV call that throws does not block the submission (fail-open) — this path is new and wasn't testable under the old dormant-binding code
-- [ ] No default exports, explicit return types, and comments only where they explain a non-obvious constraint, per SPEC.md §7
+- [x] A 6th submission from the same IP within 60 seconds returns `fail(429, ...)` with the existing "Too many requests" message
+- [x] A KV call that throws does not block the submission (fail-open) — this path is new and wasn't testable under the old dormant-binding code
+- [x] No default exports, explicit return types, and comments only where they explain a non-obvious constraint, per SPEC.md §7
 
 **Verification:**
 
-- [ ] Tests pass: `vp test run src/routes/contact/page.server.test.ts`
-- [ ] Build succeeds: `vp check` and `vp run check:svelte`
-- [ ] Manual check: `vp run preview:pages`, submit the form 6 times rapidly from the same browser, confirm the 6th shows the rate-limit error
+- [x] Tests pass: `vp test run src/routes/contact/page.server.test.ts`
+- [x] Build succeeds: `vp check` and `vp run check:svelte`
+- [x] Manual check: `vp run preview:pages`, submit the form 6 times rapidly from the same browser, confirm the 6th shows the rate-limit error — verified via curl against the real local Wrangler runtime: requests 1-5 got 400 (no Turnstile token), request 6 got 429 "Too many requests. Try again in a minute."
 
 **Dependencies:** Task 2
 

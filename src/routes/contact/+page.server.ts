@@ -1,4 +1,5 @@
 import { fail } from '@sveltejs/kit';
+import { checkRateLimit } from '$lib/server/rate-limiter';
 import type { Actions } from './$types';
 
 export const prerender = false;
@@ -53,19 +54,18 @@ export const actions: Actions = {
 
     const ip = getClientAddress();
 
-    // Pages Functions do not support the rate limit binding, so this is absent
-    // in the deployed runtime -- calling it unguarded turned every production
-    // submission into a 500. Skipping it leaves Turnstile as the only abuse
-    // control here; see README.md's Deployment section for the ADR-0003 gap.
-    const rateLimiter = env.CONTACT_FORM_RATE_LIMITER;
-    if (rateLimiter) {
-      const { success: withinLimit } = await rateLimiter.limit({ key: ip });
+    try {
+      const { success: withinLimit } = await checkRateLimit(env.CONTACT_FORM_RATE_LIMITER, ip);
       if (!withinLimit) {
         return fail(429, {
           errors: formError('Too many requests. Try again in a minute.'),
           values,
         });
       }
+    } catch {
+      // Fail open: rate limiting is defense-in-depth behind Turnstile, not
+      // the primary abuse control, so a KV outage shouldn't block
+      // legitimate submissions.
     }
 
     if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip))) {
