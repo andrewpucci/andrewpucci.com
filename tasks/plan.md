@@ -40,7 +40,7 @@ The contact form's server action (`src/routes/contact/+page.server.ts`) currentl
 
 ### Phase 3: Documentation
 
-- [ ] Task 4: Update README's "open ADR-0003 gap" section and the `wrangler.jsonc` top comment
+- [x] Task 4: Update README's "open ADR-0003 gap" section (the `wrangler.jsonc` top comment was already updated in Task 2's commit)
 - [ ] Task 5: Amend ADR-0003 recording the KV decision (and the DO dead end)
 
 ### Checkpoint: Complete
