@@ -62,10 +62,12 @@ export const actions: Actions = {
           values,
         });
       }
-    } catch {
+    } catch (error) {
       // Fail open: rate limiting is defense-in-depth behind Turnstile, not
       // the primary abuse control, so a KV outage shouldn't block
-      // legitimate submissions.
+      // legitimate submissions. Still logged -- a silent binding failure is
+      // exactly what turned every deployed submission into a 500 before.
+      console.error('checkRateLimit failed, allowing submission through', error);
     }
 
     if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip))) {
