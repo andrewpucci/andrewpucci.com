@@ -103,7 +103,10 @@
       "vp lint --fix",
       "vp fmt"
     ],
-    "*.{json,scss,css,html}": [
+    "*.{scss,css,html}": [
+      "vp fmt"
+    ],
+    "!(package-lock).json": [
       "vp fmt"
     ],
     "*.md": [
