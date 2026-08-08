@@ -98,14 +98,14 @@ Source: [tasks/plan.md](plan.md), [SPEC.md](../SPEC.md)
 
 **Acceptance criteria:**
 
-- [ ] Section no longer says rate limiting is "not in place on Cloudflare Pages today"
-- [ ] Section states the actual threshold (5 requests / 60s per IP) and links to ADR-0003 for the decision rationale
-- [ ] No other README content is touched (scope discipline — this is a docs-only task)
+- [x] Section no longer says rate limiting is "not in place on Cloudflare Pages today"
+- [x] Section states the actual threshold (5 requests / 60s per IP) and links to ADR-0003 for the decision rationale
+- [x] No other README content is touched (scope discipline — this is a docs-only task)
 
 **Verification:**
 
-- [ ] Build succeeds: `vp check` (markdown lint via `vp check --fix` if formatting drifts)
-- [ ] Manual check: read the rewritten section top to bottom, confirm it accurately reflects Tasks 1-3's implementation
+- [x] Build succeeds: `vp check` (markdown lint via `vp check --fix` if formatting drifts)
+- [x] Manual check: read the rewritten section top to bottom, confirm it accurately reflects Tasks 1-3's implementation
 
 **Dependencies:** Checkpoint after Tasks 1-3
 
