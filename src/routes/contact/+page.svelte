@@ -4,7 +4,6 @@
   import Button from '$lib/components/Button/Button.svelte';
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
-  import { author } from '$lib/content/author';
   import type { ActionData } from './$types';
 
   let { form }: { form: ActionData } = $props();
@@ -61,14 +60,10 @@
       </form>
     {:else}
       <p class="form-error" role="alert">
-        The contact form is temporarily unavailable. Please email me directly instead.
+        The contact form is temporarily unavailable. Please check back soon.
       </p>
     {/if}
   {/if}
-
-  <p class="alt">
-    Prefer email? Reach me directly at <a href="mailto:{author.email}">{author.email}</a>.
-  </p>
 </div>
 
 <style>
@@ -91,9 +86,5 @@
 
   .form-error {
     color: var(--color-brand-primary);
-  }
-
-  .alt {
-    color: var(--color-text-secondary);
   }
 </style>

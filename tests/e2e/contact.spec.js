@@ -31,10 +31,8 @@ test.describe('Contact page', () => {
     await expect(page.locator(`#${describedBy}`)).toContainText(/valid email/i);
   });
 
-  test('offers a direct mailto fallback', async ({ page }) => {
-    await expect(page.getByRole('link', { name: /andrew@andrewpucci\.com/ })).toHaveAttribute(
-      'href',
-      'mailto:[redacted]'
-    );
+  test('does not expose a direct email address', async ({ page }) => {
+    // The contact form is the only contact surface -- no mailto fallback.
+    await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   });
 });
