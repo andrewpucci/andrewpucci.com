@@ -101,7 +101,7 @@ environments in the Cloudflare Pages dashboard:
 | Name                        | Dashboard type       | Purpose                                   |
 | --------------------------- | -------------------- | ----------------------------------------- |
 | `PUBLIC_TURNSTILE_SITE_KEY` | Environment variable | Renders the client-side Turnstile widget. |
-| `TURNSTILE_SECRET_KEY`      | Encrypted secret     | Verifies Turnstile submissions.           |
+| `TURNSTILE_SECRET`          | Encrypted secret     | Verifies Turnstile submissions.           |
 | `RESEND_API_KEY`            | Encrypted secret     | Authenticates email delivery.             |
 | `CONTACT_TO_EMAIL`          | Encrypted secret     | Receives contact submissions.             |
 | `CONTACT_FROM_EMAIL`        | Encrypted secret     | Provides the verified Resend sender.      |
