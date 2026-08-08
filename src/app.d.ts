@@ -5,10 +5,7 @@ declare global {
   // wrangler.jsonc `vars` -- so they never end up committed to the repo.
   // Declared here to extend the generated worker-configuration.d.ts Env.
   interface Env {
-    // Optional on purpose: Pages Functions support only a subset of bindings
-    // and the rate limit binding is not in it, so this is undefined in the
-    // deployed Pages runtime. Bound only when running as a Worker.
-    CONTACT_FORM_RATE_LIMITER?: RateLimit;
+    CONTACT_FORM_RATE_LIMITER: KVNamespace;
     TURNSTILE_SECRET_KEY: string;
     RESEND_API_KEY: string;
     CONTACT_TO_EMAIL: string;
