@@ -4,10 +4,17 @@
   "compatibility_date": "2026-07-01",
   "compatibility_flags": ["nodejs_als"],
   "pages_build_output_dir": ".svelte-kit/cloudflare",
-  // No "ratelimits" block: Pages Functions do not support the rate limit
-  // binding. Declaring it here bound CONTACT_FORM_RATE_LIMITER under local
-  // `wrangler pages dev` but not in the deployed Pages runtime, and that
-  // local-only fidelity gap is what hid the contact-form 500. The contact
-  // action now treats the binding as optional. ADR-0003 still calls for
-  // worker-level rate limiting -- see README.md's Deployment section.
+  // Backs the contact form's rate limiter (ADR-0003). A Durable Object was
+  // tried first, but @sveltejs/adapter-cloudflare's generated _worker.js
+  // only exports `default` -- there's no way to also export a named DO
+  // class from the same script this binding would point at, short of a
+  // second deployed Worker or a Pages->Workers migration. KV needs no class
+  // hosting, just this data binding, so it fits the existing single-Pages-
+  // project setup. See docs/adr/0003-security-posture.md's amendment.
+  "kv_namespaces": [
+    {
+      "binding": "CONTACT_FORM_RATE_LIMITER",
+      "id": "89c08762de7349fc9d28d433fac42c49",
+    },
+  ],
 }

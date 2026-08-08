@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
+import { checkRateLimit } from '$lib/server/rate-limiter';
 import { actions } from './+page.server';
+
+vi.mock('$lib/server/rate-limiter', () => ({
+  checkRateLimit: vi.fn(),
+}));
+
+const checkRateLimitMock = vi.mocked(checkRateLimit);
 
 function makeFormData(fields: Record<string, string>): FormData {
   const data = new FormData();
@@ -17,18 +24,11 @@ function makeEvent(fields: Record<string, string>, platform?: App.Platform) {
 
 const validFields = { name: 'Jane Tester', email: 'jane@example.com', message: 'Hello there' };
 
-function makePlatform(
-  overrides: { rateLimitOk?: boolean; rateLimiter?: false } = {}
-): App.Platform {
+function makePlatform(): App.Platform {
   return {
     env: {
-      ...(overrides.rateLimiter === false
-        ? {}
-        : {
-            CONTACT_FORM_RATE_LIMITER: {
-              limit: vi.fn().mockResolvedValue({ success: overrides.rateLimitOk ?? true }),
-            },
-          }),
+      // checkRateLimit is mocked above, so this stub is never actually read.
+      CONTACT_FORM_RATE_LIMITER: {} as KVNamespace,
       TURNSTILE_SECRET: 'secret',
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
@@ -65,6 +65,11 @@ describe('contact form action: validation', () => {
 });
 
 describe('contact form action: server-side checks', () => {
+  beforeEach(() => {
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ success: true });
+  });
+
   it('fails with 500 when platform.env is unavailable', async () => {
     const result = await actions.default!(makeEvent(validFields, undefined));
     expect(result?.status).toBe(500);
@@ -72,16 +77,18 @@ describe('contact form action: server-side checks', () => {
   });
 
   it('fails with 429 when the rate limiter rejects the request', async () => {
-    const platform = makePlatform({ rateLimitOk: false });
+    checkRateLimitMock.mockResolvedValue({ success: false });
+    const platform = makePlatform();
     const result = await actions.default!(makeEvent(validFields, platform));
     expect(result?.status).toBe(429);
     expect(result?.data?.errors?.form).toMatch(/too many requests/i);
   });
 
-  it('falls through to Turnstile when the rate limit binding is absent', async () => {
-    // The deployed Pages runtime has no rate limit binding; an unguarded
-    // .limit() call made every production submission a 500.
-    const platform = makePlatform({ rateLimiter: false });
+  it('fails open and falls through to Turnstile when checkRateLimit throws', async () => {
+    // A KV outage shouldn't block legitimate submissions -- rate limiting
+    // is defense-in-depth behind Turnstile, not the primary abuse control.
+    checkRateLimitMock.mockRejectedValue(new Error('KV unavailable'));
+    const platform = makePlatform();
     const result = await actions.default!(makeEvent(validFields, platform));
     expect(result?.status).toBe(400);
     expect(result?.data?.errors?.form).toMatch(/verification failed/i);
@@ -101,6 +108,8 @@ describe('contact form action: Turnstile + Resend', () => {
   beforeEach(() => {
     fetchMock.mockReset();
     vi.stubGlobal('fetch', fetchMock);
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ success: true });
   });
 
   it('fails with 400 when Turnstile verification fails', async () => {

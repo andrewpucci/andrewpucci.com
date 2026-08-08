@@ -106,24 +106,17 @@ environments in the Cloudflare Pages dashboard:
 | `CONTACT_TO_EMAIL`          | Encrypted secret     | Receives contact submissions.             |
 | `CONTACT_FROM_EMAIL`        | Encrypted secret     | Provides the verified Resend sender.      |
 
-### Contact-form rate limiting (open ADR-0003 gap)
+### Contact-form rate limiting
 
 ADR-0003 calls for rate limiting enforced in the Worker, independent of
-Resend's own limits. That is **not in place on Cloudflare Pages today.** Pages
-Functions support only a
-[subset of bindings](https://developers.cloudflare.com/pages/functions/bindings/)
-and the [rate limit binding](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)
-is not among them, so `env.CONTACT_FORM_RATE_LIMITER` is undefined in the
-deployed runtime. A `ratelimits` block in `wrangler.jsonc` did not change that:
-the Pages build accepted it and deployed, but the binding never appeared at
-runtime, while local `wrangler pages dev` _did_ bind it — a fidelity gap that
-hid an unguarded `.limit()` call until every deployed submission returned 500.
-
-The action now treats the binding as optional, so Turnstile is the only
-server-side abuse control on the contact form. Closing the gap properly means
-one of: a zone-level [WAF rate limiting rule](https://developers.cloudflare.com/waf/rate-limiting-rules/),
-a KV- or Durable-Object-backed limiter (both are supported Pages bindings), or
-moving the project from Pages to Workers, where the native binding works.
+Resend's own limits. Cloudflare Pages doesn't support the native
+[rate limit binding](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)
+(`env.CONTACT_FORM_RATE_LIMITER` was undefined in every deployed request), so
+the contact form action enforces its own fixed-window limit — 5 submissions
+per 60 seconds per IP — backed by a Cloudflare KV namespace bound in
+`wrangler.jsonc`. See
+[ADR-0003](docs/adr/0003-security-posture.md#amendments) for why KV was
+chosen over a Durable Object, a zone-level WAF rule, and migrating off Pages.
 
 Host-level routing and security headers live at the repo root in [_redirects](_redirects) and [_headers](_headers).
 
