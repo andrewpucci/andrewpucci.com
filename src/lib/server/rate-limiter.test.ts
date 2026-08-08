@@ -53,4 +53,14 @@ describe('checkRateLimit', () => {
     const result = await checkRateLimit(kv, '203.0.113.2');
     expect(result).toEqual({ success: true });
   });
+
+  it('writes each entry with a 60s expirationTtl so abandoned keys self-clean', async () => {
+    const kv = makeKV();
+    await checkRateLimit(kv, '203.0.113.1');
+    expect(kv.put).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.objectContaining({ expirationTtl: 60 })
+    );
+  });
 });
