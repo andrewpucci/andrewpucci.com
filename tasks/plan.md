@@ -27,14 +27,15 @@ The contact form's server action (`src/routes/contact/+page.server.ts`) currentl
 
 ### Phase 2: Wire into the contact form
 
-- [ ] Task 2: Bind a KV namespace in `wrangler.jsonc` and `app.d.ts`
-- [ ] Task 3: Call `checkRateLimit` from the contact form action, update its tests
+- [x] Task 2: Bind a KV namespace in `wrangler.jsonc` and `app.d.ts`
+- [x] Task 3: Call `checkRateLimit` from the contact form action, update its tests
 
 ### Checkpoint: Integration
 
-- [ ] `vp check` passes
-- [ ] `vp test run src/routes/contact/page.server.test.ts` passes
-- [ ] `vp run test:e2e` passes (KV binds under Wrangler preview the same as production)
+- [x] `vp check` passes
+- [x] `vp test run src/routes/contact/page.server.test.ts` passes
+- [x] KV binding confirmed live under `vp run preview:pages`: 6 rapid curl submissions returned 400×5 then 429, matching the fixed-window logic exactly
+- [~] `vp run test:e2e` — `tests/e2e/contact.spec.js` fails locally (form never renders, `PUBLIC_TURNSTILE_SITE_KEY` missing from this machine's `.env`), but confirmed via `git stash` + rerun that this failure pre-exists on the Task-1-only commit too — not a regression from Tasks 2-3. Real E2E validation happens in CI, which sets that env var.
 - [ ] Manual check: `vp run preview:pages`, submit the form 6 times rapidly, confirm the 6th is rejected with a 429 and its message
 
 ### Phase 3: Documentation
