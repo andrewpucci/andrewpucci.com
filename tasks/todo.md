@@ -123,14 +123,14 @@ Source: [tasks/plan.md](plan.md), [SPEC.md](../SPEC.md)
 
 **Acceptance criteria:**
 
-- [ ] New entry appended under ADR-0003's `## Amendments` heading, matching the existing amendment style (present-tense finding, then the resolution)
-- [ ] References all four alternatives considered (WAF rule, Durable Object, KV, Pages→Workers) and why KV won, consistent with SPEC.md §5 and issue #216's own framing
-- [ ] Does not rewrite or delete the ADR's original "Decision" section — amendments record what changed, not retroactive rewrites (matches the file's existing convention)
+- [x] New entry appended under ADR-0003's `## Amendments` heading, matching the existing amendment style (present-tense finding, then the resolution)
+- [x] References all four alternatives considered (WAF rule, Durable Object, KV, Pages→Workers) and why KV won, consistent with SPEC.md §5 and issue #216's own framing
+- [x] Does not rewrite or delete the ADR's original "Decision" section — amendments record what changed, not retroactive rewrites (matches the file's existing convention)
 
 **Verification:**
 
-- [ ] Build succeeds: `vp check`
-- [ ] Manual check: re-read ADR-0003 end to end, confirm the amendment reads coherently alongside the two existing ones
+- [x] Build succeeds: `vp check`
+- [x] Manual check: re-read ADR-0003 end to end, confirm the amendment reads coherently alongside the two existing ones
 
 **Dependencies:** Checkpoint after Tasks 1-3 (can run in parallel with Task 4 — both are docs-only, non-overlapping files)
 

@@ -41,13 +41,13 @@ The contact form's server action (`src/routes/contact/+page.server.ts`) currentl
 ### Phase 3: Documentation
 
 - [x] Task 4: Update README's "open ADR-0003 gap" section (the `wrangler.jsonc` top comment was already updated in Task 2's commit)
-- [ ] Task 5: Amend ADR-0003 recording the KV decision (and the DO dead end)
+- [x] Task 5: Amend ADR-0003 recording the KV decision (and the DO dead end)
 
 ### Checkpoint: Complete
 
-- [ ] All SPEC.md §8 boundaries respected (no `wrangler.jsonc` edit landed without confirmation — already given via this plan; no Pages→Workers migration attempted)
-- [ ] Issue #216's Part 2 acceptance criterion — "a rate-limiting approach is chosen, implemented, and documented; ADR-0003 is amended" — fully met
-- [ ] Ready for PR review
+- [x] All SPEC.md §8 boundaries respected (`wrangler.jsonc` KV binding and namespace creation confirmed with the user before Task 2; no Pages→Workers migration attempted)
+- [x] Issue #216's Part 2 acceptance criterion — "a rate-limiting approach is chosen, implemented, and documented; ADR-0003 is amended" — fully met
+- [x] Ready for PR review
 
 ## Risks and Mitigations
 
