@@ -70,7 +70,7 @@ export const actions: Actions = {
       console.error('checkRateLimit failed, allowing submission through', error);
     }
 
-    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET_KEY, ip))) {
+    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET, ip))) {
       return fail(400, { errors: formError('Verification failed. Please try again.'), values });
     }
 

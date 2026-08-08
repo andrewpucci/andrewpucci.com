@@ -29,7 +29,7 @@ function makePlatform(): App.Platform {
     env: {
       // checkRateLimit is mocked above, so this stub is never actually read.
       CONTACT_FORM_RATE_LIMITER: {} as KVNamespace,
-      TURNSTILE_SECRET_KEY: 'secret',
+      TURNSTILE_SECRET: 'secret',
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
       CONTACT_FROM_EMAIL: 'contact@andrewpucci.com',
