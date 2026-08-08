@@ -10,7 +10,6 @@ export interface Author {
   location: string;
   avatar: string;
   pronouns: string;
-  email: string;
   website: string;
   skills: string[];
   tools: string[];
