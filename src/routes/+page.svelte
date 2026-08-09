@@ -133,8 +133,21 @@
     padding: var(--space-5) var(--space-3);
   }
 
+  /* flex column + align-items: center replaces the old text-align: center
+     trick -- that only centers inline-level content, and Tabler icons render
+     as display: block, so text-align alone leaves the icon flush left.
+     h2/p opt back into full-width via align-self so their own text-align
+     centering (inherited) is unaffected. */
   .icon-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+  }
+
+  .icon-block h2,
+  .icon-block p {
+    align-self: stretch;
   }
 
   /* IconUsers/IconCode/IconHeart are components, not raw <svg> -- Svelte's

@@ -118,6 +118,22 @@
     text-align: center;
   }
 
+  /* flex column + align-items: center replaces relying on the inherited
+     text-align: center -- that only centers inline-level content, and
+     Tabler icons render as display: block, so text-align alone leaves the
+     icon flush left. h2/ul opt back into full-width via align-self so their
+     own (inherited) text-align centering is unaffected. */
+  .meta-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .meta-block h2,
+  .meta-block ul {
+    align-self: stretch;
+  }
+
   /* IconUsers/IconClipboardList/IconTool are components, not raw <svg> --
      Svelte's scoped-CSS hash never reaches a class forwarded into a child
      component, so this needs the ancestor :global() idiom (same fix, same
