@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { Collapsible, DropdownMenu } from 'bits-ui';
+  import { IconDownload, IconMenu2, IconMinus, IconPlus } from '@tabler/icons-svelte-runes';
   import Button from '$lib/components/Button/Button.svelte';
   import { cards } from '$lib/content/cards';
   import avatarSrc from '$lib/assets/img/avatar.png?enhanced';
@@ -44,7 +45,7 @@
           <Collapsible.Trigger>
             {#snippet child({ props: toggleProps })}
               <button {...toggleProps} type="button" class="toggle" aria-label="Toggle navigation">
-                ☰
+                <IconMenu2 aria-hidden="true" />
               </button>
             {/snippet}
           </Collapsible.Trigger>
@@ -75,7 +76,11 @@
                             aria-current={isPortfolioRoute ? 'page' : undefined}
                           >
                             <span>Portfolio</span>
-                            <span aria-hidden="true">{mobilePortfolioOpen ? '−' : '+'}</span>
+                            {#if mobilePortfolioOpen}
+                              <IconMinus aria-hidden="true" />
+                            {:else}
+                              <IconPlus aria-hidden="true" />
+                            {/if}
                           </button>
                         {/snippet}
                       </Collapsible.Trigger>
@@ -95,7 +100,10 @@
 
                 {#if downloadFile}
                   <div class="download download-mobile">
-                    <Button href={downloadFile} target="_blank" rel="noopener noreferrer">Download</Button>
+                    <Button href={downloadFile} target="_blank" rel="noopener noreferrer">
+                      <IconDownload aria-hidden="true" />
+                      Download
+                    </Button>
                   </div>
                 {/if}
               </div>
@@ -148,7 +156,10 @@
 
       {#if downloadFile}
         <div class="download">
-          <Button href={downloadFile} target="_blank" rel="noopener noreferrer">Download</Button>
+          <Button href={downloadFile} target="_blank" rel="noopener noreferrer">
+            <IconDownload aria-hidden="true" />
+            Download
+          </Button>
         </div>
       {/if}
     </div>
@@ -190,10 +201,12 @@
   }
 
   .toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     background: none;
     border: none;
-    font-size: 1.5rem;
   }
 
   .mobile-links {
