@@ -130,15 +130,17 @@
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content sideOffset={10}>
-          {#snippet child({ props: dropdownContentProps })}
-            <div {...dropdownContentProps} class="dropdown-menu">
-              {#each portfolioLinks as link (link.href)}
-                <DropdownMenu.Item textValue={link.label}>
-                  {#snippet child({ props: dropdownLinkProps })}
-                    <a {...dropdownLinkProps} href={link.href} class="dropdown-link">{link.label}</a>
-                  {/snippet}
-                </DropdownMenu.Item>
-              {/each}
+          {#snippet child({ props: dropdownContentProps, wrapperProps })}
+            <div {...wrapperProps}>
+              <div {...dropdownContentProps} class="dropdown-menu">
+                {#each portfolioLinks as link (link.href)}
+                  <DropdownMenu.Item textValue={link.label}>
+                    {#snippet child({ props: dropdownLinkProps })}
+                      <a {...dropdownLinkProps} href={link.href} class="dropdown-link">{link.label}</a>
+                    {/snippet}
+                  </DropdownMenu.Item>
+                {/each}
+              </div>
             </div>
           {/snippet}
         </DropdownMenu.Content>

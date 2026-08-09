@@ -134,17 +134,22 @@ jobs:
           fi
 
       - name: Build performance baseline
+        id: lighthouse-base-build
         if: steps.lighthouse-base.outputs.available == 'true'
         env:
           BASE_SHA: ${{ steps.lighthouse-base.outputs.sha }}
         run: |
           git worktree add --detach "$RUNNER_TEMP/lighthouse-base" "$BASE_SHA"
           cd "$RUNNER_TEMP/lighthouse-base"
-          vp install
-          vp build
+          if vp install && vp build; then
+            echo "buildable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "buildable=false" >> "$GITHUB_OUTPUT"
+            echo "Base commit $BASE_SHA does not build with the current toolchain (e.g. a pre-migration commit on a different build system); skipping the relative LCP gate."
+          fi
 
       - name: Audit performance baseline
-        if: steps.lighthouse-base.outputs.available == 'true'
+        if: steps.lighthouse-base.outputs.available == 'true' && steps.lighthouse-base-build.outputs.buildable == 'true'
         env:
           LIGHTHOUSE_LCP_MODE: warn
           LIGHTHOUSE_REPORT_DIR: lighthouse-reports/base
@@ -166,7 +171,7 @@ jobs:
           npm run test:lighthouse
 
       - name: Compare LCP with baseline
-        if: steps.lighthouse-base.outputs.available == 'true'
+        if: steps.lighthouse-base.outputs.available == 'true' && steps.lighthouse-base-build.outputs.buildable == 'true'
         run: npm run test:lighthouse:regression
 
       - name: Upload Lighthouse reports
