@@ -1,5 +1,6 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
+  import { chunkItems } from './chunk-items';
 
   interface Props {
     items: T[];
@@ -7,11 +8,21 @@
     /** Whether the carousel auto-advances. Ignored (forced off) under prefers-reduced-motion. */
     autoplay?: boolean;
     autoplayInterval?: number;
+    /** Items shown per slide. Defaults to 1 (one item per slide, the original behavior). */
+    itemsPerPage?: number;
     item: Snippet<[T, number]>;
   }
 
-  let { items, label, autoplay = false, autoplayInterval = 6000, item }: Props = $props();
+  let {
+    items,
+    label,
+    autoplay = false,
+    autoplayInterval = 6000,
+    itemsPerPage = 1,
+    item,
+  }: Props = $props();
 
+  let pages = $derived(chunkItems(items, itemsPerPage));
   let activeIndex = $state(0);
   let prefersReducedMotion = $state(false);
   let paused = $state(false);
@@ -33,12 +44,18 @@
     return () => clearInterval(timer);
   });
 
+  // A viewport resize can cross a breakpoint mid-session and shrink the page
+  // count (e.g. 3-per-page -> 1-per-page); keep activeIndex in range.
+  $effect(() => {
+    if (activeIndex >= pages.length) activeIndex = Math.max(0, pages.length - 1);
+  });
+
   function goNext() {
-    activeIndex = (activeIndex + 1) % items.length;
+    activeIndex = (activeIndex + 1) % pages.length;
   }
 
   function goPrev() {
-    activeIndex = (activeIndex - 1 + items.length) % items.length;
+    activeIndex = (activeIndex - 1 + pages.length) % pages.length;
   }
 
   function togglePlaying() {
@@ -73,21 +90,25 @@
       class:instant={prefersReducedMotion}
       style:transform={`translateX(-${activeIndex * 100}%)`}
     >
-      {#each items as entry, i (i)}
+      {#each pages as page, i (i)}
         <li
           class="slide"
           aria-roledescription="slide"
-          aria-label={`${i + 1} of ${items.length}`}
+          aria-label={`${i + 1} of ${pages.length}`}
           aria-hidden={i !== activeIndex}
           inert={i !== activeIndex}
         >
-          {@render item(entry, i)}
+          <div class="slide-items">
+            {#each page as entry, j (j)}
+              {@render item(entry, i * itemsPerPage + j)}
+            {/each}
+          </div>
         </li>
       {/each}
     </ul>
   </div>
 
-  <p class="visually-hidden" aria-live="polite">Slide {activeIndex + 1} of {items.length}</p>
+  <p class="visually-hidden" aria-live="polite">Slide {activeIndex + 1} of {pages.length}</p>
 </section>
 
 <style>
@@ -132,6 +153,18 @@
 
   .slide {
     flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .slide-items {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  /* :global() here targets the root element of whatever the caller's `item`
+     snippet renders -- unknowable/unscopeable from this component. */
+  .slide-items > :global(*) {
+    flex: 1;
     min-width: 0;
   }
 </style>

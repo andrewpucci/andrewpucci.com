@@ -4,6 +4,13 @@
   import Carousel from './Carousel.svelte';
 
   const slides = ['Evolving Binary Defense MDR', 'Redesigning Telerik Analytics', 'Lunchboat Mobile App'];
+  const pagedSlides = [
+    'Evolving Binary Defense MDR',
+    'Redesigning Telerik Analytics',
+    'Lunchboat Mobile App',
+    'Employee Onboarding',
+    'Organization Design',
+  ];
 
   const { Story } = defineMeta({
     title: 'Primitives/Carousel',
@@ -58,6 +65,25 @@
 >
   {#snippet template()}
     <Carousel items={slides} label="Portfolio projects" autoplay={true} autoplayInterval={50000}>
+      {#snippet item(entry)}
+        <p>{entry}</p>
+      {/snippet}
+    </Carousel>
+  {/snippet}
+</Story>
+
+<Story
+  name="Multiple items per page"
+  play={async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // 5 items at 3 per page -> 2 pages ([3, 2]).
+    await expect(canvas.getByText('Slide 1 of 2', { exact: false })).toBeInTheDocument();
+    await expect(canvas.getByText('Evolving Binary Defense MDR')).toBeInTheDocument();
+    await expect(canvas.getByText('Lunchboat Mobile App')).toBeInTheDocument();
+  }}
+>
+  {#snippet template()}
+    <Carousel items={pagedSlides} label="Portfolio projects" autoplay={false} itemsPerPage={3}>
       {#snippet item(entry)}
         <p>{entry}</p>
       {/snippet}

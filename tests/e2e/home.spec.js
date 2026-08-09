@@ -48,14 +48,28 @@ test.describe('Home page', () => {
     const carousel = page.getByRole('region', { name: 'Portfolio projects' });
     await expect(carousel).toBeVisible();
 
+    // 6 cards at 3 per page (the default Desktop Chrome viewport is >=62rem).
     const status = carousel.getByText(/Slide \d of \d/);
-    await expect(status).toHaveText('Slide 1 of 6');
+    await expect(status).toHaveText('Slide 1 of 2');
 
     await carousel.getByRole('button', { name: 'Next slide' }).click();
-    await expect(status).toHaveText('Slide 2 of 6');
+    await expect(status).toHaveText('Slide 2 of 2');
 
     await carousel.getByRole('button', { name: 'Previous slide' }).click();
-    await expect(status).toHaveText('Slide 1 of 6');
+    await expect(status).toHaveText('Slide 1 of 2');
+  });
+
+  test('shows 2 cards per page in the portfolio carousel at tablet widths', async ({ page }) => {
+    // Inside the 48-62rem band, distinct from both the mobile (1/page) and
+    // desktop (3/page) tiers -- the only viewport that actually distinguishes
+    // a correct 3-tier implementation from an accidental 2-tier one.
+    await page.setViewportSize({ width: 800, height: 900 });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const carousel = page.getByRole('region', { name: 'Portfolio projects' });
+    const status = carousel.getByText(/Slide \d of \d/);
+    await expect(status).toHaveText('Slide 1 of 3');
   });
 
   test('the carousel autoplay has a working pause control', async ({ page }) => {
