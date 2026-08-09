@@ -1,5 +1,6 @@
 <script lang="ts">
   import { MediaQuery } from 'svelte/reactivity';
+  import { IconCode, IconHeart, IconUsers } from '@tabler/icons-svelte-runes';
   import Carousel from '$lib/components/Carousel/Carousel.svelte';
   import PortfolioCard from '$lib/components/PortfolioCard/PortfolioCard.svelte';
   import TestimonialQuote from '$lib/components/TestimonialQuote/TestimonialQuote.svelte';
@@ -35,12 +36,7 @@
 
 <section class="icon-blocks">
   <div class="icon-block">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
+    <IconUsers class="icon" aria-hidden="true" />
     <h2>People-focused</h2>
     <p>
       Innately interested in how people interact both between themselves and with software, I've been involved in
@@ -49,10 +45,7 @@
   </div>
 
   <div class="icon-block">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <polyline points="8 6 2 12 8 18" />
-      <polyline points="16 6 22 12 16 18" />
-    </svg>
+    <IconCode class="icon" aria-hidden="true" />
     <h2>Technical background</h2>
     <p>
       Coming from a software engineering background has given me the ability to empathize with the developers on my
@@ -61,11 +54,7 @@
   </div>
 
   <div class="icon-block">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path
-        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-      />
-    </svg>
+    <IconHeart class="icon" aria-hidden="true" />
     <h2>Engaged in the community</h2>
     <p>
       Whether volunteering my time reviewing conference submissions or heading up local UX groups, community has
@@ -148,10 +137,12 @@
     text-align: center;
   }
 
-  .icon {
+  /* IconUsers/IconCode/IconHeart are components, not raw <svg> -- Svelte's
+     scoped-CSS hash never reaches a class forwarded into a child component,
+     so this needs the ancestor :global() idiom (same fix, same root cause,
+     as Nav.svelte's forwarded bits-ui classes, ADR-0007). */
+  .icon-block :global(.icon) {
     color: var(--color-brand-primary);
-    width: 2.5rem;
-    height: 2.5rem;
     margin-block-end: var(--space-2);
   }
 
