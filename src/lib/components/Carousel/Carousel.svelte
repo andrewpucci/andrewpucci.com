@@ -1,6 +1,7 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
   import { MediaQuery } from 'svelte/reactivity';
+  import { IconChevronLeft, IconChevronRight, IconPlayerPause, IconPlayerPlay } from '@tabler/icons-svelte-runes';
   import { chunkItems } from './chunk-items';
 
   interface Props {
@@ -64,7 +65,7 @@
 <section class="carousel" aria-roledescription="carousel" aria-label={label}>
   <div class="controls">
     <button type="button" class="control" onclick={goPrev} aria-label="Previous slide">
-      ‹
+      <IconChevronLeft aria-hidden="true" />
     </button>
     {#if autoplay && !prefersReducedMotion}
       <button
@@ -74,11 +75,15 @@
         aria-pressed={playing}
         aria-label={playing ? 'Pause automatic slide rotation' : 'Play automatic slide rotation'}
       >
-        {playing ? '⏸' : '▶'}
+        {#if playing}
+          <IconPlayerPause aria-hidden="true" />
+        {:else}
+          <IconPlayerPlay aria-hidden="true" />
+        {/if}
       </button>
     {/if}
     <button type="button" class="control" onclick={goNext} aria-label="Next slide">
-      ›
+      <IconChevronRight aria-hidden="true" />
     </button>
   </div>
 
@@ -118,6 +123,9 @@
   }
 
   .control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     color: var(--color-text-default);
     background: var(--color-surface-default);
@@ -125,8 +133,6 @@
     border-radius: var(--radius-full);
     width: 2.25rem;
     height: 2.25rem;
-    font-size: 1.25rem;
-    line-height: 1;
   }
 
   .control:hover {

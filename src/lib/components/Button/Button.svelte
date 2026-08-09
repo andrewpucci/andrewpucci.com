@@ -22,7 +22,9 @@
 
 <style>
   .button--primary {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
     cursor: pointer;
     text-decoration: none;
     font: var(--typography-body);
