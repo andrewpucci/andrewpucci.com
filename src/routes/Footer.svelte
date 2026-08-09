@@ -1,5 +1,11 @@
 <script lang="ts">
+  import { IconBrandGithub, IconBrandLinkedin } from '@tabler/icons-svelte-runes';
   import { author } from '$lib/content/author';
+
+  const socialIcons: Record<string, typeof IconBrandGithub> = {
+    Github: IconBrandGithub,
+    LinkedIn: IconBrandLinkedin,
+  };
 
   const year = new Date().getFullYear();
 </script>
@@ -21,7 +27,15 @@
       <h2>Connect</h2>
       <ul class="social">
         {#each author.social as link (link.url)}
-          <li><a href={link.url}>{link.name}</a></li>
+          <li>
+            <a href={link.url}>
+              {#if socialIcons[link.name]}
+                {@const Icon = socialIcons[link.name]}
+                <Icon aria-hidden="true" />
+              {/if}
+              {link.name}
+            </a>
+          </li>
         {/each}
       </ul>
     </div>
@@ -76,6 +90,12 @@
     list-style: none;
     margin: 0;
     padding: 0;
+  }
+
+  .social :global(a) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
   }
 
   .colophon {
