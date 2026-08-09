@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { afterNavigate } from '$app/navigation';
   import { Collapsible, DropdownMenu } from 'bits-ui';
   import { IconDownload, IconMenu2, IconMinus, IconPlus } from '@tabler/icons-svelte-runes';
   import Button from '$lib/components/Button/Button.svelte';
@@ -16,10 +17,8 @@
 
   const isPortfolioRoute = $derived(page.url.pathname.startsWith('/portfolio'));
   const downloadFile = $derived((page.data as { downloadFile?: string }).downloadFile);
-  const portfolioLinks: PortfolioLink[] = [
-    { href: '/portfolio/', label: 'Overview' },
-    ...cards.map((card) => ({ href: card.url, label: card.title })),
-  ];
+  const overviewLink: PortfolioLink = { href: '/portfolio/', label: 'Overview' };
+  const caseStudyLinks: PortfolioLink[] = cards.map((card) => ({ href: card.url, label: card.title }));
 
   function handleMobileNavChange(open: boolean) {
     mobileNavOpen = open;
@@ -28,6 +27,14 @@
       mobilePortfolioOpen = false;
     }
   }
+
+  // Nav lives in the root layout, so it isn't remounted between routes --
+  // without this, picking a link would leave the mobile menu open over the
+  // page it just navigated to.
+  afterNavigate(() => {
+    mobileNavOpen = false;
+    mobilePortfolioOpen = false;
+  });
 </script>
 
 <!-- Every bits-ui element that needs its own styling is rendered through the
@@ -88,7 +95,9 @@
                       <Collapsible.Content>
                         {#snippet child({ props: submenuContentProps })}
                           <div {...submenuContentProps} class="mobile-submenu-content">
-                            {#each portfolioLinks as link (link.href)}
+                            <a href={overviewLink.href} class="submenu-link">{overviewLink.label}</a>
+                            <hr class="submenu-divider" />
+                            {#each caseStudyLinks as link (link.href)}
                               <a href={link.href} class="submenu-link">{link.label}</a>
                             {/each}
                           </div>
@@ -141,7 +150,18 @@
           {#snippet child({ props: dropdownContentProps, wrapperProps })}
             <div {...wrapperProps}>
               <div {...dropdownContentProps} class="dropdown-menu">
-                {#each portfolioLinks as link (link.href)}
+                <DropdownMenu.Item textValue={overviewLink.label}>
+                  {#snippet child({ props: dropdownLinkProps })}
+                    <a {...dropdownLinkProps} href={overviewLink.href} class="dropdown-link">{overviewLink.label}</a
+                    >
+                  {/snippet}
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator>
+                  {#snippet child({ props: separatorProps })}
+                    <hr {...separatorProps} class="dropdown-divider" />
+                  {/snippet}
+                </DropdownMenu.Separator>
+                {#each caseStudyLinks as link (link.href)}
                   <DropdownMenu.Item textValue={link.label}>
                     {#snippet child({ props: dropdownLinkProps })}
                       <a {...dropdownLinkProps} href={link.href} class="dropdown-link">{link.label}</a>
@@ -168,12 +188,13 @@
 
 <style>
   .nav {
+    --nav-background: color-mix(in srgb, var(--color-surface-default) 98%, transparent);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 10;
-    background: color-mix(in srgb, var(--color-surface-default) 98%, transparent);
+    background: var(--nav-background);
     padding-block: var(--space-2);
   }
 
@@ -209,17 +230,22 @@
     border: none;
   }
 
+  /* Absolutely positioned against .nav (the nearest positioned ancestor --
+     .row and .mobile are both static) rather than left as a normal-flow
+     child of the right-aligned .mobile: that's what lets it span edge to
+     edge instead of being sized to a narrow box under the toggle. Same
+     background as .nav itself and no border/shadow, so opening it reads as
+     the header bar itself growing taller, not a card popping up next to it. */
   .mobile-links {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-2);
-    width: min(18rem, calc(100vw - (var(--space-3) * 2)));
-    margin-top: var(--space-2);
+    gap: var(--space-3);
     padding: var(--space-3);
-    background: var(--card-background);
-    border: 1px solid var(--card-border-color);
-    border-radius: var(--card-radius);
+    background: var(--nav-background);
   }
 
   /* `display: flex` above and the browser's default `[hidden] { display: none }`
@@ -232,11 +258,17 @@
     display: none;
   }
 
+  /* flex: 1 (not margin-inline-start: auto) so the box itself fills the
+     row's remaining width, leaving About/Résumé/Portfolio anchored to its
+     left edge -- .download's own auto margin then pushes just that item
+     right. Anchoring the whole block to the row's right edge instead would
+     shift every link sideways whenever a page's downloadFile toggles the
+     button on or off. */
   .desktop-links {
     display: none;
     align-items: center;
+    flex: 1;
     gap: var(--space-3);
-    margin-inline-start: auto;
   }
 
   .link,
@@ -281,8 +313,10 @@
     gap: var(--space-1);
     width: 100%;
     margin-top: var(--space-2);
-    padding-inline-start: var(--space-3);
-    border-inline-start: 1px solid var(--card-border-color);
+    padding: var(--space-2) var(--space-3);
+    background: var(--card-background);
+    border: 1px solid var(--card-border-color);
+    border-radius: var(--card-radius);
   }
 
   .submenu-link {
@@ -325,6 +359,15 @@
     outline: none;
   }
 
+  .submenu-divider,
+  .dropdown-divider {
+    width: 100%;
+    height: 1px;
+    margin: var(--space-1) 0;
+    border: none;
+    background: var(--card-border-color);
+  }
+
   .download-mobile {
     width: 100%;
   }
@@ -336,6 +379,10 @@
 
     .desktop-links {
       display: flex;
+    }
+
+    .desktop-links .download {
+      margin-inline-start: auto;
     }
   }
 </style>

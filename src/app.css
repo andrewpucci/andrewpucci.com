@@ -56,18 +56,33 @@
     margin: 0;
   }
 
+  /* bits-ui's dropdown/collapsible overlays lock body scroll while open,
+     compensating for the vanished scrollbar with `padding-right` on <body> --
+     but .nav is `position: fixed`, anchored to the viewport rather than
+     body's (now-padded) content box, so it isn't covered by that
+     compensation and visibly shifts sideways when the scrollbar disappears.
+     Reserving the gutter unconditionally means the scrollbar never actually
+     appears or disappears, so there's nothing to compensate for. */
   html {
+    scrollbar-gutter: stable;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
 
-  /* body's own background only covers its content box; rubber-band overscroll
-     beyond the bottom of the page reveals html's background instead, which
-     otherwise defaults to white against the full-bleed pink footer every page
-     ends with. A uniform html background-color would fix that but wrongly
-     tints the *top* overscroll pink too (every route starts off-white). Pin a
-     block behind just the bottom edge instead, tall enough to cover any
-     realistic bounce distance. */
+  /* Rubber-band overscroll beyond the bottom of the page should show pink
+     (matching the footer it's leaving), not body's off-white. `position:
+     fixed` is required, not `absolute`: per the HTML spec, once body's
+     background gets propagated to paint the canvas, body's own box is
+     treated as backgroundless for its own painting -- so nothing opaque
+     from body ever sits between this and any transparent descendant, and an
+     `absolute` block sized to reach past real content also gets counted in
+     that descendant's scrollable overflow, adding real (not just
+     overscroll) scroll height past the footer. `fixed` avoids both: it
+     never contributes to scrollable overflow, and staying glued to the
+     viewport bottom means it's only ever exposed where nothing opaque
+     covers it -- which holds everywhere except true overscroll now that
+     <main> (see +layout.svelte) paints its own opaque background instead of
+     leaving that job to body. */
   html::after {
     content: '';
     position: fixed;

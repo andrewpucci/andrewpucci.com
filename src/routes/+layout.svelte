@@ -40,8 +40,15 @@
 
   main {
     /* Grows to fill leftover space in body's flex column, pushing Footer to
-       the bottom of the viewport on pages shorter than it (see app.css). */
+       the bottom of the viewport on pages shorter than it (see app.css).
+       The explicit background isn't decorative -- once a browser propagates
+       body's background-color to paint the canvas (HTML spec), body's own
+       box stops painting that color for itself, so without this, any
+       section left transparent here would expose the bottom-overscroll
+       pink pseudo-element in app.css's html::after during ordinary
+       mid-page scrolling instead of only true overscroll. */
     flex: 1;
     padding-block-start: 4.375rem;
+    background-color: var(--color-surface-page);
   }
 </style>

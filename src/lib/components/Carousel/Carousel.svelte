@@ -126,6 +126,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
     cursor: pointer;
     color: var(--color-text-default);
     background: var(--color-surface-default);

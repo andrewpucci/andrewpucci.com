@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { MediaQuery } from 'svelte/reactivity';
   import CaseStudyLayout from '$lib/components/CaseStudyLayout/CaseStudyLayout.svelte';
   import Carousel from '$lib/components/Carousel/Carousel.svelte';
   import PortfolioCard from '$lib/components/PortfolioCard/PortfolioCard.svelte';
@@ -13,6 +14,12 @@
   const CaseStudyBody = $derived(entry.Component);
   const otherCards = $derived(cards.filter((card) => !card.url.includes(`/${data.metadata.slug}/`)));
   const heroImage = $derived(portfolioImage(data.metadata.hero));
+
+  // Matches the 1/2/3-column breakpoints used by portfolio/+page.svelte's .grid
+  // and by +page.svelte's homepage carousel, for the same cards.
+  let tablet = new MediaQuery('min-width: 48rem');
+  let desktop = new MediaQuery('min-width: 62rem');
+  let desktopItemsPerPage = $derived(desktop.current ? 3 : tablet.current ? 2 : 1);
 </script>
 
 <svelte:head>
@@ -33,7 +40,7 @@
 
 <section class="more-projects" aria-labelledby="more-projects-heading">
   <h2 id="more-projects-heading">More Projects</h2>
-  <Carousel items={otherCards} label="Other portfolio projects">
+  <Carousel items={otherCards} label="Other portfolio projects" itemsPerPage={desktopItemsPerPage}>
     {#snippet item(card)}
       <PortfolioCard {...card} />
     {/snippet}
