@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Picture } from '@sveltejs/enhanced-img';
   import type { Snippet } from 'svelte';
+  import { IconClipboardList, IconTool, IconUsers } from '@tabler/icons-svelte-runes';
 
   type LinkedItem = { name: string; link?: string };
 
@@ -34,12 +35,7 @@
   <div class="meta-blocks">
     <div class="meta-block">
       {#if showIcons}
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
+        <IconUsers class="icon" aria-hidden="true" />
       {/if}
       <h2>Project Team</h2>
       <ul>
@@ -51,10 +47,7 @@
 
     <div class="meta-block">
       {#if showIcons}
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" ry="1" />
-        </svg>
+        <IconClipboardList class="icon" aria-hidden="true" />
       {/if}
       <h2>Responsibilities</h2>
       <ul>
@@ -66,11 +59,7 @@
 
     <div class="meta-block">
       {#if showIcons}
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path
-            d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
-          />
-        </svg>
+        <IconTool class="icon" aria-hidden="true" />
       {/if}
       <h2>Tools Used</h2>
       <ul>
@@ -129,10 +118,12 @@
     text-align: center;
   }
 
-  .icon {
+  /* IconUsers/IconClipboardList/IconTool are components, not raw <svg> --
+     Svelte's scoped-CSS hash never reaches a class forwarded into a child
+     component, so this needs the ancestor :global() idiom (same fix, same
+     root cause, as Nav.svelte's forwarded bits-ui classes, ADR-0007). */
+  .meta-block :global(.icon) {
     color: var(--color-brand-primary);
-    width: 2.5rem;
-    height: 2.5rem;
     margin-block-end: var(--space-2);
   }
 
