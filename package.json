@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.2.6",
+    "@tabler/icons-svelte-runes": "^3.46.0",
     "bits-ui": "^2.18.1",
     "marked": "^18.0.5"
   },
