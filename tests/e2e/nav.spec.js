@@ -47,4 +47,18 @@ test.describe('Primary navigation', () => {
     await page.keyboard.press('Tab');
     await expect(overviewLink).toBeFocused();
   });
+
+  test('hides the mobile toggle and shows the desktop links at desktop widths', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const nav = page.getByRole('navigation', { name: 'Primary' });
+
+    await expect(nav.getByRole('button', { name: 'Toggle navigation' })).not.toBeVisible();
+    await expect(nav.getByRole('link', { name: 'About' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Portfolio' })).toBeVisible();
+  });
 });

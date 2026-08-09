@@ -151,18 +151,25 @@
     border-radius: var(--radius-full);
   }
 
-  .mobile {
+  /* .mobile, .toggle, .mobile-links, .mobile-submenu, .mobile-submenu-content,
+     .dropdown-menu, and the .dropdown-trigger[data-state='open'] selector
+     below all target elements rendered by bits-ui primitives (Collapsible.*,
+     DropdownMenu.*) via a forwarded `class` prop. Svelte's scoped-CSS hash is
+     only appended to elements literally authored in this file's own
+     template, so it never reaches those primitives' own rendered DOM nodes --
+     an ancestor-qualified :global() is required to reach them at all. */
+  .row :global(.mobile) {
     margin-inline-start: auto;
   }
 
-  .toggle {
+  .row :global(.toggle) {
     cursor: pointer;
     background: none;
     border: none;
     font-size: 1.5rem;
   }
 
-  .mobile-links {
+  .row :global(.mobile-links) {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -182,7 +189,9 @@
     margin-inline-start: auto;
   }
 
-  .link {
+  .link,
+  .row :global(.submenu-trigger),
+  .row :global(.dropdown-trigger) {
     font: var(--typography-label);
     color: var(--nav-link-color-default);
     cursor: pointer;
@@ -191,16 +200,20 @@
     padding: 0;
   }
 
-  .link:hover {
+  .link:hover,
+  .row :global(.submenu-trigger):hover,
+  .row :global(.dropdown-trigger):hover {
     color: var(--nav-link-color-hover);
   }
 
-  .link[aria-current='page'] {
+  .link[aria-current='page'],
+  .row :global(.submenu-trigger[aria-current='page']),
+  .row :global(.dropdown-trigger[aria-current='page']) {
     color: var(--nav-link-color-active);
     text-decoration: underline;
   }
 
-  .submenu-trigger {
+  .row :global(.submenu-trigger) {
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
@@ -208,11 +221,11 @@
     width: 100%;
   }
 
-  .mobile-submenu {
+  .row :global(.mobile-submenu) {
     width: 100%;
   }
 
-  .mobile-submenu-content {
+  .row :global(.mobile-submenu-content) {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -234,12 +247,15 @@
   }
 
   .submenu-link[aria-current='page'],
-  .dropdown-link[aria-current='page'],
-  .dropdown-trigger[data-state='open'] {
+  .dropdown-link[aria-current='page'] {
     color: var(--nav-link-color-active);
   }
 
-  .dropdown-menu {
+  .row :global(.dropdown-trigger[data-state='open']) {
+    color: var(--nav-link-color-active);
+  }
+
+  .row :global(.dropdown-menu) {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -264,7 +280,7 @@
   }
 
   @media (min-width: 62rem) {
-    .mobile {
+    .row :global(.mobile) {
       display: none;
     }
 
