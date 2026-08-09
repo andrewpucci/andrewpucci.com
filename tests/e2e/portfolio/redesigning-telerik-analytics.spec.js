@@ -37,6 +37,29 @@ test.describe('Redesigning Telerik Analytics case study', () => {
     );
   });
 
+  test('shows one more-projects card per page on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/portfolio/redesigning-telerik-analytics/');
+    await page.waitForLoadState('networkidle');
+
+    const carousel = page.getByRole('region', { name: 'Other portfolio projects' });
+    await expect(carousel.getByText(/Slide \d of \d/)).toHaveText('Slide 1 of 5');
+  });
+
+  test('shows two more-projects cards per page on tablet', async ({ page }) => {
+    await page.setViewportSize({ width: 800, height: 900 });
+    await page.goto('/portfolio/redesigning-telerik-analytics/');
+    await page.waitForLoadState('networkidle');
+
+    const carousel = page.getByRole('region', { name: 'Other portfolio projects' });
+    await expect(carousel.getByText(/Slide \d of \d/)).toHaveText('Slide 1 of 3');
+  });
+
+  test('shows three more-projects cards per page on desktop', async ({ page }) => {
+    const carousel = page.getByRole('region', { name: 'Other portfolio projects' });
+    await expect(carousel.getByText(/Slide \d of \d/)).toHaveText('Slide 1 of 2');
+  });
+
   test('has an accessible expandable image', async ({ page }) => {
     const trigger = page.getByRole('button', {
       name: /Screenshot of the Silverlight EQATEC interface/,

@@ -48,6 +48,37 @@ test.describe('Primary navigation', () => {
     await expect(overviewLink).toBeFocused();
   });
 
+  test('closes the mobile menu and portfolio submenu after client-side navigation', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const nav = page.getByRole('navigation', { name: 'Primary' });
+    const navToggle = nav.getByRole('button', { name: 'Toggle navigation' });
+
+    await navToggle.click();
+    await expect(navToggle).toHaveAttribute('aria-expanded', 'true');
+
+    const portfolioTrigger = nav.getByRole('button', { name: 'Portfolio' });
+    await portfolioTrigger.click();
+    await expect(portfolioTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    await nav.getByRole('link', { name: 'Redesigning Telerik Analytics' }).click();
+    await page.waitForURL('/portfolio/redesigning-telerik-analytics/');
+
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      'Redesigning Telerik Analytics'
+    );
+    await expect(navToggle).toHaveAttribute('aria-expanded', 'false');
+
+    await navToggle.click();
+    await expect(navToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(portfolioTrigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(nav.getByRole('link', { name: 'Overview' })).toBeHidden();
+  });
+
   test('hides the mobile toggle and shows the desktop links at desktop widths', async ({
     page,
   }) => {
