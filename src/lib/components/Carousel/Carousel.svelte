@@ -1,5 +1,6 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
+  import { MediaQuery } from 'svelte/reactivity';
   import { chunkItems } from './chunk-items';
 
   interface Props {
@@ -22,21 +23,16 @@
     item,
   }: Props = $props();
 
-  let pages = $derived(chunkItems(items, itemsPerPage));
+  // chunkItems clamps itemsPerPage to >= 1 internally; mirror that clamp here
+  // so the index passed to the item snippet (i * pageSize + j) can't diverge
+  // from the page sizes chunkItems actually produced.
+  let pageSize = $derived(Math.max(1, itemsPerPage));
+  let pages = $derived(chunkItems(items, pageSize));
   let activeIndex = $state(0);
-  let prefersReducedMotion = $state(false);
+  let reducedMotion = new MediaQuery('prefers-reduced-motion: reduce');
+  let prefersReducedMotion = $derived(reducedMotion.current);
   let paused = $state(false);
   let playing = $derived(autoplay && !prefersReducedMotion && !paused);
-
-  $effect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => {
-      prefersReducedMotion = query.matches;
-    };
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  });
 
   $effect(() => {
     if (!playing) return;
@@ -51,10 +47,12 @@
   });
 
   function goNext() {
+    if (pages.length === 0) return;
     activeIndex = (activeIndex + 1) % pages.length;
   }
 
   function goPrev() {
+    if (pages.length === 0) return;
     activeIndex = (activeIndex - 1 + pages.length) % pages.length;
   }
 
@@ -100,7 +98,7 @@
         >
           <div class="slide-items">
             {#each page as entry, j (j)}
-              {@render item(entry, i * itemsPerPage + j)}
+              {@render item(entry, i * pageSize + j)}
             {/each}
           </div>
         </li>

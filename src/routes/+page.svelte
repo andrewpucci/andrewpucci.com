@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { MediaQuery } from 'svelte/reactivity';
   import Carousel from '$lib/components/Carousel/Carousel.svelte';
   import PortfolioCard from '$lib/components/PortfolioCard/PortfolioCard.svelte';
   import TestimonialQuote from '$lib/components/TestimonialQuote/TestimonialQuote.svelte';
@@ -8,26 +9,13 @@
   import nondiniAvatar from '$lib/assets/img/nondininaqui.jpg?enhanced';
 
   // Matches the 1/2/3-column breakpoints already used by portfolio/+page.svelte's
-  // .grid for the same cards. $effect never runs during prerendering, so the
-  // static HTML always ships at 1 card/page; hydration then reflows to 2 or 3 on
-  // tablet/desktop -- a synchronous-read alternative would avoid that flash but
-  // risks an actual hydration mismatch, which is worse.
-  let desktopItemsPerPage = $state(1);
-
-  $effect(() => {
-    const tablet = window.matchMedia('(min-width: 48rem)');
-    const desktop = window.matchMedia('(min-width: 62rem)');
-    const update = () => {
-      desktopItemsPerPage = desktop.matches ? 3 : tablet.matches ? 2 : 1;
-    };
-    update();
-    tablet.addEventListener('change', update);
-    desktop.addEventListener('change', update);
-    return () => {
-      tablet.removeEventListener('change', update);
-      desktop.removeEventListener('change', update);
-    };
-  });
+  // .grid for the same cards. MediaQuery's `current` is only known once mounted in
+  // the browser, so the static HTML always ships at 1 card/page; hydration then
+  // reflows to 2 or 3 on tablet/desktop -- a synchronous-read alternative would
+  // avoid that flash but risks an actual hydration mismatch, which is worse.
+  let tablet = new MediaQuery('min-width: 48rem');
+  let desktop = new MediaQuery('min-width: 62rem');
+  let desktopItemsPerPage = $derived(desktop.current ? 3 : tablet.current ? 2 : 1);
 </script>
 
 <svelte:head>
