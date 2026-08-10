@@ -34,7 +34,7 @@ const validFields = {
 const validTurnstileResponse = {
   success: true,
   action: 'turnstile-spin-v2',
-  hostname: 'andrewpucci.com',
+  hostname: 'allowed.example.test',
 };
 
 const whitespaceOnlyString = fc
@@ -55,7 +55,7 @@ function makePlatform(overrides: Partial<App.Platform['env']> = {}): App.Platfor
       // checkRateLimit is mocked above, so this stub is never actually read.
       CONTACT_FORM_RATE_LIMITER: {} as KVNamespace,
       PUBLIC_TURNSTILE_SITE_KEY: ' site-key ',
-      TURNSTILE_HOSTNAMES: 'andrewpucci.com, preview.andrewpucci.com',
+      TURNSTILE_HOSTNAMES: 'allowed.example.test',
       TURNSTILE_SECRET: 'secret',
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
@@ -237,7 +237,7 @@ describe('contact form action: Turnstile + Resend', () => {
       json: async () => ({
         success: false,
         'error-codes': ['invalid-input-secret'],
-        hostname: 'nav-mobile-expand-and-download-alignment.andrewpucci.pages.dev',
+        hostname: 'preview.example.test',
       }),
     });
     const platform = makePlatform();
@@ -252,7 +252,7 @@ describe('contact form action: Turnstile + Resend', () => {
       expect.objectContaining({
         errorCodes: ['invalid-input-secret'],
         hasToken: true,
-        hostname: 'nav-mobile-expand-and-download-alignment.andrewpucci.pages.dev',
+        hostname: 'preview.example.test',
       })
     );
   });
