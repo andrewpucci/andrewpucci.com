@@ -70,7 +70,7 @@ jobs:
 
       - name: Open follow-up issue
         if: steps.config.outputs.needs_watch == 'true' && steps.ranges.outputs.supported == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           KIT_VERSION: ${{ steps.ranges.outputs.kit_version }}
           KIT_RANGE: ${{ steps.ranges.outputs.kit_range }}
