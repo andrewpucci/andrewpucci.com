@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Chromatic needs history to diff against a baseline
 
@@ -70,7 +70,7 @@ jobs:
       # directly, hence the env-var indirection.
       - name: Publish to Chromatic
         if: ${{ env.CHROMATIC_PROJECT_TOKEN != '' }}
-        uses: chromaui/action@v1
+        uses: chromaui/action@latest
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         with:
@@ -83,7 +83,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # The regression gate builds the PR base (or previous main commit)
           # on the same runner so hardware variance affects both samples.
@@ -193,7 +193,7 @@ jobs:
         browser: [chromium, firefox, webkit]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Set up Vite+
         uses: voidzero-dev/setup-vp@v1
