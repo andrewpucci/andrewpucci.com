@@ -149,4 +149,6 @@ if (!isExpectedTurnstileResponse) {
 ## Open questions
 
 None. The allowed Turnstile hostname list is a non-secret deployment value in
-`wrangler.jsonc`, rather than application code.
+`wrangler.jsonc` (`andrewpucci.com` and the supported
+`andrewpucci.pages.dev` branch-deployment hostname), rather than application
+code.

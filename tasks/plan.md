@@ -7,8 +7,9 @@ Implement the approved security-hardening spec in four small, sequential slices.
 ## Prerequisite
 
 `TURNSTILE_HOSTNAMES` is a comma-separated, non-secret allowlist in
-`wrangler.jsonc`. It begins with `andrewpucci.com`; preview/local hostnames
-belong there only when their widgets are intentionally supported.
+`wrangler.jsonc`. It includes `andrewpucci.com` and the supported Cloudflare
+branch-deployment hostname `andrewpucci.pages.dev`; local hostnames belong
+there only when their widgets are intentionally supported.
 
 ## Dependency graph
 
