@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 import { checkRateLimit } from '$lib/server/rate-limiter';
-import { actions } from './+page.server';
+import { actions, load } from './+page.server';
 
 vi.mock('$lib/server/rate-limiter', () => ({
   checkRateLimit: vi.fn(),
@@ -29,6 +29,7 @@ function makePlatform(): App.Platform {
     env: {
       // checkRateLimit is mocked above, so this stub is never actually read.
       CONTACT_FORM_RATE_LIMITER: {} as KVNamespace,
+      PUBLIC_TURNSTILE_SITE_KEY: ' site-key ',
       TURNSTILE_SECRET: 'secret',
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
@@ -61,6 +62,15 @@ describe('contact form action: validation', () => {
     const result = await actions.default!(makeEvent({ ...validFields, message: 'x'.repeat(5001) }));
     expect(result?.status).toBe(400);
     expect(result?.data?.errors).toEqual({ message: 'Message is too long.' });
+  });
+});
+
+describe('contact form page load', () => {
+  it('reads the Turnstile site key from the Cloudflare runtime env', async () => {
+    const data = (await load({ platform: makePlatform() } as Parameters<typeof load>[0])) as {
+      turnstileSiteKey: string;
+    };
+    expect(data.turnstileSiteKey).toBe('site-key');
   });
 });
 

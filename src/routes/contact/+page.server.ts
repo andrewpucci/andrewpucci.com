@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { checkRateLimit } from '$lib/server/rate-limiter';
+import type { PageServerLoad } from './$types';
 import type { Actions } from './$types';
 
 export const prerender = false;
@@ -16,6 +17,13 @@ function formError(message: string): ContactFormErrors {
 interface TurnstileSiteverifyResponse {
   success: boolean;
 }
+
+export const load: PageServerLoad = ({ platform }) => ({
+  turnstileSiteKey:
+    platform?.env.PUBLIC_TURNSTILE_SITE_KEY?.trim() ??
+    process.env.PUBLIC_TURNSTILE_SITE_KEY?.trim() ??
+    '',
+});
 
 async function verifyTurnstile(token: string, secret: string, ip: string): Promise<boolean> {
   const body = new URLSearchParams({ secret, response: token, remoteip: ip });
@@ -49,7 +57,10 @@ export const actions: Actions = {
 
     const env = platform?.env;
     if (!env) {
-      return fail(500, { errors: formError('Server misconfiguration.'), values });
+      return fail(500, {
+        errors: formError('Server misconfiguration.'),
+        values,
+      });
     }
 
     const ip = getClientAddress();
@@ -71,7 +82,10 @@ export const actions: Actions = {
     }
 
     if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET, ip))) {
-      return fail(400, { errors: formError('Verification failed. Please try again.'), values });
+      return fail(400, {
+        errors: formError('Verification failed. Please try again.'),
+        values,
+      });
     }
 
     const resendResponse = await fetch('https://api.resend.com/emails', {

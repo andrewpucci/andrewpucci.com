@@ -6,6 +6,7 @@ declare global {
   // Declared here to extend the generated worker-configuration.d.ts Env.
   interface Env {
     CONTACT_FORM_RATE_LIMITER: KVNamespace;
+    PUBLIC_TURNSTILE_SITE_KEY: string;
     TURNSTILE_SECRET: string;
     RESEND_API_KEY: string;
     CONTACT_TO_EMAIL: string;

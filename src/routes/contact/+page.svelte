@@ -1,14 +1,13 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { env } from '$env/dynamic/public';
   import Button from '$lib/components/Button/Button.svelte';
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
-  import type { ActionData } from './$types';
+  import type { ActionData, PageData } from './$types';
 
-  let { form }: { form: ActionData } = $props();
+  let { data, form }: { data: PageData; form: ActionData } = $props();
   let submitting = $state(false);
-  const turnstileSiteKey = env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
+  const turnstileSiteKey = data.turnstileSiteKey?.trim();
   const formAvailable = Boolean(turnstileSiteKey);
 </script>
 
