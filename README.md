@@ -137,6 +137,9 @@ vp run check:svelte
 vp run test:ci
 ```
 
+Contribution and security expectations are documented in
+[CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+
 ## License
 
 GPL-3.0. See [LICENSE](LICENSE).

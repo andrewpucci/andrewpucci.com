@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
+import fc from 'fast-check';
 import { checkRateLimit } from '$lib/server/rate-limiter';
 import { actions, load } from './+page.server';
 
@@ -29,6 +30,18 @@ const validFields = {
   email: 'jane@example.com',
   message: 'Hello there',
 };
+
+const whitespaceOnlyString = fc
+  .array(fc.constantFrom(' ', '\t', '\n', '\r'), { maxLength: 32 })
+  .map((characters) => characters.join(''));
+
+const nonEmptyTrimmedString = fc
+  .string({ maxLength: 256 })
+  .filter((value) => value.trim().length > 0);
+
+const overlongNonWhitespaceMessage = fc
+  .array(fc.constantFrom('a', 'b', 'c', '1', '-', '_'), { minLength: 5001, maxLength: 5500 })
+  .map((characters) => characters.join(''));
 
 function makePlatform(overrides: Partial<App.Platform['env']> = {}): App.Platform {
   return {
@@ -75,6 +88,67 @@ describe('contact form action: validation', () => {
     const result = await actions.default!(makeEvent({ ...validFields, message: 'x'.repeat(5001) }));
     expect(result?.status).toBe(400);
     expect(result?.data?.errors).toEqual({ message: 'Message is too long.' });
+  });
+
+  it('rejects names that collapse to empty after trimming', async () => {
+    await fc.assert(
+      fc.asyncProperty(whitespaceOnlyString, nonEmptyTrimmedString, async (name, message) => {
+        const result = await actions.default!(
+          makeEvent({ name, email: validFields.email, message })
+        );
+
+        expect(result?.status).toBe(400);
+        expect(result?.data?.errors?.name).toBe('Enter your name.');
+      }),
+      { numRuns: 50 }
+    );
+  });
+
+  it('rejects messages longer than the server-side limit', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        nonEmptyTrimmedString,
+        overlongNonWhitespaceMessage,
+        async (name, message) => {
+          const result = await actions.default!(
+            makeEvent({ name, email: validFields.email, message })
+          );
+
+          expect(result?.status).toBe(400);
+          expect(result?.data?.errors?.message).toBe('Message is too long.');
+        }
+      ),
+      { numRuns: 25 }
+    );
+  });
+
+  it('trims surrounding whitespace from otherwise valid emails before later checks', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        whitespaceOnlyString,
+        whitespaceOnlyString,
+        nonEmptyTrimmedString,
+        nonEmptyTrimmedString,
+        async (leadingWhitespace, trailingWhitespace, name, message) => {
+          const result = await actions.default!(
+            makeEvent({
+              name,
+              email: `${leadingWhitespace}${validFields.email}${trailingWhitespace}`,
+              message,
+            })
+          );
+
+          expect(result?.status).toBe(500);
+          expect(result?.data?.errors).toEqual({ form: 'Server misconfiguration.' });
+          expect(result?.data?.values).toEqual({
+            name: name.trim(),
+            email: validFields.email,
+            message: message.trim(),
+          });
+        }
+      ),
+      { numRuns: 50 }
+    );
   });
 });
 
