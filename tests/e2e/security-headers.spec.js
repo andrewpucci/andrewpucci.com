@@ -23,8 +23,10 @@ test.describe('HTTP security headers', () => {
     expect(staticResponse.ok()).toBe(true);
     const staticHeaders = staticResponse.headers();
     expectFixedSecurityHeaders(staticHeaders);
-    expect(staticHeaders['content-security-policy']).toContain("default-src 'none'");
-    expect(staticHeaders['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(staticHeaders['content-security-policy']).toBe("frame-ancestors 'none'");
+    expect(await staticResponse.text()).toContain(
+      '<meta http-equiv="content-security-policy" content="default-src \'none\''
+    );
 
     const workerResponse = await request.get('/contact/');
     expect(workerResponse.ok()).toBe(true);
