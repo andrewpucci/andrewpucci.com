@@ -6,6 +6,7 @@
   "pages_build_output_dir": ".svelte-kit/cloudflare",
   "vars": {
     "PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEJlE6Qi5n81J3rN",
+    "TURNSTILE_HOSTNAMES": "andrewpucci.com",
   },
   // Backs the contact form's rate limiter (ADR-0003). A Durable Object was
   // tried first, but @sveltejs/adapter-cloudflare's generated _worker.js

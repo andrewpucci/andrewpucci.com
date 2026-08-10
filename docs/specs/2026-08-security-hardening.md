@@ -148,4 +148,5 @@ if (!isExpectedTurnstileResponse) {
 
 ## Open questions
 
-None. The allowed Turnstile hostname list will be supplied as deployment configuration rather than hardcoded; adding that binding requires the existing "ask first" approval at implementation time.
+None. The allowed Turnstile hostname list is a non-secret deployment value in
+`wrangler.jsonc`, rather than application code.

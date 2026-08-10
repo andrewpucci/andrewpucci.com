@@ -1,6 +1,6 @@
 # Security hardening tasks
 
-- [ ] Configure the `TURNSTILE_HOSTNAMES` Cloudflare Pages runtime binding with approved hostnames. (Owner prerequisite)
+- [x] Configure the `TURNSTILE_HOSTNAMES` Cloudflare Pages runtime binding with approved hostnames.
 - [x] Task 1: Validate the complete Turnstile response contract.
   - Acceptance: Expected action and allowlisted hostname are required; timeouts/network failures fail safely; a valid response sends exactly one email.
   - Verify: `npm run test:coverage`

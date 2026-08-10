@@ -100,16 +100,16 @@ See [tests/e2e/README.md](tests/e2e/README.md) for Playwright details.
 | Build output             | `.svelte-kit/cloudflare`                                                                                    |
 | Production branch        | `main`                                                                                                      |
 
-Configure the following runtime values for both the Preview and Production
-environments in the Cloudflare Pages dashboard:
+The non-secret `PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_HOSTNAMES` values
+are defined in `wrangler.jsonc`. Configure the following secrets for both the
+Preview and Production environments in the Cloudflare Pages dashboard:
 
-| Name                        | Dashboard type       | Purpose                                   |
-| --------------------------- | -------------------- | ----------------------------------------- |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Environment variable | Renders the client-side Turnstile widget. |
-| `TURNSTILE_SECRET`          | Encrypted secret     | Verifies Turnstile submissions.           |
-| `RESEND_API_KEY`            | Encrypted secret     | Authenticates email delivery.             |
-| `CONTACT_TO_EMAIL`          | Encrypted secret     | Receives contact submissions.             |
-| `CONTACT_FROM_EMAIL`        | Encrypted secret     | Provides the verified Resend sender.      |
+| Name                 | Dashboard type   | Purpose                         |
+| -------------------- | ---------------- | ------------------------------- |
+| `TURNSTILE_SECRET`   | Encrypted secret | Verifies Turnstile submissions. |
+| `RESEND_API_KEY`     | Encrypted secret | Authenticates email delivery.   |
+| `CONTACT_TO_EMAIL`   | Encrypted secret | Receives contact submissions.   |
+| `CONTACT_FROM_EMAIL` | Encrypted secret | Provides the verified sender.   |
 
 ### Contact-form rate limiting
 

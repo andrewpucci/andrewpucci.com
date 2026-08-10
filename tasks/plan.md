@@ -6,7 +6,9 @@ Implement the approved security-hardening spec in four small, sequential slices.
 
 ## Prerequisite
 
-Before Task 1 is deployed, the repository owner must add the `TURNSTILE_HOSTNAMES` runtime binding in Cloudflare Pages. It must be a comma-separated allowlist of intended hostnames, beginning with `andrewpucci.com`; preview/local hostnames belong there only when their widgets are intentionally supported. This is a deployment-configuration change and is not performed by this implementation plan.
+`TURNSTILE_HOSTNAMES` is a comma-separated, non-secret allowlist in
+`wrangler.jsonc`. It begins with `andrewpucci.com`; preview/local hostnames
+belong there only when their widgets are intentionally supported.
 
 ## Dependency graph
 
@@ -125,4 +127,4 @@ Tasks 1–3 are deliberately sequential because they establish the runtime contr
 
 ## Open questions
 
-None for code design. Deployment approval is required only for the `TURNSTILE_HOSTNAMES` binding described in the prerequisite.
+None.
