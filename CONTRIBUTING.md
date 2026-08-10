@@ -18,6 +18,7 @@ That means outside contributions are welcome, but review and merge timing are be
 - Prefer opening an issue first for non-trivial changes so scope can be agreed before implementation.
 - Keep changes focused. Small pull requests are much easier to validate and merge safely.
 - Avoid drive-by refactors unless they are required to support the main change.
+- Prefer TypeScript for new or modified code whenever the toolchain allows it; keep JavaScript only where a specific tool or runtime requires it.
 
 ## Local validation
 

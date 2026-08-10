@@ -10,7 +10,7 @@ Install the Vite+ CLI (`vp`) first, then use `vp install` for dependencies. Run 
 
 ## Coding Style & Naming Conventions
 
-This is an ESM-only codebase; use `import`/`export`, not CommonJS. Formatting and linting run through Vite+ (`vp fmt`/`vp lint`, configured in the `fmt` and `lint` blocks of `vite.config.ts`); run `vp check --fix` before opening a PR. Keep JavaScript, TypeScript, Svelte, and Markdown changes small and readable. Match existing file patterns such as source-adjacent `*.test.ts`, `*.stories.svelte`, `*.spec.js`, and resume entries like `src/lib/content/resume/work/2022-expel-senior-ux-designer.md`.
+This is an ESM-only codebase; use `import`/`export`, not CommonJS. Prefer TypeScript for new or modified code whenever the toolchain allows it; only keep JavaScript when a specific tool or runtime requires it. Formatting and linting run through Vite+ (`vp fmt`/`vp lint`, configured in the `fmt` and `lint` blocks of `vite.config.ts`); run `vp check --fix` before opening a PR. Keep TypeScript, Svelte, and Markdown changes small and readable. Match existing file patterns such as source-adjacent `*.test.ts`, `*.stories.svelte`, `*.spec.ts`, and resume entries like `src/lib/content/resume/work/2022-expel-senior-ux-designer.md`.
 
 ## Testing Guidelines
 

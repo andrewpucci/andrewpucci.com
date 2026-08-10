@@ -1,4 +1,3 @@
-// @ts-check
 import { expect, test } from '@playwright/test';
 
 test.describe('Redesigning Telerik Analytics case study', () => {

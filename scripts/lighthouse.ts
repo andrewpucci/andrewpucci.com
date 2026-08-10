@@ -9,6 +9,16 @@ import { computeMedianRun } from 'lighthouse/core/lib/median-run.js';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 
+type MetricAudit = { numericValue?: number };
+type CategoryAudit = { score?: number };
+type LighthouseLikeResult = {
+  audits: Record<string, MetricAudit | undefined>;
+};
+type RouteSummary = {
+  route: string;
+  lcpMs: number | undefined;
+};
+
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:4173';
 const DEFAULT_ROUTES = [
   '/',
@@ -46,12 +56,12 @@ const METRIC_THRESHOLDS = {
   'total-blocking-time': { label: 'TBT (INP proxy)', unit: 'ms', max: 200 },
 };
 
-async function writeReport(filename, value) {
+async function writeReport(filename: string, value: unknown): Promise<void> {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- The report directory is a trusted local/CI configuration value.
   await writeFile(join(REPORT_DIR, filename), JSON.stringify(value));
 }
 
-function categoryThresholdsForRoute(route) {
+function categoryThresholdsForRoute(route: string) {
   // Archive case studies deliberately use noindex, so Lighthouse's SEO score
   // is not meaningful for them. Their performance and usability budgets still
   // apply exactly as they do to indexable pages.
@@ -60,14 +70,17 @@ function categoryThresholdsForRoute(route) {
     : Object.entries(CATEGORY_THRESHOLDS);
 }
 
-function hasMedianRunInputs(lhr) {
+function hasMedianRunInputs(lhr: LighthouseLikeResult): boolean {
   const firstContentfulPaint = lhr.audits['first-contentful-paint']?.numericValue;
   return typeof firstContentfulPaint === 'number' && Number.isFinite(firstContentfulPaint);
 }
 
-async function auditRoute(port, route) {
+async function auditRoute(
+  port: number,
+  route: string
+): Promise<{ ok: boolean; summary: RouteSummary }> {
   const url = `${BASE_URL}${route}`;
-  const validRuns = [];
+  const validRuns: LighthouseLikeResult[] = [];
   let attempts = 0;
 
   while (validRuns.length < RUNS_PER_ROUTE && attempts < MAX_ATTEMPTS_PER_ROUTE) {
@@ -78,18 +91,22 @@ async function auditRoute(port, route) {
       onlyCategories: ['performance', 'best-practices', 'seo'],
       logLevel: 'error',
     });
+    if (!result) {
+      throw new Error(`Lighthouse returned no result for ${route}.`);
+    }
+    const report = result.lhr as LighthouseLikeResult;
 
     const filename = `${route.replaceAll('/', '_') || 'home'}-attempt-${attempts}.json`;
-    await writeReport(filename, result.lhr);
+    await writeReport(filename, report);
 
-    if (!hasMedianRunInputs(result.lhr)) {
+    if (!hasMedianRunInputs(report)) {
       console.warn(
         `Skipping incomplete Lighthouse sample for ${route} (attempt ${attempts}/${MAX_ATTEMPTS_PER_ROUTE})`
       );
       continue;
     }
 
-    validRuns.push(result.lhr);
+    validRuns.push(report);
   }
 
   if (validRuns.length < RUNS_PER_ROUTE) {
@@ -99,7 +116,10 @@ async function auditRoute(port, route) {
     );
   }
 
-  const { categories, audits } = computeMedianRun(validRuns);
+  const { categories, audits } = computeMedianRun(validRuns) as {
+    categories: Record<string, CategoryAudit | undefined>;
+    audits: Record<string, MetricAudit | undefined>;
+  };
   const categoriesById = new Map(Object.entries(categories));
   const auditsById = new Map(Object.entries(audits));
   let ok = true;
@@ -163,7 +183,7 @@ async function main() {
   });
 
   let allPassed = true;
-  const routeSummaries = [];
+  const routeSummaries: RouteSummary[] = [];
   try {
     for (const route of ROUTES) {
       const { ok, summary } = await auditRoute(chrome.port, route);

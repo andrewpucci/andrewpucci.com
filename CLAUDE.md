@@ -42,6 +42,12 @@ vp check --fix
 
 This is a **SvelteKit** site deployed through Cloudflare Pages. Active app code lives in `src/routes/` and `src/lib/`. The shipping adapter output is `.svelte-kit/cloudflare`.
 
+## Code conventions
+
+- Prefer TypeScript for new or modified code whenever the toolchain allows it.
+- Keep JavaScript only where a specific runtime or tool requires it.
+- Use ESM imports/exports throughout; CommonJS is not part of the project style.
+
 ### SvelteKit + Cloudflare
 
 - Routes live in `src/routes/`, reusable UI and content loaders in `src/lib/`

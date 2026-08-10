@@ -1,13 +1,14 @@
 import { readFile } from 'node:fs/promises';
+import type { RouteLcpSummary } from '../src/lib/utils/lighthouse-regression.ts';
 import { compareLcpRoutes } from '../src/lib/utils/lighthouse-regression.ts';
 
 const BASE_SUMMARY = process.env.LIGHTHOUSE_BASE_SUMMARY ?? 'lighthouse-reports/base/summary.json';
 const CURRENT_SUMMARY =
   process.env.LIGHTHOUSE_CURRENT_SUMMARY ?? 'lighthouse-reports/current/summary.json';
 
-async function readRoutes(filename, label) {
+async function readRoutes(filename: string, label: string): Promise<RouteLcpSummary[]> {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- Summary paths are trusted local/CI configuration values.
-  const value = JSON.parse(await readFile(filename, 'utf8'));
+  const value = JSON.parse(await readFile(filename, 'utf8')) as { routes?: RouteLcpSummary[] };
   if (!value || !Array.isArray(value.routes)) {
     throw new Error(`${label} Lighthouse summary has no routes array: ${filename}`);
   }
