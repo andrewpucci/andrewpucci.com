@@ -29,6 +29,13 @@ updates:
     # Keep manifest ranges stable when they already admit the new release;
     # Dependabot still updates the lockfile/resolved version.
     versioning-strategy: increase-if-necessary
+    # SvelteKit and svelte-check do not yet publish TypeScript 7 support.
+    # Keep 6.x moving, but block new 7.x PRs until the watcher workflow opens
+    # a follow-up issue telling us to remove this ignore.
+    ignore:
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
     commit-message:
       prefix: chore
       prefix-development: chore

@@ -1,0 +1,116 @@
+name: Watch TypeScript 7 support
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly and offset from the top of the hour to reduce dropped runs.
+    - cron: '17 17 * * 3'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    name: Watch TypeScript 7 support
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check whether the TypeScript major-version ignore is still active
+        id: config
+        run: |
+          if grep -Eq 'dependency-name:\s*typescript' .github/dependabot.yml; then
+            echo "needs_watch=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_watch=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check published TypeScript peer ranges
+        id: ranges
+        if: steps.config.outputs.needs_watch == 'true'
+        env:
+          npm_config_cache: ${{ runner.temp }}/npm-cache
+        run: |
+          mkdir -p "$npm_config_cache"
+
+          kit_range=$(npm view @sveltejs/kit peerDependencies.typescript)
+          kit_version=$(npm view @sveltejs/kit version)
+          svelte_check_range=$(npm view svelte-check peerDependencies.typescript)
+          svelte_check_version=$(npm view svelte-check version)
+
+          {
+            echo "kit_range=$kit_range"
+            echo "kit_version=$kit_version"
+            echo "svelte_check_range=$svelte_check_range"
+            echo "svelte_check_version=$svelte_check_version"
+          } >> "$GITHUB_OUTPUT"
+
+          if npx --yes semver -r "$kit_range" 7.0.0 >/dev/null \
+            && npx --yes semver -r "$svelte_check_range" 7.0.0 >/dev/null; then
+            echo "supported=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "supported=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summarize status
+        run: |
+          {
+            echo "## TypeScript 7 support watch"
+            echo
+
+            if [[ "${{ steps.config.outputs.needs_watch }}" != 'true' ]]; then
+              echo "The `typescript` major-version ignore is no longer present in \`.github/dependabot.yml\`, so this watcher has nothing left to do."
+              exit 0
+            fi
+
+            echo "- \`@sveltejs/kit@${{ steps.ranges.outputs.kit_version }}\`: \`${{ steps.ranges.outputs.kit_range }}\`"
+            echo "- \`svelte-check@${{ steps.ranges.outputs.svelte_check_version }}\`: \`${{ steps.ranges.outputs.svelte_check_range }}\`"
+            echo "- Both packages admit TypeScript 7: \`${{ steps.ranges.outputs.supported }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open follow-up issue
+        if: steps.config.outputs.needs_watch == 'true' && steps.ranges.outputs.supported == 'true'
+        uses: actions/github-script@v8
+        env:
+          KIT_VERSION: ${{ steps.ranges.outputs.kit_version }}
+          KIT_RANGE: ${{ steps.ranges.outputs.kit_range }}
+          SVELTE_CHECK_VERSION: ${{ steps.ranges.outputs.svelte_check_version }}
+          SVELTE_CHECK_RANGE: ${{ steps.ranges.outputs.svelte_check_range }}
+        with:
+          script: |
+            const title =
+              'Revisit TypeScript 7 upgrade now that the Svelte toolchain supports it';
+            const marker = '<!-- typescript-7-support-watch -->';
+            const { owner, repo } = context.repo;
+            const { data: search } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:issue is:open in:title "${title}"`,
+              per_page: 1,
+            });
+
+            if (search.total_count > 0) {
+              core.info(`Issue already open: #${search.items[0].number}`);
+              return;
+            }
+
+            const body = `${marker}
+
+            The scheduled TypeScript support watcher detected published support for TypeScript \`7.x\` in the Svelte toolchain this repo currently gates on.
+
+            Current published peer ranges:
+            - \`@sveltejs/kit@${process.env.KIT_VERSION}\`: \`${process.env.KIT_RANGE}\`
+            - \`svelte-check@${process.env.SVELTE_CHECK_VERSION}\`: \`${process.env.SVELTE_CHECK_RANGE}\`
+
+            Follow-up:
+            - Remove the \`typescript\` major-version ignore from \`.github/dependabot.yml\`
+            - Retry the TypeScript \`7.x\` dependency bump
+            - Run the full CI path before merging
+
+            This issue was opened automatically so the repo does not silently miss the moment TypeScript 7 becomes supported.`;
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body,
+              labels: ['ready-for-agent'],
+            });
