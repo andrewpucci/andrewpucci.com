@@ -19,6 +19,7 @@ That means outside contributions are welcome, but review and merge timing are be
 - Keep changes focused. Small pull requests are much easier to validate and merge safely.
 - Avoid drive-by refactors unless they are required to support the main change.
 - Prefer TypeScript for new or modified code whenever the toolchain allows it; keep JavaScript only where a specific tool or runtime requires it.
+- Changes that affect browser behavior, interactive patterns, or accessibility should follow the browser/accessibility support policy in [ADR-0013](/Users/pucciar/Github/andrewpucci.com/docs/adr/0013-browser-support-and-accessibility-interoperability.md).
 
 ## Local validation
 

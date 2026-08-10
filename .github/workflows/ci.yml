@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main, feat/sveltekit-migration]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -145,7 +145,7 @@ jobs:
             echo "buildable=true" >> "$GITHUB_OUTPUT"
           else
             echo "buildable=false" >> "$GITHUB_OUTPUT"
-            echo "Base commit $BASE_SHA does not build with the current toolchain (e.g. a pre-migration commit on a different build system); skipping the relative LCP gate."
+            echo "Base commit $BASE_SHA does not build with the current toolchain; skipping the relative LCP gate."
           fi
 
       - name: Audit performance baseline
