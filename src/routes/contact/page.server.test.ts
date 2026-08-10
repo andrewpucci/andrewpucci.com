@@ -16,15 +16,21 @@ function makeFormData(fields: Record<string, string>): FormData {
 
 function makeEvent(fields: Record<string, string>, platform?: App.Platform) {
   return {
-    request: { formData: async () => makeFormData(fields) } as unknown as Request,
+    request: {
+      formData: async () => makeFormData(fields),
+    } as unknown as Request,
     platform,
     getClientAddress: () => '203.0.113.1',
   } as Parameters<NonNullable<typeof actions.default>>[0];
 }
 
-const validFields = { name: 'Jane Tester', email: 'jane@example.com', message: 'Hello there' };
+const validFields = {
+  name: 'Jane Tester',
+  email: 'jane@example.com',
+  message: 'Hello there',
+};
 
-function makePlatform(): App.Platform {
+function makePlatform(overrides: Partial<App.Platform['env']> = {}): App.Platform {
   return {
     env: {
       // checkRateLimit is mocked above, so this stub is never actually read.
@@ -34,6 +40,7 @@ function makePlatform(): App.Platform {
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
       CONTACT_FROM_EMAIL: 'contact@andrewpucci.com',
+      ...overrides,
     },
   } as unknown as App.Platform;
 }
@@ -54,8 +61,14 @@ describe('contact form action: validation', () => {
       makeEvent({ name: 'Jane', email: 'not-an-email', message: 'Hi' })
     );
     expect(result?.status).toBe(400);
-    expect(result?.data?.errors).toEqual({ email: 'Enter a valid email address.' });
-    expect(result?.data?.values).toEqual({ name: 'Jane', email: 'not-an-email', message: 'Hi' });
+    expect(result?.data?.errors).toEqual({
+      email: 'Enter a valid email address.',
+    });
+    expect(result?.data?.values).toEqual({
+      name: 'Jane',
+      email: 'not-an-email',
+      message: 'Hi',
+    });
   });
 
   it('rejects a message over the length limit', async () => {
@@ -114,11 +127,13 @@ describe('contact form action: server-side checks', () => {
 
 describe('contact form action: Turnstile + Resend', () => {
   const fetchMock = vi.fn();
+  const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
   beforeEach(() => {
     fetchMock.mockReset();
     vi.stubGlobal('fetch', fetchMock);
+    consoleErrorSpy.mockClear();
     consoleWarnSpy.mockClear();
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ success: true });
@@ -152,13 +167,75 @@ describe('contact form action: Turnstile + Resend', () => {
   it('fails with 502 when Resend rejects the email', async () => {
     fetchMock
       .mockResolvedValueOnce({ json: async () => ({ success: true }) })
-      .mockResolvedValueOnce({ ok: false });
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        statusText: 'Forbidden',
+        headers: {
+          get: (name: string) => (name === 'x-request-id' ? 'req_123' : null),
+        },
+        json: async () => ({
+          message:
+            'The `andrewpucci.com` domain is not verified. Please, add and verify your domain.',
+          name: 'validation_error',
+          statusCode: 403,
+        }),
+      });
     const platform = makePlatform();
     const result = await actions.default!(
       makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, platform)
     );
     expect(result?.status).toBe(502);
     expect(result?.data?.errors?.form).toMatch(/could not send/i);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Resend email send failed',
+      expect.objectContaining({
+        fromDomain: 'andrewpucci.com',
+        requestId: 'req_123',
+        resendError: expect.objectContaining({
+          name: 'validation_error',
+          statusCode: 403,
+        }),
+        status: 403,
+        statusText: 'Forbidden',
+        toDomain: 'andrewpucci.com',
+      })
+    );
+  });
+
+  it('trims email configuration before sending to Resend', async () => {
+    fetchMock
+      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({ ok: true });
+    const platform = makePlatform({
+      CONTACT_FROM_EMAIL: ' contact@andrewpucci.com ',
+      CONTACT_TO_EMAIL: ' hi@andrewpucci.com ',
+      RESEND_API_KEY: ' re_test ',
+      TURNSTILE_SECRET: ' secret ',
+    });
+
+    const result = await actions.default!(
+      makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, platform)
+    );
+
+    expect(result).toEqual({ success: true });
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      'https://api.resend.com/emails',
+      expect.objectContaining({
+        body: JSON.stringify({
+          from: 'contact@andrewpucci.com',
+          to: 'hi@andrewpucci.com',
+          reply_to: 'jane@example.com',
+          subject: 'New message from Jane Tester via andrewpucci.com',
+          text: 'Hello there',
+        }),
+        headers: expect.objectContaining({
+          authorization: 'Bearer re_test',
+          'content-type': 'application/json',
+        }),
+      })
+    );
   });
 
   it('succeeds when Turnstile and Resend both accept the request', async () => {

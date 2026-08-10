@@ -21,6 +21,41 @@ interface TurnstileSiteverifyResponse {
   hostname?: string;
 }
 
+interface ResendErrorResponse {
+  message?: string;
+  name?: string;
+  statusCode?: number;
+}
+
+function trimEnvValue(value: string | undefined | null): string {
+  return value?.trim() ?? '';
+}
+
+function getEmailDomain(address: string): string {
+  return address.split('@').at(-1) ?? '';
+}
+
+async function readResendError(response: Response): Promise<ResendErrorResponse | string | null> {
+  if (typeof response.json === 'function') {
+    try {
+      return (await response.json()) as ResendErrorResponse;
+    } catch {
+      // Fall through to text parsing.
+    }
+  }
+
+  if (typeof response.text === 'function') {
+    try {
+      const text = (await response.text()).trim();
+      return text || null;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
 export const load: PageServerLoad = ({ platform }) => ({
   turnstileSiteKey:
     platform?.env.PUBLIC_TURNSTILE_SITE_KEY?.trim() ??
@@ -70,6 +105,25 @@ export const actions: Actions = {
       });
     }
 
+    const turnstileSecret = trimEnvValue(env.TURNSTILE_SECRET);
+    const resendApiKey = trimEnvValue(env.RESEND_API_KEY);
+    const contactToEmail = trimEnvValue(env.CONTACT_TO_EMAIL);
+    const contactFromEmail = trimEnvValue(env.CONTACT_FROM_EMAIL);
+
+    if (!turnstileSecret || !resendApiKey || !contactToEmail || !contactFromEmail) {
+      console.error('Missing contact form runtime config', {
+        hasContactFromEmail: Boolean(contactFromEmail),
+        hasContactToEmail: Boolean(contactToEmail),
+        hasResendApiKey: Boolean(resendApiKey),
+        hasTurnstileSecret: Boolean(turnstileSecret),
+      });
+
+      return fail(500, {
+        errors: formError('Server misconfiguration.'),
+        values,
+      });
+    }
+
     const ip = getClientAddress();
 
     try {
@@ -89,7 +143,7 @@ export const actions: Actions = {
     }
 
     const turnstileResult = turnstileToken
-      ? await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET, ip)
+      ? await verifyTurnstile(turnstileToken, turnstileSecret, ip)
       : null;
 
     if (!turnstileToken || !turnstileResult?.success) {
@@ -109,12 +163,12 @@ export const actions: Actions = {
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        authorization: `Bearer ${env.RESEND_API_KEY}`,
+        authorization: `Bearer ${resendApiKey}`,
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        from: env.CONTACT_FROM_EMAIL,
-        to: env.CONTACT_TO_EMAIL,
+        from: contactFromEmail,
+        to: contactToEmail,
         reply_to: email,
         subject: `New message from ${name} via andrewpucci.com`,
         text: message,
@@ -122,6 +176,16 @@ export const actions: Actions = {
     });
 
     if (!resendResponse.ok) {
+      const resendError = await readResendError(resendResponse);
+      console.error('Resend email send failed', {
+        fromDomain: getEmailDomain(contactFromEmail),
+        requestId: resendResponse.headers.get('x-request-id'),
+        resendError,
+        status: resendResponse.status,
+        statusText: resendResponse.statusText,
+        toDomain: getEmailDomain(contactToEmail),
+      });
+
       return fail(502, {
         errors: formError('Could not send your message. Please try again later.'),
         values,
