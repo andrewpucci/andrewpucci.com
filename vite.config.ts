@@ -12,7 +12,7 @@ const dirname =
 
 // `sveltekit()` is called with no arguments so it (and every other tool that
 // loads Svelte config the classic way, e.g. Storybook's SvelteKit framework)
-// reads the single source of truth in svelte.config.js.
+// reads the single source of truth in svelte.config.ts.
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   server: {

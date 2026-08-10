@@ -6,6 +6,7 @@ Andrew Pucci's public portfolio site. The app is built with SvelteKit and deploy
 
 - SvelteKit 2 with `adapter-cloudflare`
 - Svelte 5
+- TypeScript-first application and tooling
 - Storybook 10
 - Vitest and Playwright
 - Terrazzo design tokens
@@ -74,6 +75,10 @@ real Cloudflare Pages behavior -- that is what the E2E suite runs against.
 
 `vp run test:ci` enforces the Vitest coverage threshold before running that
 production-style E2E preview.
+
+## Code Conventions
+
+Prefer TypeScript for new or modified code whenever the surrounding tool supports it. JavaScript should only remain where a specific runtime or tool requires it; otherwise use `.ts` and keep types explicit enough for `vp check` and `vp run check:svelte` to stay green.
 
 ## Testing
 

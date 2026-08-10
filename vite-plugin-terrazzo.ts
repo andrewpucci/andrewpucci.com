@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { Plugin } from 'vite';
 
 const TOKENS_SOURCE = path.resolve('tokens/tokens.json');
-const TERRAZZO_CONFIG = path.resolve('terrazzo.config.js');
+const TERRAZZO_CONFIG = path.resolve('terrazzo.config.ts');
 const TOKENS_OUTPUT = path.resolve('src/lib/tokens/tokens.css');
 const TERRAZZO_BIN = path.resolve('node_modules/.bin/tz');
 const TERRAZZO_BUILD_ACTIVE = 'TERRAZZO_BUILD_ACTIVE';

@@ -1,4 +1,3 @@
-// @ts-check
 import { expect, test } from '@playwright/test';
 
 test.describe('Contact page', () => {
@@ -36,13 +35,11 @@ test.describe('Contact page', () => {
     expect(submitCount).toBe(0);
     const emailInput = page.getByLabel('Email');
     const validationMessage = await emailInput.evaluate(
-      (node) => /** @type {HTMLInputElement} */ (node).validationMessage
+      (node) => (node as HTMLInputElement).validationMessage
     );
     expect(validationMessage.length).toBeGreaterThan(0);
     expect(
-      await emailInput.evaluate(
-        (node) => /** @type {HTMLInputElement} */ (node).validity.typeMismatch
-      )
+      await emailInput.evaluate((node) => (node as HTMLInputElement).validity.typeMismatch)
     ).toBe(true);
     await expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     await expect(emailInput).toHaveAccessibleDescription(
