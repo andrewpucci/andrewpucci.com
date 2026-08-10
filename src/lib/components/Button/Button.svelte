@@ -2,10 +2,17 @@
   import type { Snippet } from 'svelte';
   import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
-  type Props = { variant?: 'primary'; children: Snippet } & (
-    | ({ href?: undefined } & HTMLButtonAttributes)
-    | ({ href: HTMLAnchorAttributes['href'] } & Omit<HTMLAnchorAttributes, 'href'>)
-  );
+  type SharedProps = {
+    variant?: 'primary';
+    children: Snippet;
+    onclick?: (event: MouseEvent) => void;
+  };
+
+  type Props = SharedProps &
+    (
+      | ({ href?: undefined } & Omit<HTMLButtonAttributes, 'onclick'>)
+      | ({ href: HTMLAnchorAttributes['href'] } & Omit<HTMLAnchorAttributes, 'href' | 'onclick'>)
+    );
 
   let { variant = 'primary', href, children, onclick, ...rest }: Props = $props();
 </script>
