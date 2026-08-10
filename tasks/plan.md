@@ -38,14 +38,14 @@ Tasks 1–3 are deliberately sequential because they establish the runtime contr
 - Use `TURNSTILE_HOSTNAMES` as an explicit, comma-separated runtime allowlist. Do not infer trust from a request host or hardcode production/preview domains.
 - Add a short abort timeout to Siteverify and fail closed with the existing generic verification message when the upstream cannot be verified.
 - Implement fixed Worker headers in a reusable `src/lib/server` helper invoked by `src/hooks.server.ts`. The helper must never set `Content-Security-Policy`, allowing SvelteKit to retain its per-response nonce-bearing CSP.
-- Place the static CSP in canonical root `_headers`; it protects prerendered assets that bypass the Worker hook.
+- Preserve SvelteKit's static hash-based CSP and use canonical root `_headers` only for its HTTP-only `frame-ancestors` directive plus fixed headers.
 - Use one E2E request-level test against the generated Pages preview to verify the actual static and dynamic response contracts.
 
 ## Task list
 
 ### Phase 1: Contact boundary hardening
 
-- [ ] Task 1: Validate the complete Turnstile response contract
+- [x] Task 1: Validate the complete Turnstile response contract
 
   - Acceptance:
     - A token is accepted only when Siteverify reports `success: true`, action `turnstile-spin-v2`, and a hostname in `TURNSTILE_HOSTNAMES`.
@@ -63,7 +63,7 @@ Tasks 1–3 are deliberately sequential because they establish the runtime contr
 
 ### Phase 2: Header coverage
 
-- [ ] Task 2: Add fixed headers to Worker responses without replacing CSP
+- [x] Task 2: Add fixed headers to Worker responses without replacing CSP
 
   - Acceptance:
     - Worker responses include HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and `Permissions-Policy` values matching canonical static policy.
@@ -74,10 +74,10 @@ Tasks 1–3 are deliberately sequential because they establish the runtime contr
   - Files: `src/lib/server/security-headers.ts`, `src/lib/server/security-headers.test.ts`, `src/hooks.server.ts`
   - Estimated scope: M
 
-- [ ] Task 3: Make root deployment configuration canonical and CSP-complete
+- [x] Task 3: Make root deployment configuration canonical and CSP-complete
 
   - Acceptance:
-    - Root `_headers` supplies the static CSP and existing fixed headers using the same documented policy shape as SvelteKit where applicable.
+    - Root `_headers` supplies fixed headers and the HTTP-only `frame-ancestors` directive; SvelteKit's generated meta CSP protects static route scripts.
     - `src/site/_headers` and `src/site/_redirects` are removed.
     - ADR-0003 describes the two delivery paths accurately: static `_headers` and dynamic hook/SvelteKit CSP.
   - Verify: `npm run check && npm run build && git diff --check`
@@ -92,10 +92,10 @@ Tasks 1–3 are deliberately sequential because they establish the runtime contr
 
 ### Phase 3: Runtime regression proof
 
-- [ ] Task 4: Verify static and Worker response headers in the Pages preview
+- [x] Task 4: Verify static and Worker response headers in the Pages preview
 
   - Acceptance:
-    - The root static route returns CSP plus all fixed security headers.
+    - The root static route returns `frame-ancestors` plus all fixed security headers and contains SvelteKit's CSP meta tag.
     - `/contact/` returns SvelteKit CSP plus all fixed security headers.
     - The test asserts header presence/required directives rather than brittle nonce values or full header strings.
   - Verify: `npm run test:e2e`

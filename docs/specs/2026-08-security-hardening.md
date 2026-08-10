@@ -12,7 +12,7 @@ Success means every deployed page has an appropriate security policy, the contac
 
 ### In scope
 
-- Add an HTTP CSP for prerendered Pages responses in the canonical root `_headers` file.
+- Preserve SvelteKit's hash-based CSP for prerendered Pages responses and add the HTTP-only `frame-ancestors` directive in canonical root `_headers`.
 - Apply the shared fixed HTTP-security headers to Worker-rendered responses, including `/contact/`, without overwriting SvelteKit's nonce-bearing CSP.
 - Harden Turnstile validation by checking the expected action and configured hostname allowlist, bounding upstream verification time, and returning a safe form error for verification-service failures.
 - Remove the stale `src/site/_headers` and `src/site/_redirects` copies.
@@ -130,7 +130,7 @@ if (!isExpectedTurnstileResponse) {
 
 ## Success criteria
 
-1. The canonical root `_headers` contains a CSP appropriate for static routes, and generated prerendered HTML/responses are protected by it.
+1. Generated prerendered HTML contains SvelteKit's hash-based CSP, and canonical root `_headers` adds the HTTP-only `frame-ancestors 'none'` directive.
 2. The static root route and dynamic `/contact/` route both send HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and clickjacking protection; `/contact/` retains a CSP compatible with Turnstile.
 3. The contact action rejects a Siteverify response whose `action` is not `turnstile-spin-v2`, whose hostname is outside a configured allowlist, or whose verification request fails/times out.
 4. A valid Siteverify result with the expected action and hostname still sends the contact email exactly once.
