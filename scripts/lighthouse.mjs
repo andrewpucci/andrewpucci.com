@@ -21,6 +21,10 @@ const DEFAULT_ROUTES = [
 ];
 const ROUTES = process.env.LIGHTHOUSE_ROUTES?.split(',') ?? DEFAULT_ROUTES;
 const RUNS_PER_ROUTE = Number.parseInt(process.env.LIGHTHOUSE_RUNS ?? '5', 10);
+const MAX_ATTEMPTS_PER_ROUTE = Number.parseInt(
+  process.env.LIGHTHOUSE_MAX_ATTEMPTS ?? String(RUNS_PER_ROUTE * 2),
+  10
+);
 const REPORT_DIR = process.env.LIGHTHOUSE_REPORT_DIR ?? 'lighthouse-reports';
 const LCP_MODE = process.env.LIGHTHOUSE_LCP_MODE ?? 'error';
 const THRESHOLD_MODE = process.env.LIGHTHOUSE_THRESHOLD_MODE ?? 'error';
@@ -56,26 +60,50 @@ function categoryThresholdsForRoute(route) {
     : Object.entries(CATEGORY_THRESHOLDS);
 }
 
+function hasMedianRunInputs(lhr) {
+  const firstContentfulPaint = lhr.audits['first-contentful-paint']?.numericValue;
+  return typeof firstContentfulPaint === 'number' && Number.isFinite(firstContentfulPaint);
+}
+
 async function auditRoute(port, route) {
   const url = `${BASE_URL}${route}`;
-  const runs = [];
-  for (let run = 0; run < RUNS_PER_ROUTE; run += 1) {
+  const validRuns = [];
+  let attempts = 0;
+
+  while (validRuns.length < RUNS_PER_ROUTE && attempts < MAX_ATTEMPTS_PER_ROUTE) {
+    attempts += 1;
     const result = await lighthouse(url, {
       port,
       output: 'json',
       onlyCategories: ['performance', 'best-practices', 'seo'],
       logLevel: 'error',
     });
-    runs.push(result.lhr);
-    const filename = `${route.replaceAll('/', '_') || 'home'}-${run + 1}.json`;
+
+    const filename = `${route.replaceAll('/', '_') || 'home'}-attempt-${attempts}.json`;
     await writeReport(filename, result.lhr);
+
+    if (!hasMedianRunInputs(result.lhr)) {
+      console.warn(
+        `Skipping incomplete Lighthouse sample for ${route} (attempt ${attempts}/${MAX_ATTEMPTS_PER_ROUTE})`
+      );
+      continue;
+    }
+
+    validRuns.push(result.lhr);
   }
 
-  const { categories, audits } = computeMedianRun(runs);
+  if (validRuns.length < RUNS_PER_ROUTE) {
+    throw new Error(
+      `Collected ${validRuns.length}/${RUNS_PER_ROUTE} valid Lighthouse runs for ${route} ` +
+        `after ${attempts} attempts`
+    );
+  }
+
+  const { categories, audits } = computeMedianRun(validRuns);
   const categoriesById = new Map(Object.entries(categories));
   const auditsById = new Map(Object.entries(audits));
   let ok = true;
-  console.log(`\n${route} (median of ${RUNS_PER_ROUTE} runs)`);
+  console.log(`\n${route} (median of ${RUNS_PER_ROUTE} valid runs from ${attempts} attempts)`);
 
   for (const [key, threshold] of categoryThresholdsForRoute(route)) {
     const score = categoriesById.get(key)?.score ?? 0;
@@ -116,6 +144,9 @@ async function auditRoute(port, route) {
 async function main() {
   if (!Number.isInteger(RUNS_PER_ROUTE) || RUNS_PER_ROUTE < 1) {
     throw new Error('LIGHTHOUSE_RUNS must be a positive integer.');
+  }
+  if (!Number.isInteger(MAX_ATTEMPTS_PER_ROUTE) || MAX_ATTEMPTS_PER_ROUTE < RUNS_PER_ROUTE) {
+    throw new Error('LIGHTHOUSE_MAX_ATTEMPTS must be an integer >= LIGHTHOUSE_RUNS.');
   }
   if (!['error', 'warn'].includes(LCP_MODE)) {
     throw new Error('LIGHTHOUSE_LCP_MODE must be either "error" or "warn".');
