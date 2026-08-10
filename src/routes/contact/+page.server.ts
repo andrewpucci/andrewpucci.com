@@ -111,12 +111,7 @@ export const actions: Actions = {
     const contactFromEmail = trimEnvValue(env.CONTACT_FROM_EMAIL);
 
     if (!turnstileSecret || !resendApiKey || !contactToEmail || !contactFromEmail) {
-      console.error('Missing contact form runtime config', {
-        hasContactFromEmail: Boolean(contactFromEmail),
-        hasContactToEmail: Boolean(contactToEmail),
-        hasResendApiKey: Boolean(resendApiKey),
-        hasTurnstileSecret: Boolean(turnstileSecret),
-      });
+      console.error('Missing contact form runtime config');
 
       return fail(500, {
         errors: formError('Server misconfiguration.'),
