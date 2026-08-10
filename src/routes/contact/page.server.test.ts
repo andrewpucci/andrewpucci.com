@@ -31,6 +31,12 @@ const validFields = {
   message: 'Hello there',
 };
 
+const validTurnstileResponse = {
+  success: true,
+  action: 'turnstile-spin-v2',
+  hostname: 'allowed.example.test',
+};
+
 const whitespaceOnlyString = fc
   .array(fc.constantFrom(' ', '\t', '\n', '\r'), { maxLength: 32 })
   .map((characters) => characters.join(''));
@@ -49,6 +55,7 @@ function makePlatform(overrides: Partial<App.Platform['env']> = {}): App.Platfor
       // checkRateLimit is mocked above, so this stub is never actually read.
       CONTACT_FORM_RATE_LIMITER: {} as KVNamespace,
       PUBLIC_TURNSTILE_SITE_KEY: ' site-key ',
+      TURNSTILE_HOSTNAMES: 'allowed.example.test',
       TURNSTILE_SECRET: 'secret',
       RESEND_API_KEY: 're_test',
       CONTACT_TO_EMAIL: 'hi@andrewpucci.com',
@@ -230,7 +237,7 @@ describe('contact form action: Turnstile + Resend', () => {
       json: async () => ({
         success: false,
         'error-codes': ['invalid-input-secret'],
-        hostname: 'nav-mobile-expand-and-download-alignment.andrewpucci.pages.dev',
+        hostname: 'preview.example.test',
       }),
     });
     const platform = makePlatform();
@@ -245,14 +252,51 @@ describe('contact form action: Turnstile + Resend', () => {
       expect.objectContaining({
         errorCodes: ['invalid-input-secret'],
         hasToken: true,
-        hostname: 'nav-mobile-expand-and-download-alignment.andrewpucci.pages.dev',
+        hostname: 'preview.example.test',
       })
     );
   });
 
+  it('fails with 400 when Turnstile reports an unexpected action', async () => {
+    fetchMock.mockResolvedValueOnce({
+      json: async () => ({ ...validTurnstileResponse, action: 'newsletter-signup' }),
+    });
+    const result = await actions.default!(
+      makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, makePlatform())
+    );
+
+    expect(result?.status).toBe(400);
+    expect(result?.data?.errors?.form).toMatch(/verification failed/i);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails with 400 when Turnstile reports a hostname outside the allowlist', async () => {
+    fetchMock.mockResolvedValueOnce({
+      json: async () => ({ ...validTurnstileResponse, hostname: 'attacker.example' }),
+    });
+    const result = await actions.default!(
+      makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, makePlatform())
+    );
+
+    expect(result?.status).toBe(400);
+    expect(result?.data?.errors?.form).toMatch(/verification failed/i);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails with 400 when Siteverify cannot be reached', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('network unavailable'));
+    const result = await actions.default!(
+      makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, makePlatform())
+    );
+
+    expect(result?.status).toBe(400);
+    expect(result?.data?.errors?.form).toMatch(/verification failed/i);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('fails with 502 when Resend rejects the email', async () => {
     fetchMock
-      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({ json: async () => validTurnstileResponse })
       .mockResolvedValueOnce({
         ok: false,
         status: 403,
@@ -291,7 +335,7 @@ describe('contact form action: Turnstile + Resend', () => {
 
   it('logs the plain-text Resend error when JSON parsing fails', async () => {
     fetchMock
-      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({ json: async () => validTurnstileResponse })
       .mockResolvedValueOnce({
         ok: false,
         status: 500,
@@ -323,7 +367,7 @@ describe('contact form action: Turnstile + Resend', () => {
 
   it('logs a null Resend error when the fallback text is blank', async () => {
     fetchMock
-      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({ json: async () => validTurnstileResponse })
       .mockResolvedValueOnce({
         ok: false,
         status: 422,
@@ -355,7 +399,7 @@ describe('contact form action: Turnstile + Resend', () => {
 
   it('trims email configuration before sending to Resend', async () => {
     fetchMock
-      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({ json: async () => validTurnstileResponse })
       .mockResolvedValueOnce({ ok: true });
     const platform = makePlatform({
       CONTACT_FROM_EMAIL: ' contact@andrewpucci.com ',
@@ -396,7 +440,7 @@ describe('contact form action: Turnstile + Resend', () => {
 
   it('succeeds when Turnstile and Resend both accept the request', async () => {
     fetchMock
-      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({ json: async () => validTurnstileResponse })
       .mockResolvedValueOnce({ ok: true });
     const platform = makePlatform();
     const result = await actions.default!(
