@@ -44,7 +44,7 @@ describe('contact form action: validation', () => {
     expect(result?.status).toBe(400);
     expect(result?.data?.errors).toEqual({
       name: 'Enter your name.',
-      email: 'Enter a valid email address.',
+      email: 'Enter an email address.',
       message: 'Enter a message.',
     });
   });
@@ -114,16 +114,24 @@ describe('contact form action: server-side checks', () => {
 
 describe('contact form action: Turnstile + Resend', () => {
   const fetchMock = vi.fn();
+  const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
   beforeEach(() => {
     fetchMock.mockReset();
     vi.stubGlobal('fetch', fetchMock);
+    consoleWarnSpy.mockClear();
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ success: true });
   });
 
   it('fails with 400 when Turnstile verification fails', async () => {
-    fetchMock.mockResolvedValueOnce({ json: async () => ({ success: false }) });
+    fetchMock.mockResolvedValueOnce({
+      json: async () => ({
+        success: false,
+        'error-codes': ['invalid-input-secret'],
+        hostname: 'nav-mobile-expand-and-download-alignment.andrewpucci.pages.dev',
+      }),
+    });
     const platform = makePlatform();
     const result = await actions.default!(
       makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, platform)
@@ -131,6 +139,14 @@ describe('contact form action: Turnstile + Resend', () => {
     expect(result?.status).toBe(400);
     expect(result?.data?.errors?.form).toMatch(/verification failed/i);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Turnstile verification failed',
+      expect.objectContaining({
+        errorCodes: ['invalid-input-secret'],
+        hasToken: true,
+        hostname: 'nav-mobile-expand-and-download-alignment.andrewpucci.pages.dev',
+      })
+    );
   });
 
   it('fails with 502 when Resend rejects the email', async () => {

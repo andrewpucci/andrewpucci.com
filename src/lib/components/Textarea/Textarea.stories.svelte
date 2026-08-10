@@ -17,8 +17,15 @@
 <Story name="Default" />
 
 <Story
+  name="Required"
+  args={{
+    required: true,
+  }}
+/>
+
+<Story
   name="With an error"
-  args={{ error: 'Enter a message.' }}
+  args={{ error: 'Enter a message.', required: true }}
   play={async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const textarea = canvas.getByLabelText('Message');

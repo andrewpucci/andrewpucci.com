@@ -18,14 +18,22 @@ test.describe('Contact page', () => {
     await expect(page.getByLabel('Name')).toHaveAttribute('required', '');
     await expect(page.getByLabel('Email')).toHaveAttribute('required', '');
     await expect(page.getByLabel('Message')).toHaveAttribute('required', '');
+    await expect(page.getByText('Required')).toHaveCount(3);
   });
 
-  test('uses native email validation before submission', async ({ page }) => {
+  test('uses custom email validation without submitting invalid data', async ({ page }) => {
+    let submitCount = 0;
+    await page.route('**/contact/', async (route) => {
+      if (route.request().method() === 'POST') submitCount += 1;
+      await route.continue();
+    });
+
     await page.getByLabel('Name').fill('Jane Tester');
     await page.getByLabel('Email').fill('asdf');
     await page.getByLabel('Message').fill('Hello there');
     await page.getByRole('button', { name: 'Send message' }).click();
 
+    expect(submitCount).toBe(0);
     const emailInput = page.getByLabel('Email');
     const validationMessage = await emailInput.evaluate(
       (node) => /** @type {HTMLInputElement} */ (node).validationMessage
@@ -36,30 +44,44 @@ test.describe('Contact page', () => {
         (node) => /** @type {HTMLInputElement} */ (node).validity.typeMismatch
       )
     ).toBe(true);
+    await expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+    await expect(emailInput).toHaveAccessibleDescription(
+      /Use a format like name@example\.com\..*Enter a valid email address\./
+    );
+    await expect(page.getByText('Error: Enter a valid email address.')).toBeVisible();
     await expect(emailInput).toHaveValue('asdf');
     await expect(page.getByRole('button', { name: 'Send message' })).toContainText('Send message');
   });
 
-  test('preserves submitted values and shows an associated error on failed server validation', async ({
-    page,
-  }) => {
+  test('shows a positive field state after a valid email is committed', async ({ page }) => {
+    const emailInput = page.getByLabel('Email');
+    await emailInput.fill('jane@example.com');
+    await emailInput.blur();
+
+    await expect(emailInput).not.toHaveAttribute('aria-invalid', 'true');
+    await expect(emailInput).toHaveAccessibleDescription(
+      /Use a format like name@example\.com\..*Looks good\./
+    );
+    await expect(page.getByText('Looks good.')).toBeVisible();
+  });
+
+  test('shows an associated error after the message field is left empty', async ({ page }) => {
     await page.getByLabel('Name').fill('Jane Tester');
     await page.getByLabel('Email').fill('jane@example.com');
-    // Browser validation should pass so the request reaches the server.
-    // Use an overlong message to exercise the server-side validation path.
-    await page.getByLabel('Message').fill('x'.repeat(5001));
-    await page.getByRole('button', { name: 'Send message' }).click();
+    const messageInput = page.getByLabel('Message');
+    await messageInput.focus();
+    await page.getByLabel('Email').focus();
 
     await expect(page.getByLabel('Name')).toHaveValue('Jane Tester');
     await expect(page.getByLabel('Email')).toHaveValue('jane@example.com');
-    await expect(page.getByLabel('Message')).toHaveValue('x'.repeat(5001));
+    await expect(messageInput).toHaveValue('');
 
-    const messageInput = page.getByLabel('Message');
     await expect(messageInput).toHaveAttribute('aria-invalid', 'true');
+    await expect(messageInput).toHaveAccessibleDescription(/Error: Enter a message\./);
 
     const describedBy = await messageInput.getAttribute('aria-describedby');
     expect(describedBy).toBeTruthy();
-    await expect(page.locator(`#${describedBy}`)).toContainText(/message is too long/i);
+    await expect(page.locator(`#${describedBy}`)).toContainText(/enter a message/i);
   });
 
   test('does not expose a direct email address', async ({ page }) => {

@@ -16,6 +16,9 @@ function formError(message: string): ContactFormErrors {
 
 interface TurnstileSiteverifyResponse {
   success: boolean;
+  'error-codes'?: string[];
+  action?: string;
+  hostname?: string;
 }
 
 export const load: PageServerLoad = ({ platform }) => ({
@@ -25,15 +28,18 @@ export const load: PageServerLoad = ({ platform }) => ({
     '',
 });
 
-async function verifyTurnstile(token: string, secret: string, ip: string): Promise<boolean> {
+async function verifyTurnstile(
+  token: string,
+  secret: string,
+  ip: string
+): Promise<TurnstileSiteverifyResponse> {
   const body = new URLSearchParams({ secret, response: token, remoteip: ip });
   const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body,
   });
-  const result: TurnstileSiteverifyResponse = await response.json();
-  return result.success;
+  return response.json() as Promise<TurnstileSiteverifyResponse>;
 }
 
 export const actions: Actions = {
@@ -47,7 +53,8 @@ export const actions: Actions = {
 
     const errors: ContactFormErrors = {};
     if (!name) errors.name = 'Enter your name.';
-    if (!email || !EMAIL_PATTERN.test(email)) errors.email = 'Enter a valid email address.';
+    if (!email) errors.email = 'Enter an email address.';
+    else if (!EMAIL_PATTERN.test(email)) errors.email = 'Enter a valid email address.';
     if (!message) errors.message = 'Enter a message.';
     else if (message.length > MAX_MESSAGE_LENGTH) errors.message = 'Message is too long.';
 
@@ -81,7 +88,18 @@ export const actions: Actions = {
       console.error('checkRateLimit failed, allowing submission through', error);
     }
 
-    if (!turnstileToken || !(await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET, ip))) {
+    const turnstileResult = turnstileToken
+      ? await verifyTurnstile(turnstileToken, env.TURNSTILE_SECRET, ip)
+      : null;
+
+    if (!turnstileToken || !turnstileResult?.success) {
+      console.warn('Turnstile verification failed', {
+        action: turnstileResult?.action,
+        errorCodes: turnstileResult?.['error-codes'],
+        hasToken: Boolean(turnstileToken),
+        hostname: turnstileResult?.hostname,
+      });
+
       return fail(400, {
         errors: formError('Verification failed. Please try again.'),
         values,

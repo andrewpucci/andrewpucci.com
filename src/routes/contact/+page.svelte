@@ -7,8 +7,27 @@
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
   let submitting = $state(false);
+  let showValidation = $state(false);
+  let formElement = $state<HTMLFormElement | null>(null);
   const turnstileSiteKey = $derived(data.turnstileSiteKey?.trim() ?? '');
   const formAvailable = $derived(Boolean(turnstileSiteKey));
+
+  function resetTurnstile() {
+    if (!formAvailable) return;
+
+    (
+      window as Window & {
+        turnstile?: { reset: (widget: string) => void };
+      }
+    ).turnstile?.reset('#contact-turnstile');
+  }
+
+  function handleSubmit(event: SubmitEvent) {
+    showValidation = true;
+    if (!formElement?.checkValidity()) {
+      event.preventDefault();
+    }
+  }
 </script>
 
 <svelte:head>
@@ -27,12 +46,16 @@
   {:else}
     {#if formAvailable}
       <form
+        bind:this={formElement}
         method="POST"
+        novalidate
+        onsubmit={handleSubmit}
         use:enhance={() => {
           submitting = true;
-          return async ({ update }) => {
+          return async ({ result, update }) => {
             await update();
             submitting = false;
+            if (result.type !== 'success') resetTurnstile();
           };
         }}
       >
@@ -40,19 +63,45 @@
           <p class="form-error" role="alert">{form.errors.form}</p>
         {/if}
 
-        <Input label="Name" name="name" autocomplete="name" required value={form?.values?.name ?? ''} error={form?.errors?.name} />
+        <Input
+          label="Name"
+          name="name"
+          autocomplete="name"
+          required
+          requiredMessage="Enter your name."
+          showValidation={showValidation}
+          value={form?.values?.name ?? ''}
+          error={form?.errors?.name}
+        />
         <Input
           label="Email"
           name="email"
           type="email"
           autocomplete="email"
           required
+          hint="Use a format like name@example.com."
+          requiredMessage="Enter an email address."
+          invalidMessage="Enter a valid email address."
+          showValidation={showValidation}
           value={form?.values?.email ?? ''}
           error={form?.errors?.email}
         />
-        <Textarea label="Message" name="message" required error={form?.errors?.message}>{form?.values?.message ?? ''}</Textarea>
+        <Textarea
+          label="Message"
+          name="message"
+          required
+          requiredMessage="Enter a message."
+          showValidation={showValidation}
+          value={form?.values?.message ?? ''}
+          error={form?.errors?.message}
+        />
 
-        <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-action="turnstile-spin-v2"></div>
+        <div
+          id="contact-turnstile"
+          class="cf-turnstile"
+          data-sitekey={turnstileSiteKey}
+          data-action="turnstile-spin-v2"
+        ></div>
 
         <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
       </form>

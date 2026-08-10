@@ -7,15 +7,15 @@
     | ({ href: HTMLAnchorAttributes['href'] } & Omit<HTMLAnchorAttributes, 'href'>)
   );
 
-  let { variant = 'primary', href, children, ...rest }: Props = $props();
+  let { variant = 'primary', href, children, onclick, ...rest }: Props = $props();
 </script>
 
 {#if href}
-  <a class="button button--{variant}" {href} {...rest as Omit<HTMLAnchorAttributes, 'href'>}>
+  <a class="button button--{variant}" {href} {onclick} {...rest as Omit<HTMLAnchorAttributes, 'href'>}>
     {@render children()}
   </a>
 {:else}
-  <button class="button button--{variant}" {...rest as HTMLButtonAttributes}>
+  <button class="button button--{variant}" {onclick} {...rest as HTMLButtonAttributes}>
     {@render children()}
   </button>
 {/if}
