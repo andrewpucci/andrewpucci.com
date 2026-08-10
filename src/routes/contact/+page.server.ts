@@ -7,6 +7,8 @@ export const prerender = false;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_MESSAGE_LENGTH = 5000;
+const TURNSTILE_ACTION = 'turnstile-spin-v2';
+const TURNSTILE_TIMEOUT_MS = 5000;
 
 type ContactFormErrors = Partial<Record<'name' | 'email' | 'message' | 'form', string>>;
 
@@ -29,6 +31,15 @@ interface ResendErrorResponse {
 
 function trimEnvValue(value: string | undefined | null): string {
   return value?.trim() ?? '';
+}
+
+function parseHostnames(value: string | undefined): Set<string> {
+  return new Set(
+    value
+      ?.split(',')
+      .map((hostname) => hostname.trim())
+      .filter(Boolean) ?? []
+  );
 }
 
 function getEmailDomain(address: string): string {
@@ -77,6 +88,7 @@ async function verifyTurnstile(
     method: 'POST',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body,
+    signal: AbortSignal.timeout(TURNSTILE_TIMEOUT_MS),
   });
   return response.json() as Promise<TurnstileSiteverifyResponse>;
 }
@@ -113,8 +125,15 @@ export const actions: Actions = {
     const resendApiKey = trimEnvValue(env.RESEND_API_KEY);
     const contactToEmail = trimEnvValue(env.CONTACT_TO_EMAIL);
     const contactFromEmail = trimEnvValue(env.CONTACT_FROM_EMAIL);
+    const allowedTurnstileHostnames = parseHostnames(env.TURNSTILE_HOSTNAMES);
 
-    if (!turnstileSecret || !resendApiKey || !contactToEmail || !contactFromEmail) {
+    if (
+      !turnstileSecret ||
+      !resendApiKey ||
+      !contactToEmail ||
+      !contactFromEmail ||
+      allowedTurnstileHostnames.size === 0
+    ) {
       console.error('Missing contact form runtime config');
 
       return fail(500, {
@@ -141,11 +160,23 @@ export const actions: Actions = {
       console.error('checkRateLimit failed, allowing submission through', error);
     }
 
-    const turnstileResult = turnstileToken
-      ? await verifyTurnstile(turnstileToken, turnstileSecret, ip)
-      : null;
+    let turnstileResult: TurnstileSiteverifyResponse | null = null;
+    if (turnstileToken) {
+      try {
+        turnstileResult = await verifyTurnstile(turnstileToken, turnstileSecret, ip);
+      } catch (error) {
+        console.warn('Turnstile verification request failed', {
+          errorName: error instanceof Error ? error.name : 'unknown',
+        });
+      }
+    }
 
-    if (!turnstileToken || !turnstileResult?.success) {
+    if (
+      !turnstileToken ||
+      !turnstileResult?.success ||
+      turnstileResult.action !== TURNSTILE_ACTION ||
+      !allowedTurnstileHostnames.has(turnstileResult.hostname ?? '')
+    ) {
       console.warn('Turnstile verification failed', {
         action: turnstileResult?.action,
         errorCodes: turnstileResult?.['error-codes'],
