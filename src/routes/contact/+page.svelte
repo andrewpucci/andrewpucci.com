@@ -115,7 +115,8 @@
 
 <style>
   .contact {
-    max-width: 36rem;
+    max-width: 48rem;
+    margin-inline: auto;
     padding: var(--space-3);
   }
 

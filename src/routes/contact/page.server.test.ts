@@ -88,7 +88,10 @@ describe('contact form page load', () => {
 });
 
 describe('contact form action: server-side checks', () => {
+  const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
   beforeEach(() => {
+    consoleErrorSpy.mockClear();
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ success: true });
   });
@@ -97,6 +100,15 @@ describe('contact form action: server-side checks', () => {
     const result = await actions.default!(makeEvent(validFields, undefined));
     expect(result?.status).toBe(500);
     expect(result?.data?.errors).toEqual({ form: 'Server misconfiguration.' });
+  });
+
+  it('fails with 500 when a required runtime value is blank', async () => {
+    const result = await actions.default!(
+      makeEvent(validFields, makePlatform({ CONTACT_FROM_EMAIL: '   ' }))
+    );
+    expect(result?.status).toBe(500);
+    expect(result?.data?.errors).toEqual({ form: 'Server misconfiguration.' });
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Missing contact form runtime config');
   });
 
   it('fails with 429 when the rate limiter rejects the request', async () => {
@@ -199,6 +211,70 @@ describe('contact form action: Turnstile + Resend', () => {
         status: 403,
         statusText: 'Forbidden',
         toDomain: 'andrewpucci.com',
+      })
+    );
+  });
+
+  it('logs the plain-text Resend error when JSON parsing fails', async () => {
+    fetchMock
+      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        headers: {
+          get: (name: string) => (name === 'x-request-id' ? 'req_text' : null),
+        },
+        json: async () => {
+          throw new Error('invalid json');
+        },
+        text: async () => 'upstream unavailable',
+      });
+    const platform = makePlatform();
+
+    const result = await actions.default!(
+      makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, platform)
+    );
+
+    expect(result?.status).toBe(502);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Resend email send failed',
+      expect.objectContaining({
+        requestId: 'req_text',
+        resendError: 'upstream unavailable',
+        status: 500,
+      })
+    );
+  });
+
+  it('logs a null Resend error when the fallback text is blank', async () => {
+    fetchMock
+      .mockResolvedValueOnce({ json: async () => ({ success: true }) })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 422,
+        statusText: 'Unprocessable Entity',
+        headers: {
+          get: (name: string) => (name === 'x-request-id' ? 'req_blank' : null),
+        },
+        json: async () => {
+          throw new Error('invalid json');
+        },
+        text: async () => '   ',
+      });
+    const platform = makePlatform();
+
+    const result = await actions.default!(
+      makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, platform)
+    );
+
+    expect(result?.status).toBe(502);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Resend email send failed',
+      expect.objectContaining({
+        requestId: 'req_blank',
+        resendError: null,
+        status: 422,
       })
     );
   });
