@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/// <reference types="node" />
 import { spawnSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { extname } from 'path';
@@ -6,7 +7,7 @@ import { extname } from 'path';
 // Avoid blocking when run interactively without piped stdin
 if (process.stdin.isTTY) process.exit(0);
 
-let input;
+let input: { tool_input?: { file_path?: string } };
 try {
   input = JSON.parse(readFileSync('/dev/stdin', 'utf8'));
 } catch {
@@ -18,12 +19,12 @@ if (!filePath) process.exit(0);
 
 const cwd = process.cwd();
 
-const run = (bin, ...args) => {
+const run = (bin: string, ...args: string[]) => {
   const result = spawnSync(`./node_modules/.bin/${bin}`, [...args, filePath], {
     stdio: 'pipe',
     cwd,
   });
-  if (result.error?.code === 'ENOENT') {
+  if ((result.error as NodeJS.ErrnoException | undefined)?.code === 'ENOENT') {
     process.stderr.write(`lint-on-save: ${bin} not found in node_modules/.bin\n`);
   }
 };
