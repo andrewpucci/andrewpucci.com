@@ -224,11 +224,17 @@ describe('contact form action: Turnstile + Resend', () => {
       'https://api.resend.com/emails',
       expect.objectContaining({
         body: JSON.stringify({
-          from: 'contact@andrewpucci.com',
+          from: 'andrewpucci.com contact <contact@andrewpucci.com>',
           to: 'hi@andrewpucci.com',
           reply_to: 'jane@example.com',
           subject: 'New message from Jane Tester via andrewpucci.com',
-          text: 'Hello there',
+          text: [
+            'Name: Jane Tester',
+            'Email: jane@example.com',
+            '',
+            'Message:',
+            'Hello there',
+          ].join('\n'),
         }),
         headers: expect.objectContaining({
           authorization: 'Bearer re_test',
@@ -247,5 +253,24 @@ describe('contact form action: Turnstile + Resend', () => {
       makeEvent({ ...validFields, 'cf-turnstile-response': 'token' }, platform)
     );
     expect(result).toEqual({ success: true });
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      'https://api.resend.com/emails',
+      expect.objectContaining({
+        body: JSON.stringify({
+          from: 'andrewpucci.com contact <contact@andrewpucci.com>',
+          to: 'hi@andrewpucci.com',
+          reply_to: 'jane@example.com',
+          subject: 'New message from Jane Tester via andrewpucci.com',
+          text: [
+            'Name: Jane Tester',
+            'Email: jane@example.com',
+            '',
+            'Message:',
+            'Hello there',
+          ].join('\n'),
+        }),
+      })
+    );
   });
 });

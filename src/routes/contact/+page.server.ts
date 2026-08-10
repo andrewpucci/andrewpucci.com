@@ -35,6 +35,10 @@ function getEmailDomain(address: string): string {
   return address.split('@').at(-1) ?? '';
 }
 
+function buildContactEmailText(name: string, email: string, message: string): string {
+  return [`Name: ${name}`, `Email: ${email}`, '', 'Message:', message].join('\n');
+}
+
 async function readResendError(response: Response): Promise<ResendErrorResponse | string | null> {
   if (typeof response.json === 'function') {
     try {
@@ -162,11 +166,11 @@ export const actions: Actions = {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        from: contactFromEmail,
+        from: `andrewpucci.com contact <${contactFromEmail}>`,
         to: contactToEmail,
         reply_to: email,
         subject: `New message from ${name} via andrewpucci.com`,
-        text: message,
+        text: buildContactEmailText(name, email, message),
       }),
     });
 
