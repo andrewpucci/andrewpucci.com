@@ -88,7 +88,7 @@
     "svelte": "^5.56.1",
     "svelte-check": "^4.6.0",
     "typescript": "^6.0.3",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8",
     "vite-plus": "0.2.8",
     "vitest": "4.1.10",
     "wrangler": "4.119.0"
@@ -130,7 +130,7 @@
     },
     "sharp": "0.35.3",
     "undici": "7.29.0",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.7",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8",
     "vitest": "4.1.10"
   }
 }
