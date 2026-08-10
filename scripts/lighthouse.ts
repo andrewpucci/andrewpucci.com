@@ -4,20 +4,11 @@
 // this process directly.
 import { launch } from 'chrome-launcher';
 import { mkdir, writeFile } from 'node:fs/promises';
-import lighthouse from 'lighthouse';
+import lighthouse, { type Result as LighthouseResult } from 'lighthouse';
 import { computeMedianRun } from 'lighthouse/core/lib/median-run.js';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
-
-type MetricAudit = { numericValue?: number };
-type CategoryAudit = { score?: number };
-type LighthouseLikeResult = {
-  audits: Record<string, MetricAudit | undefined>;
-};
-type RouteSummary = {
-  route: string;
-  lcpMs: number | undefined;
-};
+import type { RouteLcpSummary } from '../src/lib/utils/lighthouse-regression.ts';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:4173';
 const DEFAULT_ROUTES = [
@@ -70,7 +61,7 @@ function categoryThresholdsForRoute(route: string) {
     : Object.entries(CATEGORY_THRESHOLDS);
 }
 
-function hasMedianRunInputs(lhr: LighthouseLikeResult): boolean {
+function hasMedianRunInputs(lhr: LighthouseResult): boolean {
   const firstContentfulPaint = lhr.audits['first-contentful-paint']?.numericValue;
   return typeof firstContentfulPaint === 'number' && Number.isFinite(firstContentfulPaint);
 }
@@ -78,9 +69,9 @@ function hasMedianRunInputs(lhr: LighthouseLikeResult): boolean {
 async function auditRoute(
   port: number,
   route: string
-): Promise<{ ok: boolean; summary: RouteSummary }> {
+): Promise<{ ok: boolean; summary: RouteLcpSummary }> {
   const url = `${BASE_URL}${route}`;
-  const validRuns: LighthouseLikeResult[] = [];
+  const validRuns: LighthouseResult[] = [];
   let attempts = 0;
 
   while (validRuns.length < RUNS_PER_ROUTE && attempts < MAX_ATTEMPTS_PER_ROUTE) {
@@ -94,7 +85,7 @@ async function auditRoute(
     if (!result) {
       throw new Error(`Lighthouse returned no result for ${route}.`);
     }
-    const report = result.lhr as LighthouseLikeResult;
+    const report = result.lhr;
 
     const filename = `${route.replaceAll('/', '_') || 'home'}-attempt-${attempts}.json`;
     await writeReport(filename, report);
@@ -116,10 +107,8 @@ async function auditRoute(
     );
   }
 
-  const { categories, audits } = computeMedianRun(validRuns) as {
-    categories: Record<string, CategoryAudit | undefined>;
-    audits: Record<string, MetricAudit | undefined>;
-  };
+  const median: LighthouseResult = computeMedianRun(validRuns);
+  const { categories, audits } = median;
   const categoriesById = new Map(Object.entries(categories));
   const auditsById = new Map(Object.entries(audits));
   let ok = true;
@@ -152,13 +141,12 @@ async function auditRoute(
     console.log(`  ${icon} ${label}: ${value?.toFixed(2)}${unit} (<= ${max}${unit}${suffix})`);
   }
 
-  return {
-    ok,
-    summary: {
-      route,
-      lcpMs: auditsById.get('largest-contentful-paint')?.numericValue,
-    },
-  };
+  const lcpMs = auditsById.get('largest-contentful-paint')?.numericValue;
+  if (typeof lcpMs !== 'number') {
+    throw new Error(`Median Lighthouse run for ${route} has no largest-contentful-paint value.`);
+  }
+
+  return { ok, summary: { route, lcpMs } };
 }
 
 async function main() {
@@ -183,7 +171,7 @@ async function main() {
   });
 
   let allPassed = true;
-  const routeSummaries: RouteSummary[] = [];
+  const routeSummaries: RouteLcpSummary[] = [];
   try {
     for (const route of ROUTES) {
       const { ok, summary } = await auditRoute(chrome.port, route);
