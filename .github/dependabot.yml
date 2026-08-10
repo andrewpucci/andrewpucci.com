@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: weekly
       day: tuesday
-      time: "08:00"
+      time: '08:00'
       timezone: America/Los_Angeles
     commit-message:
       prefix: ci
@@ -13,18 +13,18 @@ updates:
     groups:
       github-actions:
         patterns:
-          - "*"
+          - '*'
       github-actions-security:
         applies-to: security-updates
         patterns:
-          - "*"
+          - '*'
 
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
       day: tuesday
-      time: "09:00"
+      time: '09:00'
       timezone: America/Los_Angeles
     # Keep manifest ranges stable when they already admit the new release;
     # Dependabot still updates the lockfile/resolved version.
@@ -37,14 +37,14 @@ updates:
       npm-production-minor-patch:
         dependency-type: production
         patterns:
-          - "*"
+          - '*'
         update-types:
           - minor
           - patch
       npm-development-minor-patch:
         dependency-type: development
         patterns:
-          - "*"
+          - '*'
         update-types:
           - minor
           - patch
@@ -52,9 +52,9 @@ updates:
         applies-to: security-updates
         dependency-type: production
         patterns:
-          - "*"
+          - '*'
       npm-security-development:
         applies-to: security-updates
         dependency-type: development
         patterns:
-          - "*"
+          - '*'
