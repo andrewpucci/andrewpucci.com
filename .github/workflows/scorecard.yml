@@ -27,7 +27,9 @@ jobs:
           persist-credentials: false
 
       - name: Run analysis
-        uses: ossf/scorecard-action@v2
+        # Pin to the release commit because the action does not publish a
+        # floating major tag like `v2`.
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc
         with:
           results_file: results.sarif
           results_format: sarif
