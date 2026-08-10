@@ -28,8 +28,8 @@
   args={{ error: 'Enter a message.', required: true }}
   play={async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const textarea = canvas.getByLabelText('Message');
+    const textarea = canvas.getByRole('textbox', { name: /^Message\b/ });
     await expect(textarea).toHaveAttribute('aria-invalid', 'true');
-    await expect(textarea).toHaveAccessibleDescription('Enter a message.');
+    await expect(textarea).toHaveAccessibleDescription('Error: Enter a message.');
   }}
 />

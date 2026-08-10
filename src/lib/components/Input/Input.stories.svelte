@@ -32,8 +32,8 @@
   args={{ error: 'Enter your name.', required: true }}
   play={async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByLabelText('Name');
+    const input = canvas.getByRole('textbox', { name: /^Name\b/ });
     await expect(input).toHaveAttribute('aria-invalid', 'true');
-    await expect(input).toHaveAccessibleDescription('Enter your name.');
+    await expect(input).toHaveAccessibleDescription('Error: Enter your name.');
   }}
 />
