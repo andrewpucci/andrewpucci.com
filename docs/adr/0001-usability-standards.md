@@ -19,7 +19,7 @@ Nielsen's 10 usability heuristics are the lens for design review. Every signific
 
 ### What is automated
 
-**Lighthouse, run in CI,** enforces the following thresholds on every deployment. Falling below any threshold fails the CI run:
+**Lighthouse, run in CI,** evaluates the following thresholds on every deployment. ADR-0012 supersedes this ADR's original requirement that every absolute LCP failure block shared-runner CI; the 2.5s value remains the production p75 objective while CI uses a same-runner relative LCP gate:
 
 - Performance score ≥ 90
 - LCP ≤ 2.5s (maps to heuristic 1: visibility of system status — a slow response is invisible feedback)
@@ -57,5 +57,5 @@ These are evaluated at the shape stage, not by a CI gate.
 
 - Lighthouse is added to the CI pipeline alongside Vitest and Playwright. See ADR-0010.
 - Custom Playwright assertions run usability hygiene checks on every page route. See ADR-0010.
-- Any PR that regresses a Lighthouse score below threshold fails CI. The metric must recover, or the new threshold must be documented here as an intentional adjustment.
+- Any PR that regresses a blocking Lighthouse measurement fails CI. ADR-0012 defines the relative LCP regression budget; the other absolute thresholds remain blocking.
 - No component or pattern is considered done until it has been reviewed against the relevant heuristics. Keyboard navigation and error state behavior are part of that review, covered by ADR-0002.

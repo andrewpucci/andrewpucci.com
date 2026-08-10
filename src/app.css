@@ -1,0 +1,195 @@
+@layer reset, tokens, base, components, utilities;
+
+@import '$lib/tokens/tokens.css' layer(tokens);
+
+/* Preloading in +layout makes this available for the initial render on the
+   common path. `optional` keeps the metric-matched fallback in place when a
+   slow connection misses that window, avoiding a late font-swap reflow. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url('@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url('@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Keep text visible while the self-hosted Atkinson font is loading without
+   allowing the eventual swap to reflow the page. These values match Arial's
+   average English character width and line metrics to Atkinson Hyperlegible
+   Next Regular. Liberation Sans has the same measured averages and metrics as
+   Arial, and is installed on the Linux Playwright runners; system-ui remains
+   the final fallback when neither local font is available. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Fallback';
+  src: local('Arial'), local('Liberation Sans');
+  size-adjust: 99.455173%;
+  ascent-override: 98.939046%;
+  descent-override: 31.773108%;
+  line-gap-override: 0%;
+}
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  /* bits-ui's dropdown/collapsible overlays lock body scroll while open,
+     compensating for the vanished scrollbar with `padding-right` on <body> --
+     but .nav is `position: fixed`, anchored to the viewport rather than
+     body's (now-padded) content box, so it isn't covered by that
+     compensation and visibly shifts sideways when the scrollbar disappears.
+     Reserving the gutter unconditionally means the scrollbar never actually
+     appears or disappears, so there's nothing to compensate for. */
+  html {
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Rubber-band overscroll beyond the bottom of the page should show pink
+     (matching the footer it's leaving), not body's off-white. `position:
+     fixed` is required, not `absolute`: per the HTML spec, once body's
+     background gets propagated to paint the canvas, body's own box is
+     treated as backgroundless for its own painting -- so nothing opaque
+     from body ever sits between this and any transparent descendant, and an
+     `absolute` block sized to reach past real content also gets counted in
+     that descendant's scrollable overflow, adding real (not just
+     overscroll) scroll height past the footer. `fixed` avoids both: it
+     never contributes to scrollable overflow, and staying glued to the
+     viewport bottom means it's only ever exposed where nothing opaque
+     covers it -- which holds everywhere except true overscroll now that
+     <main> (see +layout.svelte) paints its own opaque background instead of
+     leaving that job to body. */
+  html::after {
+    content: '';
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    height: 12rem;
+    background-color: var(--footer-background);
+    z-index: -1;
+  }
+
+  body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  picture,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer base {
+  body {
+    /* Sticky footer: without this, a page shorter than the viewport leaves a
+       gap below the footer -- and with html::after's bottom-pinned overscroll
+       patch below, that gap showed as a stray floating pink bar rather than
+       actual overscroll. min-height plus a flex column with <main> set to
+       flex: 1 (+layout.svelte) guarantees the footer always reaches at least
+       the bottom of the viewport, so that gap can't occur in the first place. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    font: var(--typography-body);
+    color: var(--color-text-default);
+    background-color: var(--color-surface-page);
+  }
+
+  h1 {
+    font: var(--typography-headline);
+  }
+
+  /* Hierarchy comes from weight, not size escalation (see DESIGN.md): h2-h6 all
+     share the Title scale rather than stepping down in size per level. */
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font: var(--typography-title);
+  }
+
+  a {
+    color: var(--color-brand-primary);
+  }
+
+  a:hover {
+    color: var(--color-brand-primary-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 2px;
+  }
+
+  /* Typographic differentiation, not a colored border stripe (see DESIGN.md's
+     Don't rule on decorative border-left/right; the previous 9px pink left
+     border on blockquotes is the debt this replaces). */
+  blockquote {
+    padding-inline-start: var(--space-3);
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+}
+
+@layer utilities {
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}

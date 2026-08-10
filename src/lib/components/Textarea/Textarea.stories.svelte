@@ -1,0 +1,35 @@
+<script module>
+  import { defineMeta } from '@storybook/addon-svelte-csf';
+  import { expect, within } from 'storybook/test';
+  import Textarea from './Textarea.svelte';
+
+  const { Story } = defineMeta({
+    title: 'Primitives/Textarea',
+    component: Textarea,
+    tags: ['autodocs'],
+    args: {
+      label: 'Message',
+      name: 'message',
+    },
+  });
+</script>
+
+<Story name="Default" />
+
+<Story
+  name="Required"
+  args={{
+    required: true,
+  }}
+/>
+
+<Story
+  name="With an error"
+  args={{ error: 'Enter a message.', required: true }}
+  play={async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const textarea = canvas.getByRole('textbox', { name: /^Message\b/ });
+    await expect(textarea).toHaveAttribute('aria-invalid', 'true');
+    await expect(textarea).toHaveAccessibleDescription('Error: Enter a message.');
+  }}
+/>

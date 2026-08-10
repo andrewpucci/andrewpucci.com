@@ -9,28 +9,28 @@ colors:
   ink-secondary: "#495057"
 typography:
   display:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.975rem, calc(1.475rem + 2.7vw), 3.5rem)"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "normal"
   headline:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "clamp(1.375rem, calc(1.175rem + 1.5vw), 2.5rem)"
     fontWeight: 700
     lineHeight: 1.25
   title:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 700
     lineHeight: 1.4
   body:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "'IBM Plex Sans', system-ui, -apple-system, sans-serif"
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 700
     lineHeight: 1.4
@@ -89,16 +89,16 @@ Accessibility is a design constraint built into component decisions from the sta
 
 - One saturated brand accent; all other surfaces neutral or white
 - Single typeface, differentiated by weight only. No second family, no display font.
-- Large base type (1.125rem / 18px), set deliberately above Bootstrap's 1rem default
+- Large base type (1.125rem / 18px), set deliberately above the 1rem default common in framework-first sites
 - Full-bleed Precision Pink footer as the one committed color surface
 - Flat by default; no decorative elevation or shadow
 - Accessible by default: visible focus, non-color state indicators, reduced-motion support
 
 ### Implementation Direction
 
-Bootstrap 5 is the current foundation, retained from the site's original build. It's a transitional dependency, not a design system. The goal is to replace it with a purpose-built token pipeline: DTCG-format tokens built with Terrazzo, generating CSS custom properties used throughout, mirroring the architecture of the Expel Design System (EDS). The site is itself an exhibit of that work in progress.
+The site now runs on a purpose-built token pipeline: DTCG-format tokens built with Terrazzo, generating CSS custom properties used throughout, mirroring the architecture of the Expel Design System (EDS). The site is itself an exhibit of that work in progress.
 
-Until Bootstrap is fully replaced, the constraint is: nothing should read as a Bootstrap default. Every Bootstrap component in use needs a deliberate treatment applied. When a component is rebuilt with the Terrazzo pipeline, it replaces the Bootstrap version and doesn't look back.
+The constraint remains the same even without Bootstrap in the repo: nothing should read like a framework default or theme preset. Components need deliberate spacing, type, state, and motion choices that reflect the system rather than a starter kit.
 
 ## 2. Colors: The Precision Palette
 
@@ -127,9 +127,9 @@ One saturated color. Everything else neutral.
 
 ## 3. Typography
 
-**Display / Body Font:** IBM Plex Sans (self-hosted WOFF2, `font-display: swap`). Regular (400), Bold (700), and both italics.
+**Display / Body Font:** Atkinson Hyperlegible Next (self-hosted variable WOFF2 via Fontsource, `font-display: swap`). Weight axis 200-800; the site uses Regular (400) and Bold (700), plus italics. Chosen for the same reason it's used on chroma11y: it's designed to maximize character distinction (1/l/I, disambiguated numerals) over conventional elegance, which matters more on a portfolio a screen-reader or low-vision user is expected to actually read.
 
-**Character:** One family, two weights. Display and body copy are both IBM Plex Sans, differentiated by size and weight only. The single-family constraint is intentional, not a gap to fill.
+**Character:** One family, two weights. Display and body copy are both Atkinson Hyperlegible Next, differentiated by size and weight only. The single-family constraint is intentional, not a gap to fill.
 
 ### Hierarchy
 
@@ -153,7 +153,7 @@ Flat by default. Depth comes from color contrast, type weight, and spacing.
 
 Surfaces sit at two levels: Body Background (`#fbfafa`) and Surface (`#ffffff`). Cards read as elevated against the near-white page by color alone, no shadow needed. The navbar is `rgba(255, 255, 255, 0.98)`, separating from content below without a drop shadow.
 
-The one exception is the Bootstrap modal, which uses a `scale(0.8)` entry transform: motion as a depth cue rather than shadow. This animation must have a `prefers-reduced-motion` fallback — an instant appearance, not a scaled one.
+The one exception is the modal entry animation, which uses a `scale(0.8)` transform as a depth cue rather than shadow. This animation must have a `prefers-reduced-motion` fallback: an instant appearance, not a scaled one.
 
 ### Elevation Rules
 
@@ -188,7 +188,7 @@ The primary button is the only variant in the current design.
 - **Style:** Fixed top, full-width, white at 98% opacity
 - **Links:** Ink at rest, Slate on hover, Precision Pink when active. No underlines; color carries the state.
 - **Logo:** 42px circular avatar. Signals person, not brand, from the first glance.
-- **Mobile:** Bootstrap collapse with hamburger toggler. Links stack vertically; download button (primary) sits below the link list.
+- **Mobile:** Collapsed hamburger toggler. Links stack vertically; the primary download button sits below the link list.
 - **Typography:** Label weight (700, 0.875rem) to keep the bar lightweight.
 
 ### Timeline / Entrylist
@@ -218,16 +218,16 @@ Used on the résumé for work, education, speaking, and volunteering.
 - **Do** include a `prefers-reduced-motion` fallback for every animation. Instant transitions are fine; invisible or inaccessible content is not.
 - **Do** render the footer as a full-bleed Precision Pink block. No partial pink panels, no pink strips.
 - **Do** apply `filter: grayscale(100%)` to portfolio card images. Grayscale is a system decision, not a placeholder.
-- **Do** keep type hierarchy to weight and scale. IBM Plex Sans at two weights is the full palette.
-- **Do** define new design values as DTCG-format tokens built with Terrazzo. When a component is rebuilt from Bootstrap, wire it to the token pipeline rather than carrying Bootstrap variables forward.
+- **Do** keep type hierarchy to weight and scale. Atkinson Hyperlegible Next at two weights is the full palette.
+- **Do** define new design values as DTCG-format tokens built with Terrazzo. Extend the token pipeline rather than sneaking ad hoc component values back into the codebase.
 
 ### Don't
 
-- **Don't** let the site look like it came out of a Bootstrap template. Any element that reads as Bootstrap default (a nav link at default spacing, a card with no considered treatment, a button unchanged from Bootstrap) needs a deliberate choice applied. Generic Bootstrap portfolio is the primary anti-reference.
-- **Don't** carry Bootstrap variables forward when rebuilding a component. When a component moves off Bootstrap, it uses Terrazzo-generated CSS custom properties, not Bootstrap's `$spacer`, `$primary`, or utility classes.
+- **Don't** let the site look like it came out of a template. Any element that reads as framework-default or starter-kit UI needs a deliberate choice applied. Generic Bootstrap portfolio is still the primary anti-reference.
+- **Don't** reintroduce framework-era variables or utility conventions through the side door. New component styling should use Terrazzo-generated CSS custom properties, not one-off compatibility shims.
 - **Don't** turn portfolio pages into a Dribbble shot gallery. Case studies need context, process narrative, and decision rationale. Image grids optimized for visual impressiveness don't do that.
 - **Don't** let the tone go corporate. "Want to chat? Get in touch!" is the register. Formal biography copy, third-person references, and achievement-stacking bullet points are not.
 - **Don't** introduce scroll-driven animations, type reveals, parallax effects, or motion that signals "creative agency portfolio." Motion should be functional: a state change, a transition, a hover response.
 - **Don't** use `border-left` or `border-right` greater than 1px as a colored decorative stripe on cards, callouts, or list items. The current blockquote uses a 9px left border in Precision Pink. That's design debt to resolve, not a pattern to continue. Replace with a background tint, indented padding, or typographic differentiation.
-- **Don't** replace IBM Plex Sans without deliberate selection from a real type catalog. Don't default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface. If a change is needed, choose for the brand.
+- **Don't** replace Atkinson Hyperlegible Next without deliberate selection from a real type catalog. Don't default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface. If a change is needed, choose for the brand.
 - **Don't** add color complexity. No secondary accent, no gradient, no multi-color palette. One pink, one near-white, two grays, one surface white.

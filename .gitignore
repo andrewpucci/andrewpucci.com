@@ -7,11 +7,25 @@ node_modules/
 dist/
 .sass-cache/
 *.css.map
+/build
+/.svelte-kit
+.wrangler/
+.output
+.vercel
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+worker-configuration.d.ts
+storybook-static/
+*storybook.log
+
+# Terrazzo-generated token output (source of truth is tokens/tokens.json)
+src/lib/tokens/tokens.css
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+.dev.vars
 
 # Logs
 logs
@@ -26,6 +40,7 @@ coverage/
 
 # Playwright
 playwright-report/
+lighthouse-reports/
 playwright/.cache/
 test-results/
 
