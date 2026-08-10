@@ -139,12 +139,12 @@ if (!isExpectedTurnstileResponse) {
 
 ## Risks and mitigations
 
-| Risk | Mitigation |
-| --- | --- |
-| Static CSP blocks a legitimate asset or Svelte runtime | Derive it from the existing SvelteKit policy, verify built output and Pages preview before shipping. |
-| Dynamic header logic overwrites nonce-bearing CSP | Add only fixed headers and test preservation of an existing CSP. |
-| Preview/local Turnstile tokens fail hostname checks | Make allowed hostnames an explicit runtime configuration and use Cloudflare's documented test credentials in tests. |
-| Siteverify outage disrupts submissions | Set a short timeout, return a generic retryable error, and log safe diagnostics. |
+| Risk                                                   | Mitigation                                                                                                          |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Static CSP blocks a legitimate asset or Svelte runtime | Derive it from the existing SvelteKit policy, verify built output and Pages preview before shipping.                |
+| Dynamic header logic overwrites nonce-bearing CSP      | Add only fixed headers and test preservation of an existing CSP.                                                    |
+| Preview/local Turnstile tokens fail hostname checks    | Make allowed hostnames an explicit runtime configuration and use Cloudflare's documented test credentials in tests. |
+| Siteverify outage disrupts submissions                 | Set a short timeout, return a generic retryable error, and log safe diagnostics.                                    |
 
 ## Open questions
 

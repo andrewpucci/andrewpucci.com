@@ -13,9 +13,9 @@ The site is also a demonstration of craft. The same discipline applied to access
 
 ### HTTP security headers
 
-All pages ship a strict set of security headers via a `_headers` file in the Cloudflare Pages output:
+Prerendered Pages responses receive the fixed policy from root `_headers`. Worker-rendered responses receive the same fixed headers from `src/hooks.server.ts`; the hook intentionally leaves CSP to SvelteKit so it can emit the per-response nonce/hash policy. This split is necessary because Cloudflare Pages does not apply `_headers` rules to Function responses.
 
-- `Content-Security-Policy` — strict policy with nonces for any inline scripts. SvelteKit's `handle` hook generates nonces per request. No `unsafe-inline`, no `unsafe-eval`. External sources are allowlisted explicitly and minimally.
+- `Content-Security-Policy` — static responses receive an HTTP CSP from `_headers`; Worker responses receive SvelteKit's CSP. `script-src` has no `unsafe-inline` or `unsafe-eval`, and external sources are allowlisted explicitly and minimally. `style-src 'unsafe-inline'` is the documented narrow exception required for Svelte runtime style mutations.
 - `Strict-Transport-Security` — long `max-age`, `includeSubDomains`.
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
@@ -68,7 +68,7 @@ All pages ship a strict set of security headers via a `_headers` file in the Clo
 ## Amendments
 
 - **Nonce-based CSP doesn't work with a fully prerendered site.** SvelteKit throws a build error if `kit.csp.mode` is `'nonce'` while prerendering — a nonce baked into a static HTML file at build time and served identically to every visitor isn't a nonce. `kit.csp.mode` is set to `'auto'` instead: hash-based CSP for prerendered pages (all of them today), nonce-based for any route rendered per-request in the future (the contact form action, if it ever needs an inline script). Same "no `unsafe-inline`" guarantee, correct mechanism for static output.
-- **CSP for prerendered pages ships as a `<meta http-equiv="Content-Security-Policy">` tag, not an HTTP header**, since static files served by Cloudflare Pages have no per-request handler to attach a header to. This has one real gap: `frame-ancestors` is silently ignored by browsers when set via `<meta>` (HTTP-header-only directive). `X-Frame-Options: DENY` in `static/_headers` covers the same clickjacking protection as a working fallback. The other fixed-value headers (`Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) also live in `static/_headers` since they don't vary per page and don't need kit's per-page hash computation.
+- **CSP and fixed-header delivery is split by response type.** Root `_headers` sends the complete static policy, including an HTTP CSP and `frame-ancestors`, for prerendered Pages assets. `src/hooks.server.ts` adds the fixed headers to Worker-rendered responses, while SvelteKit supplies that route's nonce-bearing CSP. This avoids both the static-response CSP gap and accidentally replacing SvelteKit's dynamic CSP.
 - **The contact form's Worker-level rate limiting (referenced above under "Contact form Worker") is a Cloudflare KV-backed fixed window: 5 submissions per 60 seconds per IP.** Cloudflare's native rate-limit binding isn't supported on Pages Functions, so `env.CONTACT_FORM_RATE_LIMITER` was undefined in every deployed request until this was closed (see [GitHub issue #216](https://github.com/andrewpucci/andrewpucci.com/issues/216)). Four options were weighed:
   - A **zone-level WAF rate limiting rule** was ruled out first: it lives entirely outside the repo, invisible to tests and to anyone reading the codebase.
   - A **Durable Object** was tried next and got as far as a working, unit-tested implementation before hitting a hosting dead end: `@sveltejs/adapter-cloudflare`'s generated `_worker.js` exports only `default`, and Cloudflare requires a DO class to be exported by name from the script its binding points at. Hosting it would have needed a second, independently deployed Worker (cross-script binding) — real operational surface for what should be a self-contained gap fix.

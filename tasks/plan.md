@@ -116,12 +116,12 @@ Tasks 1–3 are deliberately sequential because they establish the runtime contr
 
 ## Risks and mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| CSP blocks an asset or runtime behavior | High | Build first, then assert response headers and run the full Pages-preview E2E suite. |
-| Dynamic hook overwrites SvelteKit nonce CSP | High | Keep CSP out of the fixed-header helper and unit-test preservation explicitly. |
-| Hostname allowlist excludes a legitimate deployment | Medium | Make the Cloudflare binding explicit and document preview-host requirements before deployment. |
-| Siteverify transient failure harms contact conversion | Medium | Use a bounded timeout and a retryable, generic form error; retain safe operational logging. |
+| Risk                                                  | Impact | Mitigation                                                                                     |
+| ----------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| CSP blocks an asset or runtime behavior               | High   | Build first, then assert response headers and run the full Pages-preview E2E suite.            |
+| Dynamic hook overwrites SvelteKit nonce CSP           | High   | Keep CSP out of the fixed-header helper and unit-test preservation explicitly.                 |
+| Hostname allowlist excludes a legitimate deployment   | Medium | Make the Cloudflare binding explicit and document preview-host requirements before deployment. |
+| Siteverify transient failure harms contact conversion | Medium | Use a bounded timeout and a retryable, generic form error; retain safe operational logging.    |
 
 ## Open questions
 
