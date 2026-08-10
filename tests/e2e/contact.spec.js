@@ -14,21 +14,52 @@ test.describe('Contact page', () => {
     await expect(page).toHaveTitle('Contact | Andrew Pucci');
   });
 
-  test('preserves submitted values and shows an associated error on failed validation', async ({
+  test('marks every field as required in the DOM', async ({ page }) => {
+    await expect(page.getByLabel('Name')).toHaveAttribute('required', '');
+    await expect(page.getByLabel('Email')).toHaveAttribute('required', '');
+    await expect(page.getByLabel('Message')).toHaveAttribute('required', '');
+  });
+
+  test('uses native email validation before submission', async ({ page }) => {
+    await page.getByLabel('Name').fill('Jane Tester');
+    await page.getByLabel('Email').fill('asdf');
+    await page.getByLabel('Message').fill('Hello there');
+    await page.getByRole('button', { name: 'Send message' }).click();
+
+    const emailInput = page.getByLabel('Email');
+    const validationMessage = await emailInput.evaluate(
+      (node) => /** @type {HTMLInputElement} */ (node).validationMessage
+    );
+    expect(validationMessage.length).toBeGreaterThan(0);
+    expect(
+      await emailInput.evaluate(
+        (node) => /** @type {HTMLInputElement} */ (node).validity.typeMismatch
+      )
+    ).toBe(true);
+    await expect(emailInput).toHaveValue('asdf');
+    await expect(page.getByRole('button', { name: 'Send message' })).toContainText('Send message');
+  });
+
+  test('preserves submitted values and shows an associated error on failed server validation', async ({
     page,
   }) => {
     await page.getByLabel('Name').fill('Jane Tester');
-    // Email and message left empty on purpose to trigger validation.
+    await page.getByLabel('Email').fill('jane@example.com');
+    // Browser validation should pass so the request reaches the server.
+    // Use an overlong message to exercise the server-side validation path.
+    await page.getByLabel('Message').fill('x'.repeat(5001));
     await page.getByRole('button', { name: 'Send message' }).click();
 
     await expect(page.getByLabel('Name')).toHaveValue('Jane Tester');
+    await expect(page.getByLabel('Email')).toHaveValue('jane@example.com');
+    await expect(page.getByLabel('Message')).toHaveValue('x'.repeat(5001));
 
-    const emailInput = page.getByLabel('Email');
-    await expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+    const messageInput = page.getByLabel('Message');
+    await expect(messageInput).toHaveAttribute('aria-invalid', 'true');
 
-    const describedBy = await emailInput.getAttribute('aria-describedby');
+    const describedBy = await messageInput.getAttribute('aria-describedby');
     expect(describedBy).toBeTruthy();
-    await expect(page.locator(`#${describedBy}`)).toContainText(/valid email/i);
+    await expect(page.locator(`#${describedBy}`)).toContainText(/message is too long/i);
   });
 
   test('does not expose a direct email address', async ({ page }) => {

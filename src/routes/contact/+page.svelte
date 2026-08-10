@@ -7,8 +7,8 @@
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
   let submitting = $state(false);
-  const turnstileSiteKey = data.turnstileSiteKey?.trim();
-  const formAvailable = Boolean(turnstileSiteKey);
+  const turnstileSiteKey = $derived(data.turnstileSiteKey?.trim() ?? '');
+  const formAvailable = $derived(Boolean(turnstileSiteKey));
 </script>
 
 <svelte:head>
@@ -28,7 +28,6 @@
     {#if formAvailable}
       <form
         method="POST"
-        novalidate
         use:enhance={() => {
           submitting = true;
           return async ({ update }) => {
