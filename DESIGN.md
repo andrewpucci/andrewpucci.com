@@ -29,6 +29,11 @@ typography:
     fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.5
+  meta:
+    fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 400
+    lineHeight: 1.5
   label:
     fontFamily: "'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif"
     fontSize: "0.875rem"
@@ -106,7 +111,7 @@ One saturated color. Everything else neutral.
 
 ### Primary
 
-- **Precision Pink** (`#d42274`): The sole saturated color. Used on active nav states, CTAs, timeline dot markers, carousel controls, and the footer background. The full-bleed footer works because the color is absent everywhere it doesn't need to be.
+- **Precision Pink** (`#d42274`): The sole saturated color. Used on active nav states, CTAs, timeline dot markers, timeline organization-name links, carousel controls, and the footer background. The full-bleed footer works because the color is absent everywhere it doesn't need to be.
 
 ### Neutral
 
@@ -137,6 +142,7 @@ One saturated color. Everything else neutral.
 - **Headline** (700, `clamp(1.375rem, calc(1.175rem + 1.5vw), 2.5rem)`, line-height 1.25): H1-level page titles and major résumé section names. Fluid; rarely appears outside dedicated header regions.
 - **Title** (700, 1.125rem, line-height 1.4): H4-H6 section headings (feature blocks, footer section headers). Matches body size; hierarchy comes from weight, not size escalation.
 - **Body** (400, 1.125rem, line-height 1.5): All prose. Max line length 65-75ch on content pages.
+- **Meta** (400, 0.9375rem, line-height 1.5): Secondary/supplementary text smaller than body — form hints and validation messages, résumé dates, testimonial and case-study-media captions. Always paired with Slate (`--color-text-secondary`); never used at body size or Ink color.
 - **Label** (700, 0.875rem, line-height 1.4): Navigation links, cite attributions, card metadata. Smaller and bolder for supplementary and navigational text.
 
 ### Typography Rules
@@ -153,11 +159,16 @@ Flat by default. Depth comes from color contrast, type weight, and spacing.
 
 Surfaces sit at two levels: Body Background (`#fbfafa`) and Surface (`#ffffff`). Cards read as elevated against the near-white page by color alone, no shadow needed. The navbar is `rgba(255, 255, 255, 0.98)`, separating from content below without a drop shadow.
 
-The one exception is the modal entry animation, which uses a `scale(0.8)` transform as a depth cue rather than shadow. This animation must have a `prefers-reduced-motion` fallback: an instant appearance, not a scaled one.
+Two surfaces break the flat rule because they float above page content rather than sitting in its flow: the image-preview modal and the Portfolio nav dropdown. Both use a shadow, not a scale/transform depth cue.
+
+### Shadow Vocabulary
+
+- **`--shadow-lg`** (`0rem 1rem 2rem 0rem` Ink at 12.5% alpha): The image-preview modal (`ExpandableImage`). A large, soft shadow appropriate for the one surface that genuinely detaches from the page.
+- **Dropdown shadow** (`0 1rem 2rem`, Ink at 10% alpha via `color-mix`): The desktop Portfolio dropdown menu (`Nav.svelte`). Same silhouette as `--shadow-lg` at slightly lower opacity; not yet consolidated into a shared token — a candidate for `extract`.
 
 ### Elevation Rules
 
-**The Flat-By-Default Rule.** Shadows don't appear on resting elements. No card hover lifts, no navbar drop shadows, no ambient glows on buttons. If an element needs a shadow to look elevated, the layout, color, or spacing isn't doing its job. Shadows may appear as hover-state feedback on interactive components, as a response to interaction rather than decoration.
+**The Flat-By-Default Rule.** Shadows don't appear on elements that sit in normal page flow. No card hover lifts, no navbar drop shadows, no ambient glows on buttons. If an in-flow element needs a shadow to look elevated, the layout, color, or spacing isn't doing its job. The one legitimate use is a surface that portals above page content (a modal, a dropdown/popover) — there a shadow is the honest cue, not decoration.
 
 **The Motion Preference Rule.** Animations and transitions respect `prefers-reduced-motion: reduce`. The reduced-motion fallback is an instant transition or a simple fade — never a removed affordance. Content does not disappear or become inaccessible for users with motion sensitivity.
 
@@ -186,8 +197,9 @@ The primary button is the only variant in the current design.
 ### Navigation
 
 - **Style:** Fixed top, full-width, white at 98% opacity
-- **Links:** Ink at rest, Slate on hover, Precision Pink when active. No underlines; color carries the state.
+- **Links:** Ink at rest, Slate on hover, Precision Pink and an underline when active — color alone never carries the active state, per the Non-Color Meaning Rule.
 - **Logo:** 42px circular avatar. Signals person, not brand, from the first glance.
+- **Portfolio submenu:** The Portfolio link opens a list of case studies rather than linking directly. Desktop renders it as a dropdown menu (Surface background, subtle border, dropdown shadow — see Elevation); mobile renders it as an inline collapsible section nested inside the mobile link stack, using the same Card surface/border treatment instead of a shadow.
 - **Mobile:** Collapsed hamburger toggler. Links stack vertically; the primary download button sits below the link list.
 - **Typography:** Label weight (700, 0.875rem) to keep the bar lightweight.
 
@@ -196,8 +208,24 @@ The primary button is the only variant in the current design.
 Used on the résumé for work, education, speaking, and volunteering.
 
 - **Vertical rule:** 1px Ink line, fading to transparent at the bottom via `linear-gradient`.
-- **Entry dot:** 0.625rem Precision Pink circle centered on the rule at the start of each entry heading. The only appearance of Precision Pink in the résumé layout.
-- **Entry content:** Title weight (700, 1.125rem) for role name, Slate metadata below, Ink prose below that.
+- **Entry dot:** 0.625rem Precision Pink circle centered on the rule at the start of each entry heading.
+- **Entry content:** Title weight (700, 1.125rem) for role name; dates (0.9375rem, Slate) precede it visually via `order: -1`; organization name (1.25rem) is a Precision Pink link when it has a URL — the dot and the organization name are the only Precision Pink in the résumé layout; Ink prose below that.
+
+### Inputs / Fields
+
+Used on the contact form (`Input`, `Textarea`).
+
+- **Shape:** 0.25rem (4px) radius — one step tighter than buttons and cards, distinguishing form controls from containers.
+- **Style:** 1px solid border (same subtle Ink-at-12.5% as card borders), Surface white background, label above in Label weight (700, 0.875rem). Required fields carry a "Required" pill (Slate text, full-radius outline) instead of a bare asterisk.
+- **Focus / Error / Valid states are never color-only:** error pairs a Precision Pink border + box-shadow ring with an inline "!" icon and "Error: …" text; valid pairs an Ink border + box-shadow ring with a "✓" icon and "Looks good." text.
+- **Textarea** is the same field styling with `min-height: 8rem` and vertical resize enabled.
+
+### Testimonials
+
+Landing-page only. Named, attributed quotes (`TestimonialQuote`) — no invented or placeholder testimonials.
+
+- **Style:** `<figure>`/`<blockquote>` pairing, same typographic-differentiation treatment as the global blockquote rule (italic, Slate, indented) — no border, no card surface.
+- **Attribution:** 40px circular avatar, author name (linked to LinkedIn when available), role, and organization at 0.9375rem in Slate.
 
 ### Footer
 
@@ -228,6 +256,6 @@ Used on the résumé for work, education, speaking, and volunteering.
 - **Don't** turn portfolio pages into a Dribbble shot gallery. Case studies need context, process narrative, and decision rationale. Image grids optimized for visual impressiveness don't do that.
 - **Don't** let the tone go corporate. "Want to chat? Get in touch!" is the register. Formal biography copy, third-person references, and achievement-stacking bullet points are not.
 - **Don't** introduce scroll-driven animations, type reveals, parallax effects, or motion that signals "creative agency portfolio." Motion should be functional: a state change, a transition, a hover response.
-- **Don't** use `border-left` or `border-right` greater than 1px as a colored decorative stripe on cards, callouts, or list items. The current blockquote uses a 9px left border in Precision Pink. That's design debt to resolve, not a pattern to continue. Replace with a background tint, indented padding, or typographic differentiation.
+- **Don't** use `border-left` or `border-right` greater than 1px as a colored decorative stripe on cards, callouts, or list items. Blockquotes resolved this already: italic Slate text with indented padding, no border. Match that pattern rather than reaching for a colored stripe.
 - **Don't** replace Atkinson Hyperlegible Next without deliberate selection from a real type catalog. Don't default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface. If a change is needed, choose for the brand.
 - **Don't** add color complexity. No secondary accent, no gradient, no multi-color palette. One pink, one near-white, two grays, one surface white.

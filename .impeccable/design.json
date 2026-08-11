@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-28T00:00:00Z",
+  "generatedAt": "2026-08-10T00:00:00Z",
   "title": "Design System: andrewpucci.com",
   "extensions": {
     "colorMeta": {
@@ -83,43 +83,56 @@
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Hero headline only — the banner CTA. Never used for section titles or content headings."
+        "purpose": "Hero headlines only, currently the banner call-to-action. Never used for section titles."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "H1-level page titles and major resume section names. Fluid sizing."
+        "purpose": "H1-level page titles and major résumé section names. Fluid; rarely appears outside dedicated header regions."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Section subheadings (H4–H6). Same size as body; hierarchy from weight alone."
+        "purpose": "H4-H6 section headings. Matches body size; hierarchy comes from weight, not size escalation."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "All prose and content. 18px floor is non-negotiable."
+        "purpose": "All prose. 18px (1.125rem) floor is non-negotiable. Max line length 65-75ch on content pages."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Secondary text smaller than body: form hints/validation messages, résumé dates, testimonial and case-study-media captions. Always Slate, never Ink or body size."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Nav links, cite attributions, card metadata, small supplementary text."
+        "purpose": "Navigation links, cite attributions, card metadata — supplementary and navigational text."
       }
     },
-    "shadows": [],
-    "motion": [
+    "shadows": [
       {
-        "name": "state-transition",
-        "value": "0.15s ease-in-out",
-        "purpose": "Color and border transitions on interactive elements (buttons, links, nav). Fast; never choreographic."
+        "name": "shadow-lg",
+        "value": "0rem 1rem 2rem 0rem rgb(12.94% 14.51% 16.08% / 0.125)",
+        "purpose": "The image-preview modal (ExpandableImage). The only in-flow-detached surface with a dedicated shadow token — a large, soft shadow, no scale/transform depth cue."
       },
       {
-        "name": "modal-entry",
-        "value": "scale(0.8) → scale(1), 0.3s ease-out",
-        "purpose": "Bootstrap modal entrance. Motion as depth cue — the one choreographic moment the system allows. Must have a prefers-reduced-motion fallback: instant appearance, no scale."
+        "name": "dropdown-shadow",
+        "value": "0 1rem 2rem color-mix(in srgb, var(--color-text-default) 10%, transparent)",
+        "purpose": "Desktop Portfolio nav dropdown (Nav.svelte). Same silhouette as shadow-lg at slightly lower opacity; ad hoc, not yet consolidated into a shared token."
+      }
+    ],
+    "motion": [
+      {
+        "name": "field-validation",
+        "value": "160ms ease",
+        "purpose": "Input/Textarea border-color, box-shadow, and background-color transition between default/error/valid states."
+      },
+      {
+        "name": "carousel-slide",
+        "value": "transform 0.3s ease",
+        "purpose": "Carousel track sliding between pages. The component sets transition: none directly under prefers-reduced-motion, in addition to the site-wide reduced-motion rule."
       }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "576px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "992px" },
-      { "name": "xl", "value": "1200px" }
+      { "name": "tablet", "value": "48rem" },
+      { "name": "desktop", "value": "62rem" }
     ]
   },
   "components": [
@@ -127,54 +140,78 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The only CTA button variant. Precision Pink, compact, direct.",
+      "description": "The only button variant. Precision Pink, compact, no transition on hover/focus — a direct color snap, not an animated response.",
       "html": "<button class=\"ds-btn-primary\">View Case Study</button>",
-      "css": ".ds-btn-primary { display: inline-block; background-color: #d42274; color: #ffffff; border: 1px solid #d42274; border-radius: 0.375rem; padding: 0.375rem 0.75rem; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 400; line-height: 1.5; cursor: pointer; text-decoration: none; transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }\n.ds-btn-primary:hover { background-color: #b31d63; border-color: #b31d63; }\n.ds-btn-primary:focus-visible { background-color: #b31d63; border-color: #b31d63; outline: 2px solid #d42274; outline-offset: 2px; }\n.ds-btn-primary:active { background-color: #9e1a56; border-color: #9e1a56; }\n@media (prefers-reduced-motion: reduce) { .ds-btn-primary { transition: none; } }"
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 0.28125rem; cursor: pointer; text-decoration: none; font: 400 1.125rem/1.5 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; color: #ffffff; background: #d42274; border: 1px solid #d42274; border-radius: 0.375rem; padding-block: 0.375rem; padding-inline: 0.75rem; }\n.ds-btn-primary:hover, .ds-btn-primary:focus-visible { background: #b31d63; border-color: #b31d63; }\n.ds-btn-primary:focus-visible { outline: 2px solid #d42274; outline-offset: 2px; }\n.ds-btn-primary:disabled { cursor: not-allowed; opacity: 0.6; }"
     },
     {
       "name": "Portfolio Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Project card. Grayscale image on top, title and summary below. Flat at rest.",
-      "html": "<div class=\"ds-card\"><div class=\"ds-card-img-wrap\"><img class=\"ds-card-img\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect width='400' height='220' fill='%23d0d0d0'/%3E%3C/svg%3E\" alt=\"Project screenshot\"></div><div class=\"ds-card-body\"><h3 class=\"ds-card-title\">chroma11y</h3><p class=\"ds-card-text\">OKLCH-based accessibility color palette tool. Generates contrast-verified palettes for design systems.</p></div></div>",
-      "css": ".ds-card { background-color: #ffffff; border: 1px solid rgba(33,37,41,0.125); border-radius: 0.375rem; overflow: hidden; display: flex; flex-direction: column; }\n.ds-card-img-wrap { overflow: hidden; }\n.ds-card-img { width: 100%; height: auto; display: block; filter: grayscale(100%); transition: filter 0.2s ease-in-out; }\n.ds-card:hover .ds-card-img { filter: grayscale(70%); }\n.ds-card-body { padding: 1.125rem; flex: 1; }\n.ds-card-title { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: #212529; margin: 0 0 0.5rem; }\n.ds-card-text { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1rem; color: #495057; margin: 0; line-height: 1.5; }\n@media (prefers-reduced-motion: reduce) { .ds-card-img { transition: none; } }"
+      "description": "Project card. Grayscale image bleeding to the card edge, title and summary below. Flat at rest, no hover treatment.",
+      "html": "<a class=\"ds-card\" href=\"#\"><img class=\"ds-card-img\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect width='400' height='220' fill='%23d0d0d0'/%3E%3C/svg%3E\" alt=\"\"><h3 class=\"ds-card-title\">Evolving Binary Defense MDR</h3><p class=\"ds-card-text\">Researching user workflows to design improvements to the UI of an information security SaaS application.</p></a>",
+      "css": ".ds-card { display: block; background: #ffffff; border: 1px solid rgba(33,37,41,0.125); border-radius: 0.375rem; padding: 1.125rem; overflow: hidden; color: inherit; text-decoration: none; }\n.ds-card-img { display: block; filter: grayscale(100%); width: calc(100% + 1.125rem * 2); margin-inline: -1.125rem; margin-block-start: -1.125rem; margin-block-end: 0.5625rem; }\n.ds-card-title { font: 700 1.125rem/1.4 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; margin: 0 0 0.28125rem; color: #212529; }\n.ds-card-text { font: 400 1.125rem/1.5 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; color: #495057; margin: 0; }"
     },
     {
       "name": "Navigation",
       "kind": "nav",
       "refersTo": "nav-link-default",
-      "description": "Fixed top nav. Avatar logo, links, optional download CTA. Frosted white, no shadow.",
-      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"/\"><div class=\"ds-nav-avatar\"></div></a><div class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\">About</a><a class=\"ds-nav-link\" href=\"#\">Résumé</a><a class=\"ds-nav-link ds-nav-link--active\" href=\"#\" aria-current=\"page\">Portfolio</a></div></nav>",
-      "css": ".ds-nav { background-color: rgba(255,255,255,0.98); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 1.5rem; }\n.ds-nav-brand { text-decoration: none; flex-shrink: 0; }\n.ds-nav-avatar { width: 42px; height: 42px; border-radius: 50%; background-color: #d0d0d0; }\n.ds-nav-links { display: flex; gap: 1rem; align-items: center; }\n.ds-nav-link { color: #212529; text-decoration: none; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; font-weight: 700; transition: color 0.15s ease-in-out; padding: 0.25rem 0; }\n.ds-nav-link:hover { color: #495057; }\n.ds-nav-link--active { color: #d42274; }\n.ds-nav-link:focus-visible { outline: 2px solid #d42274; outline-offset: 2px; border-radius: 0.25rem; }\n@media (prefers-reduced-motion: reduce) { .ds-nav-link { transition: none; } }"
+      "description": "Fixed top nav. Avatar logo, links, active state pairs Precision Pink with an underline (never color alone). Frosted white background, no shadow.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"#\"><img class=\"ds-nav-avatar\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='42' height='42'%3E%3Ccircle cx='21' cy='21' r='21' fill='%23d0d0d0'/%3E%3C/svg%3E\" alt=\"\"></a><div class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\">About</a><a class=\"ds-nav-link\" href=\"#\">Résumé</a><a class=\"ds-nav-link ds-nav-link--active\" href=\"#\" aria-current=\"page\">Portfolio</a></div></nav>",
+      "css": ".ds-nav { background: color-mix(in srgb, #ffffff 98%, transparent); padding-block: 0.5625rem; display: flex; align-items: center; gap: 1.125rem; }\n.ds-nav-brand { flex-shrink: 0; }\n.ds-nav-avatar { width: 42px; height: 42px; border-radius: 50%; display: block; }\n.ds-nav-links { display: flex; align-items: center; gap: 1.125rem; }\n.ds-nav-link { font: 700 0.875rem/1.4 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; color: #212529; text-decoration: none; }\n.ds-nav-link:hover { color: #495057; }\n.ds-nav-link--active { color: #d42274; text-decoration: underline; }\n.ds-nav-link:focus-visible { outline: 2px solid #d42274; outline-offset: 2px; }"
+    },
+    {
+      "name": "Portfolio Dropdown",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Desktop dropdown opened from the nav's Portfolio link, listing case studies. One of only two surfaces on the site that uses a shadow (see Elevation) because it portals above page content rather than sitting in flow.",
+      "html": "<div class=\"ds-dropdown\"><a class=\"ds-dropdown-link\" href=\"#\">Overview</a><hr class=\"ds-dropdown-divider\"><a class=\"ds-dropdown-link\" href=\"#\">Evolving Binary Defense MDR</a><a class=\"ds-dropdown-link\" href=\"#\">Redesigning Telerik Analytics</a></div>",
+      "css": ".ds-dropdown { display: flex; flex-direction: column; gap: 0.28125rem; min-width: 14rem; padding: 0.5625rem 1.125rem; background: #ffffff; border: 1px solid rgba(33,37,41,0.125); border-radius: 0.375rem; box-shadow: 0 1rem 2rem rgba(33,37,41,0.10); }\n.ds-dropdown-link { display: block; font: 700 0.875rem/1.4 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; color: #212529; text-decoration: none; }\n.ds-dropdown-link:hover { color: #495057; }\n.ds-dropdown-divider { width: 100%; height: 1px; margin: 0.28125rem 0; border: none; background: rgba(33,37,41,0.125); }"
     },
     {
       "name": "Timeline Entry",
       "kind": "custom",
       "refersTo": null,
-      "description": "Résumé timeline. Vertical Ink rule, Precision Pink dot marker per entry, title + metadata + prose.",
-      "html": "<div class=\"ds-entrylist\"><div class=\"ds-entry-item\"><h3 class=\"ds-entry-title\">Principal UX Designer</h3><p class=\"ds-entry-meta\">Expel · 2022–Present</p><p class=\"ds-entry-body\">End-to-end ownership of the Expel Design System, from Figma component design through TypeScript implementation and token architecture.</p></div><div class=\"ds-entry-item\"><h3 class=\"ds-entry-title\">Senior UX Designer (contract)</h3><p class=\"ds-entry-meta\">Optum · 2021–2022</p></div></div>",
-      "css": ".ds-entrylist { position: relative; padding-left: 2.25rem; }\n.ds-entrylist::before { position: absolute; top: 1.7rem; bottom: 0; left: 1.1rem; width: 1px; content: ''; background: linear-gradient(to top, rgba(33,37,41,0) 0%, rgba(33,37,41,1) 4rem, rgba(33,37,41,1) 100%); }\n.ds-entry-item { position: relative; margin-bottom: 2rem; }\n.ds-entry-item::before { position: absolute; top: 0.45rem; left: -2.25rem; width: 0.625rem; height: 0.625rem; content: ''; background-color: #d42274; border-radius: 50%; transform: translateX(50%); }\n.ds-entry-title { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: #212529; margin: 0 0 0.25rem; }\n.ds-entry-meta { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; color: #495057; margin: 0 0 0.5rem; }\n.ds-entry-body { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; color: #212529; margin: 0; line-height: 1.5; }"
+      "description": "Résumé timeline. Vertical Ink rule, Precision Pink dot marker per entry; organization name is also Precision Pink when linked — the dot and the org link are the only Precision Pink in the résumé layout.",
+      "html": "<ol class=\"ds-entrylist\"><li class=\"ds-entry\"><p class=\"ds-entry-dates\">Aug 2021 – Mar 2022</p><h3 class=\"ds-entry-title\">Senior User Experience Designer (contract)</h3><p class=\"ds-entry-org\"><a href=\"#\" class=\"ds-entry-org-link\">Optum (UnitedHealth Group)</a> · Remote (Company HQ in Eden Prairie, MN)</p><p class=\"ds-entry-body\">Collaborated with subject matter experts and seven Scrum Teams to deliver wireframes and high fidelity prototypes.</p></li></ol>",
+      "css": ".ds-entrylist { position: relative; margin: 0; padding-inline-start: 1.125rem; list-style: none; }\n.ds-entrylist::before { position: absolute; inset-inline-start: 1.1rem; top: 2rem; bottom: 0; width: 1px; content: ''; background: linear-gradient(to top, rgba(33,37,41,0) 0%, #212529 6.25rem, #212529 100%); }\n.ds-entry { position: relative; padding-inline-start: 1.125rem; padding-block-start: 1.125rem; }\n.ds-entry::before { position: absolute; top: 2rem; inset-inline-start: 0; width: 0.625rem; height: 0.625rem; content: ''; background-color: #d42274; border-radius: 50%; transform: translateX(-50%); }\n.ds-entry-dates { margin: 0 0 0.28125rem; font-size: 0.9375rem; color: #495057; }\n.ds-entry-title { font: 700 1.125rem/1.4 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; margin: 0; color: #212529; }\n.ds-entry-org { font-size: 1.25rem; margin: 0; }\n.ds-entry-org-link { color: #d42274; text-decoration: none; }\n.ds-entry-body { font: 400 1.125rem/1.5 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; color: #212529; margin: 0; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": null,
+      "description": "Contact-form text field (Input/Textarea). One radius step tighter than cards/buttons. Error and valid states always pair color with an icon and text — never color alone.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-email\"><span>Email</span><span class=\"ds-field-required\">Required</span></label><input class=\"ds-field-input ds-field-input--error\" id=\"ds-email\" type=\"email\"><p class=\"ds-field-message\"><span class=\"ds-field-message-icon\">!</span><span>Error: Enter a valid email address.</span></p></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 0.28125rem; font-family: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; }\n.ds-field-label { display: flex; align-items: center; justify-content: space-between; gap: 0.5625rem; font: 700 0.875rem/1.4 inherit; color: #212529; }\n.ds-field-required { color: #495057; border: 1px solid rgba(33,37,41,0.125); border-radius: 9999px; padding-block: 0.125rem; padding-inline: 0.5625rem; font-size: 0.875rem; }\n.ds-field-input { font: 400 1.125rem/1.5 inherit; color: #212529; background: #ffffff; border: 1px solid rgba(33,37,41,0.125); border-radius: 0.25rem; padding-block: 0.28125rem; padding-inline: 0.5625rem; }\n.ds-field-input--error { border-color: #d42274; box-shadow: 0 0 0 1px #d42274; }\n.ds-field-message { display: flex; align-items: center; gap: 0.5625rem; margin: 0; font-size: 0.9375rem; color: #d42274; }\n.ds-field-message-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border-radius: 9999px; background: #d42274; color: #ffffff; font: 700 0.875rem/1.4 inherit; }"
+    },
+    {
+      "name": "Testimonial",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Named, attributed quote on the landing page. Uses the same typographic-differentiation treatment as the global blockquote (italic, Slate, indented) — no border, no card surface.",
+      "html": "<figure class=\"ds-testimonial\"><blockquote class=\"ds-testimonial-quote\">Andrew has an innate talent for leadership and mentorship. As a manager, Andrew never acts like a superior, he acts like an advocate.</blockquote><figcaption class=\"ds-testimonial-caption\"><img class=\"ds-testimonial-avatar\" src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23d0d0d0'/%3E%3C/svg%3E\" alt=\"\"><a href=\"#\">Jax Heinzen</a>, Experience Research &amp; Design, Binary Defense</figcaption></figure>",
+      "css": ".ds-testimonial { margin: 0; font-family: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; }\n.ds-testimonial-quote { margin: 0 0 0.5625rem; padding-inline-start: 1.125rem; font-style: italic; font-size: 1.125rem; color: #495057; }\n.ds-testimonial-caption { display: flex; align-items: center; gap: 0.28125rem; font-size: 0.9375rem; color: #495057; }\n.ds-testimonial-avatar { width: 40px; height: 40px; border-radius: 50%; }\n.ds-testimonial-caption a { color: #d42274; }"
     },
     {
       "name": "Footer",
       "kind": "custom",
       "refersTo": "footer-block",
-      "description": "Full-bleed Precision Pink footer. The site's one bold brand gesture. White text throughout.",
-      "html": "<footer class=\"ds-footer\"><div class=\"ds-footer-inner\"><div class=\"ds-footer-section\"><h2 class=\"ds-footer-heading\">About Me</h2><p class=\"ds-footer-body\">Principal UX designer at the intersection of design and engineering. <a class=\"ds-footer-link\" href=\"/contact/\">Get in touch!</a></p></div><div class=\"ds-footer-section\"><h2 class=\"ds-footer-heading\">Connect</h2><ul class=\"ds-footer-list\"><li><a class=\"ds-footer-link\" href=\"#\">LinkedIn</a></li></ul></div></div><p class=\"ds-footer-legal\">&copy; 2026 Andrew Pucci.</p></footer>",
-      "css": ".ds-footer { background-color: #d42274; padding: 3.375rem 1.5rem 2rem; color: #ffffff; }\n.ds-footer-inner { display: flex; gap: 3rem; flex-wrap: wrap; margin-bottom: 2rem; }\n.ds-footer-section { flex: 1; min-width: 200px; }\n.ds-footer-heading { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; font-weight: 700; color: #ffffff; margin: 0 0 0.75rem; }\n.ds-footer-body { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 1.125rem; color: #ffffff; margin: 0; line-height: 1.5; }\n.ds-footer-link { color: #ffffff; text-decoration: none; }\n.ds-footer-link:hover { text-decoration: underline; }\n.ds-footer-link:focus-visible { outline: 2px solid #ffffff; outline-offset: 2px; border-radius: 0.25rem; }\n.ds-footer-list { list-style: none; padding: 0; margin: 0; }\n.ds-footer-list li { margin-bottom: 0.25rem; }\n.ds-footer-legal { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.875rem; color: rgba(255,255,255,0.8); margin: 0; }"
+      "description": "Full-bleed Precision Pink footer, the site's one bold color gesture. White text throughout; links underline on hover.",
+      "html": "<footer class=\"ds-footer\"><div class=\"ds-footer-inner\"><div class=\"ds-footer-section\"><h2 class=\"ds-footer-heading\">About Me</h2><p class=\"ds-footer-body\">I am a user experience designer who has built a career around the intersection of design and development. Want to chat? <a class=\"ds-footer-link\" href=\"#\">Get in touch!</a></p></div><div class=\"ds-footer-section\"><h2 class=\"ds-footer-heading\">Connect</h2><ul class=\"ds-footer-list\"><li><a class=\"ds-footer-link\" href=\"#\">GitHub</a></li><li><a class=\"ds-footer-link\" href=\"#\">LinkedIn</a></li></ul></div></div><p class=\"ds-footer-legal\">&copy; 2026 Andrew Pucci. Made with SvelteKit, hosted on Cloudflare.</p></footer>",
+      "css": ".ds-footer { background: #d42274; color: #ffffff; padding-block: 3.375rem; font-family: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Fallback', system-ui, -apple-system, sans-serif; }\n.ds-footer, .ds-footer a { color: #ffffff; }\n.ds-footer a { text-decoration: none; }\n.ds-footer a:hover { text-decoration: underline; }\n.ds-footer-inner { display: flex; flex-wrap: wrap; gap: 1.6875rem; margin-bottom: 1.6875rem; }\n.ds-footer-section { flex: 1; min-width: 200px; }\n.ds-footer-heading { font: 700 1.125rem/1.4 inherit; margin: 0 0 0.5625rem; }\n.ds-footer-body { font: 400 1.125rem/1.5 inherit; margin: 0; }\n.ds-footer-list { list-style: none; margin: 0; padding: 0; }\n.ds-footer-legal { font-size: 0.875rem; opacity: 0.9; margin: 0; }"
     }
   ],
   "narrative": {
     "northStar": "The Principal Review",
-    "overview": "One saturated accent, large body text, flat surfaces. The design doesn't compete with the content; it makes room for it. Case studies, open-source projects, design system work, and a career history carry the pages.\n\nThe primary audience is hiring managers and design leads at enterprise tech companies evaluating principal-level candidates. A secondary audience is engineering leads and design systems leads looking for a collaborator with both design judgment and engineering depth. Both scan before they read. Hierarchy matters more than novelty.\n\nThree aesthetics this explicitly avoids: off-the-shelf Bootstrap defaults, the Dribbble shot grid, and creative-agency portfolio mode. One brand color, used deliberately. Everything else is structure and text.\n\nAccessibility is a design constraint built into component decisions from the start, not a checklist applied afterward. Color is never the sole carrier of meaning. Every interactive state has a non-color indicator. Every component is keyboard reachable. Motion is conditional on user preference.\n\nBootstrap 5 is the current foundation — a transitional dependency. The goal is a purpose-built token pipeline: DTCG-format tokens built with Terrazzo, generating CSS custom properties used throughout, mirroring the architecture of the Expel Design System (EDS). The site is itself an exhibit of that work in progress.",
+    "overview": "One saturated accent, large body text, flat surfaces. The design doesn't compete with the content; it makes room for it. Case studies, open-source projects, design system work, and a career history carry the pages.\n\nThe primary audience is hiring managers and design leads at enterprise tech companies evaluating principal-level candidates. A secondary audience is engineering leads and design systems leads looking for a collaborator with both design judgment and engineering depth. Both scan before they read. Hierarchy matters more than novelty. Each surface should make the next step obvious, whether that's a case study, a project, or a way to get in touch.\n\nThree aesthetics this explicitly avoids: off-the-shelf Bootstrap defaults, the Dribbble shot grid, and creative-agency portfolio mode. One brand color, used deliberately. Everything else is structure and text.\n\nAccessibility is a design constraint built into component decisions from the start, not a checklist applied afterward. Color is never the sole carrier of meaning. Every interactive state has a non-color indicator. Every component is keyboard reachable. Motion is conditional on user preference.\n\nThe site runs on a purpose-built token pipeline: DTCG-format tokens built with Terrazzo, generating the CSS custom properties used throughout, mirroring the architecture of the Expel Design System (EDS). The site is itself an exhibit of that work in progress.",
     "keyCharacteristics": [
       "One saturated brand accent; all other surfaces neutral or white",
       "Single typeface differentiated by weight only — no second family, no display font",
       "Large base type (1.125rem / 18px) for readability and authority",
       "Full-bleed Precision Pink footer as the site's one bold gesture",
-      "Flat by default; no decorative elevation or shadow",
+      "Flat by default; shadows appear only on the two surfaces that portal above page content (modal, dropdown)",
       "Accessible by default: visible focus, non-color state indicators, reduced-motion support",
-      "Terrazzo token pipeline as the target architecture; Bootstrap is transitional"
+      "Terrazzo/DTCG token pipeline generating the CSS custom properties every component consumes"
     ],
     "rules": [
       {
@@ -199,7 +236,7 @@
       },
       {
         "name": "The Weight-Only Hierarchy Rule",
-        "body": "This system has one typeface and two weights. Scale and weight carry all hierarchy. Never introduce a second typeface, a display serif, or monospace to add variety — that constraint is the system's voice.",
+        "body": "This system has one typeface and two weights. Scale and weight carry all hierarchy. Never introduce a second typeface, a display serif, or monospace to add variety.",
         "section": "typography"
       },
       {
@@ -214,12 +251,12 @@
       },
       {
         "name": "The Flat-By-Default Rule",
-        "body": "Shadows do not appear on resting elements. If an element needs a shadow to look elevated, the layout, color, or spacing is not doing its job. Shadows may appear as hover-state feedback only.",
+        "body": "Shadows don't appear on elements that sit in normal page flow. The one legitimate use is a surface that portals above page content (a modal, a dropdown/popover) — there a shadow is the honest cue, not decoration.",
         "section": "elevation"
       },
       {
         "name": "The Motion Preference Rule",
-        "body": "Animations and transitions respect prefers-reduced-motion: reduce. The reduced-motion fallback is an instant transition or a simple fade — never a removed affordance. Content does not disappear or become inaccessible for users with motion sensitivity.",
+        "body": "Animations and transitions respect prefers-reduced-motion: reduce. The reduced-motion fallback is an instant transition or a simple fade — never a removed affordance.",
         "section": "elevation"
       },
       {
@@ -237,17 +274,17 @@
       "Include a prefers-reduced-motion fallback for every animation. Instant transitions are fine; invisible or inaccessible content is not.",
       "Render the footer as a full-bleed Precision Pink block. No partial pink panels, no pink strips.",
       "Apply filter: grayscale(100%) to portfolio card images. Grayscale is a system decision, not a placeholder.",
-      "Keep type hierarchy to weight and scale. IBM Plex Sans at two weights is the full palette.",
-      "Define new design values as DTCG-format tokens built with Terrazzo. When a component is rebuilt from Bootstrap, wire it to the token pipeline rather than carrying Bootstrap variables forward."
+      "Keep type hierarchy to weight and scale. Atkinson Hyperlegible Next at two weights is the full palette.",
+      "Define new design values as DTCG-format tokens built with Terrazzo. Extend the token pipeline rather than sneaking ad hoc component values back into the codebase."
     ],
     "donts": [
-      "Let the site look like it came out of a Bootstrap template. Any element that reads as Bootstrap default needs a deliberate treatment applied.",
-      "Carry Bootstrap variables forward when rebuilding a component. When a component moves off Bootstrap, it uses Terrazzo-generated CSS custom properties, not Bootstrap's $spacer, $primary, or utility classes.",
+      "Let the site look like it came out of a template. Any element that reads as framework-default or starter-kit UI needs a deliberate treatment applied.",
+      "Reintroduce framework-era variables or utility conventions through the side door. New component styling uses Terrazzo-generated CSS custom properties, not one-off compatibility shims.",
       "Turn portfolio pages into a Dribbble shot gallery. Case studies need context, process narrative, and decision rationale — not image grids optimized for visual impressiveness.",
       "Let the tone go corporate. 'Want to chat? Get in touch!' is the register. Formal biography copy and achievement-stacking bullet points are not.",
       "Introduce scroll-driven animations, type reveals, parallax effects, or motion that signals 'creative agency portfolio.' Motion should be functional only.",
-      "Use border-left or border-right greater than 1px as a colored decorative stripe. The current blockquote uses a 9px Precision Pink left border — this is design debt to resolve, not a pattern to continue.",
-      "Replace IBM Plex Sans without deliberate selection from a real type catalog. Do not default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface.",
+      "Use border-left or border-right greater than 1px as a colored decorative stripe. Blockquotes resolved this already: italic Slate text with indented padding, no border.",
+      "Replace Atkinson Hyperlegible Next without deliberate selection from a real type catalog. Do not default to Inter, DM Sans, Space Grotesk, or any other AI-reflex typeface.",
       "Add color complexity. No secondary accent, no gradient, no multi-color palette. One pink, one near-white, two grays, one surface white."
     ]
   }

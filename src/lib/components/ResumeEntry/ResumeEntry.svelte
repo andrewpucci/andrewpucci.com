@@ -71,7 +71,7 @@
     /* Dates lead visually while the heading stays first in reading/DOM order. */
     order: -1;
     margin-block-end: var(--space-1);
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
     color: var(--color-text-secondary);
   }
 

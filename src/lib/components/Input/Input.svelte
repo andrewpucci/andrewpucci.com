@@ -183,7 +183,7 @@
   .hint {
     margin: 0;
     color: var(--color-text-secondary);
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
   }
 
   .message {
@@ -191,7 +191,7 @@
     align-items: center;
     gap: var(--space-2);
     margin: 0;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
   }
 
   .message-icon {

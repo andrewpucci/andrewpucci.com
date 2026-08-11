@@ -1,5 +1,15 @@
 # Product
 
+<!-- impeccable:product-schema 1 -->
+
+## Platform
+
+web
+
+## Stack
+
+SvelteKit 2 with `adapter-cloudflare`, Svelte 5, TypeScript-first. Deployed to Cloudflare Pages, with a Workers runtime for the contact form. Terrazzo builds DTCG-format design tokens into CSS custom properties. Storybook 10 for component development; Vitest and Playwright for testing.
+
 ## Register
 
 brand
@@ -21,6 +31,29 @@ The site is also an exhibit of that work in progress. The goal is to build this 
 Success means a hiring manager finishes reading and believes Andrew can operate at principal level. Design judgment shows up in how the work gets built, not just what gets designed.
 
 Secondary function: professional presence for the UX and design-engineering community (conference speaking, open-source projects, peer credibility).
+
+## Positioning
+
+Most portfolio sites in this category show finished design artifacts and hand-offs. This one shows the design system being built the same way Andrew builds it at work: DTCG-format tokens, a Terrazzo build pipeline, TypeScript implementation, and accessibility engineering, all visible in the shipping site rather than described after the fact. A designer who can only show static mockups or a Dribbble-style gallery could not credibly reproduce this; the site's own construction is the evidence of the design-engineering claim.
+
+## Operating Context
+
+Visitors arrive from a resume, a LinkedIn profile, a conference bio, or a direct link during candidate screening, and typically evaluate on a laptop in a short session between other tasks. The site's own case studies (portfolio entries), a structured resume (work history, education, speaking, volunteering), and a contact path are the artifacts a hiring manager or engineering lead is expected to review. Archived early-career case studies live separately from current portfolio entries so recency is legible at a glance.
+
+## Capabilities and Constraints
+
+- Portfolio case studies and an archive of earlier work, resume (work/education/speaking/volunteering), and a contact form (Cloudflare Turnstile-protected) are the current functional surfaces.
+- Content (portfolio, resume, archive) is authored as Markdown/MDsveX and loaded at build/request time via `src/lib/content/`; new work should extend that pipeline rather than hardcoding content into components.
+- WCAG 2.2 AA is the accessibility floor (ADR-0002); the production bundle targets Vite's `baseline-widely-available` modern-browser set (ADR-0013), which is a build floor, not the accessibility contract.
+- Commercial case-study work is frequently under NDA; open-source projects, the design-system build itself, and community involvement (speaking, volunteering) are the primary channels for demonstrating current work.
+
+## Evidence on Hand
+
+- Portfolio case studies: `src/lib/content/portfolio/` (current work) and `src/lib/content/archive/` (early-career work, transformed at load time).
+- Resume content: `src/lib/content/resume/` (work, education, speaking, volunteering).
+- Author/profile data and social links: `src/lib/content/author.json`.
+- Architectural decision records for the token pipeline, framework, hosting, testing, and accessibility posture: `docs/adr/`.
+- Two named, attributed testimonials on the landing page (`src/routes/+page.svelte`, `TestimonialQuote` component): Jax Heinzen (Experience Research & Design, Binary Defense) and Nondini Naqui (CEO & President, Society of Grownups), each with role, LinkedIn URL, and avatar. No case-study metrics or unattributed/third-party quotes beyond these exist in content; future work must not fabricate additional testimonials or metrics.
 
 ## Brand Personality
 
