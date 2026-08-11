@@ -48,7 +48,9 @@
   <h1>Get in touch</h1>
 
   {#if form?.success}
-    <p class="success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
+    <p class="success" role="status">
+      Got it — thanks for reaching out. I read every message myself, and I'll get back to you soon.
+    </p>
   {:else}
     {#if formAvailable}
       <form
