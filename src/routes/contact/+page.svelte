@@ -4,6 +4,7 @@
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
   import avatarSrc from '$lib/assets/img/avatar.png?enhanced';
+  import { author } from '$lib/content/author';
   import type { ActionData, PageData } from './$types';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -114,9 +115,14 @@
         <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
       </form>
     {:else}
-      <p class="form-error" role="alert">
-        The contact form is temporarily unavailable. Please check back soon.
-      </p>
+      <div class="unavailable" role="alert">
+        <p>The contact form is temporarily unavailable. In the meantime, you can reach me directly:</p>
+        <ul class="unavailable-links">
+          {#each author.social as link (link.url)}
+            <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.name}</a></li>
+          {/each}
+        </ul>
+      </div>
     {/if}
   {/if}
 </div>
@@ -160,5 +166,18 @@
 
   .form-error {
     color: var(--color-brand-primary);
+  }
+
+  .unavailable {
+    color: var(--color-text-default);
+  }
+
+  .unavailable-links {
+    display: flex;
+    gap: var(--space-3);
+    margin: 0;
+    margin-block-start: var(--space-2);
+    padding: 0;
+    list-style: none;
   }
 </style>
