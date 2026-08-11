@@ -13,6 +13,18 @@ Andrew Pucci's public portfolio site. The app is built with SvelteKit and deploy
 - Cloudflare Pages + Workers runtime for the contact form
 - Vite+ (`vp`) for install, dev, check, test, build, and preview
 
+## Accessibility And Browser Support
+
+- WCAG 2.2 AA is the accessibility floor. See [ADR-0002](docs/adr/0002-accessibility-standards.md).
+- The production bundle explicitly targets Vite's `baseline-widely-available` browser set in [vite.config.ts](vite.config.ts). That is a modern-browser build floor, not the full accessibility contract.
+- Supported browsers for QA and bug-fix triage are the latest stable Chrome, Firefox, and Safari on desktop, plus the latest stable Safari on iOS and Chrome on Android.
+- Older browsers outside Vite's modern ESM/Baseline range are not part of the support contract unless a future ADR expands that scope.
+- Automated accessibility coverage comes from Storybook a11y checks plus `@axe-core/playwright` in the Playwright suite.
+- Manual accessibility verification remains required for keyboard-only flows and for real browser + assistive-technology combinations. At minimum, spot-check:
+  - one current Windows screen-reader/browser pair
+  - VoiceOver + Safari on macOS
+  - one current mobile screen-reader/browser pair on iOS or Android
+
 ## Project Structure
 
 ```text

@@ -21,6 +21,11 @@ export default defineConfig({
   preview: {
     port: 4173,
   },
+  build: {
+    // Keep the production bundle aligned with Vite's modern Baseline target.
+    // Accessibility support is validated separately with keyboard and AT checks.
+    target: 'baseline-widely-available',
+  },
   fmt: {
     singleQuote: true,
     trailingComma: 'es5',
