@@ -3,6 +3,7 @@
   import Button from '$lib/components/Button/Button.svelte';
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
+  import avatarSrc from '$lib/assets/img/avatar.png?enhanced';
   import type { ActionData, PageData } from './$types';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -39,6 +40,11 @@
 </svelte:head>
 
 <div class="contact">
+  <div class="intro">
+    <enhanced:img class="avatar" src={avatarSrc} alt="" sizes="56px" />
+    <p class="greeting">Hi, I'm Andrew. Drop a note below — I read every message myself.</p>
+  </div>
+
   <h1>Get in touch</h1>
 
   {#if form?.success}
@@ -118,6 +124,25 @@
     max-width: 48rem;
     margin-inline: auto;
     padding: var(--space-3);
+  }
+
+  .intro {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-end: var(--space-3);
+  }
+
+  .avatar {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+  }
+
+  .greeting {
+    margin: 0;
+    color: var(--color-text-secondary);
   }
 
   form {
