@@ -64,11 +64,14 @@
           <p class="form-error" role="alert">{form.errors.form}</p>
         {/if}
 
+        <p class="form-note">Every field below is required.</p>
+
         <Input
           label="Name"
           name="name"
           autocomplete="name"
           required
+          showRequiredPill={false}
           requiredMessage="Enter your name."
           showValidation={showValidation}
           value={form?.values?.name ?? ''}
@@ -80,6 +83,7 @@
           type="email"
           autocomplete="email"
           required
+          showRequiredPill={false}
           hint="Use a format like name@example.com."
           requiredMessage="Enter an email address."
           invalidMessage="Enter a valid email address."
@@ -91,6 +95,7 @@
           label="Message"
           name="message"
           required
+          showRequiredPill={false}
           requiredMessage="Enter a message."
           showValidation={showValidation}
           value={form?.values?.message ?? ''}
@@ -131,6 +136,12 @@
     flex-direction: column;
     gap: var(--space-3);
     margin-block: var(--space-3);
+  }
+
+  .form-note {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-meta);
   }
 
   .success {
