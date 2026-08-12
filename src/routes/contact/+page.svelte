@@ -92,7 +92,7 @@
           error={form?.errors?.email}
         />
         <Textarea
-          label="Message"
+          label="What's on your mind?"
           name="message"
           required
           showRequiredPill={false}

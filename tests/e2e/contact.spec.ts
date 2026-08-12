@@ -18,7 +18,7 @@ test.describe('Contact page', () => {
   }) => {
     await expect(page.getByLabel('Name')).toHaveAttribute('required', '');
     await expect(page.getByLabel('Email')).toHaveAttribute('required', '');
-    await expect(page.getByLabel('Message')).toHaveAttribute('required', '');
+    await expect(page.getByLabel("What's on your mind?")).toHaveAttribute('required', '');
     // Every field is required, so a single up-front note replaces a "Required"
     // badge repeated on each one -- see the accessibility rationale in the
     // shape discussion: on-blur validation already surfaces per-field errors
@@ -37,7 +37,7 @@ test.describe('Contact page', () => {
 
     await page.getByLabel('Name').fill('Jane Tester');
     await page.getByLabel('Email').fill('asdf');
-    await page.getByLabel('Message').fill('Hello there');
+    await page.getByLabel("What's on your mind?").fill('Hello there');
     await page.getByRole('button', { name: 'Send message' }).click();
 
     expect(submitCount).toBe(0);
@@ -73,7 +73,7 @@ test.describe('Contact page', () => {
   test('shows an associated error after the message field is left empty', async ({ page }) => {
     await page.getByLabel('Name').fill('Jane Tester');
     await page.getByLabel('Email').fill('jane@example.com');
-    const messageInput = page.getByLabel('Message');
+    const messageInput = page.getByLabel("What's on your mind?");
     await messageInput.focus();
     await page.getByLabel('Email').focus();
 
