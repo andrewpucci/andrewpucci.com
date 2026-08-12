@@ -8,6 +8,8 @@
     hint?: string;
     requiredMessage?: string;
     showValidation?: boolean;
+    /** Set false when every field in the form is required, so the badge isn't repeated on each one. */
+    showRequiredPill?: boolean;
   }
 
   let {
@@ -17,6 +19,7 @@
     hint,
     requiredMessage,
     showValidation = false,
+    showRequiredPill = true,
     id,
     value = '',
     ...rest
@@ -89,7 +92,7 @@
 <div class="field" data-state={getState()}>
   <label for={inputId} class="label">
     <span>{label}</span>
-    {#if isRequired}
+    {#if isRequired && showRequiredPill}
       <span class="required">Required</span>
     {/if}
   </label>
@@ -179,7 +182,7 @@
   .hint {
     margin: 0;
     color: var(--color-text-secondary);
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
   }
 
   .message {
@@ -187,7 +190,7 @@
     align-items: center;
     gap: var(--space-2);
     margin: 0;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
   }
 
   .message-icon {

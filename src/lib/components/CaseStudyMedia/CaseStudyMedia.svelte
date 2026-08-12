@@ -36,7 +36,7 @@
 
   .case-study-media figcaption {
     margin-block-start: var(--space-1);
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
     color: var(--color-text-secondary);
   }
 </style>
