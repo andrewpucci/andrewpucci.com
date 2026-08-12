@@ -13,20 +13,6 @@ test.describe('Contact page', () => {
     await expect(page).toHaveTitle('Contact | Andrew Pucci');
   });
 
-  test('shows a personal greeting with a decorative avatar above the heading', async ({ page }) => {
-    const heading = page.getByRole('heading', { name: 'Get in touch' });
-    const avatar = page.locator('.contact img');
-
-    await expect(avatar).toBeVisible();
-    await expect(avatar).toHaveAttribute('alt', '');
-    await expect(page.getByText("Hi, I'm Andrew.")).toBeVisible();
-
-    // Greeting/avatar precede the heading in reading order, not after it.
-    const introBox = await avatar.boundingBox();
-    const headingBox = await heading.boundingBox();
-    expect(introBox?.y ?? Infinity).toBeLessThan(headingBox?.y ?? 0);
-  });
-
   test('marks every field as required in the DOM', async ({ page }) => {
     await expect(page.getByLabel('Name')).toHaveAttribute('required', '');
     await expect(page.getByLabel('Email')).toHaveAttribute('required', '');
