@@ -138,6 +138,13 @@
     margin-block: var(--space-3);
   }
 
+  /* Fields stretch to fill the form (the flex column's default align-items),
+     but the button shouldn't inherit that -- a full-width bar is the widest,
+     boldest thing on the page for no reason beyond being a flex sibling. */
+  form :global(.button--primary) {
+    align-self: flex-start;
+  }
+
   .form-note {
     margin: 0;
     color: var(--color-text-secondary);
