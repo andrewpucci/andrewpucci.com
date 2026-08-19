@@ -1,5 +1,5 @@
 /// <reference types="vite-plus" />
-import { defineConfig, lazyPlugins } from 'vite-plus';
+import { defineConfig, lazyPlugins, type PluginOption } from 'vite-plus';
 import { playwright } from 'vite-plus/test/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
@@ -196,7 +196,7 @@ export default defineConfig({
   },
   // enhancedImages() must come before sveltekit() -- it's a Svelte
   // preprocessor plugin that needs to see <enhanced:img> tags first.
-  plugins: lazyPlugins(() => [terrazzo(), enhancedImages(), sveltekit()]),
+  plugins: lazyPlugins((): PluginOption[] => [terrazzo(), enhancedImages(), sveltekit()]),
   test: {
     globals: true,
     expect: {

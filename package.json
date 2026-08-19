@@ -90,7 +90,7 @@
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8",
     "vite-plus": "0.2.9",
     "vitest": "4.1.10",
-    "wrangler": "^4.113.0"
+    "wrangler": "4.113.0"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
