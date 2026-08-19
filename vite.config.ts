@@ -10,6 +10,14 @@ import { terrazzo } from './vite-plugin-terrazzo';
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
+function appPlugins(): PluginOption[] {
+  return [
+    terrazzo() as PluginOption,
+    enhancedImages() as PluginOption,
+    sveltekit() as PluginOption,
+  ];
+}
+
 // `sveltekit()` is called with no arguments so it (and every other tool that
 // loads Svelte config the classic way, e.g. Storybook's SvelteKit framework)
 // reads the single source of truth in svelte.config.ts.
@@ -196,7 +204,7 @@ export default defineConfig({
   },
   // enhancedImages() must come before sveltekit() -- it's a Svelte
   // preprocessor plugin that needs to see <enhanced:img> tags first.
-  plugins: lazyPlugins((): PluginOption[] => [terrazzo(), enhancedImages(), sveltekit()]),
+  plugins: lazyPlugins(appPlugins),
   test: {
     globals: true,
     expect: {
