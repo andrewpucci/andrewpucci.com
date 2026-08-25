@@ -70,7 +70,7 @@ jobs:
       # directly, hence the env-var indirection.
       - name: Publish to Chromatic
         if: ${{ env.CHROMATIC_PROJECT_TOKEN != '' }}
-        uses: chromaui/action@14cfaef73576e69f95f47f60058063f46ca38719 # latest (v18.1.0)
+        uses: chromaui/action@534eebfc19023579541d106f7b61d5ad70ed65c7 # latest (v18.1.0)
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         with:
