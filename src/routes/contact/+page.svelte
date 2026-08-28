@@ -3,6 +3,7 @@
   import Button from '$lib/components/Button/Button.svelte';
   import Input from '$lib/components/Input/Input.svelte';
   import Textarea from '$lib/components/Textarea/Textarea.svelte';
+  import { author } from '$lib/content/author';
   import type { ActionData, PageData } from './$types';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -42,7 +43,7 @@
   <h1>Get in touch</h1>
 
   {#if form?.success}
-    <p class="success" role="status">Thanks for reaching out — I'll get back to you soon.</p>
+    <p class="success" role="status">Got it — thanks for reaching out. I'll get back to you soon.</p>
   {:else}
     {#if formAvailable}
       <form
@@ -63,11 +64,14 @@
           <p class="form-error" role="alert">{form.errors.form}</p>
         {/if}
 
+        <p class="form-note">Every field below is required.</p>
+
         <Input
           label="Name"
           name="name"
           autocomplete="name"
           required
+          showRequiredPill={false}
           requiredMessage="Enter your name."
           showValidation={showValidation}
           value={form?.values?.name ?? ''}
@@ -79,6 +83,7 @@
           type="email"
           autocomplete="email"
           required
+          showRequiredPill={false}
           hint="Use a format like name@example.com."
           requiredMessage="Enter an email address."
           invalidMessage="Enter a valid email address."
@@ -87,9 +92,10 @@
           error={form?.errors?.email}
         />
         <Textarea
-          label="Message"
+          label="What's on your mind?"
           name="message"
           required
+          showRequiredPill={false}
           requiredMessage="Enter a message."
           showValidation={showValidation}
           value={form?.values?.message ?? ''}
@@ -106,9 +112,14 @@
         <Button type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Send message'}</Button>
       </form>
     {:else}
-      <p class="form-error" role="alert">
-        The contact form is temporarily unavailable. Please check back soon.
-      </p>
+      <div class="unavailable" role="alert">
+        <p>The contact form is temporarily unavailable. In the meantime, you can reach me directly:</p>
+        <ul class="unavailable-links">
+          {#each author.social as link (link.url)}
+            <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.name}</a></li>
+          {/each}
+        </ul>
+      </div>
     {/if}
   {/if}
 </div>
@@ -127,11 +138,37 @@
     margin-block: var(--space-3);
   }
 
+  /* Fields stretch to fill the form (the flex column's default align-items),
+     but the button shouldn't inherit that -- a full-width bar is the widest,
+     boldest thing on the page for no reason beyond being a flex sibling. */
+  form :global(.button--primary) {
+    align-self: flex-start;
+  }
+
+  .form-note {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-meta);
+  }
+
   .success {
     color: var(--color-text-default);
   }
 
   .form-error {
     color: var(--color-brand-primary);
+  }
+
+  .unavailable {
+    color: var(--color-text-default);
+  }
+
+  .unavailable-links {
+    display: flex;
+    gap: var(--space-3);
+    margin: 0;
+    margin-block-start: var(--space-2);
+    padding: 0;
+    list-style: none;
   }
 </style>

@@ -33,7 +33,7 @@
        dot sits beside the job title, not the date line above it. Depends on
        ResumeEntry.svelte's structure -- update both if either changes. */
     --timeline-marker-center: calc(
-      var(--space-3) + (0.9375rem * 1.5) + var(--space-1) +
+      var(--space-3) + (var(--font-size-meta) * 1.5) + var(--space-1) +
         (var(--typography-title-font-size) * var(--typography-title-line-height) / 2)
     );
   }
