@@ -11,7 +11,7 @@ Add an advisory GitHub Actions workflow that reviews npm Dependabot pull request
 - **Deterministic gates retain authority:** GitHub Dependency Review and existing CI remain merge gates. Mistral produces advisory recommendations only.
 - **Official-source-only blockers:** a `do_not_merge` verdict requires an input finding with official evidence. An applicable documented codemod blocks a plain Dependabot bump; unproven applicability becomes manual review.
 - **One updatable conversation comment:** use an issue-style comment marked with a hidden identifier and head SHA. This avoids duplicate notifications from repeated submitted reviews.
-- **Raw HTTPS by default:** use Node 24 `fetch` to avoid adding an SDK dependency. Revisit only if an official SDK materially reduces risk.
+- **Raw HTTPS and `.mjs` by default:** use Node 24 `fetch` and directly executable ESM modules to avoid adding either an SDK or TypeScript runtime dependency.
 
 ## Dependency Graph
 

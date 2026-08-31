@@ -21,7 +21,7 @@ See [plan.md](plan.md) for architecture decisions, dependencies, and risks.
 
 **Files likely touched:**
 
-- `.github/actions-scripts/dependabot-review/schema.ts`
+- `.github/actions-scripts/dependabot-review/schema.mjs`
 - `.github/actions-scripts/dependabot-review/schema.test.ts`
 
 **Estimated scope:** Small: 2 files
@@ -45,7 +45,7 @@ See [plan.md](plan.md) for architecture decisions, dependencies, and risks.
 
 **Files likely touched:**
 
-- `.github/actions-scripts/dependabot-review/inputs.ts`
+- `.github/actions-scripts/dependabot-review/inputs.mjs`
 - `.github/actions-scripts/dependabot-review/inputs.test.ts`
 
 **Estimated scope:** Small: 2 files
@@ -74,7 +74,7 @@ See [plan.md](plan.md) for architecture decisions, dependencies, and risks.
 
 **Files likely touched:**
 
-- `.github/actions-scripts/dependabot-review/analysis.ts`
+- `.github/actions-scripts/dependabot-review/analysis.mjs`
 - `.github/actions-scripts/dependabot-review/analysis.test.ts`
 
 **Estimated scope:** Small: 2 files
@@ -98,7 +98,7 @@ See [plan.md](plan.md) for architecture decisions, dependencies, and risks.
 
 **Files likely touched:**
 
-- `.github/actions-scripts/dependabot-review/reporting.ts`
+- `.github/actions-scripts/dependabot-review/reporting.mjs`
 - `.github/actions-scripts/dependabot-review/reporting.test.ts`
 
 **Estimated scope:** Small: 2 files

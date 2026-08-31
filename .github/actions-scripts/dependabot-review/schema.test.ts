@@ -1,15 +1,14 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { parseAnalysis, parseReviewInput } from './schema';
-import type { EvidenceSource, ReviewInput } from './schema';
+import { parseAnalysis, parseReviewInput } from './schema.mjs';
 
-const source: EvidenceSource = {
+const source = {
   kind: 'release-notes',
   url: 'https://github.com/example/package/releases/tag/v2.0.0',
   title: 'v2.0.0',
   excerpt: 'Adds a documented feature.',
 };
 
-const reviewInput: ReviewInput = {
+const reviewInput = {
   pullRequest: { number: 42, baseSha: 'base', headSha: 'head' },
   packages: [
     {

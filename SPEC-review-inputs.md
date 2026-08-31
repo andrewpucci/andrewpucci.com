@@ -10,7 +10,7 @@ The user is the repository maintainer reviewing a Dependabot pull request. Succe
 
 - GitHub Actions on GitHub-hosted Ubuntu runners.
 - GitHub REST API authenticated with the workflow `GITHUB_TOKEN`.
-- Node.js 24 and its built-in `fetch`; no new runtime package is required for input collection.
+- Node.js 24 and its built-in `fetch`; workflow-executed modules use `.mjs` so GitHub Actions can run them without a TypeScript runtime or a build step.
 - npm 11 with committed `package-lock.json`.
 - `review-analysis` will use `mistral-medium-latest`; this module never receives an API key or calls an LLM.
 
@@ -39,12 +39,12 @@ Workflow-specific tests will use mocked GitHub REST responses and run in Vitest.
   → Orchestration only; calls review-inputs before later modules.
 
 .github/actions-scripts/dependabot-review/
-  inputs.ts
+  inputs.mjs
     → GitHub API collection and bounded review-packet construction.
   inputs.test.ts
     → Vitest coverage of API-result parsing, source validation, and errors.
-  schema.ts
-    → Shared TypeScript types and runtime validation for the review packet.
+  schema.mjs
+    → Shared runtime validation for the review packet.
 
 SPEC-review-inputs.md
   → This module contract.
@@ -54,7 +54,7 @@ The eventual workflow and implementation files are listed for planning only; the
 
 ## Code Style
 
-Use TypeScript, ESM imports, small pure transformation functions, and explicit runtime validation at network boundaries. Treat every value received from GitHub, package registries, release notes, and pull-request files as untrusted data. Do not interpolate those values into shell scripts.
+Use ESM JavaScript, small pure transformation functions, and explicit runtime validation at network boundaries. Treat every value received from GitHub, package registries, release notes, and pull-request files as untrusted data. Do not interpolate those values into shell scripts.
 
 ```ts
 type EvidenceSource = {

@@ -8,7 +8,7 @@ The module serves the repository maintainer. It does not make merge decisions on
 
 ## Tech Stack
 
-- Node.js 24 in GitHub Actions.
+- Node.js 24 in GitHub Actions; workflow-executed modules use `.mjs` and require no TypeScript runtime or build step.
 - Mistral Chat Completions using `mistral-medium-latest` and the `MISTRAL_API_KEY` Dependabot secret.
 - Mistral JSON mode for a valid JSON object plus local runtime schema validation; do not trust model output merely because it parses.
 - The official TypeScript Mistral SDK is preferred if adopted with approval; otherwise use the documented HTTPS API with Node's built-in `fetch` to avoid a new runtime dependency.
@@ -32,9 +32,9 @@ All analysis tests use mocked Mistral HTTP responses. No test calls Mistral or r
 
 ```text
 .github/actions-scripts/dependabot-review/
-  schema.ts
-    → Shared TypeScript schemas for input and analysis contracts.
-  analysis.ts
+  schema.mjs
+    → Shared runtime schemas for input and analysis contracts.
+  analysis.mjs
     → Prompt construction, Mistral request/retry handling, and result validation.
   analysis.test.ts
     → Vitest coverage of verdict policy, prompt construction, and error handling.
@@ -45,7 +45,7 @@ SPEC-review-analysis.md
 
 ## Code Style
 
-Use TypeScript, ESM imports, discriminated unions for verdict states, explicit timeouts, and pure functions for all policy decisions. Build the prompt from structured fields, not string concatenation of shell commands or unbounded upstream documents.
+Use ESM JavaScript, explicit verdict strings, explicit timeouts, and pure functions for all policy decisions. Build the prompt from structured fields, not string concatenation of shell commands or unbounded upstream documents.
 
 ```ts
 type Verdict = 'merge' | 'merge_with_followups' | 'do_not_merge' | 'analysis_unavailable';

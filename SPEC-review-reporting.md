@@ -10,7 +10,7 @@ The maintainer must be able to distinguish verified blockers from follow-ups, se
 
 - GitHub Actions on GitHub-hosted Ubuntu runners.
 - GitHub REST API with the workflow `GITHUB_TOKEN`.
-- Node.js 24 with built-in `fetch`; no new runtime package is required.
+- Node.js 24 with built-in `fetch`; workflow-executed modules use `.mjs` and require no TypeScript runtime or build step.
 - A single issue-style pull-request conversation comment, created or updated through the GitHub Issues comments API. Pull requests are issues for this API, which enables in-place updates and avoids an additional review notification for every Dependabot push.
 
 The workflow requires `issues: write` only for this module. It does not need permission to approve, request changes, or merge a pull request.
@@ -32,12 +32,12 @@ All reporting tests mock GitHub REST calls. They do not create or alter live pul
 
 ```text
 .github/actions-scripts/dependabot-review/
-  reporting.ts
+  reporting.mjs
     → Markdown rendering, comment discovery, and create/update operations.
   reporting.test.ts
     → Vitest coverage of rendering, truncation, idempotency, and failures.
-  schema.ts
-    → Shared input/analysis/reporting types and runtime validation.
+  schema.mjs
+    → Shared input/analysis/reporting runtime validation.
 
 .github/workflows/dependabot-intelligent-review.yml
   → Invokes the completed modules with minimal permissions.
@@ -48,7 +48,7 @@ SPEC-review-reporting.md
 
 ## Code Style
 
-Use TypeScript, ESM imports, small pure render functions, and explicit REST response handling. Escape values that originate with model output or upstream documents before inserting them into Markdown. Render links only from previously validated official evidence URLs.
+Use ESM JavaScript, small pure render functions, and explicit REST response handling. Escape values that originate with model output or upstream documents before inserting them into Markdown. Render links only from previously validated official evidence URLs.
 
 ```ts
 const marker = '<!-- dependabot-intelligent-review -->';
