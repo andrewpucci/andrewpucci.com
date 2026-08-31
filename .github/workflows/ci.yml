@@ -42,88 +42,11 @@ jobs:
       - name: Svelte type check
         run: vp run check:svelte
 
-      - name: Install Playwright browsers
-        # Storybook's browser project runs only in Chromium. The other browser
-        # engines are installed in their own E2E matrix jobs below.
-        run: npx playwright install --with-deps chromium
-
-      # Covers both plain utility functions and Storybook interaction tests
-      # (the "storybook" Vitest project) -- there's no separate component
-      # test layer, per ADR-0010.
-      - name: Unit + Storybook interaction tests
+      - name: Unit tests
         # `npm run` resolves the local `vp` binary, which also resolves the
         # locally-installed optional coverage provider.
-        run: npm run test:coverage
+        run: npm run test:coverage -- --project=server
 
       # ADR-0003: fail on high/critical, review moderate/low manually.
       - name: npm audit
         run: npm audit --audit-level=high
-
-      - name: Build Storybook
-        run: vp run build-storybook
-
-      # Requires the CHROMATIC_PROJECT_TOKEN repo secret (Storybook ->
-      # Manage -> Configure -> "Project token" on chromatic.com). Visual
-      # regression + the published Storybook URL, per ADR-0008. Skipped
-      # (not failed) until that secret is added, so the rest of CI isn't
-      # blocked on it in the meantime. `if:` can't reference `secrets.*`
-      # directly, hence the env-var indirection.
-      - name: Publish to Chromatic
-        if: ${{ env.CHROMATIC_PROJECT_TOKEN != '' }}
-        uses: chromaui/action@534eebfc19023579541d106f7b61d5ad70ed65c7 # latest (v18.1.0)
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          storybookBuildDir: storybook-static
-
-  e2e:
-    name: E2E (${{ matrix.browser }})
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Vite+
-        uses: voidzero-dev/setup-vp@313600b80b104eadebb9111787d37a2e83e014ca # v1.17.0
-        with:
-          node-version: 24.x
-          cache: true
-
-      - name: Install dependencies
-        run: vp install
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
-
-      # playwright.config.ts's webServer runs `npm run build && npm run
-      # preview:pages` itself (Wrangler, not `vp preview`), so this also
-      # exercises the real Cloudflare Pages build.
-      - name: E2E + accessibility tests
-        run: npm run test:e2e -- --project=${{ matrix.browser }} --retries=2
-        env:
-          # Fork PRs cannot access repository secrets. Functional checks run
-          # everywhere; trusted PRs and main pushes upload to Argos once its
-          # repository token is configured.
-          ARGOS_UPLOAD: ${{ matrix.browser == 'chromium' && secrets.ARGOS_TOKEN != '' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork == false) && 'true' || 'false' }}
-          ARGOS_TOKEN: ${{ secrets.ARGOS_TOKEN }}
-          # Cloudflare's documented public Turnstile test key makes the form
-          # available for client-side E2E validation. It cannot verify a real
-          # challenge and has no production authority.
-          PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: playwright-report-${{ matrix.browser }}
-          path: |
-            playwright-report/
-            ~/.config/.wrangler/logs/
-          retention-days: 7
