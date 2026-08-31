@@ -1,7 +1,8 @@
 name: Dependabot intelligent review
 
 on:
-  pull_request:
+  # Allows this trusted-base workflow to publish its PR review comment.
+  pull_request_target:
     types: [opened, reopened, synchronize]
 
 concurrency:
