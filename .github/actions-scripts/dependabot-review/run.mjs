@@ -3,7 +3,10 @@ import { analyze } from './analysis.mjs';
 import { collectReviewInput } from './inputs.mjs';
 import { renderComment } from './reporting.mjs';
 
-const event = JSON.parse(await readFile(process.env.GITHUB_EVENT_PATH, 'utf8'));
+const eventPath = process.env.GITHUB_EVENT_PATH;
+if (!eventPath) throw new Error('GITHUB_EVENT_PATH is required.');
+// oxlint-disable-next-line security/detect-non-literal-fs-filename -- GitHub Actions supplies this runner path.
+const event = JSON.parse(await readFile(eventPath, 'utf8'));
 const filesUrl = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls/${event.pull_request.number}/files?per_page=100`;
 const githubHeaders = {
   Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
@@ -12,10 +15,14 @@ const githubHeaders = {
 const filesResponse = await fetch(filesUrl, { headers: githubHeaders });
 if (!filesResponse.ok)
   throw new Error(`Unable to retrieve pull request files (${filesResponse.status}).`);
-const input = await collectReviewInput({
-  pull_request: event.pull_request,
-  files: await filesResponse.json(),
-});
+const input = await collectReviewInput(
+  {
+    pull_request: event.pull_request,
+    repository: process.env.GITHUB_REPOSITORY,
+    files: await filesResponse.json(),
+  },
+  { githubHeaders }
+);
 if (!input) process.exit(0);
 const analysis = await analyze(input, process.env.MISTRAL_API_KEY);
 const body = renderComment(analysis, input.pullRequest.headSha);
