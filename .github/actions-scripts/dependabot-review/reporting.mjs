@@ -4,6 +4,10 @@ function escape(value) {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
+function escapeFence(value) {
+  return value.replaceAll('```', '``\\`');
+}
+
 export function renderComment(analysis, headSha) {
   const verdict = analysis.verdict.replaceAll('_', ' ');
   const lines = [
@@ -39,7 +43,7 @@ export function renderComment(analysis, headSha) {
         '',
         '### Remediation prompt',
         '```text',
-        analysis.remediationPrompt.replaceAll('```', '```'),
+        escapeFence(analysis.remediationPrompt),
         '```'
       );
   }
