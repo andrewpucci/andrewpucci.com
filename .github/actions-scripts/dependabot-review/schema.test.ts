@@ -16,6 +16,7 @@ const reviewInput = {
       from: '1.0.0',
       to: '2.0.0',
       dependencyType: 'direct:production',
+      license: null,
       sources: [source],
       findings: [],
     },
@@ -65,6 +66,7 @@ describe('review contracts', () => {
           packageAssessments: [],
           blockers: [
             {
+              findingId: 'missing-finding',
               reason: 'Run the codemod.',
               impact: 'The upgrade is incomplete.',
               evidence: [{ claim: 'The codemod is documented.', sourceUrl: source.url }],
@@ -77,5 +79,91 @@ describe('review contracts', () => {
         reviewInput
       )
     ).toThrow(/verified input finding/i);
+  });
+
+  it('rejects a blocker that does not identify a matching verified finding', () => {
+    const inputWithFinding = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          findings: [
+            {
+              id: 'example:applicable-codemod',
+              kind: 'applicable-codemod',
+              reason: 'Run the codemod.',
+              sourceUrl: source.url,
+              remediation: ['npx example-codemod migrate'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'do_not_merge',
+          summary: 'A migration is required.',
+          packageAssessments: [],
+          blockers: [
+            {
+              findingId: 'different-finding',
+              reason: 'Run the codemod.',
+              impact: 'The upgrade is incomplete.',
+              evidence: [{ claim: 'The codemod is documented.', sourceUrl: source.url }],
+              remediation: ['Run the official codemod.'],
+              validation: ['npm test'],
+            },
+          ],
+          remediationPrompt: 'Run the codemod and validate the resulting diff.',
+        },
+        inputWithFinding
+      )
+    ).toThrow(/verified input finding/i);
+  });
+
+  it('accepts a blocker that cites its matching verified finding', () => {
+    const inputWithFinding = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          findings: [
+            {
+              id: 'example:applicable-codemod',
+              kind: 'applicable-codemod',
+              reason: 'Run the codemod.',
+              sourceUrl: source.url,
+              remediation: ['npx example-codemod migrate'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'do_not_merge',
+          summary: 'A migration is required.',
+          packageAssessments: [],
+          blockers: [
+            {
+              findingId: 'example:applicable-codemod',
+              reason: 'Run the codemod.',
+              impact: 'The upgrade is incomplete.',
+              evidence: [{ claim: 'The codemod is documented.', sourceUrl: source.url }],
+              remediation: ['Run the official codemod.'],
+              validation: ['npm test'],
+            },
+          ],
+          remediationPrompt: 'Run the codemod and validate the resulting diff.',
+        },
+        inputWithFinding
+      )
+    ).toMatchObject({ verdict: 'do_not_merge' });
   });
 });

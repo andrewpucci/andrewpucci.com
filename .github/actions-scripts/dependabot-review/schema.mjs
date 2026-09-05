@@ -1,6 +1,11 @@
 const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'analysis_unavailable']);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
-const sourceKinds = new Set(['release-notes', 'migration-guide', 'codemod-guide']);
+const sourceKinds = new Set([
+  'release-notes',
+  'migration-guide',
+  'codemod-guide',
+  'github-advisory',
+]);
 const blockerKinds = new Set([
   'vulnerability',
   'license-policy',
@@ -52,11 +57,13 @@ export function parseReviewInput(value) {
       const sourceUrls = new Set(sources.map((source) => source.url));
       const findings = array(dependency.findings, 'findings').map((value) => {
         const finding = object(value, 'finding');
+        const id = string(finding.id, 'finding ID');
         const kind = string(finding.kind, 'finding kind');
         const sourceUrl = string(finding.sourceUrl, 'finding source URL');
         if (!blockerKinds.has(kind) || !sourceUrls.has(sourceUrl))
           throw new TypeError('finding must use a known blocker kind and evidence URL');
         return {
+          id,
           kind,
           reason: string(finding.reason, 'finding reason'),
           sourceUrl,
@@ -76,6 +83,7 @@ export function parseReviewInput(value) {
         from: string(dependency.from, 'package from version'),
         to: string(dependency.to, 'package to version'),
         dependencyType: string(dependency.dependencyType, 'dependency type'),
+        license: dependency.license === null ? null : string(dependency.license, 'package license'),
         sources,
         findings,
       };
@@ -89,6 +97,11 @@ export function parseAnalysis(value, input) {
   if (!verdicts.has(verdict)) throw new TypeError('unsupported verdict');
   const sourceUrls = new Set(
     input.packages.flatMap((dependency) => dependency.sources.map((source) => source.url))
+  );
+  const findings = new Map(
+    input.packages.flatMap((dependency) =>
+      dependency.findings.map((finding) => [finding.id, finding])
+    )
   );
   const requireUrl = (url) => {
     if (!sourceUrls.has(url)) throw new TypeError(`unknown evidence URL: ${url}`);
@@ -115,16 +128,23 @@ export function parseAnalysis(value, input) {
   });
   const blockers = array(analysis.blockers, 'blockers').map((value) => {
     const item = object(value, 'blocker');
+    const findingId = string(item.findingId, 'blocker finding ID');
+    const finding = findings.get(findingId);
+    if (!finding) throw new TypeError('blocker must identify a verified input finding');
+    const evidence = array(item.evidence, 'blocker evidence').map((value) => {
+      const evidence = object(value, 'blocker evidence item');
+      return {
+        claim: string(evidence.claim, 'blocker claim'),
+        sourceUrl: requireUrl(string(evidence.sourceUrl, 'blocker evidence URL')),
+      };
+    });
+    if (!evidence.length || !evidence.some((item) => item.sourceUrl === finding.sourceUrl))
+      throw new TypeError('blocker must cite its verified input finding');
     return {
+      findingId,
       reason: string(item.reason, 'blocker reason'),
       impact: string(item.impact, 'blocker impact'),
-      evidence: array(item.evidence, 'blocker evidence').map((value) => {
-        const evidence = object(value, 'blocker evidence item');
-        return {
-          claim: string(evidence.claim, 'blocker claim'),
-          sourceUrl: requireUrl(string(evidence.sourceUrl, 'blocker evidence URL')),
-        };
-      }),
+      evidence,
       remediation: array(item.remediation, 'blocker remediation').map((item) =>
         string(item, 'blocker remediation item')
       ),
@@ -133,13 +153,7 @@ export function parseAnalysis(value, input) {
       ),
     };
   });
-  if (
-    verdict === 'do_not_merge' &&
-    (!blockers.length ||
-      !input.packages.some((dependency) =>
-        dependency.findings.some((finding) => blockerKinds.has(finding.kind))
-      ))
-  )
+  if (verdict === 'do_not_merge' && !blockers.length)
     throw new TypeError('do_not_merge requires a verified input finding');
   return {
     verdict,

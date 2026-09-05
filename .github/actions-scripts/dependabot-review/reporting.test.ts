@@ -25,7 +25,7 @@ describe('renderComment', () => {
     expect(body).toContain('Remediation prompt');
   });
 
-  it('does not let fenced code in a remediation prompt close its wrapper', () => {
+  it('escapes fence delimiters inside a remediation prompt', () => {
     const body = renderComment(
       {
         verdict: 'do_not_merge',
@@ -40,11 +40,12 @@ describe('renderComment', () => {
             validation: [],
           },
         ],
-        remediationPrompt: 'Run:\n```sh\nnpm exec migrate\n```',
+        remediationPrompt: 'Run the migration.\n```sh\nnpm run migrate\n```',
       },
       'head'
     );
 
-    expect(body).toContain('Run:\n``\\`sh\nnpm exec migrate\n``\\`');
+    expect(body).toContain('``\\`sh');
+    expect(body).toContain('``\\`\n```');
   });
 });

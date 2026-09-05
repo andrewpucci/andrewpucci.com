@@ -1,0 +1,79 @@
+name: Visual regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app.css'
+      - 'src/lib/components/**'
+      - 'src/lib/tokens/**'
+      - 'static/**'
+      - 'tokens/**'
+      - 'terrazzo.config.ts'
+      - 'vite-plugin-terrazzo.ts'
+      - 'svelte.config.ts'
+      - 'vite.config.ts'
+      - '.storybook/**'
+      - '.github/workflows/visual-regression.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app.css'
+      - 'src/lib/components/**'
+      - 'src/lib/tokens/**'
+      - 'static/**'
+      - 'tokens/**'
+      - 'terrazzo.config.ts'
+      - 'vite-plugin-terrazzo.ts'
+      - 'svelte.config.ts'
+      - 'vite.config.ts'
+      - '.storybook/**'
+      - '.github/workflows/visual-regression.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  storybook:
+    name: Storybook interaction and visual tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # Chromatic needs history to diff against a baseline
+
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@313600b80b104eadebb9111787d37a2e83e014ca # v1.17.0
+        with:
+          node-version: 24.x
+          cache: true
+
+      - name: Install dependencies
+        run: vp install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Storybook interaction tests
+        run: vp test run --project=storybook
+
+      - name: Build Storybook
+        run: vp run build-storybook
+
+      # `if:` cannot reference `secrets.*` directly, hence the env-var
+      # indirection. It remains skipped until the project token is configured.
+      - name: Publish to Chromatic
+        if: ${{ env.CHROMATIC_PROJECT_TOKEN != '' }}
+        uses: chromaui/action@534eebfc19023579541d106f7b61d5ad70ed65c7 # latest (v18.1.0)
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: storybook-static

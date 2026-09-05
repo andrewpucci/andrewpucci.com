@@ -1,11 +1,6 @@
-export function workflowRunHeadSha(event) {
-  const headSha = event?.workflow_run?.head_sha;
-  if (typeof headSha !== 'string' || !headSha)
-    throw new Error('workflow_run is missing its head SHA.');
-  return headSha;
-}
-
-export function pullRequestForWorkflowRun(pullRequests, headSha) {
-  const pullRequest = pullRequests.find((item) => item?.head?.sha === headSha);
-  return pullRequest ?? null;
+export function pullRequestNumber(event) {
+  const number = event?.workflow_run?.pull_requests?.[0]?.number;
+  if (!Number.isInteger(number))
+    throw new Error('workflow_run is not associated with a pull request.');
+  return number;
 }
