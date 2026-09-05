@@ -39,7 +39,7 @@ export function renderComment(analysis, headSha) {
         '',
         '### Remediation prompt',
         '```text',
-        analysis.remediationPrompt.replaceAll('```', '```'),
+        analysis.remediationPrompt.replaceAll('```', '``\\`'),
         '```'
       );
   }
