@@ -1,11 +1,13 @@
 name: Dependabot intelligent review
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  # This trusted follow-up can comment even though Dependabot's CI token is read-only.
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 concurrency:
-  group: dependabot-intelligent-review-${{ github.event.pull_request.number }}
+  group: dependabot-intelligent-review-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: true
 
 permissions:
@@ -15,14 +17,15 @@ permissions:
 
 jobs:
   review:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      startsWith(github.event.workflow_run.head_branch, 'dependabot/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      # The script comes from the trusted base commit; no PR code is executed.
+      # workflow_run checks out the trusted default branch; no PR code is executed.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 1
       - name: Review dependency update
         env:
