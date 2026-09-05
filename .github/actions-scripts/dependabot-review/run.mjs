@@ -9,11 +9,14 @@ const eventPath = process.env.GITHUB_EVENT_PATH;
 if (!eventPath) throw new Error('GITHUB_EVENT_PATH is required.');
 // oxlint-disable-next-line security/detect-non-literal-fs-filename -- GitHub Actions supplies this runner path.
 const event = JSON.parse(await readFile(eventPath, 'utf8'));
-const number = pullRequestNumber(event);
 const githubHeaders = {
   Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
   Accept: 'application/vnd.github+json',
 };
+const number = await pullRequestNumber(event, {
+  repository: process.env.GITHUB_REPOSITORY,
+  githubHeaders,
+});
 const pullRequestApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls/${number}`;
 const [pullRequestResponse, filesResponse] = await Promise.all([
   fetch(pullRequestApi, { headers: githubHeaders }),
