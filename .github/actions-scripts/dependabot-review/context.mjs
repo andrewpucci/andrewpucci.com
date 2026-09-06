@@ -23,7 +23,8 @@ function excerptFor(text, name, ecosystem) {
       excerpt.push(line);
     }
   }
-  return excerpt.join('\n').slice(0, 500);
+  const value = excerpt.join('\n');
+  return { value: value.slice(0, 500), truncated: value.length > 500 };
 }
 
 export async function collectRepositoryContext(packages, { paths, readFile }) {
@@ -46,7 +47,8 @@ export async function collectRepositoryContext(packages, { paths, readFile }) {
             {
               kind: ecosystem === 'actions' ? 'workflow-action' : 'package-usage',
               path: file.path,
-              excerpt,
+              excerpt: excerpt.value,
+              truncated: excerpt.truncated,
             },
           ]
         : [];
@@ -54,8 +56,12 @@ export async function collectRepositoryContext(packages, { paths, readFile }) {
     return {
       name,
       status:
-        allFacts.length > maximumFacts ? 'partial' : allFacts.length ? 'available' : 'unavailable',
-      facts: allFacts.slice(0, maximumFacts),
+        allFacts.length > maximumFacts || allFacts.some((fact) => fact.truncated)
+          ? 'partial'
+          : allFacts.length
+            ? 'available'
+            : 'unavailable',
+      facts: allFacts.slice(0, maximumFacts).map(({ truncated: _truncated, ...fact }) => fact),
     };
   });
 }

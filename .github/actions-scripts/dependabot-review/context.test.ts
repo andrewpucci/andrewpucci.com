@@ -41,4 +41,14 @@ describe('collectRepositoryContext', () => {
     expect(context[0]).toMatchObject({ status: 'partial' });
     expect(context[0].facts).toHaveLength(20);
   });
+
+  it('marks context partial when a fact excerpt reaches its cap', async () => {
+    const context = await collectRepositoryContext(
+      [{ name: 'example-package', ecosystem: 'npm' }],
+      { paths: ['src/example.ts'], readFile: async () => `example-package ${'x'.repeat(600)}` }
+    );
+
+    expect(context[0]).toMatchObject({ status: 'partial' });
+    expect(context[0].facts[0].excerpt).toHaveLength(500);
+  });
 });
