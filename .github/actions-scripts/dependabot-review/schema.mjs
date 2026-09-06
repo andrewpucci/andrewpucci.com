@@ -1,7 +1,10 @@
 const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'analysis_unavailable']);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
+const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
 const sourceKinds = new Set([
   'release-notes',
+  'repository-compare',
+  'package-metadata',
   'migration-guide',
   'codemod-guide',
   'github-advisory',
@@ -41,17 +44,25 @@ export function parseReviewInput(value) {
     },
     packages: array(input.packages, 'packages').map((value) => {
       const dependency = object(value, 'package');
+      const evidence = object(dependency.evidence, 'package evidence');
+      const status = string(evidence.status, 'evidence status');
+      if (!evidenceStatuses.has(status)) throw new TypeError('unsupported evidence status');
       const sources = array(dependency.sources, 'sources').map((value) => {
         const source = object(value, 'source');
         const kind = string(source.kind, 'source kind');
         const url = string(source.url, 'source URL');
         if (!sourceKinds.has(kind) || new URL(url).protocol !== 'https:')
           throw new TypeError('source must be an HTTPS official evidence source');
+        const range = object(source.range, 'source range');
         return {
           kind,
           url,
           title: string(source.title, 'source title'),
           excerpt: string(source.excerpt, 'source excerpt'),
+          range: {
+            from: string(range.from, 'source range from version'),
+            to: string(range.to, 'source range to version'),
+          },
         };
       });
       const sourceUrls = new Set(sources.map((source) => source.url));
@@ -84,6 +95,10 @@ export function parseReviewInput(value) {
         to: string(dependency.to, 'package to version'),
         dependencyType: string(dependency.dependencyType, 'dependency type'),
         license: dependency.license === null ? null : string(dependency.license, 'package license'),
+        evidence: {
+          status,
+          reason: evidence.reason === null ? null : string(evidence.reason, 'evidence reason'),
+        },
         sources,
         findings,
       };

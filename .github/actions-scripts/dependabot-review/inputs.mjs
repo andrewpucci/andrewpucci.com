@@ -1,4 +1,5 @@
 import { parseReviewInput } from './schema.mjs';
+import { fetchAllPages } from './github.mjs';
 
 const githubRepository = (value) => {
   try {
@@ -143,6 +144,151 @@ async function json(response) {
   return response.ok ? response.json() : null;
 }
 
+async function fetchJson(fetchLike, url, options) {
+  try {
+    return await fetchLike(url, options).then(json);
+  } catch {
+    return null;
+  }
+}
+
+async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
+  for (const tag of [`v${dependency.to}`, dependency.to]) {
+    const release = await fetchJson(
+      fetchLike,
+      `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(tag)}`,
+      { headers: githubHeaders }
+    );
+    if (release?.html_url && typeof release.body === 'string')
+      return {
+        kind: 'release-notes',
+        url: release.html_url,
+        title: release.name || `${dependency.name} ${dependency.to}`,
+        excerpt: release.body.slice(0, 12_000),
+        range: { from: dependency.from, to: dependency.to },
+      };
+  }
+  return null;
+}
+
+async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
+  for (const fromTag of [`v${dependency.from}`, dependency.from])
+    for (const toTag of [`v${dependency.to}`, dependency.to]) {
+      const comparison = await fetchJson(
+        fetchLike,
+        `https://api.github.com/repos/${repository}/compare/${encodeURIComponent(fromTag)}...${encodeURIComponent(toTag)}`,
+        { headers: githubHeaders }
+      );
+      if (typeof comparison?.html_url !== 'string') continue;
+      const commits = Array.isArray(comparison.commits) ? comparison.commits : [];
+      const excerpt = commits
+        .map((commit) => commit?.commit?.message)
+        .filter((message) => typeof message === 'string')
+        .join('\n')
+        .slice(0, 12_000);
+      return {
+        kind: 'repository-compare',
+        url: comparison.html_url,
+        title: `${dependency.name} ${dependency.from} to ${dependency.to}`,
+        excerpt: excerpt || `GitHub compared ${dependency.from} to ${dependency.to}.`,
+        range: { from: dependency.from, to: dependency.to },
+      };
+    }
+  return null;
+}
+
+function versionParts(value) {
+  const version = concreteVersion(value);
+  return version?.split('-')[0].split('.').map(Number);
+}
+
+function compareVersions(left, right) {
+  return left.find((part, index) => part !== right[index]) ?? 0;
+}
+
+function withinRange(version, from, to) {
+  const candidate = versionParts(version);
+  const lower = versionParts(from);
+  const upper = versionParts(to);
+  return (
+    candidate &&
+    lower &&
+    upper &&
+    compareVersions(candidate, lower) >= 0 &&
+    compareVersions(candidate, upper) <= 0
+  );
+}
+
+async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
+  const releases = await fetchAllPages({
+    api: `https://api.github.com/repos/${repository}/releases?per_page=100`,
+    headers: githubHeaders,
+    fetchLike,
+    action: 'retrieve upstream releases',
+  }).catch(() => []);
+  return releases
+    .filter(
+      (release) =>
+        typeof release?.tag_name === 'string' &&
+        typeof release.html_url === 'string' &&
+        typeof release.body === 'string' &&
+        withinRange(release.tag_name, dependency.from, dependency.to)
+    )
+    .slice(0, 5)
+    .map((release) => {
+      const version = concreteVersion(release.tag_name);
+      return {
+        kind: 'release-notes',
+        url: release.html_url,
+        title: release.name || `${dependency.name} ${version}`,
+        excerpt: release.body.slice(0, 12_000),
+        range: { from: version, to: version },
+      };
+    });
+}
+
+function packageMetadataSource(dependency, metadata) {
+  const description = metadata?.versions?.[dependency.to]?.description ?? metadata?.description;
+  if (typeof description !== 'string' || !description) return null;
+  return {
+    kind: 'package-metadata',
+    url: `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`,
+    title: `${dependency.name} ${dependency.to} package metadata`,
+    excerpt: description.slice(0, 12_000),
+    range: { from: dependency.to, to: dependency.to },
+  };
+}
+
+async function upstreamEvidence(repository, dependency, metadata, fetchLike, githubHeaders) {
+  if (repository) {
+    const source = await targetRelease(repository, dependency, fetchLike, githubHeaders);
+    if (source) return { status: 'available', reason: null, sources: [source] };
+    const comparison = await rangeCompare(repository, dependency, fetchLike, githubHeaders);
+    if (comparison) return { status: 'available', reason: null, sources: [comparison] };
+    const releases = await rangeReleases(repository, dependency, fetchLike, githubHeaders);
+    if (releases.length)
+      return {
+        status: 'partial',
+        reason: 'Only releases within the version range were available.',
+        sources: releases,
+      };
+  }
+  const metadataSource = packageMetadataSource(dependency, metadata);
+  if (metadataSource)
+    return {
+      status: 'partial',
+      reason: 'Only npm package metadata was available for this dependency.',
+      sources: [metadataSource],
+    };
+  return {
+    status: 'unavailable',
+    reason: repository
+      ? 'No upstream release or comparison was available for this version range.'
+      : 'No attributable upstream repository was available for this dependency.',
+    sources: [],
+  };
+}
+
 export async function collectReviewInput(event, { fetchLike = fetch, githubHeaders = {} } = {}) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
@@ -158,24 +304,19 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
       const metadata =
         dependency.ecosystem === 'actions'
           ? null
-          : await fetchLike(
+          : await fetchJson(
+              fetchLike,
               `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
-            ).then(json);
+            );
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
-      let source = null;
-      if (repository) {
-        const release = await fetchLike(
-          `https://api.github.com/repos/${repository}/releases/tags/v${dependency.to}`,
-          { headers: githubHeaders }
-        ).then(json);
-        if (release?.html_url && typeof release.body === 'string')
-          source = {
-            kind: 'release-notes',
-            url: release.html_url,
-            title: release.name || `${dependency.name} ${dependency.to}`,
-            excerpt: release.body.slice(0, 12_000),
-          };
-      }
+      const evidence = await upstreamEvidence(
+        repository,
+        dependency,
+        metadata,
+        fetchLike,
+        githubHeaders
+      );
+      const [source] = evidence.sources;
       const command = source?.excerpt.match(
         /(?:npx|pnpm dlx|yarn dlx)\s+[^\n`]+(?:codemod|migrate)[^\n`]*/i
       )?.[0];
@@ -201,6 +342,7 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
           title: vulnerability.advisory_ghsa_id || `${dependency.name} vulnerability`,
           excerpt:
             vulnerability.advisory_summary || 'GitHub dependency review reported a vulnerability.',
+          range: { from: dependency.from, to: dependency.to },
         }));
       for (const vulnerability of vulnerabilitySources)
         findings.push({
@@ -217,7 +359,8 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
         to: dependency.to,
         dependencyType: dependency.dependencyType,
         license: dependency.license ?? null,
-        sources: [...vulnerabilitySources, ...(source ? [source] : [])],
+        evidence: { status: evidence.status, reason: evidence.reason },
+        sources: [...vulnerabilitySources, ...evidence.sources],
         findings,
       };
     })

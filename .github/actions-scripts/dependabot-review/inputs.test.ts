@@ -115,15 +115,264 @@ describe('collectReviewInput', () => {
         from: '2.2.2',
         to: '3.2.0',
         dependencyType: 'direct:workflow',
+        evidence: { status: 'available', reason: null },
         sources: [
           {
             url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.2.0',
+            range: { from: '2.2.2', to: '3.2.0' },
           },
         ],
       },
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock.mock.calls[1][0]).toContain('/releases/tags/v3.2.0');
+  });
+
+  it('falls back to an unprefixed release tag when the v-prefixed tag is absent', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/actions/create-github-app-token/releases/tag/3.2.0',
+          name: '3.2.0',
+          body: 'Adds enterprise-level GitHub App support.',
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0].sources).toMatchObject([
+      { url: 'https://github.com/actions/create-github-app-token/releases/tag/3.2.0' },
+    ]);
+    expect(fetchMock.mock.calls[2][0]).toContain('/releases/tags/3.2.0');
+  });
+
+  it('uses an upstream compare when neither target release tag exists', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/actions/create-github-app-token/compare/v2.2.2...v3.2.0',
+          commits: [{ commit: { message: 'Add enterprise GitHub App support.' } }],
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0].sources).toMatchObject([
+      {
+        kind: 'repository-compare',
+        url: 'https://github.com/actions/create-github-app-token/compare/v2.2.2...v3.2.0',
+      },
+    ]);
+    expect(fetchMock.mock.calls[3][0]).toContain('/compare/v2.2.2...v3.2.0');
+  });
+
+  it('retains updates with an explicit unavailable-evidence result', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValue(new Response(null, { status: 404 }));
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages).toMatchObject([
+      {
+        name: 'actions/create-github-app-token',
+        evidence: {
+          status: 'unavailable',
+          reason: 'No upstream release or comparison was available for this version range.',
+        },
+        sources: [],
+      },
+    ]);
+  });
+
+  it('degrades a failed upstream request to unavailable evidence', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockRejectedValueOnce(new TypeError('network failure'));
+
+    await expect(
+      collectReviewInput(
+        {
+          pull_request: {
+            ...pullRequest,
+            body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+          },
+          repository: 'owner/repo',
+          files: [],
+        },
+        { fetchLike: fetchMock }
+      )
+    ).resolves.toMatchObject({
+      packages: [{ evidence: { status: 'unavailable' }, sources: [] }],
+    });
+  });
+
+  it('uses release notes within the upgrade range as partial evidence', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        response([
+          {
+            tag_name: 'v3.0.0',
+            html_url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+            name: 'v3.0.0',
+            body: 'Adds enterprise-level GitHub App support.',
+          },
+        ])
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0]).toMatchObject({
+      evidence: { status: 'partial' },
+      sources: [
+        {
+          url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+          range: { from: '3.0.0', to: '3.0.0' },
+        },
+      ],
+    });
+    expect(fetchMock.mock.calls[7][0]).toContain('/releases?per_page=100');
+  });
+
+  it('follows release-list pagination to find evidence within the upgrade range', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify([]), {
+          headers: {
+            Link: '<https://api.github.com/repos/actions/create-github-app-token/releases?per_page=100&page=2>; rel="next"',
+          },
+        })
+      )
+      .mockResolvedValueOnce(
+        response([
+          {
+            tag_name: 'v3.0.0',
+            html_url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+            body: 'Adds enterprise-level GitHub App support.',
+          },
+        ])
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0]).toMatchObject({
+      evidence: { status: 'partial' },
+      sources: [{ url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0' }],
+    });
+  });
+
+  it('uses npm metadata as partial evidence when upstream releases are unavailable', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(dependencyDiff))
+      .mockResolvedValueOnce(
+        response({
+          repository: { url: 'https://github.com/example/package' },
+          versions: { '2.0.0': { description: 'Example package metadata.' } },
+        })
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(response([]));
+
+    const input = await collectReviewInput(
+      {
+        pull_request: pullRequest,
+        repository: 'owner/repo',
+        files: [packageFile],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0]).toMatchObject({
+      evidence: { status: 'partial' },
+      sources: [
+        {
+          kind: 'package-metadata',
+          url: 'https://registry.npmjs.org/example',
+          range: { from: '2.0.0', to: '2.0.0' },
+        },
+      ],
+    });
   });
 
   it('includes an Action update from the workflow diff when the dependency graph omits it', async () => {

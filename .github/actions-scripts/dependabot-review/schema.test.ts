@@ -6,6 +6,7 @@ const source = {
   url: 'https://github.com/example/package/releases/tag/v2.0.0',
   title: 'v2.0.0',
   excerpt: 'Adds a documented feature.',
+  range: { from: '1.0.0', to: '2.0.0' },
 };
 
 const reviewInput = {
@@ -17,6 +18,7 @@ const reviewInput = {
       to: '2.0.0',
       dependencyType: 'direct:production',
       license: null,
+      evidence: { status: 'available', reason: null },
       sources: [source],
       findings: [],
     },
