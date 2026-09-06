@@ -15,6 +15,7 @@ describe('Dependabot intelligent review workflow', () => {
     expect(workflow).toContain('app-id: ${{ secrets.DEPENDABOT_REVIEW_APP_ID }}');
     expect(workflow).toContain('private-key: ${{ secrets.DEPENDABOT_REVIEW_APP_PRIVATE_KEY }}');
     expect(workflow).toContain('permission-issues: write');
+    expect(workflow).toContain('permission-pull-requests: write');
     expect(workflow).toContain('GITHUB_COMMENT_TOKEN: ${{ steps.app-token.outputs.token }}');
     expect(workflow).toContain(
       'GITHUB_COMMENT_AUTHOR: ${{ steps.app-token.outputs.app-slug }}[bot]'
