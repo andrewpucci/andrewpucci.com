@@ -559,6 +559,7 @@ describe('collectReviewInput', () => {
                 advisory_ghsa_id: 'GHSA-example',
                 advisory_summary: 'Example vulnerability.',
                 advisory_url: 'https://github.com/advisories/GHSA-example',
+                severity: 'high',
               },
             ],
           },
@@ -590,6 +591,7 @@ describe('collectReviewInput', () => {
         {
           kind: 'vulnerability',
           sourceUrl: 'https://github.com/advisories/GHSA-example',
+          severity: 'high',
         },
       ],
     });

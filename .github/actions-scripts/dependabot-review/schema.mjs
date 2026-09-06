@@ -1,6 +1,7 @@
 const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'analysis_unavailable']);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
+const vulnerabilitySeverities = new Set(['low', 'moderate', 'high', 'critical']);
 const contextKinds = new Set(['workflow-action', 'package-usage']);
 const sourceKinds = new Set([
   'release-notes',
@@ -85,11 +86,20 @@ export function parseReviewInput(value) {
         const sourceUrl = string(finding.sourceUrl, 'finding source URL');
         if (!blockerKinds.has(kind) || !sourceUrls.has(sourceUrl))
           throw new TypeError('finding must use a known blocker kind and evidence URL');
+        const severity = finding.severity ?? null;
+        if (
+          severity !== null &&
+          (kind !== 'vulnerability' ||
+            typeof severity !== 'string' ||
+            !vulnerabilitySeverities.has(severity))
+        )
+          throw new TypeError('vulnerability severity must be low, moderate, high, or critical');
         return {
           id,
           kind,
           reason: string(finding.reason, 'finding reason'),
           sourceUrl,
+          ...(kind === 'vulnerability' ? { severity } : {}),
           remediation: array(finding.remediation, 'finding remediation').map((item) =>
             string(item, 'remediation item')
           ),

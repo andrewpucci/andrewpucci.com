@@ -31,6 +31,30 @@ describe('review contracts', () => {
     expect(parseReviewInput(reviewInput)).toEqual(reviewInput);
   });
 
+  it('rejects a vulnerability with an unsupported severity', () => {
+    const inputWithVulnerability = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          findings: [
+            {
+              id: 'example:vulnerability',
+              kind: 'vulnerability',
+              reason: 'GitHub reported a vulnerability.',
+              sourceUrl: source.url,
+              severity: 'urgent',
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(() => parseReviewInput(inputWithVulnerability)).toThrow(/severity/i);
+  });
+
   it('rejects analysis citations not present in the input packet', () => {
     expect(() =>
       parseAnalysis(
