@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { parseAnalysis, parseReviewInput } from './schema.mjs';
+import { parseAnalysis, parsePolicy, parseReviewInput } from './schema.mjs';
 
 const source = {
   kind: 'release-notes',
@@ -53,6 +53,48 @@ describe('review contracts', () => {
     };
 
     expect(() => parseReviewInput(inputWithVulnerability)).toThrow(/severity/i);
+  });
+
+  it('rejects a policy finding that is not attributable to the input packet', () => {
+    expect(() =>
+      parsePolicy(
+        {
+          verdictCeiling: 'do_not_merge',
+          findings: [
+            {
+              package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+              findingId: 'example:vulnerability',
+              kind: 'vulnerability',
+              sourceUrl: 'https://untrusted.example/advisory',
+              severity: 'critical',
+              verdict: 'do_not_merge',
+              reason: 'A critical vulnerability affects the target version.',
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+        {
+          ...reviewInput,
+          packages: [
+            {
+              ...reviewInput.packages[0],
+              findings: [
+                {
+                  id: 'example:vulnerability',
+                  kind: 'vulnerability',
+                  reason: 'GitHub reported a vulnerability.',
+                  sourceUrl: source.url,
+                  severity: 'critical',
+                  remediation: ['Update the package.'],
+                  validation: ['npm test'],
+                },
+              ],
+            },
+          ],
+        }
+      )
+    ).toThrow(/source URL/i);
   });
 
   it('rejects analysis citations not present in the input packet', () => {
