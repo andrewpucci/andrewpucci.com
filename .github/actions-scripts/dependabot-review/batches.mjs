@@ -1,7 +1,11 @@
 const defaults = {
+  deadlineMs: 240_000,
   maxBatchChars: 18_000,
   maxPackageChars: 5_600,
   maxPackagesPerBatch: 3,
+  maxConcurrency: 2,
+  maxRequests: 12,
+  requestTimeoutMs: 120_000,
   maxSourceExcerptChars: 1_200,
 };
 const verdictPriority = new Map([
@@ -63,15 +67,31 @@ function stricter(left, right) {
   return verdictPriority.get(left) >= verdictPriority.get(right) ? left : right;
 }
 
-async function analyzeBatch(batch, analyze) {
-  const result = await analyze(batch);
-  if (result.verdict !== 'analysis_unavailable') return { analyses: [result], unavailable: [] };
+function hasEveryAssessment(batch, analysis) {
+  const expected = new Set(batch.packages.map(identity));
+  const actual = new Set(analysis.packageAssessments.map(identity));
+  return actual.size === expected.size && [...actual].every((item) => expected.has(item));
+}
+
+async function analyzeBatch(batch, analyze, state) {
+  const timeoutMs = Math.min(state.requestTimeoutMs, state.deadline - Date.now());
+  if (state.requests >= state.maxRequests || timeoutMs <= 0)
+    return { analyses: [], unavailable: batch.packages };
+  state.requests += 1;
+  const result = await analyze(batch, { timeoutMs });
+  if (result.verdict !== 'analysis_unavailable')
+    return hasEveryAssessment(batch, result)
+      ? { analyses: [result], unavailable: [] }
+      : {
+          analyses: result.verdict === 'do_not_merge' ? [result] : [],
+          unavailable: batch.packages,
+        };
   if (result.reason !== 'truncated' || batch.packages.length === 1)
     return { analyses: [], unavailable: batch.packages };
   const midpoint = Math.ceil(batch.packages.length / 2);
   const [left, right] = await Promise.all([
-    analyzeBatch({ ...batch, packages: batch.packages.slice(0, midpoint) }, analyze),
-    analyzeBatch({ ...batch, packages: batch.packages.slice(midpoint) }, analyze),
+    analyzeBatch({ ...batch, packages: batch.packages.slice(0, midpoint) }, analyze, state),
+    analyzeBatch({ ...batch, packages: batch.packages.slice(midpoint) }, analyze, state),
   ]);
   return {
     analyses: [...left.analyses, ...right.analyses],
@@ -79,11 +99,32 @@ async function analyzeBatch(batch, analyze) {
   };
 }
 
+async function analyzeAll(batchList, analyze, state, maxConcurrency) {
+  const results = new Map();
+  let next = 0;
+  async function worker() {
+    while (next < batchList.length) {
+      const index = next;
+      next += 1;
+      const batch = batchList.at(index);
+      if (batch) results.set(index, await analyzeBatch(batch, analyze, state));
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(maxConcurrency, batchList.length) }, () => worker())
+  );
+  return batchList.map((_, index) => results.get(index));
+}
+
 export async function analyzeBatches(input, { analyzeBatch: analyze, ...options }) {
   const limits = { ...defaults, ...options };
-  const completed = await Promise.all(
-    batches(input, limits).map((batch) => analyzeBatch(batch, analyze))
-  );
+  const state = {
+    deadline: Date.now() + limits.deadlineMs,
+    maxRequests: limits.maxRequests,
+    requestTimeoutMs: limits.requestTimeoutMs,
+    requests: 0,
+  };
+  const completed = await analyzeAll(batches(input, limits), analyze, state, limits.maxConcurrency);
   const analyses = completed.flatMap((result) => result.analyses);
   const unavailable = completed.flatMap((result) => result.unavailable);
   const unavailableIds = new Set(unavailable.map(identity));

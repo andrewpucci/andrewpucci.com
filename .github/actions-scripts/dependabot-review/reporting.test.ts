@@ -48,4 +48,47 @@ describe('renderComment', () => {
     expect(body).toContain('``\\`sh');
     expect(body).toContain('``\\`\n```');
   });
+
+  it('labels each feature with its usefulness classification', () => {
+    const body = renderComment(
+      {
+        verdict: 'merge',
+        summary: 'Reviewed dependency updates.',
+        packageAssessments: [
+          {
+            name: 'example-package',
+            from: '1.0.0',
+            to: '2.0.0',
+            newFunctionality: [
+              {
+                feature: 'Useful immediately',
+                usefulness: 'use_now',
+                rationale: 'Use it in this repository today.',
+                sourceUrl: 'https://example.com/use-now',
+              },
+              {
+                feature: 'Useful later',
+                usefulness: 'consider_later',
+                rationale: 'Keep it in mind for later work.',
+                sourceUrl: 'https://example.com/later',
+              },
+              {
+                feature: 'Not applicable',
+                usefulness: 'not_relevant',
+                rationale: 'This repository does not use it.',
+                sourceUrl: 'https://example.com/not-relevant',
+              },
+            ],
+          },
+        ],
+        blockers: [],
+        remediationPrompt: null,
+      },
+      'head'
+    );
+
+    expect(body).toContain('**Use now:** **example-package:** Useful immediately');
+    expect(body).toContain('**Consider later:** **example-package:** Useful later');
+    expect(body).toContain('**Not relevant:** **example-package:** Not applicable');
+  });
 });

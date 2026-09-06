@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { analyze } from './analysis.mjs';
+import { analyzeBatches } from './batches.mjs';
 import { pullRequestNumber } from './event.mjs';
 import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
 import { collectReviewInput } from './inputs.mjs';
@@ -68,7 +69,10 @@ if (!input) {
   await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
   process.exit(0);
 }
-const analysis = await analyze(input, process.env.MISTRAL_API_KEY);
+const analysis = await analyzeBatches(input, {
+  analyzeBatch: (batch, { timeoutMs }) =>
+    analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
+});
 const body = renderComment(analysis, input.pullRequest.headSha);
 await upsertComment({
   api: commentApi,

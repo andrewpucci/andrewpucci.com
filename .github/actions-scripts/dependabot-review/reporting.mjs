@@ -24,7 +24,7 @@ export function renderComment(analysis, headSha) {
     for (const assessment of analysis.packageAssessments)
       for (const feature of assessment.newFunctionality)
         lines.push(
-          `- **${escape(assessment.name)}:** ${escape(feature.feature)} — ${escape(feature.rationale)} ([source](${feature.sourceUrl}))`
+          `- **${escape(feature.usefulness.replaceAll('_', ' ').replace(/^./, (character) => character.toUpperCase()))}:** **${escape(assessment.name)}:** ${escape(feature.feature)} — ${escape(feature.rationale)} ([source](${feature.sourceUrl}))`
         );
   }
   if (analysis.blockers.length) {
