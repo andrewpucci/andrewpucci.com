@@ -1,5 +1,6 @@
 const allowedPath = (path) =>
-  [
+  !/(^|\/)\.env(?:\.|$)/.test(path) &&
+  ([
     'package.json',
     'package-lock.json',
     'pnpm-lock.yaml',
@@ -7,8 +8,8 @@ const allowedPath = (path) =>
     'vite.config.ts',
     'svelte.config.js',
   ].includes(path) ||
-  (/^\.github\/workflows\/[^/]+\.ya?ml$/.test(path) && !path.includes('.env')) ||
-  /^src\/.+\.(?:[cm]?[jt]sx?|svelte)$/.test(path);
+    /^\.github\/workflows\/[^/]+\.ya?ml$/.test(path) ||
+    /^src\/.+\.(?:[cm]?[jt]sx?|svelte)$/.test(path));
 
 function excerptFor(text, name, ecosystem) {
   const lines = text.split('\n');

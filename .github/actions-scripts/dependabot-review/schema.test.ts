@@ -19,6 +19,7 @@ const reviewInput = {
       dependencyType: 'direct:production',
       license: null,
       evidence: { status: 'available', reason: null },
+      context: { status: 'unavailable', facts: [] },
       sources: [source],
       findings: [],
     },

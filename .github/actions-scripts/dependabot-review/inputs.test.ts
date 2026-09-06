@@ -159,6 +159,47 @@ describe('collectReviewInput', () => {
     expect(fetchMock.mock.calls[2][0]).toContain('/releases/tags/3.2.0');
   });
 
+  it('adds trusted workflow context to the review packet', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.2.0',
+          body: 'Adds enterprise-level GitHub App support.',
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      {
+        fetchLike: fetchMock,
+        repositoryContext: {
+          paths: ['.github/workflows/review.yml'],
+          readFile: async () => 'uses: actions/create-github-app-token@v3.2.0',
+        },
+      }
+    );
+
+    expect(input?.packages[0].context).toEqual({
+      status: 'available',
+      facts: [
+        {
+          kind: 'workflow-action',
+          path: '.github/workflows/review.yml',
+          excerpt: 'uses: actions/create-github-app-token@v3.2.0',
+        },
+      ],
+    });
+  });
+
   it('uses an upstream compare when neither target release tag exists', async () => {
     const fetchMock = vi
       .fn()

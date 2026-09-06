@@ -1,6 +1,7 @@
 const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'analysis_unavailable']);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
+const contextKinds = new Set(['workflow-action', 'package-usage']);
 const sourceKinds = new Set([
   'release-notes',
   'repository-compare',
@@ -47,6 +48,17 @@ export function parseReviewInput(value) {
       const evidence = object(dependency.evidence, 'package evidence');
       const status = string(evidence.status, 'evidence status');
       if (!evidenceStatuses.has(status)) throw new TypeError('unsupported evidence status');
+      const context = object(dependency.context, 'package context');
+      const contextStatus = string(context.status, 'context status');
+      if (!evidenceStatuses.has(contextStatus)) throw new TypeError('unsupported context status');
+      const facts = array(context.facts, 'context facts').map((value) => {
+        const fact = object(value, 'context fact');
+        const kind = string(fact.kind, 'context fact kind');
+        const path = string(fact.path, 'context fact path');
+        if (!contextKinds.has(kind) || path.startsWith('/') || path.includes('..'))
+          throw new TypeError('context fact must have a trusted repository path');
+        return { kind, path, excerpt: string(fact.excerpt, 'context fact excerpt') };
+      });
       const sources = array(dependency.sources, 'sources').map((value) => {
         const source = object(value, 'source');
         const kind = string(source.kind, 'source kind');
@@ -99,6 +111,7 @@ export function parseReviewInput(value) {
           status,
           reason: evidence.reason === null ? null : string(evidence.reason, 'evidence reason'),
         },
+        context: { status: contextStatus, facts },
         sources,
         findings,
       };
