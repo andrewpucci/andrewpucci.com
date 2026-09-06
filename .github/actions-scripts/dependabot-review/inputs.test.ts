@@ -126,6 +126,37 @@ describe('collectReviewInput', () => {
     expect(fetchMock.mock.calls[1][0]).toContain('/releases/tags/v3.2.0');
   });
 
+  it('falls back to an unprefixed release tag when the v-prefixed tag is absent', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/actions/create-github-app-token/releases/tag/3.2.0',
+          name: '3.2.0',
+          body: 'Adds enterprise-level GitHub App support.',
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0].sources).toMatchObject([
+      { url: 'https://github.com/actions/create-github-app-token/releases/tag/3.2.0' },
+    ]);
+    expect(fetchMock.mock.calls[2][0]).toContain('/releases/tags/3.2.0');
+  });
+
   it('includes an Action update from the workflow diff when the dependency graph omits it', async () => {
     const fetchMock = vi
       .fn()

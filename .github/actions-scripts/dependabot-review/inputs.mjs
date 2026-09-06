@@ -143,6 +143,23 @@ async function json(response) {
   return response.ok ? response.json() : null;
 }
 
+async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
+  for (const tag of [`v${dependency.to}`, dependency.to]) {
+    const release = await fetchLike(
+      `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(tag)}`,
+      { headers: githubHeaders }
+    ).then(json);
+    if (release?.html_url && typeof release.body === 'string')
+      return {
+        kind: 'release-notes',
+        url: release.html_url,
+        title: release.name || `${dependency.name} ${dependency.to}`,
+        excerpt: release.body.slice(0, 12_000),
+      };
+  }
+  return null;
+}
+
 export async function collectReviewInput(event, { fetchLike = fetch, githubHeaders = {} } = {}) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
@@ -162,20 +179,9 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
               `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
             ).then(json);
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
-      let source = null;
-      if (repository) {
-        const release = await fetchLike(
-          `https://api.github.com/repos/${repository}/releases/tags/v${dependency.to}`,
-          { headers: githubHeaders }
-        ).then(json);
-        if (release?.html_url && typeof release.body === 'string')
-          source = {
-            kind: 'release-notes',
-            url: release.html_url,
-            title: release.name || `${dependency.name} ${dependency.to}`,
-            excerpt: release.body.slice(0, 12_000),
-          };
-      }
+      const source = repository
+        ? await targetRelease(repository, dependency, fetchLike, githubHeaders)
+        : null;
       const command = source?.excerpt.match(
         /(?:npx|pnpm dlx|yarn dlx)\s+[^\n`]+(?:codemod|migrate)[^\n`]*/i
       )?.[0];
