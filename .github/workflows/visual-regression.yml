@@ -48,7 +48,7 @@ jobs:
           fetch-depth: 0 # Chromatic needs history to diff against a baseline
 
       - name: Set up Vite+
-        uses: voidzero-dev/setup-vp@313600b80b104eadebb9111787d37a2e83e014ca # v1.17.0
+        uses: voidzero-dev/setup-vp@1b32467adbe183473499fd9d5d372c3ed9641754 # v1.18.0
         with:
           node-version: 24.x
           cache: true
@@ -69,7 +69,7 @@ jobs:
       # indirection. It remains skipped until the project token is configured.
       - name: Publish to Chromatic
         if: ${{ env.CHROMATIC_PROJECT_TOKEN != '' }}
-        uses: chromaui/action@534eebfc19023579541d106f7b61d5ad70ed65c7 # latest (v18.1.0)
+        uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # latest (v18.1.0)
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         with:
