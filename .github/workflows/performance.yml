@@ -15,7 +15,6 @@ on:
       - 'svelte.config.ts'
       - 'vite.config.ts'
       - 'wrangler.jsonc'
-      - '.github/workflows/performance.yml'
   pull_request:
     branches: [main]
     paths:
@@ -30,7 +29,6 @@ on:
       - 'svelte.config.ts'
       - 'vite.config.ts'
       - 'wrangler.jsonc'
-      - '.github/workflows/performance.yml'
   workflow_dispatch:
 
 concurrency:
