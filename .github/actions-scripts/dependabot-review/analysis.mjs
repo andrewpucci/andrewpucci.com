@@ -8,6 +8,11 @@ const unavailable = (summary) => ({
   remediationPrompt: null,
 });
 
+function jsonContent(content) {
+  const fence = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(content.trim());
+  return fence?.[1] ?? content;
+}
+
 const analysisContract = `Return exactly one JSON object with every field below:
 {
   "verdict": "merge" | "merge_with_followups" | "do_not_merge",
@@ -40,7 +45,7 @@ export async function analyze(input, apiKey, fetchLike = fetch) {
       body: JSON.stringify({
         model: 'mistral-medium-latest',
         temperature: 0,
-        max_tokens: 1500,
+        max_tokens: 4096,
         response_format: { type: 'json_object' },
         messages: [
           {
@@ -50,7 +55,7 @@ export async function analyze(input, apiKey, fetchLike = fetch) {
           { role: 'user', content: JSON.stringify(input) },
         ],
       }),
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(120_000),
     });
   } catch {
     const summary = 'Mistral analysis was unavailable; perform a manual dependency review.';
@@ -62,16 +67,22 @@ export async function analyze(input, apiKey, fetchLike = fetch) {
   if (!response.ok)
     return unavailable(`Mistral analysis was unavailable (HTTP ${response.status}).`);
 
-  let content;
+  let choice;
   try {
-    content = (await response.json()).choices?.[0]?.message?.content;
+    choice = (await response.json()).choices?.[0];
   } catch {
     return unavailable('Mistral returned an invalid API response.');
   }
+  if (choice?.finish_reason === 'length') {
+    const summary = 'Mistral analysis was truncated; perform a manual dependency review.';
+    console.warn(`Dependabot review fallback: ${summary}`);
+    return unavailable(summary);
+  }
+  const content = choice?.message?.content;
   if (typeof content !== 'string') return unavailable('Mistral returned no analysis.');
 
   try {
-    return parseAnalysis(JSON.parse(content), input);
+    return parseAnalysis(JSON.parse(jsonContent(content)), input);
   } catch (error) {
     const summary =
       error instanceof SyntaxError
