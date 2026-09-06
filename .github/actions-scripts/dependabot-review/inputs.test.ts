@@ -115,9 +115,11 @@ describe('collectReviewInput', () => {
         from: '2.2.2',
         to: '3.2.0',
         dependencyType: 'direct:workflow',
+        evidence: { status: 'available', reason: null },
         sources: [
           {
             url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.2.0',
+            range: { from: '2.2.2', to: '3.2.0' },
           },
         ],
       },
@@ -189,6 +191,36 @@ describe('collectReviewInput', () => {
       },
     ]);
     expect(fetchMock.mock.calls[3][0]).toContain('/compare/v2.2.2...v3.2.0');
+  });
+
+  it('retains updates with an explicit unavailable-evidence result', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValue(new Response(null, { status: 404 }));
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages).toMatchObject([
+      {
+        name: 'actions/create-github-app-token',
+        evidence: {
+          status: 'unavailable',
+          reason: 'No upstream release or comparison was available for this version range.',
+        },
+        sources: [],
+      },
+    ]);
   });
 
   it('includes an Action update from the workflow diff when the dependency graph omits it', async () => {

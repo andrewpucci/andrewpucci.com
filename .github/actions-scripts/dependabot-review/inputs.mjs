@@ -155,6 +155,7 @@ async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
         url: release.html_url,
         title: release.name || `${dependency.name} ${dependency.to}`,
         excerpt: release.body.slice(0, 12_000),
+        range: { from: dependency.from, to: dependency.to },
       };
   }
   return null;
@@ -179,6 +180,7 @@ async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
         url: comparison.html_url,
         title: `${dependency.name} ${dependency.from} to ${dependency.to}`,
         excerpt: excerpt || `GitHub compared ${dependency.from} to ${dependency.to}.`,
+        range: { from: dependency.from, to: dependency.to },
       };
     }
   return null;
@@ -232,6 +234,7 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
           title: vulnerability.advisory_ghsa_id || `${dependency.name} vulnerability`,
           excerpt:
             vulnerability.advisory_summary || 'GitHub dependency review reported a vulnerability.',
+          range: { from: dependency.from, to: dependency.to },
         }));
       for (const vulnerability of vulnerabilitySources)
         findings.push({
@@ -248,6 +251,14 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
         to: dependency.to,
         dependencyType: dependency.dependencyType,
         license: dependency.license ?? null,
+        evidence: source
+          ? { status: 'available', reason: null }
+          : {
+              status: 'unavailable',
+              reason: repository
+                ? 'No upstream release or comparison was available for this version range.'
+                : 'No attributable upstream repository was available for this dependency.',
+            },
         sources: [...vulnerabilitySources, ...(source ? [source] : [])],
         findings,
       };
