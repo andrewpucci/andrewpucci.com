@@ -71,7 +71,7 @@ describe('upsertComment', () => {
     });
 
     expect(fetchMock).toHaveBeenLastCalledWith(
-      'https://api.github.com/repos/example/site/issues/1/comments/1',
+      'https://api.github.com/repos/example/site/issues/comments/1',
       expect.objectContaining({ method: 'PATCH' })
     );
   });

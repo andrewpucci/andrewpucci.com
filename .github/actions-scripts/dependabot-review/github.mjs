@@ -30,8 +30,11 @@ export async function upsertComment({
       comment.body?.includes('<!-- dependabot-intelligent-review -->')
   );
   const action = existing ? 'update' : 'create';
+  const commentApi = existing
+    ? api.replace(/\/issues\/\d+\/comments$/, `/issues/comments/${existing.id}`)
+    : api;
   await ensureSuccess(
-    await fetchLike(existing ? `${api}/${existing.id}` : api, {
+    await fetchLike(commentApi, {
       method: existing ? 'PATCH' : 'POST',
       headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({ body }),
