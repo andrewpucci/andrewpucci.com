@@ -1,4 +1,5 @@
 import { parseReviewInput } from './schema.mjs';
+import { fetchAllPages } from './github.mjs';
 
 const githubRepository = (value) => {
   try {
@@ -143,12 +144,21 @@ async function json(response) {
   return response.ok ? response.json() : null;
 }
 
+async function fetchJson(fetchLike, url, options) {
+  try {
+    return await fetchLike(url, options).then(json);
+  } catch {
+    return null;
+  }
+}
+
 async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
   for (const tag of [`v${dependency.to}`, dependency.to]) {
-    const release = await fetchLike(
+    const release = await fetchJson(
+      fetchLike,
       `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(tag)}`,
       { headers: githubHeaders }
-    ).then(json);
+    );
     if (release?.html_url && typeof release.body === 'string')
       return {
         kind: 'release-notes',
@@ -164,10 +174,11 @@ async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
 async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
   for (const fromTag of [`v${dependency.from}`, dependency.from])
     for (const toTag of [`v${dependency.to}`, dependency.to]) {
-      const comparison = await fetchLike(
+      const comparison = await fetchJson(
+        fetchLike,
         `https://api.github.com/repos/${repository}/compare/${encodeURIComponent(fromTag)}...${encodeURIComponent(toTag)}`,
         { headers: githubHeaders }
-      ).then(json);
+      );
       if (typeof comparison?.html_url !== 'string') continue;
       const commits = Array.isArray(comparison.commits) ? comparison.commits : [];
       const excerpt = commits
@@ -209,13 +220,12 @@ function withinRange(version, from, to) {
 }
 
 async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
-  const releases = await fetchLike(
-    `https://api.github.com/repos/${repository}/releases?per_page=100`,
-    {
-      headers: githubHeaders,
-    }
-  ).then(json);
-  if (!Array.isArray(releases)) return [];
+  const releases = await fetchAllPages({
+    api: `https://api.github.com/repos/${repository}/releases?per_page=100`,
+    headers: githubHeaders,
+    fetchLike,
+    action: 'retrieve upstream releases',
+  }).catch(() => []);
   return releases
     .filter(
       (release) =>
@@ -294,9 +304,10 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
       const metadata =
         dependency.ecosystem === 'actions'
           ? null
-          : await fetchLike(
+          : await fetchJson(
+              fetchLike,
               `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
-            ).then(json);
+            );
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
       const evidence = await upstreamEvidence(
         repository,
