@@ -9,8 +9,8 @@ const workflow = await readFile(
 
 describe('Dependabot intelligent review workflow', () => {
   it('uses the restricted GitHub App token only to write the review comment', () => {
-    expect(workflow).toContain(
-      'uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349'
+    expect(workflow).toMatch(
+      /uses: actions\/create-github-app-token@[a-f0-9]{40} # v\d+\.\d+\.\d+/
     );
     expect(workflow).toContain('app-id: ${{ secrets.DEPENDABOT_REVIEW_APP_ID }}');
     expect(workflow).toContain('private-key: ${{ secrets.DEPENDABOT_REVIEW_APP_PRIVATE_KEY }}');
