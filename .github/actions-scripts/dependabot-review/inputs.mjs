@@ -56,29 +56,71 @@ async function dependencyChanges(event, fetchLike, githubHeaders) {
   }
 }
 
-function dependencyUpdates(changes) {
+function dependabotVersions(body) {
+  if (typeof body !== 'string') return new Map();
+  return new Map(
+    [...body.matchAll(/Updates `([^`]+)` from ([^\s`]+) to ([^\s`]+)/g)].map(
+      ([, name, from, to]) => [name, { from, to }]
+    )
+  );
+}
+
+function workflowActionUpdates(files, dependabotUpdates) {
+  const updates = new Map();
+  for (const file of files) {
+    if (typeof file?.filename !== 'string' || typeof file.patch !== 'string') continue;
+    for (const [, name] of file.patch.matchAll(/^[+-]\s*uses:\s*['"]?([^@\s'"]+)@/gm)) {
+      const version = dependabotUpdates.get(name);
+      if (!version) continue;
+      updates.set(name, {
+        name,
+        manifest: file.filename,
+        ecosystem: 'actions',
+        from: version.from,
+        to: version.to,
+      });
+    }
+  }
+  return updates;
+}
+
+function dependencyUpdates(changes, dependabotUpdates, workflowActions) {
   const updates = new Map();
   for (const change of changes) {
-    if (change?.ecosystem !== 'npm' || typeof change.name !== 'string') continue;
-    const key = `${change.manifest}:${change.name}`;
+    if (!['npm', 'actions'].includes(change?.ecosystem) || typeof change.name !== 'string')
+      continue;
+    const actionVersion = dependabotUpdates.get(change.name);
+    if (change.ecosystem === 'actions' && !actionVersion) continue;
+    const key = change.ecosystem === 'actions' ? change.name : `${change.manifest}:${change.name}`;
     const update = updates.get(key) ?? {
       name: change.name,
       manifest: change.manifest,
+      ecosystem: change.ecosystem,
     };
-    if (change.change_type === 'removed') update.from = change.version;
-    if (change.change_type === 'added') Object.assign(update, { to: change.version, change });
+    if (change.change_type === 'removed') update.from = actionVersion?.from ?? change.version;
+    if (change.change_type === 'added')
+      Object.assign(update, { to: actionVersion?.to ?? change.version, change });
     updates.set(key, update);
   }
+  for (const [name, action] of workflowActions) if (!updates.has(name)) updates.set(name, action);
   return [...updates.values()]
     .filter(({ from, to }) => typeof from === 'string' && typeof to === 'string')
-    .map(({ name, manifest, from, to, change }) => ({
+    .map(({ name, manifest, ecosystem, from, to, change }) => ({
       name,
       from,
       to,
-      dependencyType: manifest === 'package.json' ? 'direct:unknown' : 'transitive',
-      repository: githubRepository(change.source_repository_url),
-      license: typeof change.license === 'string' ? change.license : null,
-      vulnerabilities: Array.isArray(change.vulnerabilities) ? change.vulnerabilities : [],
+      dependencyType:
+        ecosystem === 'actions'
+          ? 'direct:workflow'
+          : manifest === 'package.json'
+            ? 'direct:unknown'
+            : 'transitive',
+      ecosystem,
+      repository:
+        githubRepository(change?.source_repository_url) ??
+        (ecosystem === 'actions' ? name : undefined),
+      license: typeof change?.license === 'string' ? change.license : null,
+      vulnerabilities: Array.isArray(change?.vulnerabilities) ? change.vulnerabilities : [],
     }));
 }
 
@@ -105,12 +147,20 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
   const changes = await dependencyChanges(event, fetchLike, githubHeaders);
-  const updates = dependencyUpdates(changes);
+  const dependabotUpdates = dependabotVersions(pullRequest.body);
+  const updates = dependencyUpdates(
+    changes,
+    dependabotUpdates,
+    workflowActionUpdates(event.files ?? [], dependabotUpdates)
+  );
   const packages = await Promise.all(
     (updates.length ? updates : changedPackageRanges(event.files ?? [])).map(async (dependency) => {
-      const metadata = await fetchLike(
-        `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
-      ).then(json);
+      const metadata =
+        dependency.ecosystem === 'actions'
+          ? null
+          : await fetchLike(
+              `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
+            ).then(json);
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
       let source = null;
       if (repository) {
@@ -172,6 +222,7 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
       };
     })
   );
+  if (!packages.length) return null;
   return parseReviewInput({
     pullRequest: {
       number: pullRequest.number,

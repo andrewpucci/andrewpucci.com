@@ -26,7 +26,7 @@ const analysisContract = `Return exactly one JSON object with every field below:
   }],
   "remediationPrompt": string | null
 }
-Use only URLs and finding IDs supplied in the input. Always include all top-level fields, including empty arrays and null. A do_not_merge verdict requires a blocker that cites its matching supplied finding; otherwise use an empty blockers array and a null remediationPrompt.`;
+Use only URLs and finding IDs supplied in the input. Always include all top-level fields, including empty arrays and null. The summary must name every reviewed package and explain which supplied evidence supports the verdict; if a package has no source, state that its evidence is unavailable rather than inferring changes. A do_not_merge verdict requires a blocker that cites its matching supplied finding; otherwise use an empty blockers array and a null remediationPrompt.`;
 
 export async function analyze(input, apiKey, fetchLike = fetch) {
   let response;
