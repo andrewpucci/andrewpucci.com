@@ -34,7 +34,9 @@ describe('analyze', () => {
                 content: JSON.stringify({
                   verdict: 'merge',
                   summary: 'No compatibility concerns were identified.',
-                  packageAssessments: [],
+                  packageAssessments: [
+                    { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+                  ],
                   blockers: [],
                   remediationPrompt: null,
                 }),
@@ -89,7 +91,7 @@ describe('analyze', () => {
     const analysis = {
       verdict: 'merge',
       summary: 'No compatibility concerns were identified.',
-      packageAssessments: [],
+      packageAssessments: [{ name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] }],
       blockers: [],
       remediationPrompt: null,
     };

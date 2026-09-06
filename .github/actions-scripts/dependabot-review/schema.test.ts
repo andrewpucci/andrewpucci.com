@@ -60,13 +60,37 @@ describe('review contracts', () => {
     ).toThrow(/unknown evidence URL/i);
   });
 
+  it('rejects duplicate package assessments', () => {
+    const assessment = {
+      name: 'example',
+      from: '1.0.0',
+      to: '2.0.0',
+      newFunctionality: [],
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [assessment, assessment],
+          blockers: [],
+          remediationPrompt: null,
+        },
+        reviewInput
+      )
+    ).toThrow(/exactly one package assessment/i);
+  });
+
   it('rejects a blocking verdict without a verified input finding', () => {
     expect(() =>
       parseAnalysis(
         {
           verdict: 'do_not_merge',
           summary: 'A migration is required.',
-          packageAssessments: [],
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
           blockers: [
             {
               findingId: 'missing-finding',
@@ -109,7 +133,9 @@ describe('review contracts', () => {
         {
           verdict: 'do_not_merge',
           summary: 'A migration is required.',
-          packageAssessments: [],
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
           blockers: [
             {
               findingId: 'different-finding',
@@ -152,7 +178,9 @@ describe('review contracts', () => {
         {
           verdict: 'do_not_merge',
           summary: 'A migration is required.',
-          packageAssessments: [],
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
           blockers: [
             {
               findingId: 'example:applicable-codemod',

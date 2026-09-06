@@ -49,7 +49,7 @@ describe('renderComment', () => {
     expect(body).toContain('``\\`\n```');
   });
 
-  it('labels each feature with its usefulness classification', () => {
+  it('groups visible features and collapses irrelevant ones', () => {
     const body = renderComment(
       {
         verdict: 'merge',
@@ -87,8 +87,51 @@ describe('renderComment', () => {
       'head'
     );
 
-    expect(body).toContain('**Use now:** **example-package:** Useful immediately');
-    expect(body).toContain('**Consider later:** **example-package:** Useful later');
-    expect(body).toContain('**Not relevant:** **example-package:** Not applicable');
+    expect(body).toContain('### Use now');
+    expect(body).toContain('**example-package:** Useful immediately');
+    expect(body).toContain('### Consider later');
+    expect(body).toContain('**example-package:** Useful later');
+    expect(body).toContain('<details>');
+    expect(body).toContain('<summary>Not relevant</summary>');
+    expect(body).toContain('**example-package:** Not applicable');
+  });
+
+  it('renders blockers before enabled functionality', () => {
+    const body = renderComment(
+      {
+        verdict: 'do_not_merge',
+        summary: 'Migration required.',
+        packageAssessments: [
+          {
+            name: 'example-package',
+            from: '1.0.0',
+            to: '2.0.0',
+            newFunctionality: [
+              {
+                feature: 'Useful later',
+                usefulness: 'consider_later',
+                rationale: 'Keep it in mind for later work.',
+                sourceUrl: 'https://example.com/later',
+              },
+            ],
+          },
+        ],
+        blockers: [
+          {
+            reason: 'Run codemod',
+            impact: 'Upgrade incomplete.',
+            evidence: [],
+            remediation: [],
+            validation: [],
+          },
+        ],
+        remediationPrompt: null,
+      },
+      'head'
+    );
+
+    expect(body.indexOf('### Reasons not to merge')).toBeLessThan(
+      body.indexOf('### Consider later')
+    );
   });
 });

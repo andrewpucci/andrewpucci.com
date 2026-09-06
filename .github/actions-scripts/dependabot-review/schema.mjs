@@ -154,6 +154,18 @@ export function parseAnalysis(value, input) {
       }),
     };
   });
+  const expectedAssessments = new Set(
+    input.packages.map(({ name, from, to }) => `${name}\u0000${from}\u0000${to}`)
+  );
+  const actualAssessments = new Set(
+    assessments.map(({ name, from, to }) => `${name}\u0000${from}\u0000${to}`)
+  );
+  if (
+    assessments.length !== input.packages.length ||
+    actualAssessments.size !== expectedAssessments.size ||
+    [...actualAssessments].some((assessment) => !expectedAssessments.has(assessment))
+  )
+    throw new TypeError('analysis must contain exactly one package assessment per input package');
   const blockers = array(analysis.blockers, 'blockers').map((value) => {
     const item = object(value, 'blocker');
     const findingId = string(item.findingId, 'blocker finding ID');

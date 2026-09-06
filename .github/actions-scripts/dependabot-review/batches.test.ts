@@ -80,7 +80,34 @@ describe('Dependabot review batches', () => {
       maxPackagesPerBatch: 2,
     });
 
-    expect(result).toMatchObject({ verdict: 'merge_with_followups' });
+    expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
+    expect(result.summary).toContain('first 1.0.0 to 2.0.0: manual review required.');
+    expect(result.summary).toContain('second 1.0.0 to 2.0.0: manual review required.');
+  });
+
+  it('marks a batch unavailable when the model duplicates an assessment', async () => {
+    const assessment = completedAnalysis(input.packages[0]).packageAssessments[0];
+    const result = await analyzeBatches(input, {
+      analyzeBatch: vi.fn().mockResolvedValue({
+        verdict: 'merge',
+        summary: 'Everything is ready.',
+        packageAssessments: [assessment, assessment],
+        blockers: [],
+        remediationPrompt: null,
+      }),
+      maxPackagesPerBatch: 2,
+    });
+
+    expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
+    expect(result.packageAssessments).toEqual([]);
+  });
+
+  it('uses the unavailable fallback when no batch result validates', async () => {
+    const result = await analyzeBatches(input, {
+      analyzeBatch: vi.fn().mockResolvedValue({ verdict: 'analysis_unavailable' }),
+    });
+
+    expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
     expect(result.summary).toContain('first 1.0.0 to 2.0.0: manual review required.');
     expect(result.summary).toContain('second 1.0.0 to 2.0.0: manual review required.');
   });

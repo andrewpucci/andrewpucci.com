@@ -70,7 +70,11 @@ function stricter(left, right) {
 function hasEveryAssessment(batch, analysis) {
   const expected = new Set(batch.packages.map(identity));
   const actual = new Set(analysis.packageAssessments.map(identity));
-  return actual.size === expected.size && [...actual].every((item) => expected.has(item));
+  return (
+    analysis.packageAssessments.length === batch.packages.length &&
+    actual.size === expected.size &&
+    [...actual].every((item) => expected.has(item))
+  );
 }
 
 async function analyzeBatch(batch, analyze, state) {
@@ -143,6 +147,14 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
         : `${dependency.name} ${dependency.from} to ${dependency.to}: analysis complete.`
     )
     .join(' ');
+  if (!analyses.length)
+    return {
+      verdict: 'analysis_unavailable',
+      summary,
+      packageAssessments: [],
+      blockers: [],
+      remediationPrompt: null,
+    };
   return {
     verdict,
     summary,
