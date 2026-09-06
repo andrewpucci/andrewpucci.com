@@ -15,6 +15,23 @@ describe('upsertComment', () => {
     ).rejects.toThrow('Unable to list Dependabot review comments (403): Forbidden');
   });
 
+  it("reports GitHub's accepted permissions when a comment request is rejected", async () => {
+    const fetchLike: typeof fetch = async () =>
+      new Response('Forbidden', {
+        status: 403,
+        headers: { 'X-Accepted-GitHub-Permissions': 'issues=write' },
+      });
+
+    await expect(
+      upsertComment({
+        api: 'https://api.github.com/repos/example/site/issues/1/comments',
+        body: 'Review body',
+        headers: { Authorization: 'Bearer test' },
+        fetchLike,
+      })
+    ).rejects.toThrow('Accepted GitHub permissions: issues=write');
+  });
+
   it('fails when GitHub rejects creation of the review comment', async () => {
     const fetchLike: typeof fetch = async (_url: RequestInfo | URL, options?: RequestInit) =>
       options?.method === 'POST'

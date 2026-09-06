@@ -1,6 +1,10 @@
 const responseDetail = async (response) => {
   const detail = (await response.text()).replaceAll(/\s+/g, ' ').trim();
-  return detail ? `: ${detail.slice(0, 500)}` : '';
+  const acceptedPermissions = response.headers.get('x-accepted-github-permissions');
+  const permissions = acceptedPermissions
+    ? ` Accepted GitHub permissions: ${acceptedPermissions}.`
+    : '';
+  return detail ? `: ${detail.slice(0, 500)}${permissions}` : permissions;
 };
 
 async function ensureSuccess(response, action) {
