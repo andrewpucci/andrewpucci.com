@@ -14,7 +14,6 @@ on:
       - 'svelte.config.ts'
       - 'vite.config.ts'
       - '.storybook/**'
-      - '.github/workflows/visual-regression.yml'
   pull_request:
     branches: [main]
     paths:
@@ -28,7 +27,6 @@ on:
       - 'svelte.config.ts'
       - 'vite.config.ts'
       - '.storybook/**'
-      - '.github/workflows/visual-regression.yml'
   workflow_dispatch:
 
 concurrency:
