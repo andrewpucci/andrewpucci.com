@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { analyze } from './analysis.mjs';
 import { pullRequestNumber } from './event.mjs';
-import { upsertComment } from './github.mjs';
+import { deleteReviewComment, upsertComment } from './github.mjs';
 import { collectReviewInput } from './inputs.mjs';
 import { renderComment } from './reporting.mjs';
 
@@ -26,6 +26,7 @@ const number = await pullRequestNumber(event, {
   githubHeaders,
 });
 const pullRequestApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls/${number}`;
+const commentApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${number}/comments`;
 const [pullRequestResponse, filesResponse] = await Promise.all([
   fetch(pullRequestApi, { headers: githubHeaders }),
   fetch(`${pullRequestApi}/files?per_page=100`, { headers: githubHeaders }),
@@ -42,11 +43,14 @@ const input = await collectReviewInput(
   },
   { githubHeaders }
 );
-if (!input) process.exit(0);
+if (!input) {
+  await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
+  process.exit(0);
+}
 const analysis = await analyze(input, process.env.MISTRAL_API_KEY);
 const body = renderComment(analysis, input.pullRequest.headSha);
 await upsertComment({
-  api: `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${input.pullRequest.number}/comments`,
+  api: commentApi,
   body,
   headers: commentHeaders,
   author: commentAuthor,

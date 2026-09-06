@@ -50,6 +50,7 @@ describe('analyze', () => {
     expect(request.messages[0].content).toContain('packageAssessments');
     expect(request.messages[0].content).toContain('remediationPrompt');
     expect(request.messages[0].content).toContain('merge_with_followups');
+    expect(request.messages[0].content).toContain('name every reviewed package');
   });
 
   it('returns analysis_unavailable when Mistral returns malformed JSON', async () => {
