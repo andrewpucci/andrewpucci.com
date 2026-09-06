@@ -186,6 +186,76 @@ async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
   return null;
 }
 
+function versionParts(value) {
+  const version = concreteVersion(value);
+  return version?.split('-')[0].split('.').map(Number);
+}
+
+function compareVersions(left, right) {
+  return left.find((part, index) => part !== right[index]) ?? 0;
+}
+
+function withinRange(version, from, to) {
+  const candidate = versionParts(version);
+  const lower = versionParts(from);
+  const upper = versionParts(to);
+  return (
+    candidate &&
+    lower &&
+    upper &&
+    compareVersions(candidate, lower) >= 0 &&
+    compareVersions(candidate, upper) <= 0
+  );
+}
+
+async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
+  const releases = await fetchLike(
+    `https://api.github.com/repos/${repository}/releases?per_page=100`,
+    {
+      headers: githubHeaders,
+    }
+  ).then(json);
+  if (!Array.isArray(releases)) return [];
+  return releases
+    .filter(
+      (release) =>
+        typeof release?.tag_name === 'string' &&
+        typeof release.html_url === 'string' &&
+        typeof release.body === 'string' &&
+        withinRange(release.tag_name, dependency.from, dependency.to)
+    )
+    .slice(0, 5)
+    .map((release) => {
+      const version = concreteVersion(release.tag_name);
+      return {
+        kind: 'release-notes',
+        url: release.html_url,
+        title: release.name || `${dependency.name} ${version}`,
+        excerpt: release.body.slice(0, 12_000),
+        range: { from: version, to: version },
+      };
+    });
+}
+
+async function upstreamEvidence(repository, dependency, fetchLike, githubHeaders) {
+  const source = await targetRelease(repository, dependency, fetchLike, githubHeaders);
+  if (source) return { status: 'available', reason: null, sources: [source] };
+  const comparison = await rangeCompare(repository, dependency, fetchLike, githubHeaders);
+  if (comparison) return { status: 'available', reason: null, sources: [comparison] };
+  const releases = await rangeReleases(repository, dependency, fetchLike, githubHeaders);
+  if (releases.length)
+    return {
+      status: 'partial',
+      reason: 'Only releases within the version range were available.',
+      sources: releases,
+    };
+  return {
+    status: 'unavailable',
+    reason: 'No upstream release or comparison was available for this version range.',
+    sources: [],
+  };
+}
+
 export async function collectReviewInput(event, { fetchLike = fetch, githubHeaders = {} } = {}) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
@@ -205,10 +275,14 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
               `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
             ).then(json);
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
-      const source = repository
-        ? ((await targetRelease(repository, dependency, fetchLike, githubHeaders)) ??
-          (await rangeCompare(repository, dependency, fetchLike, githubHeaders)))
-        : null;
+      const evidence = repository
+        ? await upstreamEvidence(repository, dependency, fetchLike, githubHeaders)
+        : {
+            status: 'unavailable',
+            reason: 'No attributable upstream repository was available for this dependency.',
+            sources: [],
+          };
+      const [source] = evidence.sources;
       const command = source?.excerpt.match(
         /(?:npx|pnpm dlx|yarn dlx)\s+[^\n`]+(?:codemod|migrate)[^\n`]*/i
       )?.[0];
@@ -251,15 +325,8 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
         to: dependency.to,
         dependencyType: dependency.dependencyType,
         license: dependency.license ?? null,
-        evidence: source
-          ? { status: 'available', reason: null }
-          : {
-              status: 'unavailable',
-              reason: repository
-                ? 'No upstream release or comparison was available for this version range.'
-                : 'No attributable upstream repository was available for this dependency.',
-            },
-        sources: [...vulnerabilitySources, ...(source ? [source] : [])],
+        evidence: { status: evidence.status, reason: evidence.reason },
+        sources: [...vulnerabilitySources, ...evidence.sources],
         findings,
       };
     })

@@ -223,6 +223,51 @@ describe('collectReviewInput', () => {
     ]);
   });
 
+  it('uses release notes within the upgrade range as partial evidence', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        response([
+          {
+            tag_name: 'v3.0.0',
+            html_url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+            name: 'v3.0.0',
+            body: 'Adds enterprise-level GitHub App support.',
+          },
+        ])
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0]).toMatchObject({
+      evidence: { status: 'partial' },
+      sources: [
+        {
+          url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+          range: { from: '3.0.0', to: '3.0.0' },
+        },
+      ],
+    });
+    expect(fetchMock.mock.calls[7][0]).toContain('/releases?per_page=100');
+  });
+
   it('includes an Action update from the workflow diff when the dependency graph omits it', async () => {
     const fetchMock = vi
       .fn()
