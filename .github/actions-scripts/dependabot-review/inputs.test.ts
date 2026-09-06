@@ -157,6 +157,40 @@ describe('collectReviewInput', () => {
     expect(fetchMock.mock.calls[2][0]).toContain('/releases/tags/3.2.0');
   });
 
+  it('uses an upstream compare when neither target release tag exists', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(actionDependencyDiff))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/actions/create-github-app-token/compare/v2.2.2...v3.2.0',
+          commits: [{ commit: { message: 'Add enterprise GitHub App support.' } }],
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0].sources).toMatchObject([
+      {
+        kind: 'repository-compare',
+        url: 'https://github.com/actions/create-github-app-token/compare/v2.2.2...v3.2.0',
+      },
+    ]);
+    expect(fetchMock.mock.calls[3][0]).toContain('/compare/v2.2.2...v3.2.0');
+  });
+
   it('includes an Action update from the workflow diff when the dependency graph omits it', async () => {
     const fetchMock = vi
       .fn()

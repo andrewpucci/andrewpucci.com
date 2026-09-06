@@ -2,6 +2,7 @@ const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'anal
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const sourceKinds = new Set([
   'release-notes',
+  'repository-compare',
   'migration-guide',
   'codemod-guide',
   'github-advisory',

@@ -160,6 +160,30 @@ async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
   return null;
 }
 
+async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
+  for (const fromTag of [`v${dependency.from}`, dependency.from])
+    for (const toTag of [`v${dependency.to}`, dependency.to]) {
+      const comparison = await fetchLike(
+        `https://api.github.com/repos/${repository}/compare/${encodeURIComponent(fromTag)}...${encodeURIComponent(toTag)}`,
+        { headers: githubHeaders }
+      ).then(json);
+      if (typeof comparison?.html_url !== 'string') continue;
+      const commits = Array.isArray(comparison.commits) ? comparison.commits : [];
+      const excerpt = commits
+        .map((commit) => commit?.commit?.message)
+        .filter((message) => typeof message === 'string')
+        .join('\n')
+        .slice(0, 12_000);
+      return {
+        kind: 'repository-compare',
+        url: comparison.html_url,
+        title: `${dependency.name} ${dependency.from} to ${dependency.to}`,
+        excerpt: excerpt || `GitHub compared ${dependency.from} to ${dependency.to}.`,
+      };
+    }
+  return null;
+}
+
 export async function collectReviewInput(event, { fetchLike = fetch, githubHeaders = {} } = {}) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
@@ -180,7 +204,8 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
             ).then(json);
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
       const source = repository
-        ? await targetRelease(repository, dependency, fetchLike, githubHeaders)
+        ? ((await targetRelease(repository, dependency, fetchLike, githubHeaders)) ??
+          (await rangeCompare(repository, dependency, fetchLike, githubHeaders)))
         : null;
       const command = source?.excerpt.match(
         /(?:npx|pnpm dlx|yarn dlx)\s+[^\n`]+(?:codemod|migrate)[^\n`]*/i
