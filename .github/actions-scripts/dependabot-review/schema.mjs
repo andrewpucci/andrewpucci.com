@@ -4,6 +4,7 @@ const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
 const sourceKinds = new Set([
   'release-notes',
   'repository-compare',
+  'package-metadata',
   'migration-guide',
   'codemod-guide',
   'github-advisory',

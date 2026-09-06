@@ -237,21 +237,44 @@ async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
     });
 }
 
-async function upstreamEvidence(repository, dependency, fetchLike, githubHeaders) {
-  const source = await targetRelease(repository, dependency, fetchLike, githubHeaders);
-  if (source) return { status: 'available', reason: null, sources: [source] };
-  const comparison = await rangeCompare(repository, dependency, fetchLike, githubHeaders);
-  if (comparison) return { status: 'available', reason: null, sources: [comparison] };
-  const releases = await rangeReleases(repository, dependency, fetchLike, githubHeaders);
-  if (releases.length)
+function packageMetadataSource(dependency, metadata) {
+  const description = metadata?.versions?.[dependency.to]?.description ?? metadata?.description;
+  if (typeof description !== 'string' || !description) return null;
+  return {
+    kind: 'package-metadata',
+    url: `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`,
+    title: `${dependency.name} ${dependency.to} package metadata`,
+    excerpt: description.slice(0, 12_000),
+    range: { from: dependency.to, to: dependency.to },
+  };
+}
+
+async function upstreamEvidence(repository, dependency, metadata, fetchLike, githubHeaders) {
+  if (repository) {
+    const source = await targetRelease(repository, dependency, fetchLike, githubHeaders);
+    if (source) return { status: 'available', reason: null, sources: [source] };
+    const comparison = await rangeCompare(repository, dependency, fetchLike, githubHeaders);
+    if (comparison) return { status: 'available', reason: null, sources: [comparison] };
+    const releases = await rangeReleases(repository, dependency, fetchLike, githubHeaders);
+    if (releases.length)
+      return {
+        status: 'partial',
+        reason: 'Only releases within the version range were available.',
+        sources: releases,
+      };
+  }
+  const metadataSource = packageMetadataSource(dependency, metadata);
+  if (metadataSource)
     return {
       status: 'partial',
-      reason: 'Only releases within the version range were available.',
-      sources: releases,
+      reason: 'Only npm package metadata was available for this dependency.',
+      sources: [metadataSource],
     };
   return {
     status: 'unavailable',
-    reason: 'No upstream release or comparison was available for this version range.',
+    reason: repository
+      ? 'No upstream release or comparison was available for this version range.'
+      : 'No attributable upstream repository was available for this dependency.',
     sources: [],
   };
 }
@@ -275,13 +298,13 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
               `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
             ).then(json);
       const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
-      const evidence = repository
-        ? await upstreamEvidence(repository, dependency, fetchLike, githubHeaders)
-        : {
-            status: 'unavailable',
-            reason: 'No attributable upstream repository was available for this dependency.',
-            sources: [],
-          };
+      const evidence = await upstreamEvidence(
+        repository,
+        dependency,
+        metadata,
+        fetchLike,
+        githubHeaders
+      );
       const [source] = evidence.sources;
       const command = source?.excerpt.match(
         /(?:npx|pnpm dlx|yarn dlx)\s+[^\n`]+(?:codemod|migrate)[^\n`]*/i

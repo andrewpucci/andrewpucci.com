@@ -268,6 +268,45 @@ describe('collectReviewInput', () => {
     expect(fetchMock.mock.calls[7][0]).toContain('/releases?per_page=100');
   });
 
+  it('uses npm metadata as partial evidence when upstream releases are unavailable', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(dependencyDiff))
+      .mockResolvedValueOnce(
+        response({
+          repository: { url: 'https://github.com/example/package' },
+          versions: { '2.0.0': { description: 'Example package metadata.' } },
+        })
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(response([]));
+
+    const input = await collectReviewInput(
+      {
+        pull_request: pullRequest,
+        repository: 'owner/repo',
+        files: [packageFile],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0]).toMatchObject({
+      evidence: { status: 'partial' },
+      sources: [
+        {
+          kind: 'package-metadata',
+          url: 'https://registry.npmjs.org/example',
+          range: { from: '2.0.0', to: '2.0.0' },
+        },
+      ],
+    });
+  });
+
   it('includes an Action update from the workflow diff when the dependency graph omits it', async () => {
     const fetchMock = vi
       .fn()
