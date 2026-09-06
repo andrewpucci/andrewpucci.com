@@ -9,14 +9,20 @@ async function ensureSuccess(response, action) {
   return response;
 }
 
-export async function upsertComment({ api, body, headers, fetchLike = fetch }) {
+export async function upsertComment({
+  api,
+  body,
+  headers,
+  author = 'github-actions[bot]',
+  fetchLike = fetch,
+}) {
   const comments = await ensureSuccess(
     await fetchLike(api, { headers }),
     'list Dependabot review comments'
   ).then((response) => response.json());
   const existing = comments.find(
     (comment) =>
-      comment.user?.login === 'github-actions[bot]' &&
+      comment.user?.login === author &&
       comment.body?.includes('<!-- dependabot-intelligent-review -->')
   );
   const action = existing ? 'update' : 'create';
