@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { upsertComment } from './github.mjs';
+import { deleteReviewComment, upsertComment } from './github.mjs';
 
 describe('upsertComment', () => {
   it('fails when GitHub rejects listing existing review comments', async () => {
@@ -13,6 +13,23 @@ describe('upsertComment', () => {
         fetchLike,
       })
     ).rejects.toThrow('Unable to list Dependabot review comments (403): Forbidden');
+  });
+
+  it("reports GitHub's accepted permissions when a comment request is rejected", async () => {
+    const fetchLike: typeof fetch = async () =>
+      new Response('Forbidden', {
+        status: 403,
+        headers: { 'X-Accepted-GitHub-Permissions': 'issues=write' },
+      });
+
+    await expect(
+      upsertComment({
+        api: 'https://api.github.com/repos/example/site/issues/1/comments',
+        body: 'Review body',
+        headers: { Authorization: 'Bearer test' },
+        fetchLike,
+      })
+    ).rejects.toThrow('Accepted GitHub permissions: issues=write');
   });
 
   it('fails when GitHub rejects creation of the review comment', async () => {
@@ -54,8 +71,35 @@ describe('upsertComment', () => {
     });
 
     expect(fetchMock).toHaveBeenLastCalledWith(
-      'https://api.github.com/repos/example/site/issues/1/comments/1',
+      'https://api.github.com/repos/example/site/issues/comments/1',
       expect.objectContaining({ method: 'PATCH' })
+    );
+  });
+});
+
+describe('deleteReviewComment', () => {
+  it('removes the existing managed review comment', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      Response.json([
+        {
+          id: 1,
+          user: { login: 'dependabot-review-commenter[bot]' },
+          body: '<!-- dependabot-intelligent-review -->\n**Advisory verdict:** merge',
+        },
+      ])
+    );
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    await deleteReviewComment({
+      api: 'https://api.github.com/repos/example/site/issues/1/comments',
+      headers: { Authorization: 'Bearer app-token' },
+      author: 'dependabot-review-commenter[bot]',
+      fetchLike: fetchMock,
+    });
+
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      'https://api.github.com/repos/example/site/issues/comments/1',
+      expect.objectContaining({ method: 'DELETE' })
     );
   });
 });

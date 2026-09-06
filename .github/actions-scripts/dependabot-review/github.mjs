@@ -1,6 +1,10 @@
 const responseDetail = async (response) => {
   const detail = (await response.text()).replaceAll(/\s+/g, ' ').trim();
-  return detail ? `: ${detail.slice(0, 500)}` : '';
+  const acceptedPermissions = response.headers.get('x-accepted-github-permissions');
+  const permissions = acceptedPermissions
+    ? ` Accepted GitHub permissions: ${acceptedPermissions}.`
+    : '';
+  return detail ? `: ${detail.slice(0, 500)}${permissions}` : permissions;
 };
 
 async function ensureSuccess(response, action) {
@@ -8,6 +12,16 @@ async function ensureSuccess(response, action) {
     throw new Error(`Unable to ${action} (${response.status})${await responseDetail(response)}`);
   return response;
 }
+
+const managedComment = (comments, author) =>
+  comments.find(
+    (comment) =>
+      comment.user?.login === author &&
+      comment.body?.includes('<!-- dependabot-intelligent-review -->')
+  );
+
+const commentApi = (api, comment) =>
+  api.replace(/\/issues\/\d+\/comments$/, `/issues/comments/${comment.id}`);
 
 export async function upsertComment({
   api,
@@ -20,18 +34,33 @@ export async function upsertComment({
     await fetchLike(api, { headers }),
     'list Dependabot review comments'
   ).then((response) => response.json());
-  const existing = comments.find(
-    (comment) =>
-      comment.user?.login === author &&
-      comment.body?.includes('<!-- dependabot-intelligent-review -->')
-  );
+  const existing = managedComment(comments, author);
   const action = existing ? 'update' : 'create';
+  const targetApi = existing ? commentApi(api, existing) : api;
   await ensureSuccess(
-    await fetchLike(existing ? `${api}/${existing.id}` : api, {
+    await fetchLike(targetApi, {
       method: existing ? 'PATCH' : 'POST',
       headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({ body }),
     }),
     `${action} Dependabot review comment`
+  );
+}
+
+export async function deleteReviewComment({
+  api,
+  headers,
+  author = 'github-actions[bot]',
+  fetchLike = fetch,
+}) {
+  const comments = await ensureSuccess(
+    await fetchLike(api, { headers }),
+    'list Dependabot review comments'
+  ).then((response) => response.json());
+  const existing = managedComment(comments, author);
+  if (!existing) return;
+  await ensureSuccess(
+    await fetchLike(commentApi(api, existing), { method: 'DELETE', headers }),
+    'delete Dependabot review comment'
   );
 }
