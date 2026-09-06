@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vite-plus/test';
+import { describe, expect, it, vi } from 'vite-plus/test';
 import { upsertComment } from './github.mjs';
 
 describe('upsertComment', () => {
@@ -30,6 +30,32 @@ describe('upsertComment', () => {
       })
     ).rejects.toThrow(
       'Unable to create Dependabot review comment (403): Resource not accessible by integration'
+    );
+  });
+
+  it('updates the existing comment created by the GitHub App', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      Response.json([
+        {
+          id: 1,
+          user: { login: 'dependabot-review-commenter[bot]' },
+          body: '<!-- dependabot-intelligent-review -->',
+        },
+      ])
+    );
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+    await upsertComment({
+      api: 'https://api.github.com/repos/example/site/issues/1/comments',
+      body: 'Updated review body',
+      headers: { Authorization: 'Bearer app-token' },
+      author: 'dependabot-review-commenter[bot]',
+      fetchLike: fetchMock,
+    });
+
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      'https://api.github.com/repos/example/site/issues/1/comments/1',
+      expect.objectContaining({ method: 'PATCH' })
     );
   });
 });
