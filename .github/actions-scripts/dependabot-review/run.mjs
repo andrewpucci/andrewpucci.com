@@ -1,5 +1,6 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { analyze } from './analysis.mjs';
+import { analyzeBatches } from './batches.mjs';
 import { pullRequestNumber } from './event.mjs';
 import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
 import { collectReviewInput } from './inputs.mjs';
@@ -37,19 +38,41 @@ const [pullRequestResponse, files] = await Promise.all([
 ]);
 if (!pullRequestResponse.ok)
   throw new Error(`Unable to retrieve pull request (${pullRequestResponse.status}).`);
+const [workflowFiles, sourceFiles] = await Promise.all([
+  readdir('.github/workflows'),
+  readdir('src', { recursive: true }),
+]);
+const repositoryContext = {
+  paths: [
+    'package.json',
+    'package-lock.json',
+    'pnpm-lock.yaml',
+    'yarn.lock',
+    'vite.config.ts',
+    'svelte.config.js',
+    ...workflowFiles.map((path) => `.github/workflows/${path}`),
+    ...sourceFiles.map((path) => `src/${path}`),
+  ],
+  // The workflow checks out only the trusted default branch; the collector filters this list.
+  // oxlint-disable-next-line security/detect-non-literal-fs-filename
+  readFile: (path) => readFile(path, 'utf8'),
+};
 const input = await collectReviewInput(
   {
     pull_request: await pullRequestResponse.json(),
     repository: process.env.GITHUB_REPOSITORY,
     files,
   },
-  { githubHeaders }
+  { githubHeaders, repositoryContext }
 );
 if (!input) {
   await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
   process.exit(0);
 }
-const analysis = await analyze(input, process.env.MISTRAL_API_KEY);
+const analysis = await analyzeBatches(input, {
+  analyzeBatch: (batch, { timeoutMs }) =>
+    analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
+});
 const body = renderComment(analysis, input.pullRequest.headSha);
 await upsertComment({
   api: commentApi,

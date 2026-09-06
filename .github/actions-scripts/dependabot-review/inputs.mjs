@@ -1,4 +1,5 @@
 import { parseReviewInput } from './schema.mjs';
+import { collectRepositoryContext } from './context.mjs';
 import { fetchAllPages } from './github.mjs';
 
 const githubRepository = (value) => {
@@ -289,7 +290,14 @@ async function upstreamEvidence(repository, dependency, metadata, fetchLike, git
   };
 }
 
-export async function collectReviewInput(event, { fetchLike = fetch, githubHeaders = {} } = {}) {
+/**
+ * @param {{ pull_request?: unknown, repository?: unknown, files?: unknown[] }} event
+ * @param {{ fetchLike?: typeof fetch, githubHeaders?: HeadersInit, repositoryContext?: { paths: string[], readFile: (path: string) => Promise<string> } }} options
+ */
+export async function collectReviewInput(
+  event,
+  { fetchLike = fetch, githubHeaders = {}, repositoryContext } = {}
+) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
   const changes = await dependencyChanges(event, fetchLike, githubHeaders);
@@ -354,6 +362,7 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
           validation: ['npm run check', 'npm test'],
         });
       return {
+        ecosystem: dependency.ecosystem,
         name: dependency.name,
         from: dependency.from,
         to: dependency.to,
@@ -366,12 +375,20 @@ export async function collectReviewInput(event, { fetchLike = fetch, githubHeade
     })
   );
   if (!packages.length) return null;
+  const contexts = await collectRepositoryContext(
+    packages,
+    repositoryContext ?? { paths: [], readFile: async () => '' }
+  );
+  const contextByName = new Map(contexts.map((context) => [context.name, context]));
   return parseReviewInput({
     pullRequest: {
       number: pullRequest.number,
       baseSha: pullRequest.base.sha,
       headSha: pullRequest.head.sha,
     },
-    packages,
+    packages: packages.map((dependency) => {
+      const context = contextByName.get(dependency.name) ?? { status: 'unavailable', facts: [] };
+      return { ...dependency, context: { status: context.status, facts: context.facts } };
+    }),
   });
 }
