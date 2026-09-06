@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { analyze } from './analysis.mjs';
 import { pullRequestNumber } from './event.mjs';
-import { deleteReviewComment, upsertComment } from './github.mjs';
+import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
 import { collectReviewInput } from './inputs.mjs';
 import { renderComment } from './reporting.mjs';
 
@@ -27,19 +27,21 @@ const number = await pullRequestNumber(event, {
 });
 const pullRequestApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls/${number}`;
 const commentApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${number}/comments`;
-const [pullRequestResponse, filesResponse] = await Promise.all([
+const [pullRequestResponse, files] = await Promise.all([
   fetch(pullRequestApi, { headers: githubHeaders }),
-  fetch(`${pullRequestApi}/files?per_page=100`, { headers: githubHeaders }),
+  fetchAllPages({
+    api: `${pullRequestApi}/files?per_page=100`,
+    headers: githubHeaders,
+    action: 'retrieve pull request files',
+  }),
 ]);
 if (!pullRequestResponse.ok)
   throw new Error(`Unable to retrieve pull request (${pullRequestResponse.status}).`);
-if (!filesResponse.ok)
-  throw new Error(`Unable to retrieve pull request files (${filesResponse.status}).`);
 const input = await collectReviewInput(
   {
     pull_request: await pullRequestResponse.json(),
     repository: process.env.GITHUB_REPOSITORY,
-    files: await filesResponse.json(),
+    files,
   },
   { githubHeaders }
 );
