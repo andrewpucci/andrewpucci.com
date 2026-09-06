@@ -10,6 +10,7 @@ const allowedPath = (path) =>
   ].includes(path) ||
     /^\.github\/workflows\/[^/]+\.ya?ml$/.test(path) ||
     /^src\/.+\.(?:[cm]?[jt]sx?|svelte)$/.test(path));
+const maximumFacts = 20;
 
 function excerptFor(text, name, ecosystem) {
   const lines = text.split('\n');
@@ -37,7 +38,7 @@ export async function collectRepositoryContext(packages, { paths, readFile }) {
     })
   );
   return packages.map(({ name, ecosystem }) => {
-    const facts = files.flatMap((file) => {
+    const allFacts = files.flatMap((file) => {
       if (!file || typeof file.text !== 'string') return [];
       const excerpt = excerptFor(file.text, name, ecosystem);
       return excerpt
@@ -50,6 +51,11 @@ export async function collectRepositoryContext(packages, { paths, readFile }) {
           ]
         : [];
     });
-    return { name, status: facts.length ? 'available' : 'unavailable', facts };
+    return {
+      name,
+      status:
+        allFacts.length > maximumFacts ? 'partial' : allFacts.length ? 'available' : 'unavailable',
+      facts: allFacts.slice(0, maximumFacts),
+    };
   });
 }

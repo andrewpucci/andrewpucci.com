@@ -29,4 +29,16 @@ describe('collectRepositoryContext', () => {
     ]);
     expect(readFile).toHaveBeenCalledTimes(1);
   });
+
+  it('marks context partial when the aggregate fact cap is reached', async () => {
+    const paths = Array.from({ length: 21 }, (_, index) => `src/example-${index}.ts`);
+
+    const context = await collectRepositoryContext(
+      [{ name: 'example-package', ecosystem: 'npm' }],
+      { paths, readFile: async () => 'import examplePackage from "example-package";' }
+    );
+
+    expect(context[0]).toMatchObject({ status: 'partial' });
+    expect(context[0].facts).toHaveLength(20);
+  });
 });
