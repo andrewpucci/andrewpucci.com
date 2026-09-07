@@ -596,4 +596,51 @@ describe('collectReviewInput', () => {
       ],
     });
   });
+
+  it('treats an unknown dependency-review severity as unscored', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        response([
+          ...dependencyDiff,
+          {
+            change_type: 'added',
+            manifest: 'package.json',
+            ecosystem: 'npm',
+            name: 'example',
+            version: '2.0.0',
+            source_repository_url: 'https://github.com/example/package',
+            license: 'MIT',
+            vulnerabilities: [
+              {
+                advisory_ghsa_id: 'GHSA-example',
+                advisory_summary: 'Example vulnerability.',
+                advisory_url: 'https://github.com/advisories/GHSA-example',
+                severity: 'future-severity',
+              },
+            ],
+          },
+        ])
+      )
+      .mockResolvedValueOnce(
+        response({ repository: { url: 'https://github.com/example/package' } })
+      )
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/example/package/releases/tag/v2.0.0',
+          body: 'Release notes.',
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: pullRequest,
+        repository: 'owner/repo',
+        files: [packageFile],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages[0].findings).toMatchObject([{ kind: 'vulnerability', severity: null }]);
+  });
 });

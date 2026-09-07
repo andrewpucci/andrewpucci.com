@@ -24,6 +24,9 @@ const blockerKinds = new Set([
   'applicable-codemod',
 ]);
 
+export const isVulnerabilitySeverity = (value) =>
+  typeof value === 'string' && vulnerabilitySeverities.has(value);
+
 function object(value, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new TypeError(`${label} must be an object`);
@@ -96,12 +99,7 @@ export function parseReviewInput(value) {
         if (!blockerKinds.has(kind) || !sourceUrls.has(sourceUrl))
           throw new TypeError('finding must use a known blocker kind and evidence URL');
         const severity = finding.severity ?? null;
-        if (
-          severity !== null &&
-          (kind !== 'vulnerability' ||
-            typeof severity !== 'string' ||
-            !vulnerabilitySeverities.has(severity))
-        )
+        if (severity !== null && (kind !== 'vulnerability' || !isVulnerabilitySeverity(severity)))
           throw new TypeError('vulnerability severity must be low, moderate, high, or critical');
         return {
           id,
