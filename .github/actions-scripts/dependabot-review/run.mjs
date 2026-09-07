@@ -68,19 +68,19 @@ const input = await collectReviewInput(
 );
 if (!input) {
   await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
-  process.exit(0);
+} else {
+  const analysis = await analyzeBatches(
+    { ...input, policy: evaluatePolicy(input) },
+    {
+      analyzeBatch: (batch, { timeoutMs }) =>
+        analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
+    }
+  );
+  const body = renderComment(analysis, input.pullRequest.headSha);
+  await upsertComment({
+    api: commentApi,
+    body,
+    headers: commentHeaders,
+    author: commentAuthor,
+  });
 }
-const analysis = await analyzeBatches(
-  { ...input, policy: evaluatePolicy(input) },
-  {
-    analyzeBatch: (batch, { timeoutMs }) =>
-      analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
-  }
-);
-const body = renderComment(analysis, input.pullRequest.headSha);
-await upsertComment({
-  api: commentApi,
-  body,
-  headers: commentHeaders,
-  author: commentAuthor,
-});
