@@ -52,6 +52,77 @@ describe('Dependabot review batches', () => {
     expect(projected.packages[0].sources[0].excerpt).toHaveLength(100);
   });
 
+  it('bounds trusted context and scopes policy findings to the batch', () => {
+    const first = {
+      ...dependency('first'),
+      context: {
+        status: 'available',
+        facts: [
+          {
+            kind: 'package-usage',
+            path: 'package.json',
+            excerpt: 'x'.repeat(10_000),
+          },
+        ],
+      },
+    };
+    const second = dependency('second');
+    const packet = {
+      ...input,
+      packages: [first, second],
+      policy: {
+        verdictCeiling: 'do_not_merge',
+        findings: [
+          {
+            package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+            verdict: 'merge_with_followups',
+          },
+          {
+            package: { name: 'second', from: '1.0.0', to: '2.0.0' },
+            verdict: 'do_not_merge',
+          },
+        ],
+      },
+    };
+
+    const projected = projectForModel(
+      { ...packet, packages: [first] },
+      { maxSourceExcerptChars: 100, maxPackageChars: 500 }
+    );
+
+    expect(JSON.stringify(projected.packages[0]).length).toBeLessThanOrEqual(500);
+    expect(projected.packages[0].context.facts[0]).toMatchObject({ excerptTruncated: true });
+    expect(projected.policy).toEqual({
+      verdictCeiling: 'merge_with_followups',
+      findings: [
+        {
+          package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+          verdict: 'merge_with_followups',
+        },
+      ],
+    });
+  });
+
+  it('marks metadata too large for a bounded packet as unavailable without calling the model', async () => {
+    const oversized = {
+      ...dependency('oversized'),
+      sources: Array.from({ length: 20 }, () => ({
+        ...dependency('oversized').sources[0],
+        title: 'x'.repeat(100),
+      })),
+    };
+    const analyzeBatch = vi.fn();
+
+    const result = await analyzeBatches(
+      { ...input, packages: [oversized] },
+      { analyzeBatch, maxPackageChars: 500, maxBatchChars: 600 }
+    );
+
+    expect(analyzeBatch).not.toHaveBeenCalled();
+    expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
+    expect(result.summary).toContain('oversized 1.0.0 to 2.0.0: manual review required.');
+  });
+
   it('splits a truncated batch and preserves the completed package results', async () => {
     const analyzeBatch = vi.fn(async (batch) =>
       batch.packages.length > 1
@@ -66,6 +137,76 @@ describe('Dependabot review batches', () => {
     expect(
       result.packageAssessments.map((assessment: { name: string }) => assessment.name)
     ).toEqual(['first', 'second']);
+  });
+
+  it('scopes policy findings when retrying a truncated batch', async () => {
+    const policyInput = {
+      ...input,
+      policy: {
+        verdictCeiling: 'do_not_merge',
+        findings: [
+          {
+            package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+            verdict: 'merge_with_followups',
+          },
+          {
+            package: { name: 'second', from: '1.0.0', to: '2.0.0' },
+            verdict: 'do_not_merge',
+          },
+        ],
+      },
+    };
+    const analyzeBatch = vi.fn(async (batch) =>
+      batch.packages.length > 1
+        ? { verdict: 'analysis_unavailable', reason: 'truncated' }
+        : completedAnalysis(batch.packages[0])
+    );
+
+    await analyzeBatches(policyInput, { analyzeBatch, maxPackagesPerBatch: 2 });
+
+    expect(analyzeBatch.mock.calls.map(([batch]) => batch.policy.findings)).toEqual([
+      policyInput.policy.findings,
+      [policyInput.policy.findings[0]],
+      [policyInput.policy.findings[1]],
+    ]);
+  });
+
+  it('retains a deterministic do_not_merge blocker when its model batch is unavailable', async () => {
+    const second = dependency('second');
+    const result = await analyzeBatches(
+      {
+        ...input,
+        policy: {
+          verdictCeiling: 'do_not_merge',
+          findings: [
+            {
+              package: { name: second.name, from: second.from, to: second.to },
+              findingId: 'second:vulnerability',
+              verdict: 'do_not_merge',
+              reason: 'A critical vulnerability affects the target version.',
+              sourceUrl: second.sources[0].url,
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      },
+      {
+        maxPackagesPerBatch: 1,
+        analyzeBatch: async (batch: { packages: ReturnType<typeof dependency>[] }) =>
+          batch.packages[0].name === 'first'
+            ? completedAnalysis(batch.packages[0])
+            : { verdict: 'analysis_unavailable' },
+      }
+    );
+
+    expect(result).toMatchObject({ verdict: 'do_not_merge' });
+    expect(result.blockers).toMatchObject([
+      {
+        findingId: 'second:vulnerability',
+        evidence: [{ sourceUrl: second.sources[0].url }],
+      },
+    ]);
   });
 
   it('marks a batch unavailable when the model omits an assessment', async () => {

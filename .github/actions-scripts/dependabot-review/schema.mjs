@@ -211,8 +211,18 @@ export function parseAnalysis(value, input) {
   const analysis = object(value, 'analysis');
   const verdict = string(analysis.verdict, 'verdict');
   if (!verdicts.has(verdict)) throw new TypeError('unsupported verdict');
+  const policy = input.policy === undefined ? null : parsePolicy(input.policy, input);
+  if (
+    policy &&
+    verdict !== 'analysis_unavailable' &&
+    stricterVerdict(verdict, policy.verdictCeiling) !== verdict
+  )
+    throw new TypeError('analysis verdict exceeds the policy ceiling');
   const sourceUrls = new Set(
     input.packages.flatMap((dependency) => dependency.sources.map((source) => source.url))
+  );
+  const packages = new Map(
+    input.packages.map((dependency) => [packageIdentity(dependency), dependency])
   );
   const findings = new Map(
     input.packages.flatMap((dependency) =>
@@ -225,18 +235,47 @@ export function parseAnalysis(value, input) {
   };
   const assessments = array(analysis.packageAssessments, 'package assessments').map((value) => {
     const item = object(value, 'package assessment');
+    const name = string(item.name, 'assessment package name');
+    const from = string(item.from, 'assessment from version');
+    const to = string(item.to, 'assessment to version');
+    const dependency = packages.get(packageIdentity({ name, from, to }));
+    if (!dependency) throw new TypeError('analysis references an unknown package');
+    const assessmentSourceUrls = new Set(dependency.sources.map((source) => source.url));
+    const newFunctionality = array(item.newFunctionality, 'new functionality');
+    if (newFunctionality.length > 1)
+      throw new TypeError('analysis may contain at most one feature per package assessment');
     return {
-      name: string(item.name, 'assessment package name'),
-      from: string(item.from, 'assessment from version'),
-      to: string(item.to, 'assessment to version'),
-      newFunctionality: array(item.newFunctionality, 'new functionality').map((value) => {
+      name,
+      from,
+      to,
+      newFunctionality: newFunctionality.map((value) => {
         const feature = object(value, 'feature');
         const usefulnessValue = string(feature.usefulness, 'feature usefulness');
         if (!usefulness.has(usefulnessValue)) throw new TypeError('unsupported usefulness');
+        const sourceUrl = requireUrl(string(feature.sourceUrl, 'feature source URL'));
+        if (!assessmentSourceUrls.has(sourceUrl))
+          throw new TypeError('feature must cite evidence for its assessed package');
+        const action =
+          feature.action === undefined || feature.action === null
+            ? null
+            : string(feature.action, 'feature action');
+        const contextPath =
+          feature.contextPath === undefined || feature.contextPath === null
+            ? null
+            : string(feature.contextPath, 'feature context path');
+        if (
+          usefulnessValue === 'use_now' &&
+          (!action ||
+            !contextPath ||
+            !dependency.context.facts.some((fact) => fact.path === contextPath))
+        )
+          throw new TypeError('use_now requires an action and matching trusted repository context');
         return {
           feature: string(feature.feature, 'feature'),
-          sourceUrl: requireUrl(string(feature.sourceUrl, 'feature source URL')),
+          sourceUrl,
           usefulness: usefulnessValue,
+          action,
+          contextPath,
           rationale: string(feature.rationale, 'feature rationale'),
         };
       }),

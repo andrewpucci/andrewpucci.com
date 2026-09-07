@@ -6,6 +6,7 @@ const defaults = {
   maxConcurrency: 2,
   maxRequests: 12,
   requestTimeoutMs: 120_000,
+  maxContextExcerptChars: 1_200,
   maxSourceExcerptChars: 1_200,
 };
 const verdictPriority = new Map([
@@ -17,35 +18,83 @@ const verdictPriority = new Map([
 const identity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
 
 function projectedPackage(dependency, limits) {
-  const sources = dependency.sources.map((source) => ({ ...source, excerpt: '' }));
-  const overhead = JSON.stringify({ ...dependency, sources }).length;
+  const sources = dependency.sources.map((source) => ({
+    ...source,
+    excerpt: '',
+    excerptTruncated: false,
+  }));
+  const facts = dependency.context.facts.map((fact) => ({
+    ...fact,
+    excerpt: '',
+    excerptTruncated: false,
+  }));
+  const overhead = JSON.stringify({
+    ...dependency,
+    sources,
+    context: { ...dependency.context, facts },
+  }).length;
   const available = Math.max(0, limits.maxPackageChars - overhead);
   const perSource = Math.min(
     limits.maxSourceExcerptChars,
-    sources.length ? Math.floor(available / sources.length) : 0
+    sources.length + facts.length ? Math.floor(available / (sources.length + facts.length)) : 0
   );
   return {
     ...dependency,
     sources: dependency.sources.map((source) => ({
       ...source,
       excerpt: source.excerpt.slice(0, perSource),
-      excerptTruncated: source.excerpt.length > perSource,
+      excerptTruncated: source.excerptTruncated || source.excerpt.length > perSource,
     })),
+    context: {
+      ...dependency.context,
+      facts: dependency.context.facts.map((fact) => {
+        const maxExcerpt = Math.min(perSource, limits.maxContextExcerptChars);
+        return {
+          ...fact,
+          excerpt: fact.excerpt.slice(0, maxExcerpt),
+          excerptTruncated: fact.excerptTruncated || fact.excerpt.length > maxExcerpt,
+        };
+      }),
+    },
   };
 }
 
 export function projectForModel(input, options = {}) {
   const limits = { ...defaults, ...options };
+  const packageIds = new Set(input.packages.map(identity));
+  const policyFindings = input.policy?.findings.filter((finding) =>
+    packageIds.has(identity(finding.package))
+  );
+  const policy = policyFindings
+    ? {
+        ...input.policy,
+        verdictCeiling: policyFindings.reduce(
+          (current, finding) => stricter(current, finding.verdict),
+          'merge'
+        ),
+        findings: policyFindings,
+      }
+    : undefined;
   return {
     ...input,
+    ...(policy ? { policy } : {}),
     packages: input.packages.map((dependency) => projectedPackage(dependency, limits)),
   };
 }
 
 function batches(input, limits) {
   const result = [];
+  const unavailable = [];
   let current = [];
   for (const dependency of input.packages) {
+    const projectedDependency = projectForModel({ ...input, packages: [dependency] }, limits);
+    if (
+      JSON.stringify(projectedDependency.packages[0]).length > limits.maxPackageChars ||
+      JSON.stringify(projectedDependency).length > limits.maxBatchChars
+    ) {
+      unavailable.push(dependency);
+      continue;
+    }
     const candidate = [...current, dependency];
     const projected = projectForModel({ ...input, packages: candidate }, limits);
     if (
@@ -60,11 +109,27 @@ function batches(input, limits) {
     }
   }
   if (current.length) result.push(projectForModel({ ...input, packages: current }, limits));
-  return result;
+  return { batches: result, unavailable };
 }
 
 function stricter(left, right) {
   return verdictPriority.get(left) >= verdictPriority.get(right) ? left : right;
+}
+
+function policyBlockers(input, unavailableIds) {
+  return (input.policy?.findings ?? [])
+    .filter(
+      (finding) =>
+        finding.verdict === 'do_not_merge' && unavailableIds.has(identity(finding.package))
+    )
+    .map((finding) => ({
+      findingId: finding.findingId,
+      reason: finding.reason,
+      impact: 'Deterministic review policy requires this update not to merge.',
+      evidence: [{ claim: finding.reason, sourceUrl: finding.sourceUrl }],
+      remediation: finding.remediation,
+      validation: finding.validation,
+    }));
 }
 
 function hasEveryAssessment(batch, analysis) {
@@ -94,8 +159,16 @@ async function analyzeBatch(batch, analyze, state) {
     return { analyses: [], unavailable: batch.packages };
   const midpoint = Math.ceil(batch.packages.length / 2);
   const [left, right] = await Promise.all([
-    analyzeBatch({ ...batch, packages: batch.packages.slice(0, midpoint) }, analyze, state),
-    analyzeBatch({ ...batch, packages: batch.packages.slice(midpoint) }, analyze, state),
+    analyzeBatch(
+      projectForModel({ ...batch, packages: batch.packages.slice(0, midpoint) }, state.limits),
+      analyze,
+      state
+    ),
+    analyzeBatch(
+      projectForModel({ ...batch, packages: batch.packages.slice(midpoint) }, state.limits),
+      analyze,
+      state
+    ),
   ]);
   return {
     analyses: [...left.analyses, ...right.analyses],
@@ -126,20 +199,29 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     deadline: Date.now() + limits.deadlineMs,
     maxRequests: limits.maxRequests,
     requestTimeoutMs: limits.requestTimeoutMs,
+    limits,
     requests: 0,
   };
-  const completed = await analyzeAll(batches(input, limits), analyze, state, limits.maxConcurrency);
+  const scheduled = batches(input, limits);
+  const completed = await analyzeAll(scheduled.batches, analyze, state, limits.maxConcurrency);
   const analyses = completed.flatMap((result) => result.analyses);
-  const unavailable = completed.flatMap((result) => result.unavailable);
+  const unavailable = [
+    ...scheduled.unavailable,
+    ...completed.flatMap((result) => result.unavailable),
+  ];
   const unavailableIds = new Set(unavailable.map(identity));
   const packageAssessments = analyses.flatMap((analysis) => analysis.packageAssessments);
-  const blockers = analyses.flatMap((analysis) => analysis.blockers);
-  const verdict = unavailable.length
+  const deterministicBlockers = policyBlockers(input, unavailableIds);
+  const blockers = [...analyses.flatMap((analysis) => analysis.blockers), ...deterministicBlockers];
+  const modelVerdict = unavailable.length
     ? analyses.reduce(
         (current, analysis) => stricter(current, analysis.verdict),
         'merge_with_followups'
       )
     : analyses.reduce((current, analysis) => stricter(current, analysis.verdict), 'merge');
+  const verdict = deterministicBlockers.length
+    ? stricter(modelVerdict, 'do_not_merge')
+    : modelVerdict;
   const summary = input.packages
     .map((dependency) =>
       unavailableIds.has(identity(dependency))

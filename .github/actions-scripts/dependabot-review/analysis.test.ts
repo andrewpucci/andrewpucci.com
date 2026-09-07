@@ -55,6 +55,8 @@ describe('analyze', () => {
     expect(request.messages[0].content).toContain('merge_with_followups');
     expect(request.messages[0].content).toContain('name every reviewed package');
     expect(request.messages[0].content).toContain('exactly one package assessment');
+    expect(request.messages[0].content).toContain('contextPath');
+    expect(request.messages[0].content).toContain('policy verdict ceiling');
     expect(request.max_tokens).toBeGreaterThanOrEqual(4_000);
     expect(timeoutSpy).toHaveBeenCalledWith(120_000);
     timeoutSpy.mockRestore();

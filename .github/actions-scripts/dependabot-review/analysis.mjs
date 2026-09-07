@@ -22,7 +22,8 @@ const analysisContract = `Return exactly one JSON object with every field below:
     "name": string, "from": string, "to": string,
     "newFunctionality": [{
       "feature": string, "sourceUrl": string,
-      "usefulness": "use_now" | "consider_later" | "not_relevant", "rationale": string
+      "usefulness": "use_now" | "consider_later" | "not_relevant",
+      "action": string | null, "contextPath": string | null, "rationale": string
     }]
   }],
   "blockers": [{
@@ -32,7 +33,7 @@ const analysisContract = `Return exactly one JSON object with every field below:
   }],
   "remediationPrompt": string | null
 }
-Use only URLs and finding IDs supplied in the input. Always include all top-level fields, including empty arrays and null. Return exactly one package assessment for every input package and no assessment for any other package. Keep each package assessment concise and include no more than one newFunctionality item. The summary must name every reviewed package and explain which supplied evidence supports the verdict; if a package has no source, state that its evidence is unavailable rather than inferring changes. A do_not_merge verdict requires a blocker that cites its matching supplied finding; otherwise use an empty blockers array and a null remediationPrompt.`;
+Use only URLs and finding IDs supplied in the input. Never return a verdict less restrictive than the supplied policy verdict ceiling. Always include all top-level fields, including empty arrays and null. Return exactly one package assessment for every input package and no assessment for any other package. Keep each package assessment concise and include no more than one newFunctionality item. A use_now item requires a concrete action, an upstream source URL for its assessed package, and a contextPath matching a supplied trusted repository-context fact. The summary must name every reviewed package and explain which supplied evidence supports the verdict; if a package has no source, state that its evidence is unavailable rather than inferring changes. A do_not_merge verdict requires a blocker that cites its matching supplied finding; otherwise use an empty blockers array and a null remediationPrompt.`;
 
 export async function analyze(input, apiKey, fetchLike = fetch, { timeoutMs = 120_000 } = {}) {
   let response;
