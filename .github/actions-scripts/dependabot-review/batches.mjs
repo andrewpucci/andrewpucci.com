@@ -43,7 +43,7 @@ function projectedPackage(dependency, limits) {
     sources: dependency.sources.map((source) => ({
       ...source,
       excerpt: source.excerpt.slice(0, perSource),
-      excerptTruncated: source.excerpt.length > perSource,
+      excerptTruncated: source.excerptTruncated || source.excerpt.length > perSource,
     })),
     context: {
       ...dependency.context,
@@ -52,7 +52,7 @@ function projectedPackage(dependency, limits) {
         return {
           ...fact,
           excerpt: fact.excerpt.slice(0, maxExcerpt),
-          excerptTruncated: fact.excerpt.length > maxExcerpt,
+          excerptTruncated: fact.excerptTruncated || fact.excerpt.length > maxExcerpt,
         };
       }),
     },
@@ -134,8 +134,16 @@ async function analyzeBatch(batch, analyze, state) {
     return { analyses: [], unavailable: batch.packages };
   const midpoint = Math.ceil(batch.packages.length / 2);
   const [left, right] = await Promise.all([
-    analyzeBatch({ ...batch, packages: batch.packages.slice(0, midpoint) }, analyze, state),
-    analyzeBatch({ ...batch, packages: batch.packages.slice(midpoint) }, analyze, state),
+    analyzeBatch(
+      projectForModel({ ...batch, packages: batch.packages.slice(0, midpoint) }, state.limits),
+      analyze,
+      state
+    ),
+    analyzeBatch(
+      projectForModel({ ...batch, packages: batch.packages.slice(midpoint) }, state.limits),
+      analyze,
+      state
+    ),
   ]);
   return {
     analyses: [...left.analyses, ...right.analyses],
@@ -166,6 +174,7 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     deadline: Date.now() + limits.deadlineMs,
     maxRequests: limits.maxRequests,
     requestTimeoutMs: limits.requestTimeoutMs,
+    limits,
     requests: 0,
   };
   const completed = await analyzeAll(batches(input, limits), analyze, state, limits.maxConcurrency);

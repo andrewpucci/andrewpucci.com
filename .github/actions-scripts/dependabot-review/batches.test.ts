@@ -119,6 +119,38 @@ describe('Dependabot review batches', () => {
     ).toEqual(['first', 'second']);
   });
 
+  it('scopes policy findings when retrying a truncated batch', async () => {
+    const policyInput = {
+      ...input,
+      policy: {
+        verdictCeiling: 'do_not_merge',
+        findings: [
+          {
+            package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+            verdict: 'merge_with_followups',
+          },
+          {
+            package: { name: 'second', from: '1.0.0', to: '2.0.0' },
+            verdict: 'do_not_merge',
+          },
+        ],
+      },
+    };
+    const analyzeBatch = vi.fn(async (batch) =>
+      batch.packages.length > 1
+        ? { verdict: 'analysis_unavailable', reason: 'truncated' }
+        : completedAnalysis(batch.packages[0])
+    );
+
+    await analyzeBatches(policyInput, { analyzeBatch, maxPackagesPerBatch: 2 });
+
+    expect(analyzeBatch.mock.calls.map(([batch]) => batch.policy.findings)).toEqual([
+      policyInput.policy.findings,
+      [policyInput.policy.findings[0]],
+      [policyInput.policy.findings[1]],
+    ]);
+  });
+
   it('marks a batch unavailable when the model omits an assessment', async () => {
     const result = await analyzeBatches(input, {
       analyzeBatch: vi.fn().mockResolvedValue({
