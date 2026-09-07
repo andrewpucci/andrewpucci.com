@@ -52,6 +52,57 @@ describe('Dependabot review batches', () => {
     expect(projected.packages[0].sources[0].excerpt).toHaveLength(100);
   });
 
+  it('bounds trusted context and scopes policy findings to the batch', () => {
+    const first = {
+      ...dependency('first'),
+      context: {
+        status: 'available',
+        facts: [
+          {
+            kind: 'package-usage',
+            path: 'package.json',
+            excerpt: 'x'.repeat(10_000),
+          },
+        ],
+      },
+    };
+    const second = dependency('second');
+    const packet = {
+      ...input,
+      packages: [first, second],
+      policy: {
+        verdictCeiling: 'do_not_merge',
+        findings: [
+          {
+            package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+            verdict: 'merge_with_followups',
+          },
+          {
+            package: { name: 'second', from: '1.0.0', to: '2.0.0' },
+            verdict: 'do_not_merge',
+          },
+        ],
+      },
+    };
+
+    const projected = projectForModel(
+      { ...packet, packages: [first] },
+      { maxSourceExcerptChars: 100, maxPackageChars: 500 }
+    );
+
+    expect(JSON.stringify(projected.packages[0]).length).toBeLessThanOrEqual(500);
+    expect(projected.packages[0].context.facts[0]).toMatchObject({ excerptTruncated: true });
+    expect(projected.policy).toEqual({
+      verdictCeiling: 'merge_with_followups',
+      findings: [
+        {
+          package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+          verdict: 'merge_with_followups',
+        },
+      ],
+    });
+  });
+
   it('splits a truncated batch and preserves the completed package results', async () => {
     const analyzeBatch = vi.fn(async (batch) =>
       batch.packages.length > 1

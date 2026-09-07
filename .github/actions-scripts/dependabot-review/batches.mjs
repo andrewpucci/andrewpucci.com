@@ -6,6 +6,7 @@ const defaults = {
   maxConcurrency: 2,
   maxRequests: 12,
   requestTimeoutMs: 120_000,
+  maxContextExcerptChars: 1_200,
   maxSourceExcerptChars: 1_200,
 };
 const verdictPriority = new Map([
@@ -17,12 +18,25 @@ const verdictPriority = new Map([
 const identity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
 
 function projectedPackage(dependency, limits) {
-  const sources = dependency.sources.map((source) => ({ ...source, excerpt: '' }));
-  const overhead = JSON.stringify({ ...dependency, sources }).length;
+  const sources = dependency.sources.map((source) => ({
+    ...source,
+    excerpt: '',
+    excerptTruncated: false,
+  }));
+  const facts = dependency.context.facts.map((fact) => ({
+    ...fact,
+    excerpt: '',
+    excerptTruncated: false,
+  }));
+  const overhead = JSON.stringify({
+    ...dependency,
+    sources,
+    context: { ...dependency.context, facts },
+  }).length;
   const available = Math.max(0, limits.maxPackageChars - overhead);
   const perSource = Math.min(
     limits.maxSourceExcerptChars,
-    sources.length ? Math.floor(available / sources.length) : 0
+    sources.length + facts.length ? Math.floor(available / (sources.length + facts.length)) : 0
   );
   return {
     ...dependency,
@@ -31,13 +45,39 @@ function projectedPackage(dependency, limits) {
       excerpt: source.excerpt.slice(0, perSource),
       excerptTruncated: source.excerpt.length > perSource,
     })),
+    context: {
+      ...dependency.context,
+      facts: dependency.context.facts.map((fact) => {
+        const maxExcerpt = Math.min(perSource, limits.maxContextExcerptChars);
+        return {
+          ...fact,
+          excerpt: fact.excerpt.slice(0, maxExcerpt),
+          excerptTruncated: fact.excerpt.length > maxExcerpt,
+        };
+      }),
+    },
   };
 }
 
 export function projectForModel(input, options = {}) {
   const limits = { ...defaults, ...options };
+  const packageIds = new Set(input.packages.map(identity));
+  const policyFindings = input.policy?.findings.filter((finding) =>
+    packageIds.has(identity(finding.package))
+  );
+  const policy = policyFindings
+    ? {
+        ...input.policy,
+        verdictCeiling: policyFindings.reduce(
+          (current, finding) => stricter(current, finding.verdict),
+          'merge'
+        ),
+        findings: policyFindings,
+      }
+    : undefined;
   return {
     ...input,
+    ...(policy ? { policy } : {}),
     packages: input.packages.map((dependency) => projectedPackage(dependency, limits)),
   };
 }

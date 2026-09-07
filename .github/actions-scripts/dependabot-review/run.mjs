@@ -4,6 +4,7 @@ import { analyzeBatches } from './batches.mjs';
 import { pullRequestNumber } from './event.mjs';
 import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
 import { collectReviewInput } from './inputs.mjs';
+import { evaluatePolicy } from './policy.mjs';
 import { renderComment } from './reporting.mjs';
 
 const eventPath = process.env.GITHUB_EVENT_PATH;
@@ -69,10 +70,13 @@ if (!input) {
   await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
   process.exit(0);
 }
-const analysis = await analyzeBatches(input, {
-  analyzeBatch: (batch, { timeoutMs }) =>
-    analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
-});
+const analysis = await analyzeBatches(
+  { ...input, policy: evaluatePolicy(input) },
+  {
+    analyzeBatch: (batch, { timeoutMs }) =>
+      analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
+  }
+);
 const body = renderComment(analysis, input.pullRequest.headSha);
 await upsertComment({
   api: commentApi,
