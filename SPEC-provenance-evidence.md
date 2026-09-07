@@ -29,8 +29,8 @@ without the reviewer executing pull-request code or hiding its normal comment.
 attestations for downloaded packages. A lockfile-only temporary workspace has
 no package tree to verify, so the collector must make a script-free, public
 registry-only install in an action-owned directory before invoking npm. It
-never checks out the pull request or uses its manifest, configuration, or
-scripts. [npm audit](https://docs.npmjs.com/cli/v11/commands/npm-audit/)
+never checks out the pull request or uses its scripts or configuration beyond a
+strictly validated `overrides` map. [npm audit](https://docs.npmjs.com/cli/v11/commands/npm-audit/)
 
 The command can report errors for missing or invalid signatures or attestations.
 That is a reason to show evidence requiring attention, not an automatic reason
@@ -53,20 +53,21 @@ If any assumption is wrong, revise this specification before planning.
 
 For a Dependabot npm pull request, the collector must:
 
-1. Retrieve the full `package-lock.json` at the pull request's immutable head
-   SHA using GitHub's contents API and the existing read-only GitHub token.
+1. Retrieve the full `package-lock.json` and `package.json` at the pull
+   request's immutable head SHA using GitHub's contents API and the existing
+   read-only GitHub token. The manifest is used only to extract `overrides`.
 2. Parse the lockfile before invoking npm. If any resolved package points to a
    non-public registry, a git URL, a local file, or an otherwise unsupported
    source, do not submit the lockfile to npm; return `unavailable` with a
    concise reason.
 3. Write the validated lockfile and a generated minimal `package.json` to an
    action-owned temporary directory. The generated manifest copies only the
-   root dependency maps needed to match the lockfile; it omits scripts,
-   configuration, workspaces, and all other pull-request manifest fields.
+   root dependency maps and a strictly validated `overrides` map needed to
+   match the lockfile; it omits scripts, npm configuration, workspaces, and all
+   other pull-request manifest fields.
 4. Install that package tree only from `https://registry.npmjs.org`, with
    lifecycle scripts, audit, funding, workspaces, and bin links disabled. Do
-   not check out the pull request, retrieve its `package.json`, or execute its
-   code.
+   not check out the pull request or execute its code.
 
 The collector may send the public dependency graph needed by npm to
 `https://registry.npmjs.org`. It must not send repository source, GitHub tokens,
@@ -127,7 +128,8 @@ existing comment body, policy evaluation, model request, or verdict.
 
 - Node.js ESM action scripts in `.github/actions-scripts/dependabot-review/`
 - npm CLI, explicitly provisioned as `npm@12.0.2` by the trusted workflow
-- GitHub REST contents API, using the action's existing read-only token
+- GitHub REST contents API, using the action's existing read-only token to
+  retrieve the lockfile and extract only the manifest `overrides` map
 - Vitest through the repository's Vite+ test runner
 
 ## Commands
@@ -204,6 +206,8 @@ stay credential-free.
 ### Always
 
 - Use the immutable pull-request head SHA and the existing read-only token.
+- Read only the `overrides` map from the pull-request manifest; validate it as
+  public npm dependency-resolution data before writing the generated manifest.
 - Treat the lockfile, npm output, registry responses, and subprocess errors as
   untrusted data.
 - Use a hard timeout and clean up all temporary resources.
@@ -258,6 +262,9 @@ stay credential-free.
    action-owned temporary directory, with a generated script-free manifest and
    lifecycle scripts disabled. This is required for npm's verifier to assess
    downloaded packages.
+4. The collector may retrieve the pull-request manifest only to extract a
+   strictly validated `overrides` map. It never writes or uses scripts, npmrc,
+   workspaces, or other manifest configuration.
 
 ## Sources
 
