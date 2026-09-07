@@ -88,19 +88,19 @@ Tasks are tracked in GitHub Issues, as required by the repository issue-tracker 
 
 ### Checkpoint: Provenance foundation
 
-- [ ] Focused verifier, collector, schema, and model-projection tests pass.
-- [ ] `npm run lint`, `npm run check`, and `npm test` pass.
-- [ ] Review confirms there is no private-source transmission, shell subprocess, pull-request code execution, or lifecycle-script execution; only the validated public package tree is installed in an owned temporary directory.
-- [ ] Human review before wiring the collector into the privileged workflow.
+- [x] Focused verifier, collector, schema, and model-projection tests pass.
+- [x] `npm run lint`, `npm run check`, and `npm test` pass.
+- [x] Review confirms there is no private-source transmission, shell subprocess, pull-request code execution, or lifecycle-script execution; only the validated public package tree is installed in an owned temporary directory.
+- [x] Human review approved wiring the collector into the privileged workflow.
 
-- [ ] [#293: Wire advisory provenance into trusted input](https://github.com/andrewpucci/andrewpucci.com/issues/293) — Retrieve the immutable lockfile and validate only the manifest `overrides` map, collect in parallel, and preserve the managed comment when evidence is unavailable. Depends on #292, #290, and #291; medium.
+- [x] [#293: Wire advisory provenance into trusted input](https://github.com/andrewpucci/andrewpucci.com/issues/293) — Retrieve the immutable lockfile and validate only the manifest `overrides` map, collect in parallel, and preserve the managed comment when evidence is unavailable. Depends on #292, #290, and #291; medium.
 
 ### Checkpoint: Provenance complete
 
-- [ ] Focused orchestration and comment-lifecycle tests pass.
-- [ ] `npm run lint`, `npm run check`, `npm test`, and `npm run build` pass.
-- [ ] The GitHub comment and dry-run output are unchanged until the separate `decision-reporting` module is approved.
-- [ ] Human review before starting the next module.
+- [x] Focused orchestration and comment-lifecycle tests pass.
+- [x] `npm run lint`, `npm run check`, `npm test`, and `npm run build` pass.
+- [x] The GitHub comment and dry-run output are unchanged until the separate `decision-reporting` module is approved.
+- [x] Human review approved this incremental implementation plan.
 
 ## Risks and Mitigations
 
