@@ -1,6 +1,69 @@
 import { isVulnerabilitySeverity, parseReviewInput } from './schema.mjs';
 import { collectRepositoryContext } from './context.mjs';
 import { fetchAllPages } from './github.mjs';
+import { collectProvenance } from './provenance.mjs';
+
+const provenanceUnavailable = (reason) => ({
+  status: 'unavailable',
+  invalid: 0,
+  missing: 0,
+  reason,
+});
+
+async function fetchImmutableContent({ repository, headSha, path, fetchLike, githubHeaders }) {
+  const response = await fetchLike(
+    `https://api.github.com/repos/${repository}/contents/${path}?ref=${encodeURIComponent(headSha)}`,
+    { headers: githubHeaders }
+  );
+  if (!response.ok) throw new Error('GitHub contents request failed');
+  const body = await response.json();
+  if (body?.encoding !== 'base64' || typeof body.content !== 'string')
+    throw new TypeError('GitHub contents response was invalid');
+  return Buffer.from(body.content, 'base64').toString('utf8');
+}
+
+export async function collectPullRequestProvenance(
+  { repository, headSha },
+  { fetchLike = fetch, githubHeaders = {}, collectProvenance: collect = collectProvenance } = {}
+) {
+  let lockfile;
+  let manifestText;
+  try {
+    [lockfile, manifestText] = await Promise.all([
+      fetchImmutableContent({
+        repository,
+        headSha,
+        path: 'package-lock.json',
+        fetchLike,
+        githubHeaders,
+      }),
+      fetchImmutableContent({
+        repository,
+        headSha,
+        path: 'package.json',
+        fetchLike,
+        githubHeaders,
+      }),
+    ]);
+  } catch {
+    return provenanceUnavailable('The pull request provenance inputs could not be retrieved.');
+  }
+  let overrides;
+  try {
+    const manifest = JSON.parse(manifestText);
+    if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest))
+      throw new TypeError('package manifest was invalid');
+    const { overrides: manifestOverrides } = manifest;
+    overrides = manifestOverrides;
+  } catch {
+    return provenanceUnavailable('The pull request provenance inputs could not be safely parsed.');
+  }
+  try {
+    return await collect({ lockfile, overrides });
+  } catch {
+    return provenanceUnavailable('The pull request provenance could not be collected.');
+  }
+}
 
 const githubRepository = (value) => {
   try {

@@ -2,9 +2,17 @@ import { readFile, readdir } from 'node:fs/promises';
 import { analyze } from './analysis.mjs';
 import { analyzeBatches } from './batches.mjs';
 import { fetchAllPages } from './github.mjs';
-import { collectReviewInput } from './inputs.mjs';
+import { collectPullRequestProvenance, collectReviewInput } from './inputs.mjs';
 import { evaluatePolicy } from './policy.mjs';
 import { renderComment } from './reporting.mjs';
+import { parseReviewInput } from './schema.mjs';
+
+const unavailableProvenance = {
+  status: 'unavailable',
+  invalid: 0,
+  missing: 0,
+  reason: 'The pull request provenance could not be collected.',
+};
 
 export async function loadReviewInput(
   { repository, number, githubToken },
@@ -28,6 +36,7 @@ export async function loadReviewInput(
   ]);
   if (!pullRequestResponse.ok)
     throw new Error(`Unable to retrieve pull request (${pullRequestResponse.status}).`);
+  const pullRequest = await pullRequestResponse.json();
   const repositoryContext = {
     paths: [
       'package.json',
@@ -43,15 +52,21 @@ export async function loadReviewInput(
     // oxlint-disable-next-line security/detect-non-literal-fs-filename
     readFile: (path) => readFile(path, 'utf8'),
   };
-  const input = await collectReviewInput(
-    {
-      pull_request: await pullRequestResponse.json(),
-      repository,
-      files,
-    },
+  const inputPromise = collectReviewInput(
+    { pull_request: pullRequest, repository, files },
     { fetchLike, githubHeaders, repositoryContext }
   );
-  return input;
+  const provenancePromise =
+    pullRequest.user?.login === 'dependabot[bot]' &&
+    files.some((file) => file?.filename === 'package-lock.json')
+      ? collectPullRequestProvenance(
+          { repository, headSha: pullRequest.head?.sha },
+          { fetchLike, githubHeaders }
+        ).catch(() => unavailableProvenance)
+      : Promise.resolve(undefined);
+  const [input, provenance] = await Promise.all([inputPromise, provenancePromise]);
+  if (!input || !provenance) return input;
+  return parseReviewInput({ ...input, provenance });
 }
 
 export async function buildReviewCommentFromInput(

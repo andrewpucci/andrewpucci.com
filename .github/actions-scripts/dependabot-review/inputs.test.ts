@@ -1,5 +1,7 @@
+/// <reference types="node" />
+
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { collectReviewInput } from './inputs.mjs';
+import { collectPullRequestProvenance, collectReviewInput } from './inputs.mjs';
 
 const pullRequest = {
   number: 42,
@@ -77,6 +79,78 @@ const workflowFile = {
 function response(value: unknown) {
   return new Response(JSON.stringify(value));
 }
+
+function contentResponse(value: unknown) {
+  return response({
+    encoding: 'base64',
+    content: Buffer.from(JSON.stringify(value)).toString('base64'),
+  });
+}
+
+describe('collectPullRequestProvenance', () => {
+  it('retrieves immutable provenance inputs and passes only overrides to the collector', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(contentResponse({ lockfileVersion: 3, packages: { '': {} } }))
+      .mockResolvedValueOnce(
+        contentResponse({ scripts: { postinstall: 'ignored' }, overrides: { example: '1.0.0' } })
+      );
+    const collectProvenance = vi.fn().mockResolvedValue({
+      status: 'verified',
+      invalid: 0,
+      missing: 0,
+      reason: null,
+    });
+
+    await expect(
+      collectPullRequestProvenance(
+        { repository: 'owner/repo', headSha: 'immutable-head' },
+        {
+          fetchLike: fetchMock,
+          githubHeaders: { Authorization: 'Bearer read-token' },
+          collectProvenance,
+        }
+      )
+    ).resolves.toEqual({ status: 'verified', invalid: 0, missing: 0, reason: null });
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      'https://api.github.com/repos/owner/repo/contents/package-lock.json?ref=immutable-head',
+      { headers: { Authorization: 'Bearer read-token' } }
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      'https://api.github.com/repos/owner/repo/contents/package.json?ref=immutable-head',
+      { headers: { Authorization: 'Bearer read-token' } }
+    );
+    expect(collectProvenance).toHaveBeenCalledWith({
+      lockfile: JSON.stringify({ lockfileVersion: 3, packages: { '': {} } }),
+      overrides: { example: '1.0.0' },
+    });
+  });
+
+  it('returns unavailable without invoking npm when immutable inputs cannot be parsed', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(contentResponse({ lockfileVersion: 3, packages: { '': {} } }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ encoding: 'base64', content: 'not-json' }))
+      );
+    const collectProvenance = vi.fn();
+
+    await expect(
+      collectPullRequestProvenance(
+        { repository: 'owner/repo', headSha: 'immutable-head' },
+        { fetchLike: fetchMock, collectProvenance }
+      )
+    ).resolves.toEqual({
+      status: 'unavailable',
+      invalid: 0,
+      missing: 0,
+      reason: 'The pull request provenance inputs could not be safely parsed.',
+    });
+    expect(collectProvenance).not.toHaveBeenCalled();
+  });
+});
 
 describe('collectReviewInput', () => {
   it('skips a Dependabot review when it cannot identify any packages', async () => {
