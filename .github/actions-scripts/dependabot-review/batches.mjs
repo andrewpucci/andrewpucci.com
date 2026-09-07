@@ -116,6 +116,27 @@ function stricter(left, right) {
   return verdictPriority.get(left) >= verdictPriority.get(right) ? left : right;
 }
 
+function reviewSummary(packages, unavailableIds) {
+  const total = packages.length;
+  const manualReviewPackages = packages.filter((dependency) =>
+    unavailableIds.has(identity(dependency))
+  );
+  const unavailable = manualReviewPackages.length;
+  const analyzed = total - unavailable;
+  const updateLabel = `dependency update${total === 1 ? '' : 's'}`;
+  const namedPackages = manualReviewPackages
+    .slice(0, 3)
+    .map((dependency) => `${dependency.name} ${dependency.from} to ${dependency.to}`);
+  const remainingPackages = unavailable - namedPackages.length;
+  const remaining = remainingPackages
+    ? `, and ${remainingPackages} ${remainingPackages === 1 ? 'other' : 'others'}`
+    : '';
+  const manualReview = unavailable
+    ? `; manual review required for ${namedPackages.join(', ')}${remaining}`
+    : '';
+  return `Reviewed ${total} ${updateLabel}: ${analyzed} analyzed${manualReview}.`;
+}
+
 function policyBlockers(input, unavailableIds) {
   return (input.policy?.findings ?? [])
     .filter(
@@ -222,13 +243,7 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   const verdict = deterministicBlockers.length
     ? stricter(modelVerdict, 'do_not_merge')
     : modelVerdict;
-  const summary = input.packages
-    .map((dependency) =>
-      unavailableIds.has(identity(dependency))
-        ? `${dependency.name} ${dependency.from} to ${dependency.to}: manual review required.`
-        : `${dependency.name} ${dependency.from} to ${dependency.to}: analysis complete.`
-    )
-    .join(' ');
+  const summary = reviewSummary(input.packages, unavailableIds);
   if (!analyses.length)
     return {
       verdict: 'analysis_unavailable',

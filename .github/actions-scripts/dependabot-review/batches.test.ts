@@ -120,7 +120,9 @@ describe('Dependabot review batches', () => {
 
     expect(analyzeBatch).not.toHaveBeenCalled();
     expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
-    expect(result.summary).toContain('oversized 1.0.0 to 2.0.0: manual review required.');
+    expect(result.summary).toBe(
+      'Reviewed 1 dependency update: 0 analyzed; manual review required for oversized 1.0.0 to 2.0.0.'
+    );
   });
 
   it('splits a truncated batch and preserves the completed package results', async () => {
@@ -222,8 +224,9 @@ describe('Dependabot review batches', () => {
     });
 
     expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
-    expect(result.summary).toContain('first 1.0.0 to 2.0.0: manual review required.');
-    expect(result.summary).toContain('second 1.0.0 to 2.0.0: manual review required.');
+    expect(result.summary).toBe(
+      'Reviewed 2 dependency updates: 0 analyzed; manual review required for first 1.0.0 to 2.0.0, second 1.0.0 to 2.0.0.'
+    );
   });
 
   it('marks a batch unavailable when the model duplicates an assessment', async () => {
@@ -249,8 +252,32 @@ describe('Dependabot review batches', () => {
     });
 
     expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
-    expect(result.summary).toContain('first 1.0.0 to 2.0.0: manual review required.');
-    expect(result.summary).toContain('second 1.0.0 to 2.0.0: manual review required.');
+    expect(result.summary).toBe(
+      'Reviewed 2 dependency updates: 0 analyzed; manual review required for first 1.0.0 to 2.0.0, second 1.0.0 to 2.0.0.'
+    );
+  });
+
+  it('summarizes review coverage without listing every dependency', async () => {
+    const result = await analyzeBatches(
+      {
+        ...input,
+        packages: [
+          dependency('first'),
+          dependency('second'),
+          dependency('third'),
+          dependency('fourth'),
+        ],
+      },
+      {
+        analyzeBatch: async () => ({ verdict: 'analysis_unavailable' }),
+        maxPackagesPerBatch: 1,
+      }
+    );
+
+    expect(result.summary).toBe(
+      'Reviewed 4 dependency updates: 0 analyzed; manual review required for first 1.0.0 to 2.0.0, second 1.0.0 to 2.0.0, third 1.0.0 to 2.0.0, and 1 other.'
+    );
+    expect(result.summary).not.toContain('fourth 1.0.0 to 2.0.0');
   });
 
   it('records unattempted batches when the request budget is exhausted', async () => {
@@ -264,7 +291,9 @@ describe('Dependabot review batches', () => {
 
     expect(analyzeBatch).toHaveBeenCalledTimes(1);
     expect(result).toMatchObject({ verdict: 'merge_with_followups' });
-    expect(result.summary).toContain('second 1.0.0 to 2.0.0: manual review required.');
+    expect(result.summary).toBe(
+      'Reviewed 2 dependency updates: 1 analyzed; manual review required for second 1.0.0 to 2.0.0.'
+    );
   });
 
   it('limits concurrent initial batch requests', async () => {
