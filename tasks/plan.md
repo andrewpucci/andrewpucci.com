@@ -18,8 +18,9 @@ Tasks are tracked in GitHub Issues, as required by the repository issue-tracker 
 - Preserve the model as a bounded summarizer and classifier; source attribution, compatibility findings, and verdict ceilings remain validated program state.
 - Render the managed comment from structured analysis, prioritizing decisions and actions over upstream release-note detail.
 - Run provenance verification against an immutable PR lockfile in an isolated
-  temporary directory; unsupported sources and command failures become
-  advisory-unavailable evidence, never a failed comment workflow.
+  temporary directory after a script-free, public-registry-only install;
+  unsupported sources and command failures become advisory-unavailable
+  evidence, never a failed comment workflow.
 
 ## Dependency Graph
 
@@ -88,7 +89,7 @@ Tasks are tracked in GitHub Issues, as required by the repository issue-tracker 
 
 - [ ] Focused verifier, collector, schema, and model-projection tests pass.
 - [ ] `npm run lint`, `npm run check`, and `npm test` pass.
-- [ ] Review confirms there is no private-source transmission, shell subprocess, package installation, or lifecycle-script execution.
+- [ ] Review confirms there is no private-source transmission, shell subprocess, pull-request code execution, or lifecycle-script execution; only the validated public package tree is installed in an owned temporary directory.
 - [ ] Human review before wiring the collector into the privileged workflow.
 
 - [ ] [#293: Wire advisory provenance into trusted input](https://github.com/andrewpucci/andrewpucci.com/issues/293) — Retrieve only the immutable lockfile, collect in parallel, and preserve the managed comment when evidence is unavailable. Depends on #292, #290, and #291; medium.

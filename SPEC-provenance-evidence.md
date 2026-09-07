@@ -26,11 +26,11 @@ without the reviewer executing pull-request code or hiding its normal comment.
 ### Why this design
 
 `npm audit signatures` verifies public-registry signatures and provenance
-attestations. The npm CLI documents lockfile-only mode as ignoring
-`node_modules`; this repository's validated command returned empty `invalid`
-and `missing` lists for the current lockfile. The command is therefore suitable
-as a bounded advisory input when run against a fetched lockfile rather than a
-checked-out pull-request workspace. [npm audit](https://docs.npmjs.com/cli/v11/commands/npm-audit/)
+attestations for downloaded packages. A lockfile-only temporary workspace has
+no package tree to verify, so the collector must make a script-free, public
+registry-only install in an action-owned directory before invoking npm. It
+never checks out the pull request or uses its manifest, configuration, or
+scripts. [npm audit](https://docs.npmjs.com/cli/v11/commands/npm-audit/)
 
 The command can report errors for missing or invalid signatures or attestations.
 That is a reason to show evidence requiring attention, not an automatic reason
@@ -59,9 +59,14 @@ For a Dependabot npm pull request, the collector must:
    non-public registry, a git URL, a local file, or an otherwise unsupported
    source, do not submit the lockfile to npm; return `unavailable` with a
    concise reason.
-3. Write only the validated lockfile to an action-owned temporary directory.
-   Do not check out the pull request, retrieve its `package.json`, install its
-   dependencies, or execute its lifecycle scripts.
+3. Write the validated lockfile and a generated minimal `package.json` to an
+   action-owned temporary directory. The generated manifest copies only the
+   root dependency maps needed to match the lockfile; it omits scripts,
+   configuration, workspaces, and all other pull-request manifest fields.
+4. Install that package tree only from `https://registry.npmjs.org`, with
+   lifecycle scripts, audit, funding, workspaces, and bin links disabled. Do
+   not check out the pull request, retrieve its `package.json`, or execute its
+   code.
 
 The collector may send the public dependency graph needed by npm to
 `https://registry.npmjs.org`. It must not send repository source, GitHub tokens,
@@ -69,16 +74,18 @@ model credentials, or raw error output to the model or the public PR comment.
 
 ### Invocation
 
-Run the following command with argument-array subprocess APIs, never a shell:
+Run the following commands with argument-array subprocess APIs, never a shell:
 
 ```text
+npm ci --ignore-scripts --no-bin-links --no-audit --no-fund --workspaces=false
 npm audit signatures --json --package-lock-only --ignore-scripts
 ```
 
-Run it with the temporary directory as its working directory, an action-owned
-npm cache, and a 30-second timeout. Do not pass `--include-attestations`: full
-attestation bundles are not needed for a maintainer decision and would enlarge
-the review input unnecessarily.
+Run them with the temporary directory as their working directory, an
+action-owned npm cache, a forced public registry, and one 30-second total
+deadline. Do not pass `--include-attestations`: full attestation bundles are
+not needed for a maintainer decision and would enlarge the review input
+unnecessarily.
 
 The collector must remove the temporary directory and cache after the subprocess
 finishes, times out, or fails.
@@ -119,7 +126,7 @@ existing comment body, policy evaluation, model request, or verdict.
 ## Tech stack
 
 - Node.js ESM action scripts in `.github/actions-scripts/dependabot-review/`
-- npm CLI, currently declared as `npm@11.16.0` in `package.json`
+- npm CLI, explicitly provisioned as `npm@12.0.2` by the trusted workflow
 - GitHub REST contents API, using the action's existing read-only token
 - Vitest through the repository's Vite+ test runner
 
@@ -129,7 +136,8 @@ existing comment body, policy evaluation, model request, or verdict.
 # Inspect a PR's existing review input without retrieving the model credential
 npm run dependabot:review:dry-run -- 271 --preflight
 
-# Run the provenance command against a local lockfile without node_modules
+# Run the controlled verifier after creating an isolated, script-free package tree
+npm ci --ignore-scripts --no-bin-links --no-audit --no-fund --workspaces=false
 npm audit signatures --json --package-lock-only --ignore-scripts
 
 # Validate the implementation
@@ -180,8 +188,9 @@ Focused tests in `provenance.test.ts` must cover:
    `attention_required` without changing policy or verdict.
 3. Missing lockfile, unsupported registry source, timeout, nonzero process
    failure without valid JSON, and malformed output all produce `unavailable`.
-4. The subprocess receives the exact non-shell argv, temporary working
-   directory, isolated cache, `--package-lock-only`, and `--ignore-scripts`.
+4. The subprocesses receive the exact non-shell argv, temporary working
+   directory, isolated cache, forced public registry, a script-free install,
+   `--package-lock-only`, and `--ignore-scripts`.
 5. All temporary paths are removed for success, failure, and timeout.
 6. `loadReviewInput` combines unavailable provenance with normal review input;
    `buildReviewComment` and the production comment upsert still run.
@@ -212,8 +221,9 @@ stay credential-free.
 
 ### Never
 
-- Check out, install, build, test, or execute pull-request code in the
-  privileged `workflow_run` context.
+- Check out, build, test, or execute pull-request code in the privileged
+  `workflow_run` context. The only installation is the validated public npm
+  package tree in the action-owned temporary directory with scripts disabled.
 - Run npm through a shell or permit lifecycle scripts.
 - Send tokens, model credentials, raw npm output, or full attestations to the
   model or the pull-request comment.
@@ -224,9 +234,10 @@ stay credential-free.
 
 1. A Dependabot npm PR with a public-registry `package-lock.json` yields a
    validated `verified`, `attention_required`, or `unavailable` value within 30
-   seconds of starting the provenance command.
-2. No provenance path checks out PR code, installs packages, runs lifecycle
-   scripts, or uses a shell subprocess.
+   seconds of starting the provenance collector.
+2. No provenance path checks out or executes PR code, runs lifecycle scripts,
+   or uses a shell subprocess. The collector installs only validated public npm
+   packages in an action-owned temporary directory with scripts disabled.
 3. Unsupported or failed collection is visible to downstream reporting as
    `unavailable` and does not prevent the existing intelligent-review comment
    from being posted or updated.
@@ -243,6 +254,10 @@ stay credential-free.
 2. A lockfile containing private-registry, git, local, or otherwise unsupported
    dependency sources returns `unavailable`; it is never transmitted to the
    public npm registry.
+3. The collector may install the validated public package tree only in an
+   action-owned temporary directory, with a generated script-free manifest and
+   lifecycle scripts disabled. This is required for npm's verifier to assess
+   downloaded packages.
 
 ## Sources
 
