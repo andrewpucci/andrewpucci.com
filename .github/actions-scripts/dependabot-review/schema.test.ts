@@ -126,6 +126,99 @@ describe('review contracts', () => {
     ).toThrow(/unknown evidence URL/i);
   });
 
+  it('rejects a model verdict that exceeds the policy ceiling', () => {
+    const policyInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: { status: 'partial', reason: 'Only partial release notes were available.' },
+        },
+      ],
+      policy: {
+        verdictCeiling: 'merge_with_followups',
+        findings: [
+          {
+            package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+            findingId: null,
+            kind: 'evidence-incomplete',
+            sourceUrl: null,
+            severity: null,
+            verdict: 'merge_with_followups',
+            reason: 'Upstream evidence is incomplete.',
+            remediation: ['Review the upstream upgrade evidence before merging.'],
+            validation: ['Confirm the upgrade range against upstream release notes.'],
+          },
+        ],
+      },
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
+          blockers: [],
+          remediationPrompt: null,
+        },
+        policyInput
+      )
+    ).toThrow(/policy/i);
+  });
+
+  it('rejects use_now without a matching trusted-context fact', () => {
+    const contextInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'package.json',
+                excerpt: '"example": "^2.0.0"',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  feature: 'Enable the documented feature.',
+                  sourceUrl: source.url,
+                  usefulness: 'use_now',
+                  action: 'Enable the feature in the package configuration.',
+                  contextPath: 'src/unrelated.ts',
+                  rationale: 'It is useful.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          remediationPrompt: null,
+        },
+        contextInput
+      )
+    ).toThrow(/context/i);
+  });
+
   it('rejects duplicate package assessments', () => {
     const assessment = {
       name: 'example',
