@@ -52,6 +52,20 @@ describe('Dependabot review batches', () => {
     expect(projected.packages[0].sources[0].excerpt).toHaveLength(100);
   });
 
+  it('omits advisory provenance evidence from the model packet', () => {
+    const provenance = {
+      status: 'attention_required',
+      invalid: 1,
+      missing: 0,
+      reason: 'npm reported missing or invalid package provenance.',
+    };
+
+    const projected = projectForModel({ ...input, provenance });
+
+    expect(projected.provenance).toBeUndefined();
+    expect(input).not.toHaveProperty('provenance');
+  });
+
   it('bounds trusted context and scopes policy findings to the batch', () => {
     const first = {
       ...dependency('first'),

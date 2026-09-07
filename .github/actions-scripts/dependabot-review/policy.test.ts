@@ -145,4 +145,20 @@ describe('Dependabot review policy', () => {
       findings: [],
     });
   });
+
+  it('does not let advisory provenance evidence change the deterministic policy', () => {
+    const input = reviewInput();
+
+    expect(
+      evaluatePolicy({
+        ...input,
+        provenance: {
+          status: 'attention_required',
+          invalid: 1,
+          missing: 0,
+          reason: 'npm reported missing or invalid package provenance.',
+        },
+      })
+    ).toEqual(evaluatePolicy(input));
+  });
 });

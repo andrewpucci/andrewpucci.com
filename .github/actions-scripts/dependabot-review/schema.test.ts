@@ -26,9 +26,32 @@ const reviewInput = {
   ],
 };
 
+const unavailableProvenance = {
+  status: 'unavailable',
+  invalid: 0,
+  missing: 0,
+  reason: 'The npm verifier did not return usable evidence.',
+};
+
 describe('review contracts', () => {
   it('accepts a bounded, provenance-tagged input packet', () => {
     expect(parseReviewInput(reviewInput)).toEqual(reviewInput);
+  });
+
+  it('accepts only bounded advisory provenance evidence', () => {
+    const input = { ...reviewInput, provenance: unavailableProvenance };
+
+    expect(parseReviewInput(input)).toEqual(input);
+  });
+
+  it.each([
+    [{ ...unavailableProvenance, status: 'unknown' }],
+    [{ ...unavailableProvenance, invalid: 1 }],
+    [{ ...unavailableProvenance, reason: null }],
+    [{ ...unavailableProvenance, reason: 'x'.repeat(241) }],
+    [{ ...unavailableProvenance, rawOutput: 'must not cross this boundary' }],
+  ])('rejects malformed or unbounded provenance evidence', (provenance) => {
+    expect(() => parseReviewInput({ ...reviewInput, provenance })).toThrow(/provenance/i);
   });
 
   it('rejects a vulnerability with an unsupported severity', () => {

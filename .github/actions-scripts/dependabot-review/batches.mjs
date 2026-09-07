@@ -61,6 +61,8 @@ function projectedPackage(dependency, limits) {
 
 export function projectForModel(input, options = {}) {
   const limits = { ...defaults, ...options };
+  const modelInput = { ...input };
+  delete modelInput.provenance;
   const packageIds = new Set(input.packages.map(identity));
   const policyFindings = input.policy?.findings.filter((finding) =>
     packageIds.has(identity(finding.package))
@@ -76,7 +78,7 @@ export function projectForModel(input, options = {}) {
       }
     : undefined;
   return {
-    ...input,
+    ...modelInput,
     ...(policy ? { policy } : {}),
     packages: input.packages.map((dependency) => projectedPackage(dependency, limits)),
   };

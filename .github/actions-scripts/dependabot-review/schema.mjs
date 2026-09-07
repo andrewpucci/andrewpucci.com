@@ -7,6 +7,7 @@ const policyVerdictPriority = new Map([
 ]);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
+const provenanceStatuses = new Set(['verified', 'attention_required', 'unavailable']);
 const vulnerabilitySeverities = new Set(['low', 'moderate', 'high', 'critical']);
 const contextKinds = new Set(['workflow-action', 'package-usage']);
 const sourceKinds = new Set([
@@ -41,6 +42,36 @@ function array(value, label) {
   if (!Array.isArray(value)) throw new TypeError(`${label} must be an array`);
   return value;
 }
+
+function parseProvenance(value) {
+  const provenance = object(value, 'provenance');
+  const allowedFields = new Set(['status', 'invalid', 'missing', 'reason']);
+  if (Object.keys(provenance).some((field) => !allowedFields.has(field)))
+    throw new TypeError('provenance contains unsupported fields');
+  const { status: statusValue, invalid, missing, reason } = provenance;
+  const status = string(statusValue, 'provenance status');
+  if (!provenanceStatuses.has(status)) throw new TypeError('unsupported provenance status');
+  if (
+    !Number.isSafeInteger(invalid) ||
+    !Number.isSafeInteger(missing) ||
+    invalid < 0 ||
+    missing < 0 ||
+    invalid > 10_000 ||
+    missing > 10_000
+  )
+    throw new TypeError('provenance counts must be bounded non-negative integers');
+  if (reason !== null && (typeof reason !== 'string' || !reason || reason.length > 240))
+    throw new TypeError('provenance reason must be a bounded string or null');
+  if (
+    (status === 'verified' && (invalid || missing || reason !== null)) ||
+    (status === 'attention_required' && !invalid && !missing) ||
+    (status === 'unavailable' && (invalid || missing)) ||
+    (status !== 'verified' && typeof reason !== 'string')
+  )
+    throw new TypeError('provenance status does not match its bounded diagnostics');
+  return { status, invalid, missing, reason };
+}
+
 const packageIdentity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
 const stricterVerdict = (left, right) =>
   policyVerdictPriority.get(left) >= policyVerdictPriority.get(right) ? left : right;
@@ -50,6 +81,7 @@ export function parseReviewInput(value) {
   const pullRequest = object(input.pullRequest, 'pull request');
   if (!Number.isSafeInteger(pullRequest.number) || pullRequest.number < 1)
     throw new TypeError('pull request number must be a positive integer');
+  const provenance = input.provenance === undefined ? undefined : parseProvenance(input.provenance);
   return {
     pullRequest: {
       number: pullRequest.number,
@@ -133,6 +165,7 @@ export function parseReviewInput(value) {
         findings,
       };
     }),
+    ...(provenance === undefined ? {} : { provenance }),
   };
 }
 
