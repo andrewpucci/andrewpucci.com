@@ -1,4 +1,4 @@
-import { parseReviewInput } from './schema.mjs';
+import { isVulnerabilitySeverity, parseReviewInput } from './schema.mjs';
 import { collectRepositoryContext } from './context.mjs';
 import { fetchAllPages } from './github.mjs';
 
@@ -350,6 +350,7 @@ export async function collectReviewInput(
           title: vulnerability.advisory_ghsa_id || `${dependency.name} vulnerability`,
           excerpt:
             vulnerability.advisory_summary || 'GitHub dependency review reported a vulnerability.',
+          severity: isVulnerabilitySeverity(vulnerability.severity) ? vulnerability.severity : null,
           range: { from: dependency.from, to: dependency.to },
         }));
       for (const vulnerability of vulnerabilitySources)
@@ -358,6 +359,7 @@ export async function collectReviewInput(
           kind: 'vulnerability',
           reason: `GitHub dependency review reported a vulnerability in ${dependency.name}.`,
           sourceUrl: vulnerability.url,
+          severity: vulnerability.severity,
           remediation: [`Review and remediate ${vulnerability.title}.`],
           validation: ['npm run check', 'npm test'],
         });

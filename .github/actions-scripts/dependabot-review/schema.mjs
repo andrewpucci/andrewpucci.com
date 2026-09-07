@@ -1,6 +1,13 @@
 const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'analysis_unavailable']);
+const policyVerdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge']);
+const policyVerdictPriority = new Map([
+  ['merge', 0],
+  ['merge_with_followups', 1],
+  ['do_not_merge', 2],
+]);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
+const vulnerabilitySeverities = new Set(['low', 'moderate', 'high', 'critical']);
 const contextKinds = new Set(['workflow-action', 'package-usage']);
 const sourceKinds = new Set([
   'release-notes',
@@ -17,6 +24,9 @@ const blockerKinds = new Set([
   'applicable-codemod',
 ]);
 
+export const isVulnerabilitySeverity = (value) =>
+  typeof value === 'string' && vulnerabilitySeverities.has(value);
+
 function object(value, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new TypeError(`${label} must be an object`);
@@ -31,6 +41,9 @@ function array(value, label) {
   if (!Array.isArray(value)) throw new TypeError(`${label} must be an array`);
   return value;
 }
+const packageIdentity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
+const stricterVerdict = (left, right) =>
+  policyVerdictPriority.get(left) >= policyVerdictPriority.get(right) ? left : right;
 
 export function parseReviewInput(value) {
   const input = object(value, 'review input');
@@ -85,11 +98,15 @@ export function parseReviewInput(value) {
         const sourceUrl = string(finding.sourceUrl, 'finding source URL');
         if (!blockerKinds.has(kind) || !sourceUrls.has(sourceUrl))
           throw new TypeError('finding must use a known blocker kind and evidence URL');
+        const severity = finding.severity ?? null;
+        if (severity !== null && (kind !== 'vulnerability' || !isVulnerabilitySeverity(severity)))
+          throw new TypeError('vulnerability severity must be low, moderate, high, or critical');
         return {
           id,
           kind,
           reason: string(finding.reason, 'finding reason'),
           sourceUrl,
+          ...(kind === 'vulnerability' ? { severity } : {}),
           remediation: array(finding.remediation, 'finding remediation').map((item) =>
             string(item, 'remediation item')
           ),
@@ -117,6 +134,77 @@ export function parseReviewInput(value) {
       };
     }),
   };
+}
+
+export function parsePolicy(value, input) {
+  const policy = object(value, 'policy');
+  const verdictCeiling = string(policy.verdictCeiling, 'policy verdict ceiling');
+  if (!policyVerdicts.has(verdictCeiling))
+    throw new TypeError('unsupported policy verdict ceiling');
+  const packages = new Map(
+    input.packages.map((dependency) => [packageIdentity(dependency), dependency])
+  );
+  const findings = array(policy.findings, 'policy findings').map((value) => {
+    const finding = object(value, 'policy finding');
+    const packageValue = object(finding.package, 'policy finding package');
+    const packageKey = packageIdentity({
+      name: string(packageValue.name, 'policy package name'),
+      from: string(packageValue.from, 'policy package from version'),
+      to: string(packageValue.to, 'policy package to version'),
+    });
+    const dependency = packages.get(packageKey);
+    if (!dependency) throw new TypeError('policy finding must identify an input package');
+    const findingId =
+      finding.findingId === null ? null : string(finding.findingId, 'policy finding ID');
+    const kind = string(finding.kind, 'policy finding kind');
+    const sourceUrl =
+      finding.sourceUrl === null ? null : string(finding.sourceUrl, 'policy source URL');
+    const severity = finding.severity ?? null;
+    if (findingId === null) {
+      if (
+        kind !== 'evidence-incomplete' ||
+        sourceUrl !== null ||
+        dependency.evidence.status === 'available'
+      )
+        throw new TypeError('evidence policy finding must match incomplete input evidence');
+      if (severity !== null)
+        throw new TypeError('evidence policy finding cannot include a severity');
+    } else {
+      const inputFinding = dependency.findings.find((candidate) => candidate.id === findingId);
+      if (!inputFinding || inputFinding.kind !== kind || inputFinding.sourceUrl !== sourceUrl)
+        throw new TypeError('policy finding must use a known input finding and source URL');
+      if ((inputFinding.severity ?? null) !== severity)
+        throw new TypeError('policy finding severity must match its input finding');
+    }
+    const verdict = string(finding.verdict, 'policy finding verdict');
+    if (!policyVerdicts.has(verdict)) throw new TypeError('unsupported policy finding verdict');
+    return {
+      package: {
+        name: dependency.name,
+        from: dependency.from,
+        to: dependency.to,
+      },
+      findingId,
+      kind,
+      sourceUrl,
+      severity,
+      verdict,
+      reason: string(finding.reason, 'policy finding reason'),
+      remediation: array(finding.remediation, 'policy finding remediation').map((item) =>
+        string(item, 'policy finding remediation item')
+      ),
+      validation: array(finding.validation, 'policy finding validation').map((item) =>
+        string(item, 'policy finding validation item')
+      ),
+    };
+  });
+  const expectedCeiling = findings.reduce(
+    (current, finding) => stricterVerdict(current, finding.verdict),
+    'merge'
+  );
+  if (verdictCeiling !== expectedCeiling)
+    throw new TypeError('policy verdict ceiling must match its findings');
+  return { verdictCeiling, findings };
 }
 
 export function parseAnalysis(value, input) {
