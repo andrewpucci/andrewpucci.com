@@ -86,7 +86,7 @@ function workflowActionUpdates(files, dependabotUpdates) {
   return updates;
 }
 
-function dependencyUpdates(changes, dependabotUpdates, workflowActions) {
+function dependencyUpdates(changes, dependabotUpdates, workflowActions, directDependencies) {
   const updates = new Map();
   for (const change of changes) {
     if (!['npm', 'actions'].includes(change?.ecosystem) || typeof change.name !== 'string')
@@ -107,14 +107,14 @@ function dependencyUpdates(changes, dependabotUpdates, workflowActions) {
   for (const [name, action] of workflowActions) if (!updates.has(name)) updates.set(name, action);
   return [...updates.values()]
     .filter(({ from, to }) => typeof from === 'string' && typeof to === 'string')
-    .map(({ name, manifest, ecosystem, from, to, change }) => ({
+    .map(({ name, ecosystem, from, to, change }) => ({
       name,
       from,
       to,
       dependencyType:
         ecosystem === 'actions'
           ? 'direct:workflow'
-          : manifest === 'package.json'
+          : directDependencies.has(name)
             ? 'direct:unknown'
             : 'transitive',
       ecosystem,
@@ -302,10 +302,14 @@ export async function collectReviewInput(
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
   const changes = await dependencyChanges(event, fetchLike, githubHeaders);
   const dependabotUpdates = dependabotVersions(pullRequest.body);
+  const directDependencies = new Set(
+    changedPackageRanges(event.files ?? []).map(({ name }) => name)
+  );
   const updates = dependencyUpdates(
     changes,
     dependabotUpdates,
-    workflowActionUpdates(event.files ?? [], dependabotUpdates)
+    workflowActionUpdates(event.files ?? [], dependabotUpdates),
+    directDependencies
   );
   const packages = await Promise.all(
     (updates.length ? updates : changedPackageRanges(event.files ?? [])).map(async (dependency) => {

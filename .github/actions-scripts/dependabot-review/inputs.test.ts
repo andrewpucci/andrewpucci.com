@@ -35,6 +35,16 @@ const dependencyDiff = [
   },
 ];
 
+const lockfileDependencyDiff = dependencyDiff.map((change) => ({
+  ...change,
+  manifest: 'package-lock.json',
+}));
+
+const directPackageFile = {
+  filename: 'package.json',
+  patch: '-    "example": "^1.0.0",\n+    "example": "^2.0.0",',
+};
+
 const actionDependencyDiff = [
   {
     change_type: 'removed',
@@ -126,6 +136,29 @@ describe('collectReviewInput', () => {
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(fetchMock.mock.calls[1][0]).toContain('/releases/tags/v3.2.0');
+  });
+
+  it('preserves direct package classification when the dependency graph records the lockfile', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(lockfileDependencyDiff))
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/example/package/releases/tag/v2.0.0',
+          body: 'Example release notes.',
+        })
+      );
+
+    const input = await collectReviewInput(
+      {
+        pull_request: pullRequest,
+        repository: 'owner/repo',
+        files: [directPackageFile],
+      },
+      { fetchLike: fetchMock }
+    );
+
+    expect(input?.packages).toMatchObject([{ name: 'example', dependencyType: 'direct:unknown' }]);
   });
 
   it('falls back to an unprefixed release tag when the v-prefixed tag is absent', async () => {

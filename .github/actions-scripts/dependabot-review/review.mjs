@@ -6,8 +6,8 @@ import { collectReviewInput } from './inputs.mjs';
 import { evaluatePolicy } from './policy.mjs';
 import { renderComment } from './reporting.mjs';
 
-export async function buildReviewComment(
-  { repository, number, githubToken, mistralApiKey },
+export async function loadReviewInput(
+  { repository, number, githubToken },
   { fetchLike = fetch } = {}
 ) {
   const githubHeaders = {
@@ -51,7 +51,14 @@ export async function buildReviewComment(
     },
     { fetchLike, githubHeaders, repositoryContext }
   );
-  if (!input) return null;
+  return input;
+}
+
+export async function buildReviewCommentFromInput(
+  input,
+  mistralApiKey,
+  { fetchLike = fetch } = {}
+) {
   const analysis = await analyzeBatches(
     { ...input, policy: evaluatePolicy(input) },
     {
@@ -60,4 +67,12 @@ export async function buildReviewComment(
     }
   );
   return renderComment(analysis, input.pullRequest.headSha);
+}
+
+export async function buildReviewComment(
+  { repository, number, githubToken, mistralApiKey },
+  options = {}
+) {
+  const input = await loadReviewInput({ repository, number, githubToken }, options);
+  return input ? buildReviewCommentFromInput(input, mistralApiKey, options) : null;
 }
