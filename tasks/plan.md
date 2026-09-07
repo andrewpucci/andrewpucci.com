@@ -83,7 +83,7 @@ Tasks are tracked in GitHub Issues, as required by the repository issue-tracker 
 ### Phase 4: Advisory provenance evidence
 
 - [x] [#292: Pin the npm provenance verifier](https://github.com/andrewpucci/andrewpucci.com/issues/292) — Provision the exact, approved npm verifier in the trusted workflow. No dependencies; small.
-- [ ] [#290: Collect advisory npm provenance evidence](https://github.com/andrewpucci/andrewpucci.com/issues/290) — Validate public npm lockfiles and collect bounded `verified`, `attention_required`, or `unavailable` evidence. No dependencies; small.
+- [x] [#290: Collect advisory npm provenance evidence](https://github.com/andrewpucci/andrewpucci.com/issues/290) — Validate public npm lockfiles and collect bounded `verified`, `attention_required`, or `unavailable` evidence. No dependencies; small.
 - [ ] [#291: Validate and isolate provenance input](https://github.com/andrewpucci/andrewpucci.com/issues/291) — Add the validated input contract while keeping provenance out of policy, the model packet, and the current comment. Depends on #290; medium.
 
 ### Checkpoint: Provenance foundation
