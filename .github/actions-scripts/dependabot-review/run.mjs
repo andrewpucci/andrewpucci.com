@@ -1,11 +1,7 @@
-import { readFile, readdir } from 'node:fs/promises';
-import { analyze } from './analysis.mjs';
-import { analyzeBatches } from './batches.mjs';
+import { readFile } from 'node:fs/promises';
 import { pullRequestNumber } from './event.mjs';
-import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
-import { collectReviewInput } from './inputs.mjs';
-import { evaluatePolicy } from './policy.mjs';
-import { renderComment } from './reporting.mjs';
+import { deleteReviewComment, upsertComment } from './github.mjs';
+import { buildReviewComment } from './review.mjs';
 
 const eventPath = process.env.GITHUB_EVENT_PATH;
 if (!eventPath) throw new Error('GITHUB_EVENT_PATH is required.');
@@ -27,56 +23,16 @@ const number = await pullRequestNumber(event, {
   repository: process.env.GITHUB_REPOSITORY,
   githubHeaders,
 });
-const pullRequestApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls/${number}`;
 const commentApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${number}/comments`;
-const [pullRequestResponse, files] = await Promise.all([
-  fetch(pullRequestApi, { headers: githubHeaders }),
-  fetchAllPages({
-    api: `${pullRequestApi}/files?per_page=100`,
-    headers: githubHeaders,
-    action: 'retrieve pull request files',
-  }),
-]);
-if (!pullRequestResponse.ok)
-  throw new Error(`Unable to retrieve pull request (${pullRequestResponse.status}).`);
-const [workflowFiles, sourceFiles] = await Promise.all([
-  readdir('.github/workflows'),
-  readdir('src', { recursive: true }),
-]);
-const repositoryContext = {
-  paths: [
-    'package.json',
-    'package-lock.json',
-    'pnpm-lock.yaml',
-    'yarn.lock',
-    'vite.config.ts',
-    'svelte.config.js',
-    ...workflowFiles.map((path) => `.github/workflows/${path}`),
-    ...sourceFiles.map((path) => `src/${path}`),
-  ],
-  // The workflow checks out only the trusted default branch; the collector filters this list.
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename
-  readFile: (path) => readFile(path, 'utf8'),
-};
-const input = await collectReviewInput(
-  {
-    pull_request: await pullRequestResponse.json(),
-    repository: process.env.GITHUB_REPOSITORY,
-    files,
-  },
-  { githubHeaders, repositoryContext }
-);
-if (!input) {
+const body = await buildReviewComment({
+  repository: process.env.GITHUB_REPOSITORY,
+  number,
+  githubToken: process.env.GITHUB_TOKEN,
+  mistralApiKey: process.env.MISTRAL_API_KEY,
+});
+if (!body) {
   await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
 } else {
-  const analysis = await analyzeBatches(
-    { ...input, policy: evaluatePolicy(input) },
-    {
-      analyzeBatch: (batch, { timeoutMs }) =>
-        analyze(batch, process.env.MISTRAL_API_KEY, fetch, { timeoutMs }),
-    }
-  );
-  const body = renderComment(analysis, input.pullRequest.headSha);
   await upsertComment({
     api: commentApi,
     body,

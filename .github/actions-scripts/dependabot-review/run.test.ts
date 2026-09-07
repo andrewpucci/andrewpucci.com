@@ -81,6 +81,7 @@ describe('Dependabot review runner', () => {
     expect(mocks.fetchAllPages).toHaveBeenCalledWith({
       api: 'https://api.github.com/repos/example/site/pulls/42/files?per_page=100',
       headers: githubHeaders,
+      fetchLike: mocks.fetch,
       action: 'retrieve pull request files',
     });
     expect(mocks.collectReviewInput).toHaveBeenCalledWith(
@@ -90,6 +91,7 @@ describe('Dependabot review runner', () => {
         files: [{ filename: 'package.json' }],
       },
       {
+        fetchLike: mocks.fetch,
         githubHeaders,
         repositoryContext: expect.objectContaining({
           paths: expect.arrayContaining([
