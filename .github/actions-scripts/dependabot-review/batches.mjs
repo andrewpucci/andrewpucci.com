@@ -84,8 +84,17 @@ export function projectForModel(input, options = {}) {
 
 function batches(input, limits) {
   const result = [];
+  const unavailable = [];
   let current = [];
   for (const dependency of input.packages) {
+    const projectedDependency = projectForModel({ ...input, packages: [dependency] }, limits);
+    if (
+      JSON.stringify(projectedDependency.packages[0]).length > limits.maxPackageChars ||
+      JSON.stringify(projectedDependency).length > limits.maxBatchChars
+    ) {
+      unavailable.push(dependency);
+      continue;
+    }
     const candidate = [...current, dependency];
     const projected = projectForModel({ ...input, packages: candidate }, limits);
     if (
@@ -100,11 +109,27 @@ function batches(input, limits) {
     }
   }
   if (current.length) result.push(projectForModel({ ...input, packages: current }, limits));
-  return result;
+  return { batches: result, unavailable };
 }
 
 function stricter(left, right) {
   return verdictPriority.get(left) >= verdictPriority.get(right) ? left : right;
+}
+
+function policyBlockers(input, unavailableIds) {
+  return (input.policy?.findings ?? [])
+    .filter(
+      (finding) =>
+        finding.verdict === 'do_not_merge' && unavailableIds.has(identity(finding.package))
+    )
+    .map((finding) => ({
+      findingId: finding.findingId,
+      reason: finding.reason,
+      impact: 'Deterministic review policy requires this update not to merge.',
+      evidence: [{ claim: finding.reason, sourceUrl: finding.sourceUrl }],
+      remediation: finding.remediation,
+      validation: finding.validation,
+    }));
 }
 
 function hasEveryAssessment(batch, analysis) {
@@ -177,18 +202,26 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     limits,
     requests: 0,
   };
-  const completed = await analyzeAll(batches(input, limits), analyze, state, limits.maxConcurrency);
+  const scheduled = batches(input, limits);
+  const completed = await analyzeAll(scheduled.batches, analyze, state, limits.maxConcurrency);
   const analyses = completed.flatMap((result) => result.analyses);
-  const unavailable = completed.flatMap((result) => result.unavailable);
+  const unavailable = [
+    ...scheduled.unavailable,
+    ...completed.flatMap((result) => result.unavailable),
+  ];
   const unavailableIds = new Set(unavailable.map(identity));
   const packageAssessments = analyses.flatMap((analysis) => analysis.packageAssessments);
-  const blockers = analyses.flatMap((analysis) => analysis.blockers);
-  const verdict = unavailable.length
+  const deterministicBlockers = policyBlockers(input, unavailableIds);
+  const blockers = [...analyses.flatMap((analysis) => analysis.blockers), ...deterministicBlockers];
+  const modelVerdict = unavailable.length
     ? analyses.reduce(
         (current, analysis) => stricter(current, analysis.verdict),
         'merge_with_followups'
       )
     : analyses.reduce((current, analysis) => stricter(current, analysis.verdict), 'merge');
+  const verdict = deterministicBlockers.length
+    ? stricter(modelVerdict, 'do_not_merge')
+    : modelVerdict;
   const summary = input.packages
     .map((dependency) =>
       unavailableIds.has(identity(dependency))
