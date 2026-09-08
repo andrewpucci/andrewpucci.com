@@ -24,6 +24,10 @@ const blockerKinds = new Set([
   'incompatible-migration',
   'applicable-codemod',
 ]);
+const coverageStatuses = new Set(['complete', 'pending', 'unresolved']);
+const coverageLifecycleStatuses = new Set(['unchanged', 'changed', 'unavailable']);
+const coverageMetadataStatuses = new Set(['not_needed', 'pending', 'available', 'unavailable']);
+const lifecycleChangeKinds = new Set(['added', 'removed', 'changed']);
 
 export const isVulnerabilitySeverity = (value) =>
   typeof value === 'string' && vulnerabilitySeverities.has(value);
@@ -76,95 +80,194 @@ const packageIdentity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}
 const stricterVerdict = (left, right) =>
   policyVerdictPriority.get(left) >= policyVerdictPriority.get(right) ? left : right;
 
+function packageReference(value, label) {
+  const reference = object(value, label);
+  return {
+    name: string(reference.name, `${label} name`),
+    from: string(reference.from, `${label} from version`),
+    to: string(reference.to, `${label} to version`),
+  };
+}
+
+function parseCoverage(value, packages) {
+  const coverage = object(value, 'coverage');
+  if (Object.keys(coverage).some((field) => field !== 'items'))
+    throw new TypeError('coverage contains unsupported fields');
+  const packageByIdentity = new Map(
+    packages.map((dependency) => [packageIdentity(dependency), dependency])
+  );
+  const items = array(coverage.items, 'coverage items').map((value) => {
+    const item = object(value, 'coverage item');
+    const update = packageReference(item.update, 'coverage update');
+    const dependency = packageByIdentity.get(packageIdentity(update));
+    if (!dependency || item.update.dependencyType !== dependency.dependencyType)
+      throw new TypeError('coverage update must match an input package');
+    const group = object(item.group, 'coverage group');
+    const kind = string(group.kind, 'coverage group kind');
+    if (!['direct', 'standalone'].includes(kind)) throw new TypeError('unsupported coverage group');
+    const anchor = group.anchor === null ? null : packageReference(group.anchor, 'coverage anchor');
+    if ((kind === 'direct' && !anchor) || (kind === 'standalone' && anchor))
+      throw new TypeError('coverage group must have a matching anchor');
+    if (anchor && !packageByIdentity.has(packageIdentity(anchor)))
+      throw new TypeError('coverage anchor must identify an input package');
+    const lifecycle = object(item.lifecycle, 'coverage lifecycle');
+    const lifecycleStatus = string(lifecycle.status, 'coverage lifecycle status');
+    const metadata = string(lifecycle.metadata, 'coverage lifecycle metadata status');
+    if (!coverageLifecycleStatuses.has(lifecycleStatus) || !coverageMetadataStatuses.has(metadata))
+      throw new TypeError('unsupported coverage lifecycle status');
+    const paths = array(lifecycle.paths, 'coverage lifecycle paths');
+    if (paths.length > 64) throw new TypeError('coverage lifecycle paths must be bounded');
+    const changes = array(lifecycle.changes, 'coverage lifecycle changes').map((change) => {
+      const parsed = object(change, 'coverage lifecycle change');
+      const name = string(parsed.name, 'coverage lifecycle script name');
+      const kind = string(parsed.kind, 'coverage lifecycle change kind');
+      if (
+        !['preinstall', 'install', 'postinstall'].includes(name) ||
+        !lifecycleChangeKinds.has(kind)
+      )
+        throw new TypeError('unsupported coverage lifecycle change');
+      const before =
+        parsed.before === undefined ? undefined : string(parsed.before, 'lifecycle before');
+      const after =
+        parsed.after === undefined ? undefined : string(parsed.after, 'lifecycle after');
+      if (
+        (kind === 'added' && (before !== undefined || after === undefined)) ||
+        (kind === 'removed' && (before === undefined || after !== undefined)) ||
+        (kind === 'changed' && (before === undefined || after === undefined))
+      )
+        throw new TypeError('coverage lifecycle change does not match its kind');
+      return {
+        name,
+        kind,
+        ...(before === undefined ? {} : { before }),
+        ...(after === undefined ? {} : { after }),
+      };
+    });
+    const status = string(item.status, 'coverage status');
+    const reason = item.reason === null ? null : string(item.reason, 'coverage reason');
+    if (
+      !coverageStatuses.has(status) ||
+      (status === 'complete' ? reason !== null : reason === null)
+    )
+      throw new TypeError('coverage status does not match its reason');
+    return {
+      update: { ...update, dependencyType: dependency.dependencyType },
+      group: { kind, anchor },
+      lifecycle: {
+        status: lifecycleStatus,
+        metadata,
+        paths: paths.map((path) => string(path, 'coverage lifecycle path')),
+        changes,
+        reason:
+          lifecycle.reason === null ? null : string(lifecycle.reason, 'coverage lifecycle reason'),
+      },
+      status,
+      reason,
+    };
+  });
+  const identities = new Set(items.map((item) => packageIdentity(item.update)));
+  if (
+    items.length !== packages.length ||
+    identities.size !== packages.length ||
+    [...packageByIdentity].some(([key]) => !identities.has(key))
+  )
+    throw new TypeError('coverage must account for every input package exactly once');
+  return { items };
+}
+
 export function parseReviewInput(value) {
   const input = object(value, 'review input');
   const pullRequest = object(input.pullRequest, 'pull request');
   if (!Number.isSafeInteger(pullRequest.number) || pullRequest.number < 1)
     throw new TypeError('pull request number must be a positive integer');
   const provenance = input.provenance === undefined ? undefined : parseProvenance(input.provenance);
+  const packages = array(input.packages, 'packages').map((value) => {
+    const dependency = object(value, 'package');
+    const evidence = object(dependency.evidence, 'package evidence');
+    const status = string(evidence.status, 'evidence status');
+    if (!evidenceStatuses.has(status)) throw new TypeError('unsupported evidence status');
+    const context = object(dependency.context, 'package context');
+    const contextStatus = string(context.status, 'context status');
+    if (!evidenceStatuses.has(contextStatus)) throw new TypeError('unsupported context status');
+    const facts = array(context.facts, 'context facts').map((value) => {
+      const fact = object(value, 'context fact');
+      const kind = string(fact.kind, 'context fact kind');
+      const path = string(fact.path, 'context fact path');
+      if (!contextKinds.has(kind) || path.startsWith('/') || path.includes('..'))
+        throw new TypeError('context fact must have a trusted repository path');
+      return { kind, path, excerpt: string(fact.excerpt, 'context fact excerpt') };
+    });
+    const sources = array(dependency.sources, 'sources').map((value) => {
+      const source = object(value, 'source');
+      const kind = string(source.kind, 'source kind');
+      const url = string(source.url, 'source URL');
+      if (!sourceKinds.has(kind) || new URL(url).protocol !== 'https:')
+        throw new TypeError('source must be an HTTPS official evidence source');
+      const range = object(source.range, 'source range');
+      return {
+        kind,
+        url,
+        title: string(source.title, 'source title'),
+        excerpt: string(source.excerpt, 'source excerpt'),
+        range: {
+          from: string(range.from, 'source range from version'),
+          to: string(range.to, 'source range to version'),
+        },
+      };
+    });
+    const sourceUrls = new Set(sources.map((source) => source.url));
+    const findings = array(dependency.findings, 'findings').map((value) => {
+      const finding = object(value, 'finding');
+      const id = string(finding.id, 'finding ID');
+      const kind = string(finding.kind, 'finding kind');
+      const sourceUrl = string(finding.sourceUrl, 'finding source URL');
+      if (!blockerKinds.has(kind) || !sourceUrls.has(sourceUrl))
+        throw new TypeError('finding must use a known blocker kind and evidence URL');
+      const severity = finding.severity ?? null;
+      if (severity !== null && (kind !== 'vulnerability' || !isVulnerabilitySeverity(severity)))
+        throw new TypeError('vulnerability severity must be low, moderate, high, or critical');
+      return {
+        id,
+        kind,
+        reason: string(finding.reason, 'finding reason'),
+        sourceUrl,
+        ...(kind === 'vulnerability' ? { severity } : {}),
+        remediation: array(finding.remediation, 'finding remediation').map((item) =>
+          string(item, 'remediation item')
+        ),
+        validation: array(finding.validation, 'finding validation').map((item) =>
+          string(item, 'validation item')
+        ),
+        ...(typeof finding.codemodCommand === 'string'
+          ? { codemodCommand: finding.codemodCommand }
+          : {}),
+      };
+    });
+    return {
+      name: string(dependency.name, 'package name'),
+      from: string(dependency.from, 'package from version'),
+      to: string(dependency.to, 'package to version'),
+      dependencyType: string(dependency.dependencyType, 'dependency type'),
+      license: dependency.license === null ? null : string(dependency.license, 'package license'),
+      evidence: {
+        status,
+        reason: evidence.reason === null ? null : string(evidence.reason, 'evidence reason'),
+      },
+      context: { status: contextStatus, facts },
+      sources,
+      findings,
+    };
+  });
+  const coverage =
+    input.coverage === undefined ? undefined : parseCoverage(input.coverage, packages);
   return {
     pullRequest: {
       number: pullRequest.number,
       baseSha: string(pullRequest.baseSha, 'base SHA'),
       headSha: string(pullRequest.headSha, 'head SHA'),
     },
-    packages: array(input.packages, 'packages').map((value) => {
-      const dependency = object(value, 'package');
-      const evidence = object(dependency.evidence, 'package evidence');
-      const status = string(evidence.status, 'evidence status');
-      if (!evidenceStatuses.has(status)) throw new TypeError('unsupported evidence status');
-      const context = object(dependency.context, 'package context');
-      const contextStatus = string(context.status, 'context status');
-      if (!evidenceStatuses.has(contextStatus)) throw new TypeError('unsupported context status');
-      const facts = array(context.facts, 'context facts').map((value) => {
-        const fact = object(value, 'context fact');
-        const kind = string(fact.kind, 'context fact kind');
-        const path = string(fact.path, 'context fact path');
-        if (!contextKinds.has(kind) || path.startsWith('/') || path.includes('..'))
-          throw new TypeError('context fact must have a trusted repository path');
-        return { kind, path, excerpt: string(fact.excerpt, 'context fact excerpt') };
-      });
-      const sources = array(dependency.sources, 'sources').map((value) => {
-        const source = object(value, 'source');
-        const kind = string(source.kind, 'source kind');
-        const url = string(source.url, 'source URL');
-        if (!sourceKinds.has(kind) || new URL(url).protocol !== 'https:')
-          throw new TypeError('source must be an HTTPS official evidence source');
-        const range = object(source.range, 'source range');
-        return {
-          kind,
-          url,
-          title: string(source.title, 'source title'),
-          excerpt: string(source.excerpt, 'source excerpt'),
-          range: {
-            from: string(range.from, 'source range from version'),
-            to: string(range.to, 'source range to version'),
-          },
-        };
-      });
-      const sourceUrls = new Set(sources.map((source) => source.url));
-      const findings = array(dependency.findings, 'findings').map((value) => {
-        const finding = object(value, 'finding');
-        const id = string(finding.id, 'finding ID');
-        const kind = string(finding.kind, 'finding kind');
-        const sourceUrl = string(finding.sourceUrl, 'finding source URL');
-        if (!blockerKinds.has(kind) || !sourceUrls.has(sourceUrl))
-          throw new TypeError('finding must use a known blocker kind and evidence URL');
-        const severity = finding.severity ?? null;
-        if (severity !== null && (kind !== 'vulnerability' || !isVulnerabilitySeverity(severity)))
-          throw new TypeError('vulnerability severity must be low, moderate, high, or critical');
-        return {
-          id,
-          kind,
-          reason: string(finding.reason, 'finding reason'),
-          sourceUrl,
-          ...(kind === 'vulnerability' ? { severity } : {}),
-          remediation: array(finding.remediation, 'finding remediation').map((item) =>
-            string(item, 'remediation item')
-          ),
-          validation: array(finding.validation, 'finding validation').map((item) =>
-            string(item, 'validation item')
-          ),
-          ...(typeof finding.codemodCommand === 'string'
-            ? { codemodCommand: finding.codemodCommand }
-            : {}),
-        };
-      });
-      return {
-        name: string(dependency.name, 'package name'),
-        from: string(dependency.from, 'package from version'),
-        to: string(dependency.to, 'package to version'),
-        dependencyType: string(dependency.dependencyType, 'dependency type'),
-        license: dependency.license === null ? null : string(dependency.license, 'package license'),
-        evidence: {
-          status,
-          reason: evidence.reason === null ? null : string(evidence.reason, 'evidence reason'),
-        },
-        context: { status: contextStatus, facts },
-        sources,
-        findings,
-      };
-    }),
+    packages,
+    ...(coverage === undefined ? {} : { coverage }),
     ...(provenance === undefined ? {} : { provenance }),
   };
 }

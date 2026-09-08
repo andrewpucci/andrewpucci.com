@@ -28,6 +28,27 @@ const input = {
   packages: [dependency('first'), dependency('second')],
 };
 
+function coverageItem(pkg: ReturnType<typeof dependency>, status = 'complete') {
+  return {
+    update: {
+      name: pkg.name,
+      from: pkg.from,
+      to: pkg.to,
+      dependencyType: pkg.dependencyType,
+    },
+    group: { kind: 'standalone', anchor: null },
+    lifecycle: {
+      status: 'unchanged',
+      metadata: 'not_needed',
+      paths: [],
+      changes: [],
+      reason: null,
+    },
+    status,
+    reason: status === 'complete' ? null : 'coverage_inputs_unavailable',
+  };
+}
+
 function completedAnalysis(pkg: ReturnType<typeof dependency>) {
   return {
     verdict: 'merge',
@@ -39,6 +60,52 @@ function completedAnalysis(pkg: ReturnType<typeof dependency>) {
 }
 
 describe('Dependabot review batches', () => {
+  it('returns decision_incomplete when validated coverage has an unresolved unit', async () => {
+    const coverage = {
+      items: [coverageItem(input.packages[0]), coverageItem(input.packages[1], 'unresolved')],
+    };
+
+    const result = await analyzeBatches(
+      { ...input, coverage },
+      {
+        analyzeBatch: async (batch: { packages: ReturnType<typeof dependency>[] }) =>
+          completedAnalysis(batch.packages[0]),
+        maxPackagesPerBatch: 1,
+      }
+    );
+
+    expect(result.verdict).toBe('decision_incomplete');
+  });
+
+  it('keeps a direct coverage group intact when a package limit would split its members', async () => {
+    const coverage = {
+      items: input.packages.map((pkg: ReturnType<typeof dependency>) => ({
+        ...coverageItem(pkg),
+        group: {
+          kind: 'direct',
+          anchor: { name: 'first', from: '1.0.0', to: '2.0.0' },
+        },
+      })),
+    };
+    const analyzeBatch = vi.fn(async (batch: { packages: ReturnType<typeof dependency>[] }) => ({
+      verdict: 'merge',
+      summary: 'The direct group is ready.',
+      packageAssessments: batch.packages.map(
+        (pkg: ReturnType<typeof dependency>) => completedAnalysis(pkg).packageAssessments[0]
+      ),
+      blockers: [],
+      remediationPrompt: null,
+    }));
+
+    await analyzeBatches({ ...input, coverage }, { analyzeBatch, maxPackagesPerBatch: 1 });
+
+    expect(
+      analyzeBatch.mock.calls.map(([batch]) =>
+        batch.packages.map((pkg: ReturnType<typeof dependency>) => pkg.name)
+      )
+    ).toEqual([['first', 'second']]);
+  });
+
   it('bounds a model packet without dropping source attribution', () => {
     const projected = projectForModel(
       { ...input, packages: [dependency('large', 'x'.repeat(10_000))] },

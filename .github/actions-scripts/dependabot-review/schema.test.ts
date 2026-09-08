@@ -44,6 +44,71 @@ describe('review contracts', () => {
     expect(parseReviewInput(input)).toEqual(input);
   });
 
+  it('validates complete coverage once for every package while preserving its direct group', () => {
+    const nested = {
+      ...reviewInput.packages[0],
+      name: 'nested',
+      dependencyType: 'transitive',
+      sources: [{ ...source, url: 'https://github.com/example/nested/releases/tag/v2.0.0' }],
+    };
+    const input = {
+      ...reviewInput,
+      packages: [reviewInput.packages[0], nested],
+      coverage: {
+        items: [
+          {
+            update: {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              dependencyType: 'direct:production',
+            },
+            group: {
+              kind: 'direct',
+              anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+            },
+            lifecycle: {
+              status: 'unchanged',
+              metadata: 'not_needed',
+              changes: [],
+              paths: ['node_modules/example'],
+              reason: null,
+            },
+            status: 'complete',
+            reason: null,
+          },
+          {
+            update: { name: 'nested', from: '1.0.0', to: '2.0.0', dependencyType: 'transitive' },
+            group: {
+              kind: 'direct',
+              anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+            },
+            lifecycle: {
+              status: 'unchanged',
+              metadata: 'not_needed',
+              changes: [],
+              paths: ['node_modules/example/node_modules/nested'],
+              reason: null,
+            },
+            status: 'complete',
+            reason: null,
+          },
+        ],
+      },
+    };
+
+    expect(parseReviewInput(input)).toEqual(input);
+  });
+
+  it('rejects coverage that omits an input package', () => {
+    expect(() =>
+      parseReviewInput({
+        ...reviewInput,
+        coverage: { items: [] },
+      })
+    ).toThrow(/coverage/i);
+  });
+
   it.each([
     [{ ...unavailableProvenance, status: 'unknown' }],
     [{ ...unavailableProvenance, invalid: 1 }],

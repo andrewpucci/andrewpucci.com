@@ -12,7 +12,8 @@ const defaults = {
 const verdictPriority = new Map([
   ['merge', 0],
   ['merge_with_followups', 1],
-  ['do_not_merge', 2],
+  ['decision_incomplete', 2],
+  ['do_not_merge', 3],
 ]);
 
 const identity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
@@ -61,9 +62,15 @@ function projectedPackage(dependency, limits) {
 
 export function projectForModel(input, options = {}) {
   const limits = { ...defaults, ...options };
-  const modelInput = { ...input };
-  delete modelInput.provenance;
   const packageIds = new Set(input.packages.map(identity));
+  const coverageItems = input.coverage?.items.filter((item) =>
+    packageIds.has(identity(item.update))
+  );
+  const modelInput = {
+    ...input,
+    ...(coverageItems ? { coverage: { items: coverageItems } } : {}),
+  };
+  delete modelInput.provenance;
   const policyFindings = input.policy?.findings.filter((finding) =>
     packageIds.has(identity(finding.package))
   );
@@ -84,28 +91,50 @@ export function projectForModel(input, options = {}) {
   };
 }
 
+function coverageGroupKey(input, dependency) {
+  const item = input.coverage?.items.find(
+    (candidate) => identity(candidate.update) === identity(dependency)
+  );
+  return item?.group.kind === 'direct'
+    ? `direct:${identity(item.group.anchor)}`
+    : `standalone:${identity(dependency)}`;
+}
+
+function decisionUnits(input) {
+  const units = new Map();
+  for (const dependency of input.packages) {
+    const key = coverageGroupKey(input, dependency);
+    const unit = units.get(key) ?? [];
+    unit.push(dependency);
+    units.set(key, unit);
+  }
+  return [...units.values()];
+}
+
 function batches(input, limits) {
   const result = [];
   const unavailable = [];
   let current = [];
-  for (const dependency of input.packages) {
-    const projectedDependency = projectForModel({ ...input, packages: [dependency] }, limits);
+  for (const unit of decisionUnits(input)) {
+    const projectedDependency = projectForModel({ ...input, packages: unit }, limits);
     if (
-      JSON.stringify(projectedDependency.packages[0]).length > limits.maxPackageChars ||
+      projectedDependency.packages.some(
+        (dependency) => JSON.stringify(dependency).length > limits.maxPackageChars
+      ) ||
       JSON.stringify(projectedDependency).length > limits.maxBatchChars
     ) {
-      unavailable.push(dependency);
+      unavailable.push(...unit);
       continue;
     }
-    const candidate = [...current, dependency];
+    const candidate = [...current, ...unit];
     const projected = projectForModel({ ...input, packages: candidate }, limits);
     if (
       current.length &&
-      (candidate.length > limits.maxPackagesPerBatch ||
+      ((candidate.length > limits.maxPackagesPerBatch && unit.length === 1) ||
         JSON.stringify(projected).length > limits.maxBatchChars)
     ) {
       result.push(projectForModel({ ...input, packages: current }, limits));
-      current = [dependency];
+      current = unit;
     } else {
       current = candidate;
     }
@@ -180,15 +209,19 @@ async function analyzeBatch(batch, analyze, state) {
         };
   if (result.reason !== 'truncated' || batch.packages.length === 1)
     return { analyses: [], unavailable: batch.packages };
-  const midpoint = Math.ceil(batch.packages.length / 2);
+  const units = decisionUnits(batch);
+  if (units.length === 1) return { analyses: [], unavailable: batch.packages };
+  const midpoint = Math.ceil(units.length / 2);
+  const leftPackages = units.slice(0, midpoint).flat();
+  const rightPackages = units.slice(midpoint).flat();
   const [left, right] = await Promise.all([
     analyzeBatch(
-      projectForModel({ ...batch, packages: batch.packages.slice(0, midpoint) }, state.limits),
+      projectForModel({ ...batch, packages: leftPackages }, state.limits),
       analyze,
       state
     ),
     analyzeBatch(
-      projectForModel({ ...batch, packages: batch.packages.slice(midpoint) }, state.limits),
+      projectForModel({ ...batch, packages: rightPackages }, state.limits),
       analyze,
       state
     ),
@@ -234,6 +267,9 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   ];
   const unavailableIds = new Set(unavailable.map(identity));
   const packageAssessments = analyses.flatMap((analysis) => analysis.packageAssessments);
+  const incompleteCoverage = (input.coverage?.items ?? []).some(
+    (item) => item.status !== 'complete'
+  );
   const deterministicBlockers = policyBlockers(input, unavailableIds);
   const blockers = [...analyses.flatMap((analysis) => analysis.blockers), ...deterministicBlockers];
   const modelVerdict = unavailable.length
@@ -244,11 +280,16 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     : analyses.reduce((current, analysis) => stricter(current, analysis.verdict), 'merge');
   const verdict = deterministicBlockers.length
     ? stricter(modelVerdict, 'do_not_merge')
-    : modelVerdict;
+    : input.coverage && (incompleteCoverage || unavailable.length)
+      ? stricter(modelVerdict, 'decision_incomplete')
+      : modelVerdict;
   const summary = reviewSummary(input.packages, unavailableIds);
   if (!analyses.length)
     return {
-      verdict: 'analysis_unavailable',
+      verdict:
+        input.coverage && !deterministicBlockers.length
+          ? 'decision_incomplete'
+          : 'analysis_unavailable',
       summary,
       packageAssessments: [],
       blockers: [],
