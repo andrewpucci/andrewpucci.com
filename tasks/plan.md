@@ -183,8 +183,8 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
       every unresolved unit.
 
 PR 271 replay on immutable head `c0421579957fdc03c12f191d13c2b8a675aacc4c`
-reduced 108 updates to 20 graph-backed decision units: 21 validated assessments
-and 9 explicit queue entries. Each remaining entry names a direct group or
+reduced 108 updates to 20 graph-backed decision units: 25 validated assessments
+and 8 explicit queue entries. Each remaining entry names a direct group or
 standalone update and a next action; the managed comment also offers a
 digest-pinned, read-only research brief when it fits the GitHub comment limit.
 
