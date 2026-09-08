@@ -29,7 +29,7 @@ vi.mock('./review.mjs', () => ({
   prepareReview: mocks.prepareReview,
 }));
 
-const event = { workflow_run: { id: 1 } };
+const event = { workflow_run: { id: 1, head_sha: 'head' } };
 const input = { pullRequest: { headSha: 'head' }, packages: [] };
 const metadata = {
   headSha: 'head',
@@ -105,16 +105,27 @@ describe('Dependabot review runner', () => {
     expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(metadata, 'none');
   });
 
-  it('skips expensive analysis for a current head and digest', async () => {
+  it('skips packet loading for a current immutable event head and digest', async () => {
     mocks.findReviewComment.mockResolvedValue({
       body: `<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: head -->\n<!-- review-digest: ${'d'.repeat(64)} -->`,
     });
 
     await run();
 
+    expect(mocks.loadReviewInput).not.toHaveBeenCalled();
+    expect(mocks.prepareReview).not.toHaveBeenCalled();
     expect(mocks.buildReviewFromInput).not.toHaveBeenCalled();
     expect(mocks.upsertComment).not.toHaveBeenCalled();
-    expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(metadata, 'duplicate_review');
+    expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headSha: 'head',
+        reviewDigest: 'd'.repeat(64),
+        modelVersion: null,
+        promptVersion: null,
+        coverage: null,
+      }),
+      'duplicate_review'
+    );
   });
 
   it('emits a bounded failure category after incomplete analysis', async () => {

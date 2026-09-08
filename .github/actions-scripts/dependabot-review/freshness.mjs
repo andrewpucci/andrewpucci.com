@@ -16,10 +16,14 @@ export function managedReviewMetadata(body) {
   };
 }
 
-export function shouldSkipAnalysis(existingComment, metadata, { refresh = false } = {}) {
+export function shouldSkipCurrentHead(existingComment, headSha, { refresh = false } = {}) {
   if (refresh || !existingComment) return false;
   const previous = managedReviewMetadata(existingComment.body);
   // Upstream release pages can change without a new PR commit. A validated marker
   // records that this immutable head already consumed its bounded analysis budget.
-  return previous.headSha === metadata.headSha && previous.reviewDigest !== null;
+  return Boolean(headSha) && previous.headSha === headSha && previous.reviewDigest !== null;
+}
+
+export function shouldSkipAnalysis(existingComment, metadata, options = {}) {
+  return shouldSkipCurrentHead(existingComment, metadata.headSha, options);
 }

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { emitReviewDiagnostic } from './diagnostics.mjs';
 import { pullRequestNumber } from './event.mjs';
-import { shouldSkipAnalysis } from './freshness.mjs';
+import { managedReviewMetadata, shouldSkipAnalysis, shouldSkipCurrentHead } from './freshness.mjs';
 import { deleteReviewComment, findReviewComment, upsertComment } from './github.mjs';
 import { buildReviewFromInput, loadReviewInput, prepareReview } from './review.mjs';
 
@@ -26,39 +26,54 @@ const number = await pullRequestNumber(event, {
   githubHeaders,
 });
 const commentApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${number}/comments`;
-const input = await loadReviewInput({
-  repository: process.env.GITHUB_REPOSITORY,
-  number,
-  githubToken: process.env.GITHUB_TOKEN,
+const existing = await findReviewComment({
+  api: commentApi,
+  headers: commentHeaders,
+  author: commentAuthor,
 });
-if (!input) {
-  await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
+const refresh = process.env.DEPENDABOT_REVIEW_REFRESH === 'true';
+const eventHeadSha = event?.workflow_run?.head_sha;
+if (shouldSkipCurrentHead(existing, eventHeadSha, { refresh })) {
+  const { reviewDigest } = managedReviewMetadata(existing.body);
+  emitReviewDiagnostic(
+    {
+      headSha: eventHeadSha,
+      reviewDigest,
+      modelVersion: null,
+      promptVersion: null,
+      coverage: null,
+    },
+    'duplicate_review'
+  );
 } else {
-  const prepared = prepareReview(input, { repository: process.env.GITHUB_REPOSITORY });
-  const existing = await findReviewComment({
-    api: commentApi,
-    headers: commentHeaders,
-    author: commentAuthor,
+  const input = await loadReviewInput({
+    repository: process.env.GITHUB_REPOSITORY,
+    number,
+    githubToken: process.env.GITHUB_TOKEN,
   });
-  const refresh = process.env.DEPENDABOT_REVIEW_REFRESH === 'true';
-  if (shouldSkipAnalysis(existing, prepared.metadata, { refresh })) {
-    emitReviewDiagnostic(prepared.metadata, 'duplicate_review');
+  if (!input) {
+    await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
   } else {
-    const { analysis, body } = await buildReviewFromInput(input, process.env.MISTRAL_API_KEY, {
-      repository: process.env.GITHUB_REPOSITORY,
-      prepared,
-    });
-    emitReviewDiagnostic(
-      prepared.metadata,
-      ['analysis_unavailable', 'decision_incomplete'].includes(analysis.verdict)
-        ? analysis.verdict
-        : 'none'
-    );
-    await upsertComment({
-      api: commentApi,
-      body,
-      headers: commentHeaders,
-      author: commentAuthor,
-    });
+    const prepared = prepareReview(input, { repository: process.env.GITHUB_REPOSITORY });
+    if (shouldSkipAnalysis(existing, prepared.metadata, { refresh })) {
+      emitReviewDiagnostic(prepared.metadata, 'duplicate_review');
+    } else {
+      const { analysis, body } = await buildReviewFromInput(input, process.env.MISTRAL_API_KEY, {
+        repository: process.env.GITHUB_REPOSITORY,
+        prepared,
+      });
+      emitReviewDiagnostic(
+        prepared.metadata,
+        ['analysis_unavailable', 'decision_incomplete'].includes(analysis.verdict)
+          ? analysis.verdict
+          : 'none'
+      );
+      await upsertComment({
+        api: commentApi,
+        body,
+        headers: commentHeaders,
+        author: commentAuthor,
+      });
+    }
   }
 }

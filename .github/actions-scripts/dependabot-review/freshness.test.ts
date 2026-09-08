@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { managedReviewMetadata, shouldSkipAnalysis } from './freshness.mjs';
+import { managedReviewMetadata, shouldSkipAnalysis, shouldSkipCurrentHead } from './freshness.mjs';
 
 const metadata = { headSha: 'head', reviewDigest: 'd'.repeat(64) };
 
@@ -26,5 +26,16 @@ describe('review freshness', () => {
         { refresh: true }
       )
     ).toBe(false);
+  });
+
+  it('recognizes the current immutable event head without constructing a review packet', () => {
+    const current = {
+      body: `<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: head -->\n<!-- review-digest: ${'d'.repeat(64)} -->`,
+    };
+
+    expect(shouldSkipCurrentHead(current, 'head')).toBe(true);
+    expect(shouldSkipCurrentHead(current, 'different-head')).toBe(false);
+    expect(shouldSkipCurrentHead(current, 'head', { refresh: true })).toBe(false);
+    expect(shouldSkipCurrentHead(current, '')).toBe(false);
   });
 });
