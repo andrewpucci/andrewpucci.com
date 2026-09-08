@@ -55,6 +55,7 @@ export function renderResearchHandoff({
     : ['- No bounded vetted source URL is available; state this as uncertainty.'];
   const brief = [
     'Perform read-only dependency research. Do not write to GitHub, run pull-request code, or send a response to this workflow.',
+    'Decide whether this upgrade is right for this repository. Do not evaluate CI status or repeat test results.',
     `Pull request: https://github.com/${repository}/pull/${pullRequest.number}`,
     `Immutable head: ${pullRequest.headSha}`,
     `Review digest: ${reviewDigest}`,
@@ -64,7 +65,20 @@ export function renderResearchHandoff({
     `Provenance signal: ${provenanceFact(provenance)}`,
     'Vetted sources:',
     ...sourceLines,
-    'Verify the exact head; if it cannot be verified, say so. Use official package or repository sources with citations. End with merge or hold for review and list remaining uncertainty.',
+    'Verify the exact head before drawing a conclusion; if it cannot be verified, say so and use hold for review. Use only official package or repository sources with citations. Do not infer repository behavior that is not visible in the PR or trusted repository context.',
+    'Return exactly the following Markdown sections and nothing else:',
+    '## Recommendation',
+    '- Decision: `merge` or `hold for review`',
+    '- Confidence: high, medium, or low',
+    '- One-sentence rationale',
+    '## Decision evidence',
+    '- Each decision-affecting fact, its official citation, and why it applies or does not apply',
+    '## Repository impact',
+    '- The visible path or configuration affected, or `No evidenced repository impact`',
+    '## Required action',
+    '- A concrete pre-merge action, or `None`',
+    '## Remaining uncertainty',
+    '- Bounded uncertainty that could change the decision, or `None`',
   ].join('\n');
   return [
     '<details>',

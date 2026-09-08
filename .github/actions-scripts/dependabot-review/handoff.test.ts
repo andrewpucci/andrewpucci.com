@@ -40,7 +40,7 @@ const item = {
 };
 
 describe('external research handoffs', () => {
-  it('renders a read-only brief pinned to the supplied PR head and digest', () => {
+  it('renders a fixed-format decision memo pinned to the supplied PR head and digest', () => {
     const brief = renderResearchHandoff({
       repository: 'owner/site',
       pullRequest,
@@ -55,7 +55,14 @@ describe('external research handoffs', () => {
     expect(brief).toContain(`Review digest: ${'d'.repeat(64)}`);
     expect(brief).toContain('direct update direct-package 1.0.0 to 2.0.0 (2 changed updates)');
     expect(brief).toContain('Perform read-only dependency research');
-    expect(brief).toContain('End with merge or hold for review');
+    expect(brief).toContain('Do not evaluate CI status');
+    expect(brief).toContain('Return exactly the following Markdown sections and nothing else:');
+    expect(brief).toContain('## Recommendation');
+    expect(brief).toContain('Decision: `merge` or `hold for review`');
+    expect(brief).toContain('## Decision evidence');
+    expect(brief).toContain('## Repository impact');
+    expect(brief).toContain('## Required action');
+    expect(brief).toContain('## Remaining uncertainty');
     expect(brief).toContain('https://github.com/example/direct-package/releases/tag/v2.0.0');
     expect(brief).toContain('https://example.com/ignored-after-the-bound');
     expect(brief).not.toContain('https://example.com/also-ignored');
