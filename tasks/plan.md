@@ -111,7 +111,7 @@ external research service any repository write capability.
 coverage input → decision-unit contract → comment + handoff → freshness + diagnostics → replay evaluation
 ```
 
-- [ ] [**Task 1: Collect path-aware decision coverage**](https://github.com/andrewpucci/andrewpucci.com/issues/294) — Read immutable
+- [x] [**Task 1: Collect path-aware decision coverage**](https://github.com/andrewpucci/andrewpucci.com/issues/294) — Read immutable
       base/head manifests and lockfiles, classify direct runtime roles, map internal
       lockfile paths conservatively, and collect bounded lifecycle-script deltas.
   - Acceptance: Every changed npm update is either uniquely grouped under a
