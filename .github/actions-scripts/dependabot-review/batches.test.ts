@@ -87,6 +87,46 @@ describe('Dependabot review batches', () => {
     });
   });
 
+  it('queues a rate-limited direct unit for a rerun after the reset', async () => {
+    const coverage = {
+      items: input.packages.map((pkg: ReturnType<typeof dependency>) => ({
+        ...coverageItem(pkg, 'unresolved'),
+        group: {
+          kind: 'direct',
+          anchor: { name: 'first', from: '1.0.0', to: '2.0.0' },
+        },
+        reason: 'github_rate_limited',
+      })),
+    };
+
+    const result = await analyzeBatches(
+      { ...input, coverage },
+      {
+        analyzeBatch: async (batch: { packages: ReturnType<typeof dependency>[] }) => ({
+          verdict: 'merge',
+          summary: 'The direct group is ready.',
+          packageAssessments: batch.packages.map(
+            (pkg: ReturnType<typeof dependency>) => completedAnalysis(pkg).packageAssessments[0]
+          ),
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        }),
+      }
+    );
+
+    expect(result).toMatchObject({
+      verdict: 'decision_incomplete',
+      decisionQueue: [
+        {
+          count: 2,
+          reason: 'github_rate_limited',
+          action: expect.stringContaining('GitHub API rate limit resets'),
+        },
+      ],
+    });
+  });
+
   it('rejects an unqualified merge_with_followups response as incomplete coverage', async () => {
     const coverage = { items: input.packages.map((pkg) => coverageItem(pkg)) };
 

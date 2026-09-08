@@ -154,6 +154,10 @@ function formatUpdate({ name, from, to }) {
 function queueAction(group, members, coverageIssues) {
   if (!coverageIssues.length)
     return 'Rerun the advisory review after correcting the transient analysis failure for this immutable decision unit.';
+  if (coverageIssues[0].reason === 'github_rate_limited')
+    return 'Rerun the advisory review after the GitHub API rate limit resets; this immutable decision unit was not fully collected.';
+  if (coverageIssues[0].reason === 'github_request_budget_exhausted')
+    return 'Rerun the advisory review after reducing this pull request or raising the bounded GitHub request budget.';
   if (group.kind === 'direct')
     return `Inspect the cited direct-update evidence for ${formatUpdate(group.anchor)} and verify it accounts for all ${members.length} changed update${members.length === 1 ? '' : 's'}.`;
   return `Obtain immutable manifest, lockfile, and official package evidence for ${formatUpdate(members[0])}.`;

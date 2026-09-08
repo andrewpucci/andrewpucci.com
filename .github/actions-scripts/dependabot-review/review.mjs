@@ -58,7 +58,13 @@ export async function loadReviewInput(
     };
     const inputPromise = collectReviewInput(
       { pull_request: pullRequest, repository, files },
-      { fetchLike: githubFetch, githubHeaders, repositoryContext, collectCoverage: true }
+      {
+        fetchLike: githubFetch,
+        githubHeaders,
+        repositoryContext,
+        collectCoverage: true,
+        githubRequestDiagnostic: governor.diagnostic,
+      }
     );
     const provenancePromise =
       pullRequest.user?.login === 'dependabot[bot]' &&

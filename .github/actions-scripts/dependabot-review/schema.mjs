@@ -7,7 +7,8 @@ const policyVerdictPriority = new Map([
 ]);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const functionalityKinds = new Set(['new_capability']);
-const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
+const evidenceStatuses = new Set(['available', 'partial', 'unavailable', 'group_backed']);
+const contextStatuses = new Set(['available', 'partial', 'unavailable']);
 const provenanceStatuses = new Set(['verified', 'attention_required', 'unavailable']);
 const vulnerabilitySeverities = new Set(['low', 'moderate', 'high', 'critical']);
 const contextKinds = new Set(['workflow-action', 'package-usage']);
@@ -176,6 +177,24 @@ function parseCoverage(value, packages) {
   return { items };
 }
 
+function validateGroupBackedEvidence(packages, coverage) {
+  const coverageByPackage = new Map(
+    (coverage?.items ?? []).map((item) => [packageIdentity(item.update), item])
+  );
+  for (const dependency of packages) {
+    if (dependency.evidence.status !== 'group_backed') continue;
+    const item = coverageByPackage.get(packageIdentity(dependency));
+    if (
+      !item ||
+      item.group.kind !== 'direct' ||
+      packageIdentity(item.group.anchor) === packageIdentity(dependency)
+    )
+      throw new TypeError(
+        'group-backed evidence must belong to a non-anchor direct coverage group'
+      );
+  }
+}
+
 export function parseReviewInput(value) {
   const input = object(value, 'review input');
   const pullRequest = object(input.pullRequest, 'pull request');
@@ -189,7 +208,7 @@ export function parseReviewInput(value) {
     if (!evidenceStatuses.has(status)) throw new TypeError('unsupported evidence status');
     const context = object(dependency.context, 'package context');
     const contextStatus = string(context.status, 'context status');
-    if (!evidenceStatuses.has(contextStatus)) throw new TypeError('unsupported context status');
+    if (!contextStatuses.has(contextStatus)) throw new TypeError('unsupported context status');
     const facts = array(context.facts, 'context facts').map((value) => {
       const fact = object(value, 'context fact');
       const kind = string(fact.kind, 'context fact kind');
@@ -261,6 +280,7 @@ export function parseReviewInput(value) {
   });
   const coverage =
     input.coverage === undefined ? undefined : parseCoverage(input.coverage, packages);
+  validateGroupBackedEvidence(packages, coverage);
   return {
     pullRequest: {
       number: pullRequest.number,
@@ -301,7 +321,7 @@ export function parsePolicy(value, input) {
       if (
         kind !== 'evidence-incomplete' ||
         sourceUrl !== null ||
-        dependency.evidence.status === 'available'
+        ['available', 'group_backed'].includes(dependency.evidence.status)
       )
         throw new TypeError('evidence policy finding must match incomplete input evidence');
       if (severity !== null)
@@ -381,6 +401,10 @@ export function parseAnalysis(value, input) {
     const newFunctionality = array(item.newFunctionality, 'new functionality');
     if (newFunctionality.length > 1)
       throw new TypeError('analysis may contain at most one feature per package assessment');
+    if (dependency.evidence?.status === 'group_backed' && newFunctionality.length)
+      throw new TypeError(
+        'group-backed evidence cannot support an individual adoption recommendation'
+      );
     return {
       name,
       from,

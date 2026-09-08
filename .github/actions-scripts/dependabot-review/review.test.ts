@@ -114,6 +114,14 @@ describe('trusted Dependabot review input', () => {
       )
     ).resolves.toEqual(input);
     expect(mocks.collectPullRequestProvenance).not.toHaveBeenCalled();
+    expect(mocks.collectReviewInput).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        collectCoverage: true,
+        fetchLike: mocks.fetch,
+        githubRequestDiagnostic: expect.any(Function),
+      })
+    );
   });
 
   it('keeps the reviewable input when provenance collection rejects', async () => {

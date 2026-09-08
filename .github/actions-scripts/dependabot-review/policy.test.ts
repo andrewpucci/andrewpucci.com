@@ -12,7 +12,7 @@ type Finding = {
   validation: string[];
 };
 type ReviewOptions = {
-  evidenceStatus?: 'available' | 'partial' | 'unavailable';
+  evidenceStatus?: 'available' | 'partial' | 'unavailable' | 'group_backed';
   findings?: Finding[];
   license?: string | null;
 };
@@ -72,6 +72,13 @@ function migration(kind: 'applicable-codemod' | 'incompatible-migration'): Findi
 }
 
 describe('Dependabot review policy', () => {
+  it('does not treat bounded group-backed evidence as individually incomplete', () => {
+    expect(evaluatePolicy(reviewInput({ evidenceStatus: 'group_backed' }))).toEqual({
+      verdictCeiling: 'merge',
+      findings: [],
+    });
+  });
+
   it.each(['partial', 'unavailable'] as const)(
     'caps %s evidence at merge_with_followups',
     (status) => {

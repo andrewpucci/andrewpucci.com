@@ -202,7 +202,7 @@ It preserves CI separation and the trusted workflow boundary.
   - Verify: Focused GitHub/input/review tests.
   - Files: `github.mjs`, `diagnostics.mjs`, `review.mjs`, focused tests.
 
-- [ ] **Task 3: Select evidence by decision unit**
+- [x] **Task 3: Select evidence by decision unit**
   - Acceptance: Direct-group anchors and standalones are the only upstream
     evidence targets; group-backed members remain bounded and rate-limited units
     become explicitly incomplete without disturbing other decisions.

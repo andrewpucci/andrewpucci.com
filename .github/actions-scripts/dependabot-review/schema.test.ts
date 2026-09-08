@@ -98,7 +98,24 @@ describe('review contracts', () => {
       },
     };
 
-    expect(parseReviewInput(input)).toEqual(input);
+    const groupBacked = {
+      ...input,
+      packages: [
+        input.packages[0],
+        { ...nested, evidence: { status: 'group_backed', reason: null }, sources: [] },
+      ],
+    };
+
+    expect(parseReviewInput(groupBacked)).toEqual(groupBacked);
+    expect(() =>
+      parseReviewInput({
+        ...groupBacked,
+        packages: [
+          { ...groupBacked.packages[0], evidence: { status: 'group_backed', reason: null } },
+          groupBacked.packages[1],
+        ],
+      })
+    ).toThrow(/group-backed/i);
   });
 
   it('rejects coverage that omits an input package', () => {

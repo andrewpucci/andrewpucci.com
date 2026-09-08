@@ -14,7 +14,7 @@ function packageIdentity(dependency) {
 }
 
 function evidenceFinding(dependency) {
-  if (dependency.evidence.status === 'available') return null;
+  if (['available', 'group_backed'].includes(dependency.evidence.status)) return null;
   return {
     package: packageIdentity(dependency),
     findingId: null,

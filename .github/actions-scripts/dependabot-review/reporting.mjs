@@ -71,6 +71,10 @@ function nextAction(analysis) {
 function reasonLabel(reason) {
   if (reason === 'coverage_inputs_unavailable')
     return 'Immutable coverage inputs were unavailable.';
+  if (reason === 'github_rate_limited')
+    return 'GitHub API rate limiting stopped source collection.';
+  if (reason === 'github_request_budget_exhausted')
+    return 'The bounded GitHub request budget stopped source collection.';
   if (reason === 'analysis_unavailable') return 'Bounded model analysis was unavailable.';
   return reason;
 }

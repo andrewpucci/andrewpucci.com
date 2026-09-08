@@ -327,6 +327,214 @@ describe('collectReviewInput', () => {
     expect(input?.packages).toMatchObject([{ name: 'example', dependencyType: 'direct:unknown' }]);
   });
 
+  it('collects upstream evidence only for a direct-group anchor', async () => {
+    const nestedChanges = [
+      ...dependencyDiff,
+      {
+        change_type: 'removed',
+        manifest: 'package-lock.json',
+        ecosystem: 'npm',
+        name: 'nested',
+        version: '1.0.0',
+        source_repository_url: 'https://github.com/example/nested',
+        vulnerabilities: [],
+      },
+      {
+        change_type: 'added',
+        manifest: 'package-lock.json',
+        ecosystem: 'npm',
+        name: 'nested',
+        version: '2.0.0',
+        source_repository_url: 'https://github.com/example/nested',
+        vulnerabilities: [],
+      },
+    ];
+    const anchor = {
+      name: 'example',
+      from: '1.0.0',
+      to: '2.0.0',
+      dependencyType: 'direct:production',
+    };
+    const collectNpmCoverage = vi.fn().mockResolvedValue({
+      items: [
+        {
+          update: anchor,
+          group: { kind: 'direct', anchor: { name: 'example', from: '1.0.0', to: '2.0.0' } },
+          lifecycle: {
+            status: 'unchanged',
+            metadata: 'not_needed',
+            paths: [],
+            changes: [],
+            reason: null,
+          },
+          status: 'complete',
+          reason: null,
+        },
+        {
+          update: { name: 'nested', from: '1.0.0', to: '2.0.0', dependencyType: 'transitive' },
+          group: { kind: 'direct', anchor: { name: 'example', from: '1.0.0', to: '2.0.0' } },
+          lifecycle: {
+            status: 'unchanged',
+            metadata: 'not_needed',
+            paths: [],
+            changes: [],
+            reason: null,
+          },
+          status: 'complete',
+          reason: null,
+        },
+      ],
+    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(nestedChanges))
+      .mockResolvedValueOnce(
+        response({ repository: { url: 'https://github.com/example/package' } })
+      )
+      .mockResolvedValueOnce(
+        response({
+          html_url: 'https://github.com/example/package/releases/tag/v2.0.0',
+          body: 'Anchor release notes.',
+        })
+      );
+
+    const input = await collectReviewInput(
+      { pull_request: pullRequest, repository: 'owner/repo', files: [packageFile] },
+      { fetchLike: fetchMock, collectCoverage: true, collectNpmCoverage }
+    );
+
+    expect(input?.packages).toMatchObject([
+      { name: 'example', evidence: { status: 'available' } },
+      { name: 'nested', evidence: { status: 'group_backed' }, sources: [] },
+    ]);
+    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
+      expect.stringContaining('dependency-graph/compare/base...head'),
+      'https://registry.npmjs.org/example',
+      'https://api.github.com/repos/example/package/releases/tags/v2.0.0',
+    ]);
+    expect(fetchMock.mock.calls.map(([url]) => url).join('\n')).not.toContain('nested');
+  });
+
+  it('marks only a rate-limited direct decision unit incomplete', async () => {
+    const nestedChanges = [
+      ...dependencyDiff,
+      {
+        change_type: 'removed',
+        manifest: 'package-lock.json',
+        ecosystem: 'npm',
+        name: 'nested',
+        version: '1.0.0',
+        source_repository_url: 'https://github.com/example/nested',
+        vulnerabilities: [],
+      },
+      {
+        change_type: 'added',
+        manifest: 'package-lock.json',
+        ecosystem: 'npm',
+        name: 'nested',
+        version: '2.0.0',
+        source_repository_url: 'https://github.com/example/nested',
+        vulnerabilities: [],
+      },
+    ];
+    const directGroup = { kind: 'direct', anchor: { name: 'example', from: '1.0.0', to: '2.0.0' } };
+    const collectNpmCoverage = vi.fn().mockResolvedValue({
+      items: [
+        {
+          update: {
+            name: 'example',
+            from: '1.0.0',
+            to: '2.0.0',
+            dependencyType: 'direct:production',
+          },
+          group: directGroup,
+          lifecycle: {
+            status: 'unchanged',
+            metadata: 'not_needed',
+            paths: [],
+            changes: [],
+            reason: null,
+          },
+          status: 'complete',
+          reason: null,
+        },
+        {
+          update: { name: 'nested', from: '1.0.0', to: '2.0.0', dependencyType: 'transitive' },
+          group: directGroup,
+          lifecycle: {
+            status: 'unchanged',
+            metadata: 'not_needed',
+            paths: [],
+            changes: [],
+            reason: null,
+          },
+          status: 'complete',
+          reason: null,
+        },
+      ],
+    });
+    const fetchMock = vi.fn().mockResolvedValue(response(nestedChanges));
+
+    const input = await collectReviewInput(
+      { pull_request: pullRequest, repository: 'owner/repo', files: [packageFile] },
+      {
+        fetchLike: fetchMock,
+        collectCoverage: true,
+        collectNpmCoverage,
+        githubRequestDiagnostic: () => ({ limit: { status: 429 } }),
+      }
+    );
+
+    expect(input?.coverage?.items).toMatchObject([
+      { update: { name: 'example' }, status: 'unresolved', reason: 'github_rate_limited' },
+      { update: { name: 'nested' }, status: 'unresolved', reason: 'github_rate_limited' },
+    ]);
+    expect(input?.packages).toMatchObject([
+      { name: 'example', evidence: { status: 'unavailable', reason: 'github_rate_limited' } },
+      { name: 'nested', evidence: { status: 'group_backed' } },
+    ]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks a budget-stopped standalone Action incomplete without collecting evidence', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(response(actionDependencyDiff));
+
+    const input = await collectReviewInput(
+      {
+        pull_request: {
+          ...pullRequest,
+          body: 'Updates `actions/create-github-app-token` from 2.2.2 to 3.2.0',
+        },
+        repository: 'owner/repo',
+        files: [],
+      },
+      {
+        fetchLike: fetchMock,
+        collectCoverage: true,
+        githubRequestDiagnostic: () => ({ limit: { status: 'request_budget_exhausted' } }),
+      }
+    );
+
+    expect(input).toMatchObject({
+      packages: [
+        {
+          name: 'actions/create-github-app-token',
+          evidence: { status: 'unavailable', reason: 'github_request_budget_exhausted' },
+        },
+      ],
+      coverage: {
+        items: [
+          {
+            status: 'unresolved',
+            reason: 'github_request_budget_exhausted',
+            group: { kind: 'standalone' },
+          },
+        ],
+      },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('falls back to an unprefixed release tag when the v-prefixed tag is absent', async () => {
     const fetchMock = vi
       .fn()
