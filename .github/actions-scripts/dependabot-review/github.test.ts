@@ -1,5 +1,33 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { deleteReviewComment, upsertComment } from './github.mjs';
+import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
+
+describe('fetchAllPages', () => {
+  it('retrieves every GitHub API page in the Link header', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify([{ filename: 'first.yml' }]), {
+          headers: {
+            Link: '<https://api.github.com/repos/example/site/pulls/1/files?per_page=100&page=2>; rel="next"',
+          },
+        })
+      )
+      .mockResolvedValueOnce(Response.json([{ filename: 'second.yml' }]));
+
+    await expect(
+      fetchAllPages({
+        api: 'https://api.github.com/repos/example/site/pulls/1/files?per_page=100',
+        headers: { Authorization: 'Bearer test' },
+        fetchLike: fetchMock,
+        action: 'retrieve pull request files',
+      })
+    ).resolves.toEqual([{ filename: 'first.yml' }, { filename: 'second.yml' }]);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      'https://api.github.com/repos/example/site/pulls/1/files?per_page=100&page=2',
+      { headers: { Authorization: 'Bearer test' } }
+    );
+  });
+});
 
 describe('upsertComment', () => {
   it('fails when GitHub rejects listing existing review comments', async () => {

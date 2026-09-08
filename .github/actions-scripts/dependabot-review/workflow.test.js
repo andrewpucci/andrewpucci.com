@@ -21,4 +21,14 @@ describe('Dependabot intelligent review workflow', () => {
       'GITHUB_COMMENT_AUTHOR: ${{ steps.app-token.outputs.app-slug }}[bot]'
     );
   });
+
+  it('checks out only the trusted default branch before running the reviewer', () => {
+    const checkout = workflow.match(
+      /- uses: actions\/checkout@[\s\S]*?(?=\n {6}- name: Create review-comment app token)/
+    )?.[0];
+
+    expect(checkout).toContain('fetch-depth: 1');
+    expect(checkout).not.toContain('ref:');
+    expect(workflow).toContain('run: node .github/actions-scripts/dependabot-review/run.mjs');
+  });
 });

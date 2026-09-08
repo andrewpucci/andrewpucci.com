@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { parseAnalysis, parseReviewInput } from './schema.mjs';
+import { parseAnalysis, parsePolicy, parseReviewInput } from './schema.mjs';
 
 const source = {
   kind: 'release-notes',
   url: 'https://github.com/example/package/releases/tag/v2.0.0',
   title: 'v2.0.0',
   excerpt: 'Adds a documented feature.',
+  range: { from: '1.0.0', to: '2.0.0' },
 };
 
 const reviewInput = {
@@ -17,6 +18,8 @@ const reviewInput = {
       to: '2.0.0',
       dependencyType: 'direct:production',
       license: null,
+      evidence: { status: 'available', reason: null },
+      context: { status: 'unavailable', facts: [] },
       sources: [source],
       findings: [],
     },
@@ -26,6 +29,72 @@ const reviewInput = {
 describe('review contracts', () => {
   it('accepts a bounded, provenance-tagged input packet', () => {
     expect(parseReviewInput(reviewInput)).toEqual(reviewInput);
+  });
+
+  it('rejects a vulnerability with an unsupported severity', () => {
+    const inputWithVulnerability = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          findings: [
+            {
+              id: 'example:vulnerability',
+              kind: 'vulnerability',
+              reason: 'GitHub reported a vulnerability.',
+              sourceUrl: source.url,
+              severity: 'urgent',
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(() => parseReviewInput(inputWithVulnerability)).toThrow(/severity/i);
+  });
+
+  it('rejects a policy finding that is not attributable to the input packet', () => {
+    expect(() =>
+      parsePolicy(
+        {
+          verdictCeiling: 'do_not_merge',
+          findings: [
+            {
+              package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+              findingId: 'example:vulnerability',
+              kind: 'vulnerability',
+              sourceUrl: 'https://untrusted.example/advisory',
+              severity: 'critical',
+              verdict: 'do_not_merge',
+              reason: 'A critical vulnerability affects the target version.',
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+        {
+          ...reviewInput,
+          packages: [
+            {
+              ...reviewInput.packages[0],
+              findings: [
+                {
+                  id: 'example:vulnerability',
+                  kind: 'vulnerability',
+                  reason: 'GitHub reported a vulnerability.',
+                  sourceUrl: source.url,
+                  severity: 'critical',
+                  remediation: ['Update the package.'],
+                  validation: ['npm test'],
+                },
+              ],
+            },
+          ],
+        }
+      )
+    ).toThrow(/source URL/i);
   });
 
   it('rejects analysis citations not present in the input packet', () => {
@@ -57,13 +126,130 @@ describe('review contracts', () => {
     ).toThrow(/unknown evidence URL/i);
   });
 
+  it('rejects a model verdict that exceeds the policy ceiling', () => {
+    const policyInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: { status: 'partial', reason: 'Only partial release notes were available.' },
+        },
+      ],
+      policy: {
+        verdictCeiling: 'merge_with_followups',
+        findings: [
+          {
+            package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+            findingId: null,
+            kind: 'evidence-incomplete',
+            sourceUrl: null,
+            severity: null,
+            verdict: 'merge_with_followups',
+            reason: 'Upstream evidence is incomplete.',
+            remediation: ['Review the upstream upgrade evidence before merging.'],
+            validation: ['Confirm the upgrade range against upstream release notes.'],
+          },
+        ],
+      },
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
+          blockers: [],
+          remediationPrompt: null,
+        },
+        policyInput
+      )
+    ).toThrow(/policy/i);
+  });
+
+  it('rejects use_now without a matching trusted-context fact', () => {
+    const contextInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'package.json',
+                excerpt: '"example": "^2.0.0"',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  feature: 'Enable the documented feature.',
+                  sourceUrl: source.url,
+                  usefulness: 'use_now',
+                  action: 'Enable the feature in the package configuration.',
+                  contextPath: 'src/unrelated.ts',
+                  rationale: 'It is useful.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          remediationPrompt: null,
+        },
+        contextInput
+      )
+    ).toThrow(/context/i);
+  });
+
+  it('rejects duplicate package assessments', () => {
+    const assessment = {
+      name: 'example',
+      from: '1.0.0',
+      to: '2.0.0',
+      newFunctionality: [],
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [assessment, assessment],
+          blockers: [],
+          remediationPrompt: null,
+        },
+        reviewInput
+      )
+    ).toThrow(/exactly one package assessment/i);
+  });
+
   it('rejects a blocking verdict without a verified input finding', () => {
     expect(() =>
       parseAnalysis(
         {
           verdict: 'do_not_merge',
           summary: 'A migration is required.',
-          packageAssessments: [],
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
           blockers: [
             {
               findingId: 'missing-finding',
@@ -106,7 +292,9 @@ describe('review contracts', () => {
         {
           verdict: 'do_not_merge',
           summary: 'A migration is required.',
-          packageAssessments: [],
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
           blockers: [
             {
               findingId: 'different-finding',
@@ -149,7 +337,9 @@ describe('review contracts', () => {
         {
           verdict: 'do_not_merge',
           summary: 'A migration is required.',
-          packageAssessments: [],
+          packageAssessments: [
+            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+          ],
           blockers: [
             {
               findingId: 'example:applicable-codemod',

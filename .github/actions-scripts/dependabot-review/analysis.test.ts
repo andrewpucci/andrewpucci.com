@@ -24,6 +24,7 @@ const input = {
 
 describe('analyze', () => {
   it('tells Mistral the complete analysis contract', async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, 'timeout');
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -33,7 +34,9 @@ describe('analyze', () => {
                 content: JSON.stringify({
                   verdict: 'merge',
                   summary: 'No compatibility concerns were identified.',
-                  packageAssessments: [],
+                  packageAssessments: [
+                    { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+                  ],
                   blockers: [],
                   remediationPrompt: null,
                 }),
@@ -51,6 +54,12 @@ describe('analyze', () => {
     expect(request.messages[0].content).toContain('remediationPrompt');
     expect(request.messages[0].content).toContain('merge_with_followups');
     expect(request.messages[0].content).toContain('name every reviewed package');
+    expect(request.messages[0].content).toContain('exactly one package assessment');
+    expect(request.messages[0].content).toContain('contextPath');
+    expect(request.messages[0].content).toContain('policy verdict ceiling');
+    expect(request.max_tokens).toBeGreaterThanOrEqual(4_000);
+    expect(timeoutSpy).toHaveBeenCalledWith(120_000);
+    timeoutSpy.mockRestore();
   });
 
   it('returns analysis_unavailable when Mistral returns malformed JSON', async () => {
@@ -61,6 +70,43 @@ describe('analyze', () => {
       );
     await expect(analyze(input, 'key', fetchMock)).resolves.toMatchObject({
       verdict: 'analysis_unavailable',
+    });
+  });
+
+  it('identifies an analysis truncated by Mistral', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ finish_reason: 'length', message: { content: '{' } }],
+        })
+      )
+    );
+
+    await expect(analyze(input, 'key', fetchMock)).resolves.toMatchObject({
+      verdict: 'analysis_unavailable',
+      summary: 'Mistral analysis was truncated; perform a manual dependency review.',
+      reason: 'truncated',
+    });
+  });
+
+  it('accepts a valid analysis wrapped in a Markdown JSON fence', async () => {
+    const analysis = {
+      verdict: 'merge',
+      summary: 'No compatibility concerns were identified.',
+      packageAssessments: [{ name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] }],
+      blockers: [],
+      remediationPrompt: null,
+    };
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { content: `\`\`\`json\n${JSON.stringify(analysis)}\n\`\`\`` } }],
+        })
+      )
+    );
+
+    await expect(analyze(input, 'key', fetchMock)).resolves.toMatchObject({
+      verdict: 'merge',
     });
   });
 

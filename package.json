@@ -19,6 +19,7 @@
     "tokens:build": "tz build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "dependabot:review:dry-run": "node .github/actions-scripts/dependabot-review/dry-run.mjs",
     "test": "vp test run",
     "test:watch": "vp test watch",
     "test:coverage": "vp test run --coverage",

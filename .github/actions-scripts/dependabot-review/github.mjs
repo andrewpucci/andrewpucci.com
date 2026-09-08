@@ -13,6 +13,23 @@ async function ensureSuccess(response, action) {
   return response;
 }
 
+const nextPage = (link) => /<([^>]+)>;\s*rel="next"/.exec(link ?? '')?.[1];
+
+export async function fetchAllPages({ api, headers, fetchLike = fetch, action, maxPages = 30 }) {
+  const entries = [];
+  let page = api;
+  for (let index = 0; page && index < maxPages; index += 1) {
+    const response = await ensureSuccess(await fetchLike(page, { headers }), action);
+    const body = await response.json();
+    if (!Array.isArray(body))
+      throw new TypeError(`Unable to ${action}: expected an array response.`);
+    entries.push(...body);
+    page = nextPage(response.headers.get('link'));
+  }
+  if (page) throw new Error(`Unable to ${action}: exceeded ${maxPages} pages.`);
+  return entries;
+}
+
 const managedComment = (comments, author) =>
   comments.find(
     (comment) =>
