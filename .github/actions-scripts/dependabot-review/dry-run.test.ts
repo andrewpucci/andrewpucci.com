@@ -58,7 +58,9 @@ describe('Dependabot review dry run', () => {
       number: 42,
       githubToken: 'github-token',
     });
-    expect(buildReviewCommentFromInput).toHaveBeenCalledWith(reviewInput, 'mistral-key');
+    expect(buildReviewCommentFromInput).toHaveBeenCalledWith(reviewInput, 'mistral-key', {
+      repository: 'example/site',
+    });
     expect(write).toHaveBeenCalledWith('rendered production comment\n');
     expect(writeStatus).toHaveBeenCalledWith('Generated review for pull request #42 (28 bytes).\n');
   });

@@ -71,7 +71,7 @@ export async function runDryReview(
     await runCommand('op', ['item', 'get', itemId, '--fields', 'credential', '--reveal']),
     'Mistral API key'
   );
-  const body = await build(input, mistralApiKey);
+  const body = await build(input, mistralApiKey, { repository });
   await write(`${body}\n`);
   await writeStatus(
     `Generated review for pull request #${number} (${Buffer.byteLength(`${body}\n`)} bytes).\n`

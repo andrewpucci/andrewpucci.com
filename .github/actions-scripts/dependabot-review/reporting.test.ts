@@ -23,6 +23,81 @@ describe('renderComment', () => {
     );
     expect(body).toContain('Advisory verdict');
     expect(body).toContain('Remediation prompt');
+    expect(body).toContain('**Next action:** Do not merge');
+  });
+
+  it('renders every incomplete unit as a decision queue with pinned research briefs', () => {
+    const body = renderComment(
+      {
+        verdict: 'decision_incomplete',
+        summary: 'Two decision units await evidence.',
+        decisionQueue: [
+          {
+            group: { kind: 'direct', anchor: { name: 'direct', from: '1.0.0', to: '2.0.0' } },
+            members: [
+              { name: 'direct', from: '1.0.0', to: '2.0.0' },
+              { name: 'nested', from: '1.0.0', to: '2.0.0' },
+            ],
+            count: 2,
+            reason: 'coverage_inputs_unavailable',
+            action: 'Inspect direct evidence.',
+            lifecycle: [],
+          },
+          {
+            group: { kind: 'standalone', anchor: null },
+            members: [{ name: 'standalone', from: '1.0.0', to: '2.0.0' }],
+            count: 1,
+            reason: 'analysis_unavailable',
+            action: 'Rerun after correcting the transient failure.',
+            lifecycle: [],
+          },
+        ],
+        coverage: { complete: 0, pending: 1, unresolved: 2 },
+        packageAssessments: [],
+        blockers: [],
+        followups: [],
+        remediationPrompt: null,
+      },
+      {
+        headSha: 'head',
+        reviewDigest: 'd'.repeat(64),
+        repository: 'owner/site',
+        pullRequest: { number: 271, headSha: 'head' },
+        packages: [
+          {
+            name: 'direct',
+            from: '1.0.0',
+            to: '2.0.0',
+            sources: [{ url: 'https://example.com/direct' }],
+          },
+          {
+            name: 'nested',
+            from: '1.0.0',
+            to: '2.0.0',
+            sources: [{ url: 'https://example.com/nested' }],
+          },
+          {
+            name: 'standalone',
+            from: '1.0.0',
+            to: '2.0.0',
+            sources: [{ url: 'https://example.com/standalone' }],
+          },
+        ],
+        provenance: { status: 'verified', invalid: 0, missing: 0, reason: null },
+      }
+    );
+
+    expect(body).toContain('<!-- dependabot-intelligent-review -->');
+    expect(body).toContain('<!-- reviewed-head: head -->');
+    expect(body).toContain(`<!-- review-digest: ${'d'.repeat(64)} -->`);
+    expect(body).toContain('**Next action:** No merge recommendation is available.');
+    expect(body).toContain('### Decision queue');
+    expect(body).toContain('**Direct update direct 1.0.0 to 2.0.0** (2 changed updates)');
+    expect(body).toContain('**Standalone update standalone 1.0.0 to 2.0.0** (1 changed update)');
+    expect(body).not.toContain('and 1 other');
+    expect(body).toContain('Copyable research brief: direct update');
+    expect(body).toContain('Immutable head: head');
+    expect(body).toContain('### Advisory provenance');
   });
 
   it('escapes fence delimiters inside a remediation prompt', () => {

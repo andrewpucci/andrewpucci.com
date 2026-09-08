@@ -93,6 +93,7 @@ describe('Dependabot review runner', () => {
       {
         fetchLike: mocks.fetch,
         githubHeaders,
+        collectCoverage: true,
         repositoryContext: expect.objectContaining({
           paths: expect.arrayContaining([
             'package.json',
@@ -115,7 +116,14 @@ describe('Dependabot review runner', () => {
     expect(mocks.analyze).toHaveBeenCalledWith({ packages: [] }, 'mistral-key', mocks.fetch, {
       timeoutMs: 1_000,
     });
-    expect(mocks.renderComment).toHaveBeenCalledWith(analysis, 'head');
+    expect(mocks.renderComment).toHaveBeenCalledWith(
+      analysis,
+      expect.objectContaining({
+        headSha: 'head',
+        repository: 'example/site',
+        reviewDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
+      })
+    );
     expect(mocks.upsertComment).toHaveBeenCalledWith({
       api: 'https://api.github.com/repos/example/site/issues/42/comments',
       body: 'review body',
@@ -132,7 +140,14 @@ describe('Dependabot review runner', () => {
 
     await run();
 
-    expect(mocks.renderComment).toHaveBeenCalledWith({ verdict: 'analysis_unavailable' }, 'head');
+    expect(mocks.renderComment).toHaveBeenCalledWith(
+      { verdict: 'analysis_unavailable' },
+      expect.objectContaining({
+        headSha: 'head',
+        repository: 'example/site',
+        reviewDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
+      })
+    );
     expect(mocks.upsertComment).toHaveBeenCalledTimes(1);
     expect(mocks.deleteReviewComment).not.toHaveBeenCalled();
   });

@@ -5,6 +5,7 @@ import { fetchAllPages } from './github.mjs';
 import { collectPullRequestProvenance, collectReviewInput } from './inputs.mjs';
 import { evaluatePolicy } from './policy.mjs';
 import { renderComment } from './reporting.mjs';
+import { createReviewMetadata } from './review-metadata.mjs';
 import { parseReviewInput } from './schema.mjs';
 
 const unavailableProvenance = {
@@ -72,16 +73,22 @@ export async function loadReviewInput(
 export async function buildReviewCommentFromInput(
   input,
   mistralApiKey,
-  { fetchLike = fetch } = {}
+  { fetchLike = fetch, repository } = {}
 ) {
+  const policy = evaluatePolicy(input);
   const analysis = await analyzeBatches(
-    { ...input, policy: evaluatePolicy(input) },
+    { ...input, policy },
     {
       analyzeBatch: (batch, { timeoutMs }) =>
         analyze(batch, mistralApiKey, fetchLike, { timeoutMs }),
     }
   );
-  return renderComment(analysis, input.pullRequest.headSha);
+  return renderComment(analysis, {
+    ...createReviewMetadata(input, policy, { repository }),
+    pullRequest: input.pullRequest,
+    packages: input.packages,
+    provenance: input.provenance,
+  });
 }
 
 export async function buildReviewComment(
@@ -89,5 +96,7 @@ export async function buildReviewComment(
   options = {}
 ) {
   const input = await loadReviewInput({ repository, number, githubToken }, options);
-  return input ? buildReviewCommentFromInput(input, mistralApiKey, options) : null;
+  return input
+    ? buildReviewCommentFromInput(input, mistralApiKey, { ...options, repository })
+    : null;
 }

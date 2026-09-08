@@ -147,25 +147,77 @@ function stricter(left, right) {
   return verdictPriority.get(left) >= verdictPriority.get(right) ? left : right;
 }
 
-function reviewSummary(packages, unavailableIds) {
-  const total = packages.length;
-  const manualReviewPackages = packages.filter((dependency) =>
-    unavailableIds.has(identity(dependency))
+function formatUpdate({ name, from, to }) {
+  return `${name} ${from} to ${to}`;
+}
+
+function queueAction(group, members, coverageIssues) {
+  if (!coverageIssues.length)
+    return 'Rerun the advisory review after correcting the transient analysis failure for this immutable decision unit.';
+  if (group.kind === 'direct')
+    return `Inspect the cited direct-update evidence for ${formatUpdate(group.anchor)} and verify it accounts for all ${members.length} changed update${members.length === 1 ? '' : 's'}.`;
+  return `Obtain immutable manifest, lockfile, and official package evidence for ${formatUpdate(members[0])}.`;
+}
+
+function decisionQueue(input, unavailableIds) {
+  const coverageById = new Map(
+    (input.coverage?.items ?? []).map((item) => [identity(item.update), item])
   );
-  const unavailable = manualReviewPackages.length;
+  const grouped = new Map();
+  for (const dependency of input.packages) {
+    const coverage = coverageById.get(identity(dependency));
+    const group = coverage?.group ?? { kind: 'standalone', anchor: null };
+    const key =
+      group.kind === 'direct'
+        ? `direct:${identity(group.anchor)}`
+        : `standalone:${identity(dependency)}`;
+    const unit = grouped.get(key) ?? {
+      group,
+      members: [],
+      coverageIssues: [],
+      analysisUnavailable: false,
+    };
+    unit.members.push(dependency);
+    if (coverage && coverage.status !== 'complete') unit.coverageIssues.push(coverage);
+    if (unavailableIds.has(identity(dependency))) unit.analysisUnavailable = true;
+    grouped.set(key, unit);
+  }
+  return [...grouped.values()]
+    .filter((unit) => unit.coverageIssues.length || unit.analysisUnavailable)
+    .map((unit) => ({
+      group: unit.group,
+      members: unit.members.map(({ name, from, to }) => ({ name, from, to })),
+      count: unit.members.length,
+      reason: unit.coverageIssues[0]?.reason ?? 'analysis_unavailable',
+      action: queueAction(unit.group, unit.members, unit.coverageIssues),
+      lifecycle: unit.coverageIssues.map(({ update, lifecycle }) => ({
+        update: { name: update.name, from: update.from, to: update.to },
+        ...lifecycle,
+      })),
+      analysisUnavailable: unit.analysisUnavailable,
+    }));
+}
+
+function reviewSummary(input, unavailableIds, queue) {
+  const total = input.packages.length;
+  const unavailable = input.packages.filter((dependency) =>
+    unavailableIds.has(identity(dependency))
+  ).length;
   const analyzed = total - unavailable;
-  const updateLabel = `dependency update${total === 1 ? '' : 's'}`;
-  const namedPackages = manualReviewPackages
-    .slice(0, 3)
-    .map((dependency) => `${dependency.name} ${dependency.from} to ${dependency.to}`);
-  const remainingPackages = unavailable - namedPackages.length;
-  const remaining = remainingPackages
-    ? `, and ${remainingPackages} ${remainingPackages === 1 ? 'other' : 'others'}`
-    : '';
-  const manualReview = unavailable
-    ? `; manual review required for ${namedPackages.join(', ')}${remaining}`
-    : '';
-  return `Reviewed ${total} ${updateLabel}: ${analyzed} analyzed${manualReview}.`;
+  const units = decisionUnits(input).length;
+  const queued = queue.length;
+  return `Reviewed ${total} dependency update${total === 1 ? '' : 's'} across ${units} decision unit${units === 1 ? '' : 's'}: ${analyzed} validated assessment${analyzed === 1 ? '' : 's'}${queued ? `; ${queued} unit${queued === 1 ? '' : 's'} await decision evidence` : ''}.`;
+}
+
+function coverageSummary(input) {
+  if (!input.coverage) return undefined;
+  const summary = { complete: 0, pending: 0, unresolved: 0 };
+  for (const item of input.coverage.items) {
+    if (item.status === 'complete') summary.complete += 1;
+    if (item.status === 'pending') summary.pending += 1;
+    if (item.status === 'unresolved') summary.unresolved += 1;
+  }
+  return summary;
 }
 
 function policyBlockers(input, unavailableIds) {
@@ -292,7 +344,9 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     : input.coverage && (incompleteCoverage || unavailable.length)
       ? stricter(modelVerdict, 'decision_incomplete')
       : modelVerdict;
-  const summary = reviewSummary(input.packages, unavailableIds);
+  const queue = decisionQueue(input, unavailableIds);
+  const summary = reviewSummary(input, unavailableIds, queue);
+  const coverage = coverageSummary(input);
   if (!analyses.length)
     return {
       verdict:
@@ -300,6 +354,8 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
           ? 'decision_incomplete'
           : 'analysis_unavailable',
       summary,
+      decisionQueue: queue,
+      ...(coverage ? { coverage } : {}),
       packageAssessments: [],
       blockers: [],
       remediationPrompt: null,
@@ -307,6 +363,8 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   return {
     verdict,
     summary,
+    decisionQueue: queue,
+    ...(coverage ? { coverage } : {}),
     packageAssessments,
     blockers,
     remediationPrompt: null,

@@ -1,3 +1,5 @@
+import { renderResearchHandoff } from './handoff.mjs';
+
 const marker = '<!-- dependabot-intelligent-review -->';
 const maximumCommentChars = 50_000;
 const omittedFindings =
@@ -48,6 +50,88 @@ function remediationLines(analysis) {
       '```',
     ];
   return [];
+}
+
+function updateLabel({ name, from, to }) {
+  return `${name} ${from} to ${to}`;
+}
+
+function nextAction(analysis) {
+  if (analysis.verdict === 'decision_incomplete')
+    return 'No merge recommendation is available. Complete every item in the Decision queue.';
+  if (analysis.verdict === 'do_not_merge')
+    return 'Do not merge until the documented blockers are remediated and validated.';
+  if (analysis.verdict === 'merge_with_followups')
+    return 'Merge is advisory only after recording the explicit non-blocking follow-ups.';
+  if (analysis.verdict === 'analysis_unavailable')
+    return 'No merge recommendation is available. Rerun the advisory review after correcting the failure.';
+  return 'The evidence supports an advisory merge recommendation.';
+}
+
+function reasonLabel(reason) {
+  if (reason === 'coverage_inputs_unavailable')
+    return 'Immutable coverage inputs were unavailable.';
+  if (reason === 'analysis_unavailable') return 'Bounded model analysis was unavailable.';
+  return reason;
+}
+
+function decisionQueueLines(analysis) {
+  if (!analysis.decisionQueue?.length) return [];
+  const lines = ['### Decision queue'];
+  for (const item of analysis.decisionQueue) {
+    const relationship =
+      item.group.kind === 'direct'
+        ? `Direct update ${updateLabel(item.group.anchor)}`
+        : `Standalone update ${updateLabel(item.members[0])}`;
+    lines.push(
+      `- **${escape(relationship)}** (${item.count} changed update${item.count === 1 ? '' : 's'}): ${escape(abbreviate(item.action, 600))}`,
+      `  - Evidence gap: ${escape(abbreviate(reasonLabel(item.reason), 280))}`
+    );
+  }
+  return lines;
+}
+
+function coverageLines(analysis) {
+  if (!analysis.coverage) return [];
+  const { complete, pending, unresolved } = analysis.coverage;
+  const total = complete + pending + unresolved;
+  return [
+    '### Decision coverage',
+    `- ${total} changed update${total === 1 ? '' : 's'}: ${complete} complete, ${pending} pending, ${unresolved} unresolved. Grouping supplies scope evidence; it is not a claim that every member was individually researched.`,
+  ];
+}
+
+function provenanceLines(provenance) {
+  if (!provenance) return [];
+  const reason = provenance.reason ? ` ${provenance.reason}` : '';
+  return [
+    '### Advisory provenance',
+    `- **${escape(provenance.status)}:** ${provenance.invalid} invalid, ${provenance.missing} missing.${escape(abbreviate(reason, 280))}`,
+  ];
+}
+
+function followupLines(analysis) {
+  if (!analysis.followups?.length) return [];
+  return [
+    '### Non-blocking follow-ups',
+    ...analysis.followups.map((followup) => `- ${escape(abbreviate(followup.description, 280))}`),
+  ];
+}
+
+function handoffSections(analysis, metadata) {
+  if (!analysis.decisionQueue?.length || !metadata.repository || !metadata.reviewDigest) return [];
+  return analysis.decisionQueue
+    .map((item) =>
+      renderResearchHandoff({
+        repository: metadata.repository,
+        pullRequest: metadata.pullRequest,
+        reviewDigest: metadata.reviewDigest,
+        item,
+        packages: metadata.packages,
+        provenance: metadata.provenance,
+      })
+    )
+    .filter(Boolean);
 }
 
 function featureSections(assessments) {
@@ -102,21 +186,36 @@ function appendCriticalSection(lines, section, footer) {
   if (kept.length) lines.push('', ...kept);
 }
 
-export function renderComment(analysis, headSha) {
+function appendRequiredSection(lines, section, footer) {
+  if (!section.length) return;
+  if (!appendSection(lines, section, footer))
+    throw new RangeError('The complete Dependabot decision queue exceeds GitHub’s comment limit.');
+}
+
+export function renderComment(analysis, value) {
+  const metadata = typeof value === 'string' ? { headSha: value } : value;
+  const { headSha, reviewDigest } = metadata;
   const footer = `Reviewed head: \`${headSha}\`. This workflow did not execute code or codemods.`;
   const verdict = analysis.verdict.replaceAll('_', ' ');
   const lines = [
     marker,
     `<!-- reviewed-head: ${headSha} -->`,
+    ...(reviewDigest ? [`<!-- review-digest: ${reviewDigest} -->`] : []),
     '## Dependabot intelligent review',
     '',
     `**Advisory verdict:** ${verdict}`,
+    `**Next action:** ${nextAction(analysis)}`,
     '',
     escape(abbreviate(analysis.summary)),
   ];
+  appendRequiredSection(lines, decisionQueueLines(analysis), footer);
   appendCriticalSection(lines, blockerLines(analysis), footer);
   const deferredSections = [
+    coverageLines(analysis),
+    provenanceLines(metadata.provenance),
+    followupLines(analysis),
     remediationLines(analysis),
+    ...handoffSections(analysis, metadata),
     ...featureSections(analysis.packageAssessments),
   ];
   let omitted = false;
