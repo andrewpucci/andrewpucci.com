@@ -115,65 +115,65 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
    remains validated against the unit's vetted sources, trusted context, and
    constituent package identities.
 3. Add the advisory verdict `decision_incomplete`. It means one or more
-    coverage items could not be assessed; it is not a merge recommendation or a
-    required GitHub status.
+   coverage items could not be assessed; it is not a merge recommendation or a
+   required GitHub status.
 4. Verdict precedence is `do_not_merge` > `decision_incomplete` >
-    `merge_with_followups` > `merge`. A `merge` verdict is permitted only when
-    every coverage item has a validated assessment and deterministic policy does
-    not impose a stricter outcome.
+   `merge_with_followups` > `merge`. A `merge` verdict is permitted only when
+   every coverage item has a validated assessment and deterministic policy does
+   not impose a stricter outcome.
 5. An analysis failure, packet-size limit, request-budget exhaustion, or
-    malformed response makes only its coverage item unresolved and yields
-    `decision_incomplete` unless an independent `do_not_merge` finding exists.
-    It must not discard successful assessments for other items.
+   malformed response makes only its coverage item unresolved and yields
+   `decision_incomplete` unless an independent `do_not_merge` finding exists.
+   It must not discard successful assessments for other items.
 6. Keep the existing deterministic policy rules, including their evidence
-    limits. This capability changes only how completeness constrains the
-    advisory verdict; it does not duplicate CI failure or vulnerability-gate
-    reporting in the decision comment. A `merge_with_followups` conclusion is
-    valid only when coverage is complete and every follow-up is explicitly marked
-    non-blocking; otherwise use `decision_incomplete`.
+   limits. This capability changes only how completeness constrains the
+   advisory verdict; it does not duplicate CI failure or vulnerability-gate
+   reporting in the decision comment. A `merge_with_followups` conclusion is
+   valid only when coverage is complete and every follow-up is explicitly marked
+   non-blocking; otherwise use `decision_incomplete`.
 7. Canonicalize the validated decision packet and render a bounded
-    `reviewDigest` with the immutable head SHA. A rerun for a new head SHA always
-    creates a new digest and invalidates prior decision coverage. At most one
-    expensive analysis runs for a PR/head pair unless a maintainer explicitly
-    requests a refresh.
+   `reviewDigest` with the immutable head SHA. A rerun for a new head SHA always
+   creates a new digest and invalidates prior decision coverage. At most one
+   expensive analysis runs for a PR/head pair unless a maintainer explicitly
+   requests a refresh.
 8. Preserve successful assessment results for unaffected coverage units and
-    emit bounded diagnostics—head SHA, review digest, model/prompt version,
-    coverage counts, and failure category—without raw prompts, model output,
-    source excerpts, tokens, credentials, or personal data.
+   emit bounded diagnostics—head SHA, review digest, model/prompt version,
+   coverage counts, and failure category—without raw prompts, model output,
+   source excerpts, tokens, credentials, or personal data.
 
 ### Comment wayfinding
 
- 1. Begin with the advisory verdict and a plain-language next action. For
+1.  Begin with the advisory verdict and a plain-language next action. For
     `decision_incomplete`, say that no merge recommendation is available and
     show a short **Decision queue**.
- 2. Each queue entry must identify the decision unit, its changed-update count,
+2.  Each queue entry must identify the decision unit, its changed-update count,
     the relationship when one is known, and the concrete next action: inspect
     the cited direct-update evidence, obtain evidence for the standalone update,
     or rerun the review after correcting a transient failure. Never render a
     generic "manual review required" list or an unexplained "and N others."
- 3. For a complete review, show concise coverage context—how many updates and
+3.  For a complete review, show concise coverage context—how many updates and
     decision units were assessed—without claiming group members were
     individually researched. Keep member detail collapsed or omitted when it
     does not change the decision.
- 4. Render bounded provenance evidence as an advisory signal—`verified`,
+4.  Render bounded provenance evidence as an advisory signal—`verified`,
     `attention_required`, or `unavailable` plus validated counts/reason—without
     treating it as a required check or giving it to the model. A human can use it
     in the decision or external-research handoff without exposing raw npm output.
- 5. Preserve the existing managed-comment marker, reviewed head SHA, escaping,
+5.  Preserve the existing managed-comment marker, reviewed head SHA, escaping,
     comment-size prioritization, and comment upsert behavior.
 
 ### External-research handoff
 
- 1. For each unresolved coverage item, render an optional, copyable research
+1.  For each unresolved coverage item, render an optional, copyable research
     brief in collapsed Markdown. It includes the PR URL, immutable head SHA,
     `reviewDigest`, direct anchor/member count or standalone identity, exact
     unresolved question, lifecycle/provenance facts, and vetted source URLs.
- 2. The renderer, not model prose, owns the research prompt template. It must
+2.  The renderer, not model prose, owns the research prompt template. It must
     require read-only investigation, official/package/repository sources,
     citations, explicit acknowledgement when the specified head cannot be
     verified, and a conclusion of `merge` or `hold for review` with remaining
     uncertainty.
- 3. The workflow never receives, parses, stores, or acts upon a ChatGPT, Claude,
+3.  The workflow never receives, parses, stores, or acts upon a ChatGPT, Claude,
     or other external-research response. The maintainer's native GitHub review or
     comment remains the only recorded resolution; a stale head requires a new
     brief.
