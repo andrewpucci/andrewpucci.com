@@ -102,6 +102,88 @@ Tasks are tracked in GitHub Issues, as required by the repository issue-tracker 
 - [x] The GitHub comment and dry-run output are unchanged until the separate `decision-reporting` module is approved.
 - [x] Human review approved this incremental implementation plan.
 
+### Phase 5: Complete decision coverage
+
+The approved GitHub task records below implement [the decision-coverage specification](../SPEC-dependabot-decision-coverage.md) without changing CI gates or granting an
+external research service any repository write capability.
+
+```text
+coverage input → decision-unit contract → comment + handoff → freshness + diagnostics → replay evaluation
+```
+
+- [ ] [**Task 1: Collect path-aware decision coverage**](https://github.com/andrewpucci/andrewpucci.com/issues/294) — Read immutable
+      base/head manifests and lockfiles, classify direct runtime roles, map internal
+      lockfile paths conservatively, and collect bounded lifecycle-script deltas.
+  - Acceptance: Every changed npm update is either uniquely grouped under a
+    direct anchor or remains a standalone unresolved unit; duplicate package
+    instances and missing metadata cannot be silently grouped.
+  - Verify: Focused coverage/input tests cover roles, duplicate paths,
+    ambiguous/orphan relationships, lifecycle additions/changes/unavailable
+    metadata, and no checkout/installation of PR code.
+  - Files: `inputs.mjs`, `coverage.mjs`, `inputs.test.ts`, `coverage.test.ts`.
+  - Scope: Medium; no dependencies.
+
+- [ ] [**Task 2: Constrain the decision-unit verdict**](https://github.com/andrewpucci/andrewpucci.com/issues/298) — Add validated coverage
+      units and the `decision_incomplete` verdict to the schema and bounded model
+      batching/aggregation path.
+  - Acceptance: `merge` requires a validated assessment for every coverage
+    unit; `do_not_merge` wins over incomplete coverage; an explicit non-blocking
+    follow-up is the only path to `merge_with_followups`.
+  - Verify: Focused schema/batch tests prove verdict precedence, partial success,
+    budget exhaustion, and that model output cannot omit or invent unit members.
+  - Dependencies: Task 1.
+  - Files: `schema.mjs`, `batches.mjs`, `schema.test.ts`, `batches.test.ts`.
+  - Scope: Medium.
+
+- [ ] [**Task 3: Render decisions and one-way research handoffs**](https://github.com/andrewpucci/andrewpucci.com/issues/296) — Present
+      decision queues, bounded provenance evidence, and deterministic copyable
+      research briefs in the managed comment.
+  - Acceptance: An incomplete review names its precise action and no opaque
+    overflow; every handoff is head/digest-pinned, cites only vetted sources,
+    and cannot be parsed back into workflow input.
+  - Verify: Renderer/handoff tests cover every verdict, escaping, stale-head
+    prompt data, source bounds, provenance states, comment limits, and unchanged
+    marker/upsert semantics.
+  - Dependencies: Task 2.
+  - Files: `reporting.mjs`, `handoff.mjs`, `reporting.test.ts`, `handoff.test.ts`.
+  - Scope: Medium.
+
+- [ ] [**Task 4: Bound reruns and emit safe diagnostics**](https://github.com/andrewpucci/andrewpucci.com/issues/297) — Key the expensive
+      review to the PR/head/digest and expose only bounded run diagnostics.
+  - Acceptance: A duplicate trigger for the same head does not repeat expensive
+    analysis without explicit refresh; a new head invalidates the prior result;
+    diagnostics contain no prompts, source excerpts, tokens, or credentials.
+  - Verify: Focused orchestration tests prove idempotence/freshness and error
+    handling while the existing comment lifecycle remains intact.
+  - Dependencies: Tasks 2–3.
+  - Files: `review.mjs`, `run.mjs`, `review.test.ts`, `run.test.ts`.
+  - Scope: Medium.
+
+- [ ] [**Task 5: Replay decision evidence**](https://github.com/andrewpucci/andrewpucci.com/issues/295) — Add representative fixtures and
+      run the revised dry run on PR 271 as the human-facing regression check.
+  - Acceptance: Fixtures cover runtime roles, duplicate lockfile paths,
+    lifecycle scripts, stale heads, every verdict, and the PR 271 decision queue.
+  - Verify: Focused tests, `npm run lint`, `npm run check`, `npm test`,
+    `npm run build`, and `npm run dependabot:review:dry-run -- 271` pass.
+  - Dependencies: Tasks 1–4.
+  - Files: `dry-run.test.ts`, `workflow.test.js`, focused review fixtures, and
+    this plan/spec status.
+  - Scope: Medium.
+
+### Checkpoint: Decision coverage foundation
+
+- [x] GitHub Issue tasks created and linked in this plan after approval.
+- [ ] Tasks 1–2 pass focused tests and retain the trusted workflow boundary.
+- [ ] Human review before changing the managed comment.
+
+### Checkpoint: Decision coverage complete
+
+- [ ] Tasks 3–5 pass focused tests, lint, checks, the full suite, and build.
+- [ ] PR 271 dry-run output tells the maintainer the exact decision/action for
+      every unresolved unit.
+- [ ] Review confirms no CI repetition, external-research ingestion, PR-code
+      execution, new write permission, or secret exposure.
+
 ## Risks and Mitigations
 
 | Risk                                                                    | Impact | Mitigation                                                                                               |
@@ -115,6 +197,11 @@ Tasks are tracked in GitHub Issues, as required by the repository issue-tracker 
 | Registry or npm verification is slow or unavailable.                    | Medium | Use a 30-second hard timeout, isolated cache, and advisory `unavailable` fallback.                       |
 | A future lockfile includes a private or non-registry source.            | High   | Reject it before the npm call; never transmit it to the public registry.                                 |
 | Mutable runner tooling changes the verification result.                 | Medium | Explicitly provision and pin `npm@12.0.2` in the workflow.                                               |
+| Lockfile paths are ambiguous or duplicated.                             | High   | Keep the update standalone and unresolved; never group from package-name similarity.                     |
+| Lifecycle metadata cannot be safely matched.                            | High   | Mark only the affected decision unit incomplete and name the evidence gap.                               |
+| An external research report is mistaken for trusted workflow input.     | High   | Render one-way briefs only; the workflow never parses or acts on external model prose.                   |
+| A rebased PR makes earlier evidence stale.                              | High   | Bind coverage and handoffs to immutable head SHA plus digest; rerun on a new head.                       |
+| Model/tool retries grow cost or duration.                               | Medium | Per-head coalescing, bounded source/model budgets, and scoped incomplete fallbacks.                      |
 
 ## Open Questions
 
