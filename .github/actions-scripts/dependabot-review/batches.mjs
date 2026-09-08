@@ -194,6 +194,15 @@ function hasEveryAssessment(batch, analysis) {
   );
 }
 
+function hasExplicitNonBlockingFollowups(analysis) {
+  return (
+    analysis.verdict !== 'merge_with_followups' ||
+    (Array.isArray(analysis.followups) &&
+      analysis.followups.length > 0 &&
+      analysis.followups.every((followup) => followup?.blocking === false))
+  );
+}
+
 async function analyzeBatch(batch, analyze, state) {
   const timeoutMs = Math.min(state.requestTimeoutMs, state.deadline - Date.now());
   if (state.requests >= state.maxRequests || timeoutMs <= 0)
@@ -201,7 +210,7 @@ async function analyzeBatch(batch, analyze, state) {
   state.requests += 1;
   const result = await analyze(batch, { timeoutMs });
   if (result.verdict !== 'analysis_unavailable')
-    return hasEveryAssessment(batch, result)
+    return hasEveryAssessment(batch, result) && hasExplicitNonBlockingFollowups(result)
       ? { analyses: [result], unavailable: [] }
       : {
           analyses: result.verdict === 'do_not_merge' ? [result] : [],

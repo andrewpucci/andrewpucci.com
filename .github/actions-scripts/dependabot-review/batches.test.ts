@@ -55,6 +55,7 @@ function completedAnalysis(pkg: ReturnType<typeof dependency>) {
     summary: `${pkg.name} is ready to merge.`,
     packageAssessments: [{ name: pkg.name, from: pkg.from, to: pkg.to, newFunctionality: [] }],
     blockers: [],
+    followups: [],
     remediationPrompt: null,
   };
 }
@@ -75,6 +76,23 @@ describe('Dependabot review batches', () => {
     );
 
     expect(result.verdict).toBe('decision_incomplete');
+  });
+
+  it('rejects an unqualified merge_with_followups response as incomplete coverage', async () => {
+    const coverage = { items: input.packages.map((pkg) => coverageItem(pkg)) };
+
+    const result = await analyzeBatches(
+      { ...input, coverage },
+      {
+        analyzeBatch: async (batch: { packages: ReturnType<typeof dependency>[] }) => ({
+          ...completedAnalysis(batch.packages[0]),
+          verdict: 'merge_with_followups',
+        }),
+        maxPackagesPerBatch: 1,
+      }
+    );
+
+    expect(result).toMatchObject({ verdict: 'decision_incomplete', packageAssessments: [] });
   });
 
   it('keeps a direct coverage group intact when a package limit would split its members', async () => {

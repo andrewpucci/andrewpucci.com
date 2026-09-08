@@ -458,11 +458,27 @@ export function parseAnalysis(value, input) {
   });
   if (verdict === 'do_not_merge' && !blockers.length)
     throw new TypeError('do_not_merge requires a verified input finding');
+  const followups = array(analysis.followups, 'followups').map((value) => {
+    const followup = object(value, 'followup');
+    if (Object.keys(followup).some((field) => !['description', 'blocking'].includes(field)))
+      throw new TypeError('followup contains unsupported fields');
+    const description = string(followup.description, 'followup description');
+    if (description.length > 280 || followup.blocking !== false)
+      throw new TypeError('followup must be bounded and explicitly non-blocking');
+    return { description, blocking: false };
+  });
+  if (
+    followups.length > 8 ||
+    (verdict === 'merge_with_followups' && !followups.length) ||
+    (verdict !== 'merge_with_followups' && followups.length)
+  )
+    throw new TypeError('followups do not match the advisory verdict');
   return {
     verdict,
     summary: string(analysis.summary, 'summary'),
     packageAssessments: assessments,
     blockers,
+    followups,
     remediationPrompt:
       analysis.remediationPrompt === null
         ? null

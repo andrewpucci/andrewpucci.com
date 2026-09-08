@@ -38,6 +38,7 @@ describe('analyze', () => {
                     { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
                   ],
                   blockers: [],
+                  followups: [],
                   remediationPrompt: null,
                 }),
               },
@@ -52,6 +53,7 @@ describe('analyze', () => {
     const request = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(request.messages[0].content).toContain('packageAssessments');
     expect(request.messages[0].content).toContain('remediationPrompt');
+    expect(request.messages[0].content).toContain('explicitly non-blocking');
     expect(request.messages[0].content).toContain('merge_with_followups');
     expect(request.messages[0].content).toContain('name every reviewed package');
     expect(request.messages[0].content).toContain('exactly one package assessment');
@@ -95,6 +97,7 @@ describe('analyze', () => {
       summary: 'No compatibility concerns were identified.',
       packageAssessments: [{ name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] }],
       blockers: [],
+      followups: [],
       remediationPrompt: null,
     };
     const fetchMock = vi.fn().mockResolvedValue(

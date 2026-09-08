@@ -34,6 +34,7 @@ const unavailableProvenance = {
 };
 
 describe('review contracts', () => {
+  const emptyFollowups = { followups: [] };
   it('accepts a bounded, provenance-tagged input packet', () => {
     expect(parseReviewInput(reviewInput)).toEqual(reviewInput);
   });
@@ -190,6 +191,9 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'merge_with_followups',
+          followups: [
+            { description: 'Confirm the optional configuration later.', blocking: false },
+          ],
           summary: 'Consider the new feature.',
           packageAssessments: [
             {
@@ -212,6 +216,29 @@ describe('review contracts', () => {
         reviewInput
       )
     ).toThrow(/unknown evidence URL/i);
+  });
+
+  it('requires explicit, non-blocking followups for a followup verdict', () => {
+    const analysis = {
+      verdict: 'merge_with_followups',
+      summary: 'Confirm an optional setting after merge.',
+      packageAssessments: [{ name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] }],
+      blockers: [],
+      remediationPrompt: null,
+    };
+
+    expect(() => parseAnalysis(analysis, reviewInput)).toThrow(/followups/i);
+    expect(
+      parseAnalysis(
+        {
+          ...analysis,
+          followups: [
+            { description: 'Confirm the optional setting after merge.', blocking: false },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({ verdict: 'merge_with_followups', followups: [{ blocking: false }] });
   });
 
   it('rejects a model verdict that exceeds the policy ceiling', () => {
@@ -245,6 +272,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'merge',
+          ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [
             { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
@@ -281,6 +309,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'merge',
+          ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [
             {
@@ -319,6 +348,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'merge',
+          ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [assessment, assessment],
           blockers: [],
@@ -334,6 +364,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'do_not_merge',
+          ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
             { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
@@ -379,6 +410,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'do_not_merge',
+          ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
             { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
@@ -424,6 +456,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'do_not_merge',
+          ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
             { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
