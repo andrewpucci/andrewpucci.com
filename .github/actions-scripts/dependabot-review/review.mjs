@@ -70,12 +70,25 @@ export async function loadReviewInput(
   return parseReviewInput({ ...input, provenance });
 }
 
-export async function buildReviewCommentFromInput(
+export async function buildReviewCommentFromInput(input, mistralApiKey, options = {}) {
+  const { body } = await buildReviewFromInput(input, mistralApiKey, options);
+  return body;
+}
+
+export function prepareReview(input, { repository } = {}) {
+  const policy = evaluatePolicy(input);
+  return {
+    policy,
+    metadata: createReviewMetadata(input, policy, { repository }),
+  };
+}
+
+export async function buildReviewFromInput(
   input,
   mistralApiKey,
-  { fetchLike = fetch, repository } = {}
+  { fetchLike = fetch, repository, prepared = prepareReview(input, { repository }) } = {}
 ) {
-  const policy = evaluatePolicy(input);
+  const { policy, metadata } = prepared;
   const analysis = await analyzeBatches(
     { ...input, policy },
     {
@@ -83,12 +96,13 @@ export async function buildReviewCommentFromInput(
         analyze(batch, mistralApiKey, fetchLike, { timeoutMs }),
     }
   );
-  return renderComment(analysis, {
-    ...createReviewMetadata(input, policy, { repository }),
+  const body = renderComment(analysis, {
+    ...metadata,
     pullRequest: input.pullRequest,
     packages: input.packages,
     provenance: input.provenance,
   });
+  return { analysis, body, metadata };
 }
 
 export async function buildReviewComment(

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { deleteReviewComment, fetchAllPages, upsertComment } from './github.mjs';
+import { deleteReviewComment, fetchAllPages, findReviewComment, upsertComment } from './github.mjs';
 
 describe('fetchAllPages', () => {
   it('retrieves every GitHub API page in the Link header', async () => {
@@ -102,6 +102,30 @@ describe('upsertComment', () => {
       'https://api.github.com/repos/example/site/issues/comments/1',
       expect.objectContaining({ method: 'PATCH' })
     );
+  });
+});
+
+describe('findReviewComment', () => {
+  it('returns only the managed comment created by the configured app', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      Response.json([
+        { id: 1, user: { login: 'someone-else' }, body: '<!-- dependabot-intelligent-review -->' },
+        {
+          id: 2,
+          user: { login: 'dependabot-review-commenter[bot]' },
+          body: '<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: head -->',
+        },
+      ])
+    );
+
+    await expect(
+      findReviewComment({
+        api: 'https://api.github.com/repos/example/site/issues/1/comments',
+        headers: { Authorization: 'Bearer app-token' },
+        author: 'dependabot-review-commenter[bot]',
+        fetchLike: fetchMock,
+      })
+    ).resolves.toMatchObject({ id: 2 });
   });
 });
 

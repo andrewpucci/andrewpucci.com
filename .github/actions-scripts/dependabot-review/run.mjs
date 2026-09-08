@@ -1,7 +1,9 @@
 import { readFile } from 'node:fs/promises';
+import { emitReviewDiagnostic } from './diagnostics.mjs';
 import { pullRequestNumber } from './event.mjs';
-import { deleteReviewComment, upsertComment } from './github.mjs';
-import { buildReviewComment } from './review.mjs';
+import { shouldSkipAnalysis } from './freshness.mjs';
+import { deleteReviewComment, findReviewComment, upsertComment } from './github.mjs';
+import { buildReviewFromInput, loadReviewInput, prepareReview } from './review.mjs';
 
 const eventPath = process.env.GITHUB_EVENT_PATH;
 if (!eventPath) throw new Error('GITHUB_EVENT_PATH is required.');
@@ -24,19 +26,39 @@ const number = await pullRequestNumber(event, {
   githubHeaders,
 });
 const commentApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${number}/comments`;
-const body = await buildReviewComment({
+const input = await loadReviewInput({
   repository: process.env.GITHUB_REPOSITORY,
   number,
   githubToken: process.env.GITHUB_TOKEN,
-  mistralApiKey: process.env.MISTRAL_API_KEY,
 });
-if (!body) {
+if (!input) {
   await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
 } else {
-  await upsertComment({
+  const prepared = prepareReview(input, { repository: process.env.GITHUB_REPOSITORY });
+  const existing = await findReviewComment({
     api: commentApi,
-    body,
     headers: commentHeaders,
     author: commentAuthor,
   });
+  const refresh = process.env.DEPENDABOT_REVIEW_REFRESH === 'true';
+  if (shouldSkipAnalysis(existing, prepared.metadata, { refresh })) {
+    emitReviewDiagnostic(prepared.metadata, 'duplicate_review');
+  } else {
+    const { analysis, body } = await buildReviewFromInput(input, process.env.MISTRAL_API_KEY, {
+      repository: process.env.GITHUB_REPOSITORY,
+      prepared,
+    });
+    emitReviewDiagnostic(
+      prepared.metadata,
+      ['analysis_unavailable', 'decision_incomplete'].includes(analysis.verdict)
+        ? analysis.verdict
+        : 'none'
+    );
+    await upsertComment({
+      api: commentApi,
+      body,
+      headers: commentHeaders,
+      author: commentAuthor,
+    });
+  }
 }

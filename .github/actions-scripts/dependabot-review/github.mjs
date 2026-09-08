@@ -40,6 +40,19 @@ const managedComment = (comments, author) =>
 const commentApi = (api, comment) =>
   api.replace(/\/issues\/\d+\/comments$/, `/issues/comments/${comment.id}`);
 
+export async function findReviewComment({
+  api,
+  headers,
+  author = 'github-actions[bot]',
+  fetchLike = fetch,
+}) {
+  const comments = await ensureSuccess(
+    await fetchLike(api, { headers }),
+    'list Dependabot review comments'
+  ).then((response) => response.json());
+  return managedComment(comments, author) ?? null;
+}
+
 export async function upsertComment({
   api,
   body,

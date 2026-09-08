@@ -1,42 +1,43 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 
 const mocks = vi.hoisted(() => ({
-  analyze: vi.fn(),
-  analyzeBatches: vi.fn(),
-  collectReviewInput: vi.fn(),
+  buildReviewFromInput: vi.fn(),
   deleteReviewComment: vi.fn(),
-  evaluatePolicy: vi.fn(),
-  fetch: vi.fn(),
-  fetchAllPages: vi.fn(),
+  emitReviewDiagnostic: vi.fn(),
+  findReviewComment: vi.fn(),
+  loadReviewInput: vi.fn(),
+  prepareReview: vi.fn(),
   pullRequestNumber: vi.fn(),
   readFile: vi.fn(),
-  readdir: vi.fn(),
-  renderComment: vi.fn(),
   upsertComment: vi.fn(),
 }));
 
 vi.mock('node:fs/promises', () => ({
-  default: { readFile: mocks.readFile, readdir: mocks.readdir },
+  default: { readFile: mocks.readFile },
   readFile: mocks.readFile,
-  readdir: mocks.readdir,
 }));
-vi.mock('./analysis.mjs', () => ({ analyze: mocks.analyze }));
-vi.mock('./batches.mjs', () => ({ analyzeBatches: mocks.analyzeBatches }));
+vi.mock('./diagnostics.mjs', () => ({ emitReviewDiagnostic: mocks.emitReviewDiagnostic }));
 vi.mock('./event.mjs', () => ({ pullRequestNumber: mocks.pullRequestNumber }));
 vi.mock('./github.mjs', () => ({
   deleteReviewComment: mocks.deleteReviewComment,
-  fetchAllPages: mocks.fetchAllPages,
+  findReviewComment: mocks.findReviewComment,
   upsertComment: mocks.upsertComment,
 }));
-vi.mock('./inputs.mjs', () => ({ collectReviewInput: mocks.collectReviewInput }));
-vi.mock('./policy.mjs', () => ({ evaluatePolicy: mocks.evaluatePolicy }));
-vi.mock('./reporting.mjs', () => ({ renderComment: mocks.renderComment }));
+vi.mock('./review.mjs', () => ({
+  buildReviewFromInput: mocks.buildReviewFromInput,
+  loadReviewInput: mocks.loadReviewInput,
+  prepareReview: mocks.prepareReview,
+}));
 
 const event = { workflow_run: { id: 1 } };
-const pullRequest = { number: 42, head: { sha: 'head' } };
 const input = { pullRequest: { headSha: 'head' }, packages: [] };
-const policy = { verdictCeiling: 'merge', findings: [] };
-const analysis = { verdict: 'merge' };
+const metadata = {
+  headSha: 'head',
+  reviewDigest: 'd'.repeat(64),
+  modelVersion: 'mistral-medium-latest',
+  promptVersion: 'dependabot-review-v2',
+  coverage: { complete: 0, pending: 0, unresolved: 0 },
+};
 
 async function run() {
   await import('./run.mjs');
@@ -51,79 +52,47 @@ describe('Dependabot review runner', () => {
     vi.stubEnv('GITHUB_COMMENT_TOKEN', 'comment-token');
     vi.stubEnv('GITHUB_COMMENT_AUTHOR', 'reviewer[bot]');
     vi.stubEnv('MISTRAL_API_KEY', 'mistral-key');
-    vi.stubGlobal('fetch', mocks.fetch);
     for (const mock of Object.values(mocks)) mock.mockReset();
     mocks.readFile.mockResolvedValue(JSON.stringify(event));
-    mocks.readdir.mockImplementation(async (path) =>
-      path === '.github/workflows' ? ['dependabot.yml'] : ['lib/example.ts']
-    );
     mocks.pullRequestNumber.mockResolvedValue(42);
-    mocks.fetch.mockResolvedValue({ ok: true, json: async () => pullRequest });
-    mocks.fetchAllPages.mockResolvedValue([{ filename: 'package.json' }]);
-    mocks.collectReviewInput.mockResolvedValue(input);
-    mocks.evaluatePolicy.mockReturnValue(policy);
-    mocks.analyzeBatches.mockResolvedValue(analysis);
-    mocks.renderComment.mockReturnValue('review body');
+    mocks.loadReviewInput.mockResolvedValue(input);
+    mocks.prepareReview.mockReturnValue({
+      policy: { verdictCeiling: 'merge', findings: [] },
+      metadata,
+    });
+    mocks.findReviewComment.mockResolvedValue(null);
+    mocks.buildReviewFromInput.mockResolvedValue({
+      analysis: { verdict: 'merge' },
+      body: 'review body',
+      metadata,
+    });
   });
 
   afterEach(() => {
     vi.unstubAllEnvs();
-    vi.unstubAllGlobals();
   });
 
-  it('passes paginated files, trusted context, policy, analysis, and rendered output through', async () => {
+  it('uses the prepared immutable packet for one bounded analysis and managed upsert', async () => {
     await run();
 
-    const githubHeaders = {
-      Authorization: 'Bearer read-token',
-      Accept: 'application/vnd.github+json',
-    };
-    expect(mocks.fetchAllPages).toHaveBeenCalledWith({
-      api: 'https://api.github.com/repos/example/site/pulls/42/files?per_page=100',
-      headers: githubHeaders,
-      fetchLike: mocks.fetch,
-      action: 'retrieve pull request files',
+    expect(mocks.loadReviewInput).toHaveBeenCalledWith({
+      repository: 'example/site',
+      number: 42,
+      githubToken: 'read-token',
     });
-    expect(mocks.collectReviewInput).toHaveBeenCalledWith(
-      {
-        pull_request: pullRequest,
-        repository: 'example/site',
-        files: [{ filename: 'package.json' }],
+    expect(mocks.prepareReview).toHaveBeenCalledWith(input, { repository: 'example/site' });
+    expect(mocks.findReviewComment).toHaveBeenCalledWith({
+      api: 'https://api.github.com/repos/example/site/issues/42/comments',
+      headers: {
+        Authorization: 'Bearer comment-token',
+        Accept: 'application/vnd.github+json',
       },
-      {
-        fetchLike: mocks.fetch,
-        githubHeaders,
-        collectCoverage: true,
-        repositoryContext: expect.objectContaining({
-          paths: expect.arrayContaining([
-            'package.json',
-            '.github/workflows/dependabot.yml',
-            'src/lib/example.ts',
-          ]),
-          readFile: expect.any(Function),
-        }),
-      }
-    );
-    const repositoryContext = mocks.collectReviewInput.mock.calls[0][1].repositoryContext;
-    await repositoryContext.readFile('package.json');
-    expect(mocks.readFile).toHaveBeenLastCalledWith('package.json', 'utf8');
-    expect(mocks.analyzeBatches).toHaveBeenCalledWith(
-      { ...input, policy },
-      { analyzeBatch: expect.any(Function) }
-    );
-    const analyzeBatch = mocks.analyzeBatches.mock.calls[0][1].analyzeBatch;
-    await analyzeBatch({ packages: [] }, { timeoutMs: 1_000 });
-    expect(mocks.analyze).toHaveBeenCalledWith({ packages: [] }, 'mistral-key', mocks.fetch, {
-      timeoutMs: 1_000,
+      author: 'reviewer[bot]',
     });
-    expect(mocks.renderComment).toHaveBeenCalledWith(
-      analysis,
-      expect.objectContaining({
-        headSha: 'head',
-        repository: 'example/site',
-        reviewDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
-      })
-    );
+    expect(mocks.buildReviewFromInput).toHaveBeenCalledWith(input, 'mistral-key', {
+      repository: 'example/site',
+      prepared: expect.objectContaining({ metadata }),
+    });
     expect(mocks.upsertComment).toHaveBeenCalledWith({
       api: 'https://api.github.com/repos/example/site/issues/42/comments',
       body: 'review body',
@@ -133,27 +102,57 @@ describe('Dependabot review runner', () => {
       },
       author: 'reviewer[bot]',
     });
+    expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(metadata, 'none');
   });
 
-  it('updates the managed comment when analysis is unavailable', async () => {
-    mocks.analyzeBatches.mockResolvedValue({ verdict: 'analysis_unavailable' });
+  it('skips expensive analysis for a current head and digest', async () => {
+    mocks.findReviewComment.mockResolvedValue({
+      body: `<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: head -->\n<!-- review-digest: ${'d'.repeat(64)} -->`,
+    });
 
     await run();
 
-    expect(mocks.renderComment).toHaveBeenCalledWith(
-      { verdict: 'analysis_unavailable' },
-      expect.objectContaining({
-        headSha: 'head',
-        repository: 'example/site',
-        reviewDigest: expect.stringMatching(/^[a-f0-9]{64}$/),
-      })
-    );
+    expect(mocks.buildReviewFromInput).not.toHaveBeenCalled();
+    expect(mocks.upsertComment).not.toHaveBeenCalled();
+    expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(metadata, 'duplicate_review');
+  });
+
+  it('emits a bounded failure category after incomplete analysis', async () => {
+    mocks.buildReviewFromInput.mockResolvedValue({
+      analysis: { verdict: 'decision_incomplete' },
+      body: 'incomplete review body',
+      metadata,
+    });
+
+    await run();
+
+    expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(metadata, 'decision_incomplete');
+  });
+
+  it('reruns and replaces the managed comment when the previous head is stale', async () => {
+    mocks.findReviewComment.mockResolvedValue({
+      body: `<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: stale-head -->\n<!-- review-digest: ${'d'.repeat(64)} -->`,
+    });
+
+    await run();
+
+    expect(mocks.buildReviewFromInput).toHaveBeenCalledTimes(1);
     expect(mocks.upsertComment).toHaveBeenCalledTimes(1);
-    expect(mocks.deleteReviewComment).not.toHaveBeenCalled();
+  });
+
+  it('allows an explicit refresh of a current review', async () => {
+    vi.stubEnv('DEPENDABOT_REVIEW_REFRESH', 'true');
+    mocks.findReviewComment.mockResolvedValue({
+      body: `<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: head -->\n<!-- review-digest: ${'d'.repeat(64)} -->`,
+    });
+
+    await run();
+
+    expect(mocks.buildReviewFromInput).toHaveBeenCalledTimes(1);
   });
 
   it('removes the managed comment and stops when no review input is available', async () => {
-    mocks.collectReviewInput.mockResolvedValue(null);
+    mocks.loadReviewInput.mockResolvedValue(null);
 
     await run();
 
@@ -165,7 +164,7 @@ describe('Dependabot review runner', () => {
       },
       author: 'reviewer[bot]',
     });
-    expect(mocks.analyzeBatches).not.toHaveBeenCalled();
+    expect(mocks.prepareReview).not.toHaveBeenCalled();
     expect(mocks.upsertComment).not.toHaveBeenCalled();
   });
 });
