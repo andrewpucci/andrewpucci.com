@@ -202,6 +202,7 @@ describe('review contracts', () => {
               to: '2.0.0',
               newFunctionality: [
                 {
+                  kind: 'new_capability',
                   feature: 'Documented feature',
                   sourceUrl: 'https://untrusted.example/feature',
                   usefulness: 'consider_later',
@@ -216,6 +217,91 @@ describe('review contracts', () => {
         reviewInput
       )
     ).toThrow(/unknown evidence URL/i);
+  });
+
+  it('rejects a bug fix masquerading as an adoption opportunity', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'src/routes/+page.svelte',
+                excerpt: 'The site uses the package in its public page.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'bug_fix',
+                  feature: 'Fixes command resolution.',
+                  sourceUrl: source.url,
+                  usefulness: 'use_now',
+                  action: 'Use the fixed command resolution.',
+                  contextPath: 'src/routes/+page.svelte',
+                  rationale: 'The fix benefits an existing page.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toThrow(/newly introduced capability/i);
+  });
+
+  it('requires a visible use case before deferring adoption of a new capability', () => {
+    expect(() =>
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'A documented new option.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: null,
+                  contextPath: null,
+                  rationale: 'It might be useful someday.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        reviewInput
+      )
+    ).toThrow(/visible adoption opportunities/i);
   });
 
   it('requires explicit, non-blocking followups for a followup verdict', () => {
@@ -318,6 +404,7 @@ describe('review contracts', () => {
               to: '2.0.0',
               newFunctionality: [
                 {
+                  kind: 'new_capability',
                   feature: 'Enable the documented feature.',
                   sourceUrl: source.url,
                   usefulness: 'use_now',

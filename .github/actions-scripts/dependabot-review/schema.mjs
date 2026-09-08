@@ -6,6 +6,7 @@ const policyVerdictPriority = new Map([
   ['do_not_merge', 2],
 ]);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
+const functionalityKinds = new Set(['new_capability']);
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable']);
 const provenanceStatuses = new Set(['verified', 'attention_required', 'unavailable']);
 const vulnerabilitySeverities = new Set(['low', 'moderate', 'high', 'critical']);
@@ -386,6 +387,9 @@ export function parseAnalysis(value, input) {
       to,
       newFunctionality: newFunctionality.map((value) => {
         const feature = object(value, 'feature');
+        const kind = string(feature.kind, 'feature kind');
+        if (!functionalityKinds.has(kind))
+          throw new TypeError('feature must be a newly introduced capability');
         const usefulnessValue = string(feature.usefulness, 'feature usefulness');
         if (!usefulness.has(usefulnessValue)) throw new TypeError('unsupported usefulness');
         const sourceUrl = requireUrl(string(feature.sourceUrl, 'feature source URL'));
@@ -400,13 +404,16 @@ export function parseAnalysis(value, input) {
             ? null
             : string(feature.contextPath, 'feature context path');
         if (
-          usefulnessValue === 'use_now' &&
+          usefulnessValue !== 'not_relevant' &&
           (!action ||
             !contextPath ||
             !dependency.context.facts.some((fact) => fact.path === contextPath))
         )
-          throw new TypeError('use_now requires an action and matching trusted repository context');
+          throw new TypeError(
+            'visible adoption opportunities require an action and matching trusted repository context'
+          );
         return {
+          kind,
           feature: string(feature.feature, 'feature'),
           sourceUrl,
           usefulness: usefulnessValue,

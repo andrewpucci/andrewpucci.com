@@ -151,7 +151,7 @@ describe('renderComment', () => {
     expect(body).toContain('``\\`\n```');
   });
 
-  it('groups visible features and collapses irrelevant ones', () => {
+  it('groups visible adoption opportunities and collapses irrelevant capabilities', () => {
     const body = renderComment(
       {
         verdict: 'merge',
@@ -191,13 +191,13 @@ describe('renderComment', () => {
       'head'
     );
 
-    expect(body).toContain('### Use now');
+    expect(body).toContain('### New capabilities to adopt now');
     expect(body).toContain('**example-package:** Useful immediately');
     expect(body).toContain('Action: Enable the new option. (src/config.ts)');
-    expect(body).toContain('### Consider later');
+    expect(body).toContain('### New capabilities to consider later');
     expect(body).toContain('**example-package:** Useful later');
     expect(body).toContain('<details>');
-    expect(body).toContain('<summary>Not relevant</summary>');
+    expect(body).toContain('<summary>New capabilities not relevant here</summary>');
     expect(body).toContain('**example-package:** Not applicable');
   });
 
@@ -304,7 +304,7 @@ describe('renderComment', () => {
     );
 
     expect(body.indexOf('### Reasons not to merge')).toBeLessThan(
-      body.indexOf('### Consider later')
+      body.indexOf('### New capabilities to consider later')
     );
   });
 });

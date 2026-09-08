@@ -142,8 +142,8 @@ function featureSections(assessments) {
   const considerLater = features.filter(({ feature }) => feature.usefulness === 'consider_later');
   const notRelevant = features.filter(({ feature }) => feature.usefulness === 'not_relevant');
   const sections = [
-    [useNow, 'Use now'],
-    [considerLater, 'Consider later'],
+    [useNow, 'New capabilities to adopt now'],
+    [considerLater, 'New capabilities to consider later'],
   ]
     .filter(([features]) => features.length)
     .map(([features, title]) => [
@@ -153,7 +153,7 @@ function featureSections(assessments) {
   if (notRelevant.length)
     sections.push([
       '<details>',
-      '<summary>Not relevant</summary>',
+      '<summary>New capabilities not relevant here</summary>',
       '',
       ...notRelevant.map(({ assessment, feature }) => featureLine(assessment, feature)),
       '',

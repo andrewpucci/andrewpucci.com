@@ -59,6 +59,8 @@ describe('analyze', () => {
     expect(request.messages[0].content).toContain('exactly one package assessment');
     expect(request.messages[0].content).toContain('contextPath');
     expect(request.messages[0].content).toContain('policy verdict ceiling');
+    expect(request.messages[0].content).toContain('newly introduced, opt-in capability');
+    expect(request.messages[0].content).toContain('bug fixes');
     expect(request.max_tokens).toBeGreaterThanOrEqual(4_000);
     expect(timeoutSpy).toHaveBeenCalledWith(120_000);
     timeoutSpy.mockRestore();
