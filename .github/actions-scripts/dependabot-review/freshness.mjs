@@ -19,5 +19,7 @@ export function managedReviewMetadata(body) {
 export function shouldSkipAnalysis(existingComment, metadata, { refresh = false } = {}) {
   if (refresh || !existingComment) return false;
   const previous = managedReviewMetadata(existingComment.body);
-  return previous.headSha === metadata.headSha && previous.reviewDigest === metadata.reviewDigest;
+  // Upstream release pages can change without a new PR commit. A validated marker
+  // records that this immutable head already consumed its bounded analysis budget.
+  return previous.headSha === metadata.headSha && previous.reviewDigest !== null;
 }
