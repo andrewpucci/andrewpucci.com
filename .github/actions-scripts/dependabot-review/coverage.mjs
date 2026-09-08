@@ -51,7 +51,11 @@ function parseLockfile(lockfile) {
     return null;
   const packages = new Map();
   for (const [path, entry] of Object.entries(lockfile.packages)) {
-    if (!isObject(entry) || (entry.dependencies !== undefined && !isObject(entry.dependencies)))
+    if (
+      !isObject(entry) ||
+      (entry.dependencies !== undefined && !isObject(entry.dependencies)) ||
+      (entry.optionalDependencies !== undefined && !isObject(entry.optionalDependencies))
+    )
       return null;
     if (path !== '' && !packageNameAtPath(path)) return null;
     packages.set(path, entry);
@@ -84,7 +88,10 @@ function packageGraph(packages) {
   const graph = new Map();
   for (const [path, entry] of packages) {
     const edges = new Set();
-    for (const name of Object.keys(entry.dependencies ?? {})) {
+    for (const name of new Set([
+      ...Object.keys(entry.dependencies ?? {}),
+      ...Object.keys(entry.optionalDependencies ?? {}),
+    ])) {
       const target = resolvedDependencyPath(packages, path, name);
       if (target) edges.add(target);
     }

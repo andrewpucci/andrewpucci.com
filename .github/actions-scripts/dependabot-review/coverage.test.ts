@@ -78,6 +78,38 @@ describe('collectNpmCoverage', () => {
     ]);
   });
 
+  it('uses an explicit optional dependency edge without inferring a package relationship', () => {
+    const result = collectNpmCoverage({
+      updates: [
+        update('direct', '1.0.0', '2.0.0', 'direct:unknown'),
+        update('platform-binary', '1.0.0', '2.0.0'),
+      ],
+      baseManifest: { dependencies: { direct: '^1.0.0' } },
+      headManifest: { dependencies: { direct: '^2.0.0' } },
+      baseLockfile: lockfile({
+        '': { dependencies: { direct: '^1.0.0' } },
+        'node_modules/direct': {
+          version: '1.0.0',
+          optionalDependencies: { 'platform-binary': '^1.0.0' },
+        },
+        'node_modules/platform-binary': { version: '1.0.0' },
+      }),
+      headLockfile: lockfile({
+        '': { dependencies: { direct: '^2.0.0' } },
+        'node_modules/direct': {
+          version: '2.0.0',
+          optionalDependencies: { 'platform-binary': '^2.0.0' },
+        },
+        'node_modules/platform-binary': { version: '2.0.0' },
+      }),
+    });
+
+    expect(result.items[1]).toMatchObject({
+      group: { kind: 'direct', anchor: { name: 'direct', from: '1.0.0', to: '2.0.0' } },
+      status: 'complete',
+    });
+  });
+
   it('leaves duplicate package paths unresolved when they do not share one direct anchor', () => {
     const result = collectNpmCoverage({
       updates: [

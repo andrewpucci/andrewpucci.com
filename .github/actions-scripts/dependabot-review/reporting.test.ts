@@ -2,6 +2,33 @@ import { describe, expect, it } from 'vite-plus/test';
 import { renderComment } from './reporting.mjs';
 
 describe('renderComment', () => {
+  it.each([
+    ['merge', 'The evidence supports an advisory merge recommendation.'],
+    [
+      'merge_with_followups',
+      'Merge is advisory only after recording the explicit non-blocking follow-ups.',
+    ],
+    ['do_not_merge', 'Do not merge until the documented blockers are remediated and validated.'],
+    ['analysis_unavailable', 'No merge recommendation is available. Rerun the advisory review'],
+  ])('renders a specific next action for %s', (verdict, action) => {
+    const body = renderComment(
+      {
+        verdict,
+        summary: 'An advisory decision was rendered.',
+        packageAssessments: [],
+        blockers: [],
+        followups:
+          verdict === 'merge_with_followups'
+            ? [{ description: 'Record the optional configuration choice.', blocking: false }]
+            : [],
+        remediationPrompt: null,
+      },
+      'head'
+    );
+
+    expect(body).toContain(`**Next action:** ${action}`);
+  });
+
   it('renders a blocking remediation report as advisory Markdown', () => {
     const body = renderComment(
       {
