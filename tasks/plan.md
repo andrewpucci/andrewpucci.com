@@ -123,7 +123,7 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
   - Files: `inputs.mjs`, `coverage.mjs`, `inputs.test.ts`, `coverage.test.ts`.
   - Scope: Medium; no dependencies.
 
-- [ ] [**Task 2: Constrain the decision-unit verdict**](https://github.com/andrewpucci/andrewpucci.com/issues/298) — Add validated coverage
+- [x] [**Task 2: Constrain the decision-unit verdict**](https://github.com/andrewpucci/andrewpucci.com/issues/298) — Add validated coverage
       units and the `decision_incomplete` verdict to the schema and bounded model
       batching/aggregation path.
   - Acceptance: `merge` requires a validated assessment for every coverage
@@ -173,7 +173,7 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
 ### Checkpoint: Decision coverage foundation
 
 - [x] GitHub Issue tasks created and linked in this plan after approval.
-- [ ] Tasks 1–2 pass focused tests and retain the trusted workflow boundary.
+- [x] Tasks 1–2 pass focused tests and retain the trusted workflow boundary.
 - [ ] Human review before changing the managed comment.
 
 ### Checkpoint: Decision coverage complete
