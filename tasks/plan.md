@@ -135,7 +135,7 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
   - Files: `schema.mjs`, `batches.mjs`, `schema.test.ts`, `batches.test.ts`.
   - Scope: Medium.
 
-- [ ] [**Task 3: Render decisions and one-way research handoffs**](https://github.com/andrewpucci/andrewpucci.com/issues/296) — Present
+- [x] [**Task 3: Render decisions and one-way research handoffs**](https://github.com/andrewpucci/andrewpucci.com/issues/296) — Present
       decision queues, bounded provenance evidence, and deterministic copyable
       research briefs in the managed comment.
   - Acceptance: An incomplete review names its precise action and no opaque
@@ -148,7 +148,7 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
   - Files: `reporting.mjs`, `handoff.mjs`, `reporting.test.ts`, `handoff.test.ts`.
   - Scope: Medium.
 
-- [ ] [**Task 4: Bound reruns and emit safe diagnostics**](https://github.com/andrewpucci/andrewpucci.com/issues/297) — Key the expensive
+- [x] [**Task 4: Bound reruns and emit safe diagnostics**](https://github.com/andrewpucci/andrewpucci.com/issues/297) — Key the expensive
       review to the PR/head/digest and expose only bounded run diagnostics.
   - Acceptance: A duplicate trigger for the same head does not repeat expensive
     analysis without explicit refresh; a new head invalidates the prior result;
@@ -159,7 +159,7 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
   - Files: `review.mjs`, `run.mjs`, `review.test.ts`, `run.test.ts`.
   - Scope: Medium.
 
-- [ ] [**Task 5: Replay decision evidence**](https://github.com/andrewpucci/andrewpucci.com/issues/295) — Add representative fixtures and
+- [x] [**Task 5: Replay decision evidence**](https://github.com/andrewpucci/andrewpucci.com/issues/295) — Add representative fixtures and
       run the revised dry run on PR 271 as the human-facing regression check.
   - Acceptance: Fixtures cover runtime roles, duplicate lockfile paths,
     lifecycle scripts, stale heads, every verdict, and the PR 271 decision queue.
@@ -174,13 +174,20 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
 
 - [x] GitHub Issue tasks created and linked in this plan after approval.
 - [x] Tasks 1–2 pass focused tests and retain the trusted workflow boundary.
-- [ ] Human review before changing the managed comment.
+- [x] Human review approved the managed-comment change before implementation.
 
 ### Checkpoint: Decision coverage complete
 
-- [ ] Tasks 3–5 pass focused tests, lint, checks, the full suite, and build.
-- [ ] PR 271 dry-run output tells the maintainer the exact decision/action for
+- [x] Tasks 3–5 pass focused tests, lint, checks, the full suite, and build.
+- [x] PR 271 dry-run output tells the maintainer the exact decision/action for
       every unresolved unit.
+
+PR 271 replay on immutable head `c0421579957fdc03c12f191d13c2b8a675aacc4c`
+reduced 108 updates to 20 graph-backed decision units: 21 validated assessments
+and 9 explicit queue entries. Each remaining entry names a direct group or
+standalone update and a next action; the managed comment also offers a
+digest-pinned, read-only research brief when it fits the GitHub comment limit.
+
 - [ ] Review confirms no CI repetition, external-research ingestion, PR-code
       execution, new write permission, or secret exposure.
 
