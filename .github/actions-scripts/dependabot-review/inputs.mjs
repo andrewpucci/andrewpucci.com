@@ -415,7 +415,13 @@ async function upstreamEvidence(repository, dependency, metadata, fetchLike, git
  */
 export async function collectReviewInput(
   event,
-  { fetchLike = fetch, githubHeaders = {}, repositoryContext } = {}
+  {
+    fetchLike = fetch,
+    githubHeaders = {},
+    repositoryContext,
+    collectCoverage = false,
+    collectNpmCoverage = collectNpmCoverageInput,
+  } = {}
 ) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
@@ -430,8 +436,39 @@ export async function collectReviewInput(
     workflowActionUpdates(event.files ?? [], dependabotUpdates),
     directDependencies
   );
+  const reviewUpdates = updates.length
+    ? updates
+    : changedPackageRanges(event.files ?? []).map((dependency) => ({
+        ...dependency,
+        ecosystem: 'npm',
+      }));
+  const npmCoverage = collectCoverage
+    ? await collectNpmCoverage(
+        {
+          repository: event.repository,
+          baseSha: pullRequest.base.sha,
+          headSha: pullRequest.head.sha,
+        },
+        reviewUpdates,
+        { fetchLike, githubHeaders }
+      )
+    : undefined;
+  const coverageByUpdate = new Map(
+    (npmCoverage?.items ?? []).map((item) => [
+      `${item.update.name}\u0000${item.update.from}\u0000${item.update.to}`,
+      item,
+    ])
+  );
+  const normalizedUpdates = reviewUpdates.map((dependency) => {
+    const coverage = coverageByUpdate.get(
+      `${dependency.name}\u0000${dependency.from}\u0000${dependency.to}`
+    );
+    return coverage
+      ? { ...dependency, dependencyType: coverage.update.dependencyType }
+      : dependency;
+  });
   const packages = await Promise.all(
-    (updates.length ? updates : changedPackageRanges(event.files ?? [])).map(async (dependency) => {
+    normalizedUpdates.map(async (dependency) => {
       const metadata =
         dependency.ecosystem === 'actions'
           ? null
@@ -505,15 +542,44 @@ export async function collectReviewInput(
     repositoryContext ?? { paths: [], readFile: async () => '' }
   );
   const contextByName = new Map(contexts.map((context) => [context.name, context]));
+  const packagesWithContext = packages.map((dependency) => {
+    const context = contextByName.get(dependency.name) ?? { status: 'unavailable', facts: [] };
+    return { ...dependency, context: { status: context.status, facts: context.facts } };
+  });
+  const coverage = collectCoverage
+    ? {
+        items: packagesWithContext.map(
+          (dependency) =>
+            coverageByUpdate.get(
+              `${dependency.name}\u0000${dependency.from}\u0000${dependency.to}`
+            ) ?? {
+              update: {
+                name: dependency.name,
+                from: dependency.from,
+                to: dependency.to,
+                dependencyType: dependency.dependencyType,
+              },
+              group: { kind: 'standalone', anchor: null },
+              lifecycle: {
+                status: 'unchanged',
+                metadata: 'not_needed',
+                paths: [],
+                changes: [],
+                reason: null,
+              },
+              status: 'complete',
+              reason: null,
+            }
+        ),
+      }
+    : undefined;
   return parseReviewInput({
     pullRequest: {
       number: pullRequest.number,
       baseSha: pullRequest.base.sha,
       headSha: pullRequest.head.sha,
     },
-    packages: packages.map((dependency) => {
-      const context = contextByName.get(dependency.name) ?? { status: 'unavailable', facts: [] };
-      return { ...dependency, context: { status: context.status, facts: context.facts } };
-    }),
+    packages: packagesWithContext,
+    ...(coverage ? { coverage } : {}),
   });
 }
