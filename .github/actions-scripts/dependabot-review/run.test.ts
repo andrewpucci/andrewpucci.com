@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 const mocks = vi.hoisted(() => ({
   buildReviewFromInput: vi.fn(),
   deleteReviewComment: vi.fn(),
+  emitGithubRequestDiagnostic: vi.fn(),
   emitReviewDiagnostic: vi.fn(),
   findReviewComment: vi.fn(),
   loadReviewInput: vi.fn(),
@@ -16,7 +17,10 @@ vi.mock('node:fs/promises', () => ({
   default: { readFile: mocks.readFile },
   readFile: mocks.readFile,
 }));
-vi.mock('./diagnostics.mjs', () => ({ emitReviewDiagnostic: mocks.emitReviewDiagnostic }));
+vi.mock('./diagnostics.mjs', () => ({
+  emitGithubRequestDiagnostic: mocks.emitGithubRequestDiagnostic,
+  emitReviewDiagnostic: mocks.emitReviewDiagnostic,
+}));
 vi.mock('./event.mjs', () => ({ pullRequestNumber: mocks.pullRequestNumber }));
 vi.mock('./github.mjs', () => ({
   deleteReviewComment: mocks.deleteReviewComment,
@@ -75,11 +79,14 @@ describe('Dependabot review runner', () => {
   it('uses the prepared immutable packet for one bounded analysis and managed upsert', async () => {
     await run();
 
-    expect(mocks.loadReviewInput).toHaveBeenCalledWith({
-      repository: 'example/site',
-      number: 42,
-      githubToken: 'read-token',
-    });
+    expect(mocks.loadReviewInput).toHaveBeenCalledWith(
+      {
+        repository: 'example/site',
+        number: 42,
+        githubToken: 'read-token',
+      },
+      expect.objectContaining({ onGithubRequestLimit: expect.any(Function) })
+    );
     expect(mocks.prepareReview).toHaveBeenCalledWith(input, { repository: 'example/site' });
     expect(mocks.findReviewComment).toHaveBeenCalledWith({
       api: 'https://api.github.com/repos/example/site/issues/42/comments',
@@ -176,6 +183,25 @@ describe('Dependabot review runner', () => {
       author: 'reviewer[bot]',
     });
     expect(mocks.prepareReview).not.toHaveBeenCalled();
+    expect(mocks.upsertComment).not.toHaveBeenCalled();
+  });
+
+  it('emits a safe request-limit diagnostic and preserves the existing comment', async () => {
+    mocks.findReviewComment.mockResolvedValue({ body: 'existing review' });
+    mocks.loadReviewInput.mockImplementation(async (_request, { onGithubRequestLimit }) => {
+      onGithubRequestLimit({ status: 429, resource: 'core', remaining: 0, reset: 123 });
+      return undefined;
+    });
+
+    await run();
+
+    expect(mocks.emitGithubRequestDiagnostic).toHaveBeenCalledWith(
+      { status: 429, resource: 'core', remaining: 0, reset: 123 },
+      { headSha: 'head' }
+    );
+    expect(mocks.deleteReviewComment).not.toHaveBeenCalled();
+    expect(mocks.prepareReview).not.toHaveBeenCalled();
+    expect(mocks.buildReviewFromInput).not.toHaveBeenCalled();
     expect(mocks.upsertComment).not.toHaveBeenCalled();
   });
 });

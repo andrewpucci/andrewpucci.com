@@ -68,8 +68,7 @@ headers out of comments and model packets; diagnostics may retain only the
 bounded rate-limit fields below.
 
 ```js
-if (state.stopped)
-  throw new GithubRequestLimitError(state.limit);
+if (state.stopped) throw new GithubRequestLimitError(state.limit);
 ```
 
 ## Requirements

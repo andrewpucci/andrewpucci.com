@@ -188,14 +188,14 @@ The approved [GitHub request-guardrails specification](../SPEC-dependabot-github
 keeps large grouped reviews within the workflow's read-only GitHub API budget.
 It preserves CI separation and the trusted workflow boundary.
 
-- [ ] **Task 1: Skip duplicate immutable heads before packet loading**
+- [x] **Task 1: Skip duplicate immutable heads before packet loading**
   - Acceptance: A valid managed comment for the event head ends the runner
     before trusted input, upstream evidence, or Mistral work; explicit refresh
     and stale/malformed markers retain the normal path.
   - Verify: Focused freshness/runner tests.
   - Files: `freshness.mjs`, `run.mjs`, `freshness.test.ts`, `run.test.ts`.
 
-- [ ] **Task 2: Govern and diagnose GitHub evidence requests**
+- [x] **Task 2: Govern and diagnose GitHub evidence requests**
   - Acceptance: Read-only `api.github.com` evidence calls share the approved
     two-concurrent, 160-request governor; 403/429 and budget exhaustion stop
     safely and emit bounded diagnostics without a retry.

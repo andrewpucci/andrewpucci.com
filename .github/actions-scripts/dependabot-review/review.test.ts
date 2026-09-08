@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 const mocks = vi.hoisted(() => ({
   collectPullRequestProvenance: vi.fn(),
   collectReviewInput: vi.fn(),
+  createGithubRequestGovernor: vi.fn(),
   fetch: vi.fn(),
   fetchAllPages: vi.fn(),
   readFile: vi.fn(),
@@ -14,7 +15,10 @@ vi.mock('node:fs/promises', () => ({
   readFile: mocks.readFile,
   readdir: mocks.readdir,
 }));
-vi.mock('./github.mjs', () => ({ fetchAllPages: mocks.fetchAllPages }));
+vi.mock('./github.mjs', () => ({
+  createGithubRequestGovernor: mocks.createGithubRequestGovernor,
+  fetchAllPages: mocks.fetchAllPages,
+}));
 vi.mock('./inputs.mjs', () => ({
   collectPullRequestProvenance: mocks.collectPullRequestProvenance,
   collectReviewInput: mocks.collectReviewInput,
@@ -59,6 +63,10 @@ describe('trusted Dependabot review input', () => {
     mocks.fetch.mockResolvedValue({ ok: true, json: async () => pullRequest });
     mocks.readdir.mockResolvedValue([]);
     mocks.collectReviewInput.mockResolvedValue(input);
+    mocks.createGithubRequestGovernor.mockImplementation((fetchLike) => ({
+      fetch: fetchLike,
+      diagnostic: () => ({ requests: 0, limit: null }),
+    }));
   });
 
   it('collects immutable npm provenance alongside normal input and preserves unavailable evidence', async () => {
@@ -126,5 +134,50 @@ describe('trusted Dependabot review input', () => {
         reason: 'The pull request provenance could not be collected.',
       },
     });
+  });
+
+  it('reports a bounded governor limit after preserving the review packet', async () => {
+    mocks.fetchAllPages.mockResolvedValue([{ filename: '.github/workflows/ci.yml' }]);
+    mocks.createGithubRequestGovernor.mockImplementation((fetchLike) => ({
+      fetch: fetchLike,
+      diagnostic: () => ({
+        requests: 7,
+        limit: { status: 429, resource: 'core', remaining: 0, reset: 123, retryAfter: 60 },
+      }),
+    }));
+    const onGithubRequestLimit = vi.fn();
+
+    await expect(
+      loadReviewInput(
+        { repository: 'owner/repo', number: 42, githubToken: 'read-token' },
+        { fetchLike: mocks.fetch, onGithubRequestLimit }
+      )
+    ).resolves.toEqual(input);
+
+    expect(onGithubRequestLimit).toHaveBeenCalledWith({
+      status: 429,
+      resource: 'core',
+      remaining: 0,
+      reset: 123,
+      retryAfter: 60,
+    });
+  });
+
+  it('returns no packet when a governor limit interrupts required PR input', async () => {
+    mocks.fetchAllPages.mockRejectedValue(new Error('rate limited'));
+    mocks.createGithubRequestGovernor.mockImplementation((fetchLike) => ({
+      fetch: fetchLike,
+      diagnostic: () => ({ requests: 1, limit: { status: 'request_budget_exhausted' } }),
+    }));
+    const onGithubRequestLimit = vi.fn();
+
+    await expect(
+      loadReviewInput(
+        { repository: 'owner/repo', number: 42, githubToken: 'read-token' },
+        { fetchLike: mocks.fetch, onGithubRequestLimit }
+      )
+    ).resolves.toBeUndefined();
+
+    expect(onGithubRequestLimit).toHaveBeenCalledWith({ status: 'request_budget_exhausted' });
   });
 });

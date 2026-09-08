@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { emitReviewDiagnostic } from './diagnostics.mjs';
+import { emitGithubRequestDiagnostic, emitReviewDiagnostic } from './diagnostics.mjs';
 import { pullRequestNumber } from './event.mjs';
 import { managedReviewMetadata, shouldSkipAnalysis, shouldSkipCurrentHead } from './freshness.mjs';
 import { deleteReviewComment, findReviewComment, upsertComment } from './github.mjs';
@@ -46,15 +46,32 @@ if (shouldSkipCurrentHead(existing, eventHeadSha, { refresh })) {
     'duplicate_review'
   );
 } else {
-  const input = await loadReviewInput({
-    repository: process.env.GITHUB_REPOSITORY,
-    number,
-    githubToken: process.env.GITHUB_TOKEN,
-  });
-  if (!input) {
-    await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
+  let githubRequestLimit;
+  const input = await loadReviewInput(
+    {
+      repository: process.env.GITHUB_REPOSITORY,
+      number,
+      githubToken: process.env.GITHUB_TOKEN,
+    },
+    {
+      onGithubRequestLimit: (limit) => {
+        githubRequestLimit = limit;
+      },
+    }
+  );
+  if (input === undefined && githubRequestLimit) {
+    emitGithubRequestDiagnostic(githubRequestLimit, { headSha: eventHeadSha });
+  } else if (!input) {
+    await deleteReviewComment({
+      api: commentApi,
+      headers: commentHeaders,
+      author: commentAuthor,
+    });
   } else {
-    const prepared = prepareReview(input, { repository: process.env.GITHUB_REPOSITORY });
+    const prepared = prepareReview(input, {
+      repository: process.env.GITHUB_REPOSITORY,
+    });
+    if (githubRequestLimit) emitGithubRequestDiagnostic(githubRequestLimit, prepared.metadata);
     if (shouldSkipAnalysis(existing, prepared.metadata, { refresh })) {
       emitReviewDiagnostic(prepared.metadata, 'duplicate_review');
     } else {
