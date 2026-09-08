@@ -182,6 +182,35 @@ coverage input → decision-unit contract → comment + handoff → freshness + 
 - [x] PR 271 dry-run output tells the maintainer the exact decision/action for
       every unresolved unit.
 
+### Phase 6: GitHub request guardrails
+
+The approved [GitHub request-guardrails specification](../SPEC-dependabot-github-request-guardrails.md)
+keeps large grouped reviews within the workflow's read-only GitHub API budget.
+It preserves CI separation and the trusted workflow boundary.
+
+- [ ] **Task 1: Skip duplicate immutable heads before packet loading**
+  - Acceptance: A valid managed comment for the event head ends the runner
+    before trusted input, upstream evidence, or Mistral work; explicit refresh
+    and stale/malformed markers retain the normal path.
+  - Verify: Focused freshness/runner tests.
+  - Files: `freshness.mjs`, `run.mjs`, `freshness.test.ts`, `run.test.ts`.
+
+- [ ] **Task 2: Govern and diagnose GitHub evidence requests**
+  - Acceptance: Read-only `api.github.com` evidence calls share the approved
+    two-concurrent, 160-request governor; 403/429 and budget exhaustion stop
+    safely and emit bounded diagnostics without a retry.
+  - Verify: Focused GitHub/input/review tests.
+  - Files: `github.mjs`, `diagnostics.mjs`, `review.mjs`, focused tests.
+
+- [ ] **Task 3: Select evidence by decision unit**
+  - Acceptance: Direct-group anchors and standalones are the only upstream
+    evidence targets; group-backed members remain bounded and rate-limited units
+    become explicitly incomplete without disturbing other decisions.
+  - Verify: Focused input/schema/policy/batch tests and replay when rate budget
+    permits.
+  - Files: `inputs.mjs`, `schema.mjs`, `policy.mjs`, `coverage.mjs`, focused
+    tests.
+
 PR 271 replay on immutable head `c0421579957fdc03c12f191d13c2b8a675aacc4c`
 reduced 108 updates to 20 graph-backed decision units: 25 validated assessments
 and 8 explicit queue entries. Each remaining entry names a direct group or
