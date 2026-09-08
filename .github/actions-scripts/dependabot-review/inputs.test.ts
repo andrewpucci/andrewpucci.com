@@ -1,7 +1,11 @@
 /// <reference types="node" />
 
 import { describe, expect, it, vi } from 'vite-plus/test';
-import { collectPullRequestProvenance, collectReviewInput } from './inputs.mjs';
+import {
+  collectNpmCoverageInput,
+  collectPullRequestProvenance,
+  collectReviewInput,
+} from './inputs.mjs';
 
 const pullRequest = {
   number: 42,
@@ -149,6 +153,94 @@ describe('collectPullRequestProvenance', () => {
       reason: 'The pull request provenance inputs could not be safely parsed.',
     });
     expect(collectProvenance).not.toHaveBeenCalled();
+  });
+});
+
+describe('collectNpmCoverageInput', () => {
+  it('reads immutable base and head npm inputs before resolving a lifecycle delta', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        contentResponse({
+          lockfileVersion: 3,
+          packages: {
+            '': { dependencies: { example: '^1.0.0' } },
+            'node_modules/example': { version: '1.0.0', hasInstallScript: false },
+          },
+        })
+      )
+      .mockResolvedValueOnce(
+        contentResponse({
+          lockfileVersion: 3,
+          packages: {
+            '': { dependencies: { example: '^2.0.0' } },
+            'node_modules/example': { version: '2.0.0', hasInstallScript: true },
+          },
+        })
+      )
+      .mockResolvedValueOnce(contentResponse({ dependencies: { example: '^1.0.0' } }))
+      .mockResolvedValueOnce(contentResponse({ dependencies: { example: '^2.0.0' } }))
+      .mockResolvedValueOnce(response({ name: 'example', version: '1.0.0', scripts: {} }))
+      .mockResolvedValueOnce(
+        response({
+          name: 'example',
+          version: '2.0.0',
+          scripts: { postinstall: 'node ./setup.js' },
+        })
+      );
+
+    const coverage = await collectNpmCoverageInput(
+      { repository: 'owner/repo', baseSha: 'base-sha', headSha: 'head-sha' },
+      [
+        {
+          ecosystem: 'npm',
+          name: 'example',
+          from: '1.0.0',
+          to: '2.0.0',
+          dependencyType: 'direct:unknown',
+        },
+      ],
+      { fetchLike: fetchMock }
+    );
+
+    expect(fetchMock.mock.calls.slice(0, 4).map(([url]) => url)).toEqual([
+      'https://api.github.com/repos/owner/repo/contents/package-lock.json?ref=base-sha',
+      'https://api.github.com/repos/owner/repo/contents/package-lock.json?ref=head-sha',
+      'https://api.github.com/repos/owner/repo/contents/package.json?ref=base-sha',
+      'https://api.github.com/repos/owner/repo/contents/package.json?ref=head-sha',
+    ]);
+    expect(coverage.items).toMatchObject([
+      {
+        update: { name: 'example', dependencyType: 'direct:production' },
+        lifecycle: {
+          status: 'changed',
+          metadata: 'available',
+          changes: [{ name: 'postinstall', kind: 'added', after: 'node ./setup.js' }],
+        },
+        status: 'complete',
+      },
+    ]);
+  });
+
+  it('does not read immutable package files when the update set has no npm packages', async () => {
+    const fetchMock = vi.fn();
+
+    await expect(
+      collectNpmCoverageInput(
+        { repository: 'owner/repo', baseSha: 'base-sha', headSha: 'head-sha' },
+        [
+          {
+            ecosystem: 'actions',
+            name: 'actions/checkout',
+            from: '4.1.0',
+            to: '4.2.0',
+            dependencyType: 'direct:workflow',
+          },
+        ],
+        { fetchLike: fetchMock }
+      )
+    ).resolves.toBeUndefined();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 

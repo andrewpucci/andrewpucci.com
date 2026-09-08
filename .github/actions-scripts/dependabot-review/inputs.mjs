@@ -1,4 +1,6 @@
 import { isVulnerabilitySeverity, parseReviewInput } from './schema.mjs';
+import { collectNpmCoverage } from './coverage.mjs';
+import { collectLifecycleScripts } from './lifecycle.mjs';
 import { collectRepositoryContext } from './context.mjs';
 import { fetchAllPages } from './github.mjs';
 import { collectProvenance } from './provenance.mjs';
@@ -10,9 +12,9 @@ const provenanceUnavailable = (reason) => ({
   reason,
 });
 
-async function fetchImmutableContent({ repository, headSha, path, fetchLike, githubHeaders }) {
+async function fetchImmutableContent({ repository, refSha, path, fetchLike, githubHeaders }) {
   const response = await fetchLike(
-    `https://api.github.com/repos/${repository}/contents/${path}?ref=${encodeURIComponent(headSha)}`,
+    `https://api.github.com/repos/${repository}/contents/${path}?ref=${encodeURIComponent(refSha)}`,
     { headers: githubHeaders }
   );
   if (!response.ok) throw new Error('GitHub contents request failed');
@@ -32,14 +34,14 @@ export async function collectPullRequestProvenance(
     [lockfile, manifestText] = await Promise.all([
       fetchImmutableContent({
         repository,
-        headSha,
+        refSha: headSha,
         path: 'package-lock.json',
         fetchLike,
         githubHeaders,
       }),
       fetchImmutableContent({
         repository,
-        headSha,
+        refSha: headSha,
         path: 'package.json',
         fetchLike,
         githubHeaders,
@@ -62,6 +64,60 @@ export async function collectPullRequestProvenance(
     return await collect({ lockfile, overrides });
   } catch {
     return provenanceUnavailable('The pull request provenance could not be collected.');
+  }
+}
+
+export async function collectNpmCoverageInput(
+  { repository, baseSha, headSha },
+  updates,
+  { fetchLike = fetch, githubHeaders = {} } = {}
+) {
+  const npmUpdates = updates.filter((update) => update.ecosystem === 'npm');
+  if (!npmUpdates.length) return undefined;
+  try {
+    const [baseLockfileText, headLockfileText, baseManifestText, headManifestText] =
+      await Promise.all([
+        fetchImmutableContent({
+          repository,
+          refSha: baseSha,
+          path: 'package-lock.json',
+          fetchLike,
+          githubHeaders,
+        }),
+        fetchImmutableContent({
+          repository,
+          refSha: headSha,
+          path: 'package-lock.json',
+          fetchLike,
+          githubHeaders,
+        }),
+        fetchImmutableContent({
+          repository,
+          refSha: baseSha,
+          path: 'package.json',
+          fetchLike,
+          githubHeaders,
+        }),
+        fetchImmutableContent({
+          repository,
+          refSha: headSha,
+          path: 'package.json',
+          fetchLike,
+          githubHeaders,
+        }),
+      ]);
+    return collectLifecycleScripts(
+      collectNpmCoverage({
+        updates: npmUpdates,
+        baseManifest: JSON.parse(baseManifestText),
+        headManifest: JSON.parse(headManifestText),
+        baseLockfile: JSON.parse(baseLockfileText),
+        headLockfile: JSON.parse(headLockfileText),
+      }),
+      { fetchLike }
+    );
+  } catch {
+    return collectNpmCoverage({ updates: npmUpdates });
   }
 }
 
