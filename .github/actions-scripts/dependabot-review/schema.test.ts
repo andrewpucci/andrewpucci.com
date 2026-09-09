@@ -634,6 +634,59 @@ describe('review contracts', () => {
     ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
   });
 
+  it('omits a capability whose relevance is only hypothetical future work', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'vite.config.ts',
+                excerpt: 'The Vite configuration enables SvelteKit support.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Export server-side rendering types.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Review if these types are needed for server-side rendering.',
+                  contextPath: 'vite.config.ts',
+                  rationale:
+                    'The project uses SvelteKit, which may benefit from these exports in future server-side logic.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
   it('requires explicit, non-blocking followups for a followup verdict', () => {
     const analysis = {
       verdict: 'merge_with_followups',
@@ -688,6 +741,45 @@ describe('review contracts', () => {
         reviewInput
       )
     ).toMatchObject({ verdict: 'merge', followups: [] });
+  });
+
+  it('omits optional adoption while retaining an independent upgrade followup', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade has one decision-relevant followup.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Assess whether to adopt the new defineConfig helper for lint-staged configuration.',
+                  blocking: false,
+                },
+                {
+                  description: 'Determine if the --all flag is useful for the repository workflow.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [
+        {
+          description: 'Determine if the --all flag is useful for the repository workflow.',
+          blocking: false,
+        },
+      ],
+    });
   });
 
   it('rejects a model verdict that exceeds the policy ceiling', () => {

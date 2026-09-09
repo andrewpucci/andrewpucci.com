@@ -17,8 +17,12 @@ const dependencyManifestPaths = new Set([
 ]);
 const futureOnlyUseCase =
   /\b(?:not (?:currently|yet) (?:used|in use|adopted|configured)|future (?:use|adoption)|no (?:existing|current) [^.\n]*\b(?:configuration|config|setup|integration)\b|(?:until|after|when) [^.\n]*\b(?:created|configured|adopted))\b/i;
+const hypotheticalUseCase =
+  /\b(?:may|might|could) benefit\b|\bfuture [^.\n]*\b(?:logic|work|implementation|usage|need)\b/i;
 const requiresConfigurationCreation =
   /\b(?:(?:configuration|config|setup|integration|workflow|file)[^\n]*\bneeds? creation|(?:needs?|requires?) [^.\n]*\b(?:configuration|config|setup|integration|workflow|file)\b[^.\n]*\b(?:creation|creating)\b)\b/i;
+const optionalAdoptionFollowup =
+  /\b(?:assess|evaluate|consider|determine|review)\b [^.\n]*\b(?:adopt|adopting|enable|enabling)\b/i;
 const unconfirmedCapability =
   /\b(?:(?:immediate )?(?:utility|benefit|usefulness) (?:is )?not (?:confirmed|established)|not (?:yet )?(?:confirmed|established)|new (?:feature|workflow|surface) requiring separate (?:evaluation|adoption)|separate (?:product )?(?:surface|workflow) (?:requires|needs) (?:separate )?(?:evaluation|adoption))\b/i;
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable', 'group_backed']);
@@ -434,6 +438,7 @@ function parsePackageAnalysis(value, input) {
           dependencyManifestPaths.has(contextPath) ||
           !dependency.context.facts.some((fact) => fact.path === contextPath) ||
           futureOnlyUseCase.test(`${featureName}\n${action}\n${rationale}`) ||
+          hypotheticalUseCase.test(`${featureName}\n${action}\n${rationale}`) ||
           requiresConfigurationCreation.test(`${featureName}\n${action}\n${rationale}`) ||
           unconfirmedCapability.test(`${featureName}\n${action}\n${rationale}`))
       )
@@ -566,7 +571,8 @@ function parseDecisionFollowups(verdict, value) {
     const description = string(followup.description, 'decision followup description');
     if (description.length > 280 || followup.blocking !== false)
       throw new TypeError('decision followup must be bounded and explicitly non-blocking');
-    return requiresConfigurationCreation.test(description)
+    return requiresConfigurationCreation.test(description) ||
+      optionalAdoptionFollowup.test(description)
       ? []
       : [{ description, blocking: false }];
   });

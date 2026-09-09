@@ -142,8 +142,9 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
    consolidating related actions for each unit, and provides one bounded,
    immutable-head-pinned research prompt per retained unit when the repository
    and review digest are available. Optional capability cards are omitted when
-   their stated benefit requires an unconfirmed product surface. Follow-up
-   items that require creating new configuration are omitted and cannot alone
+   their stated benefit requires an unconfirmed product surface or relies on a
+   hypothetical future use case. Follow-up items that merely assess optional
+   adoption or require creating new configuration are omitted and cannot alone
    justify a `merge_with_followups` verdict.
 7. Canonicalize the validated decision packet and render a bounded
    `reviewDigest` with the immutable head SHA. A rerun for a new head SHA always
