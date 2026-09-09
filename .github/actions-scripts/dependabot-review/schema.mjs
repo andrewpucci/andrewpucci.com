@@ -23,6 +23,14 @@ const requiresConfigurationCreation =
   /\b(?:(?:configuration|config|setup|integration|workflow|file)[^\n]*\bneeds? creation|(?:needs?|requires?) [^.\n]*\b(?:configuration|config|setup|integration|workflow|file)\b[^.\n]*\b(?:creation|creating)\b)\b/i;
 const optionalAdoptionFollowup =
   /\b(?:assess|evaluate|consider|determine|review)\b [^.\n]*\b(?:adopt|adopting|enable|enabling)\b/i;
+const genericEvidenceFollowup =
+  /\b(?:review|validate|confirm|check)\b [^.\n]*\b(?:upstream|release notes?|releases?|package metadata|upgrade (?:evidence|range)|version range)\b|\b(?:confirm|verify|validate)\b [^.\n]*\bno breaking changes\b/i;
+const optionalCapabilityUtilityFollowup =
+  /\b(?:evaluate|assess|determine)\b [^.\n]*\b(?:utility|usefulness|value)\b [^.\n]*\b(?:new|optional)\b [^.\n]*\b(?:flag|option|feature|capability)\b/i;
+const genericNewCapabilityCompatibilityFollowup =
+  /\b(?:validate|verify|confirm)\b [^.\n]*\bnew [^.\n]*\b(?:exports?|types?|features?|capabilities?)\b/i;
+const concreteRepositorySurface =
+  /\b(?:src|tests?|static|docs)\/[\w./-]+|\.github\/[\w./-]+|\b(?:repository|current|existing) [^.\n]*\b(?:local-)?development workflow\b/i;
 const unconfirmedCapability =
   /\b(?:(?:immediate )?(?:utility|benefit|usefulness) (?:is )?not (?:confirmed|established)|not (?:yet )?(?:confirmed|established)|new (?:feature|workflow|surface) requiring separate (?:evaluation|adoption)|separate (?:product )?(?:surface|workflow) (?:requires|needs) (?:separate )?(?:evaluation|adoption))\b/i;
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable', 'group_backed']);
@@ -572,7 +580,11 @@ function parseDecisionFollowups(verdict, value) {
     if (description.length > 280 || followup.blocking !== false)
       throw new TypeError('decision followup must be bounded and explicitly non-blocking');
     return requiresConfigurationCreation.test(description) ||
-      optionalAdoptionFollowup.test(description)
+      optionalAdoptionFollowup.test(description) ||
+      genericEvidenceFollowup.test(description) ||
+      optionalCapabilityUtilityFollowup.test(description) ||
+      (genericNewCapabilityCompatibilityFollowup.test(description) &&
+        !concreteRepositorySurface.test(description))
       ? []
       : [{ description, blocking: false }];
   });

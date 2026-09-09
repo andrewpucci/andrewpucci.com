@@ -92,7 +92,12 @@ describe('analyze', () => {
     expect(request.messages[0].content).toContain('remediationPrompt');
     expect(request.messages[0].content).toContain('explicitly non-blocking');
     expect(request.messages[0].content).toContain('merge_with_followups');
-    expect(request.messages[0].content).toContain('decision-relevant upgrade question');
+    expect(request.messages[0].content).toContain(
+      'concrete incompatibility on a current repository surface'
+    );
+    expect(request.messages[0].content).toContain(
+      'generic release-note, metadata, version-range, and generic compatibility research'
+    );
     expect(request.messages[0].content).toContain('framework configuration alone');
     expect(request.messages[0].content).toContain('assess or propose optional adoption');
     expect(request.messages[0].content).toContain('decisionUnit IDs exactly once');

@@ -144,8 +144,11 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
    and review digest are available. Optional capability cards are omitted when
    their stated benefit requires an unconfirmed product surface or relies on a
    hypothetical future use case. Follow-up items that merely assess optional
-   adoption or require creating new configuration are omitted and cannot alone
-   justify a `merge_with_followups` verdict.
+   adoption, optional capability utility, upstream release notes or metadata,
+   version ranges, generic compatibility, or creating new configuration are
+   omitted and cannot alone justify a `merge_with_followups` verdict. A
+   retained follow-up identifies a concrete incompatibility on a current,
+   visible repository surface.
 7. Canonicalize the validated decision packet and render a bounded
    `reviewDigest` with the immutable head SHA. A rerun for a new head SHA always
    creates a new digest and invalidates prior decision coverage. At most one

@@ -743,7 +743,7 @@ describe('review contracts', () => {
     ).toMatchObject({ verdict: 'merge', followups: [] });
   });
 
-  it('omits optional adoption while retaining an independent upgrade followup', () => {
+  it('omits generic evidence review while retaining a concrete upgrade followup', () => {
     expect(
       parseAnalysis(
         {
@@ -757,11 +757,12 @@ describe('review contracts', () => {
               followups: [
                 {
                   description:
-                    'Assess whether to adopt the new defineConfig helper for lint-staged configuration.',
+                    'Review the upstream release notes for @sveltejs/kit@2.70.3 to confirm no breaking changes.',
                   blocking: false,
                 },
                 {
-                  description: 'Determine if the --all flag is useful for the repository workflow.',
+                  description:
+                    'Verify that wrangler pages dev remains compatible with the repository local-development workflow.',
                   blocking: false,
                 },
               ],
@@ -775,7 +776,81 @@ describe('review contracts', () => {
       verdict: 'merge_with_followups',
       followups: [
         {
-          description: 'Determine if the --all flag is useful for the repository workflow.',
+          description:
+            'Verify that wrangler pages dev remains compatible with the repository local-development workflow.',
+          blocking: false,
+        },
+      ],
+    });
+  });
+
+  it('omits a generic release-note followup and downgrades the verdict', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade itself is ready.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Review the upstream release notes for @sveltejs/kit@2.70.3 to confirm no breaking changes.',
+                  blocking: false,
+                },
+                {
+                  description:
+                    'Evaluate the utility of the new --all flag for running tasks on all Git-tracked files.',
+                  blocking: false,
+                },
+                {
+                  description:
+                    'Validate that the new server-side exports are compatible with current SvelteKit usage.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({ verdict: 'merge', followups: [] });
+  });
+
+  it('retains a compatibility followup that names a current repository surface', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade needs one targeted compatibility check.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Validate that the new server-side exports are compatible with src/hooks.server.ts.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [
+        {
+          description:
+            'Validate that the new server-side exports are compatible with src/hooks.server.ts.',
           blocking: false,
         },
       ],
