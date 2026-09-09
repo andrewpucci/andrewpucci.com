@@ -220,7 +220,10 @@ function dependencyUpdates(changes, dependabotUpdates, workflowActions, directDe
     };
     if (change.change_type === 'removed') update.from = actionVersion?.from ?? change.version;
     if (change.change_type === 'added')
-      Object.assign(update, { to: actionVersion?.to ?? change.version, change });
+      Object.assign(update, {
+        to: actionVersion?.to ?? change.version,
+        change,
+      });
     updates.set(key, update);
   }
   for (const [name, action] of workflowActions) if (!updates.has(name)) updates.set(name, action);
@@ -323,7 +326,13 @@ function versionParts(value) {
 }
 
 function compareVersions(left, right) {
-  return left.find((part, index) => part !== right[index]) ?? 0;
+  for (let index = 0; index < left.length; index += 1) {
+    const leftPart = left.at(index);
+    const rightPart = right.at(index);
+    if (leftPart < rightPart) return -1;
+    if (leftPart > rightPart) return 1;
+  }
+  return 0;
 }
 
 function withinRange(version, from, to) {
@@ -336,6 +345,19 @@ function withinRange(version, from, to) {
     upper &&
     compareVersions(candidate, lower) >= 0 &&
     compareVersions(candidate, upper) <= 0
+  );
+}
+
+function isDependencyReleaseTag(tag, dependency) {
+  const version = concreteVersion(tag);
+  return (
+    version &&
+    [
+      version,
+      `v${version}`,
+      `${dependency.name}@${version}`,
+      `${dependency.name}@v${version}`,
+    ].includes(tag)
   );
 }
 
@@ -352,6 +374,7 @@ async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
         typeof release?.tag_name === 'string' &&
         typeof release.html_url === 'string' &&
         typeof release.body === 'string' &&
+        isDependencyReleaseTag(release.tag_name, dependency) &&
         withinRange(release.tag_name, dependency.from, dependency.to)
     )
     .slice(0, 5)
@@ -517,7 +540,11 @@ export async function collectReviewInput(
         const limit = githubRequestDiagnostic()?.limit;
         if (limit) {
           rateLimitedTargets.set(target, limit);
-          evidence = { status: 'unavailable', reason: githubLimitReason(limit), sources: [] };
+          evidence = {
+            status: 'unavailable',
+            reason: githubLimitReason(limit),
+            sources: [],
+          };
         } else {
           const metadata =
             dependency.ecosystem === 'actions'
@@ -604,8 +631,14 @@ export async function collectReviewInput(
   );
   const contextByName = new Map(contexts.map((context) => [context.name, context]));
   const packagesWithContext = packages.map((dependency) => {
-    const context = contextByName.get(dependency.name) ?? { status: 'unavailable', facts: [] };
-    return { ...dependency, context: { status: context.status, facts: context.facts } };
+    const context = contextByName.get(dependency.name) ?? {
+      status: 'unavailable',
+      facts: [],
+    };
+    return {
+      ...dependency,
+      context: { status: context.status, facts: context.facts },
+    };
   });
   const coverage = limitedCoverage(
     collectCoverage

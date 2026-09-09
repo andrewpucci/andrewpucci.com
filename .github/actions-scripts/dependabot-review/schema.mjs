@@ -1,3 +1,5 @@
+import { decisionUnits } from './decision-units.mjs';
+
 const verdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge', 'analysis_unavailable']);
 const policyVerdicts = new Set(['merge', 'merge_with_followups', 'do_not_merge']);
 const policyVerdictPriority = new Map([
@@ -7,6 +9,18 @@ const policyVerdictPriority = new Map([
 ]);
 const usefulness = new Set(['use_now', 'consider_later', 'not_relevant']);
 const functionalityKinds = new Set(['new_capability']);
+const dependencyManifestPaths = new Set([
+  'package.json',
+  'package-lock.json',
+  'pnpm-lock.yaml',
+  'yarn.lock',
+]);
+const futureOnlyUseCase =
+  /\b(?:not (?:currently|yet) (?:used|in use|adopted|configured)|future (?:use|adoption)|no (?:existing|current) [^.\n]*\b(?:configuration|config|setup|integration)\b|(?:until|after|when) [^.\n]*\b(?:created|configured|adopted))\b/i;
+const requiresConfigurationCreation =
+  /\b(?:(?:configuration|config|setup|integration|workflow|file)[^\n]*\bneeds? creation|(?:needs?|requires?) [^.\n]*\b(?:configuration|config|setup|integration|workflow|file)\b[^.\n]*\b(?:creation|creating)\b)\b/i;
+const unconfirmedCapability =
+  /\b(?:(?:immediate )?(?:utility|benefit|usefulness) (?:is )?not (?:confirmed|established)|not (?:yet )?(?:confirmed|established)|new (?:feature|workflow|surface) requiring separate (?:evaluation|adoption)|separate (?:product )?(?:surface|workflow) (?:requires|needs) (?:separate )?(?:evaluation|adoption))\b/i;
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable', 'group_backed']);
 const contextStatuses = new Set(['available', 'partial', 'unavailable']);
 const provenanceStatuses = new Set(['verified', 'attention_required', 'unavailable']);
@@ -215,7 +229,11 @@ export function parseReviewInput(value) {
       const path = string(fact.path, 'context fact path');
       if (!contextKinds.has(kind) || path.startsWith('/') || path.includes('..'))
         throw new TypeError('context fact must have a trusted repository path');
-      return { kind, path, excerpt: string(fact.excerpt, 'context fact excerpt') };
+      return {
+        kind,
+        path,
+        excerpt: string(fact.excerpt, 'context fact excerpt'),
+      };
     });
     const sources = array(dependency.sources, 'sources').map((value) => {
       const source = object(value, 'source');
@@ -364,7 +382,7 @@ export function parsePolicy(value, input) {
   return { verdictCeiling, findings };
 }
 
-export function parseAnalysis(value, input) {
+function parsePackageAnalysis(value, input) {
   const analysis = object(value, 'analysis');
   const verdict = string(analysis.verdict, 'verdict');
   if (!verdicts.has(verdict)) throw new TypeError('unsupported verdict');
@@ -390,6 +408,49 @@ export function parseAnalysis(value, input) {
     if (!sourceUrls.has(url)) throw new TypeError(`unknown evidence URL: ${url}`);
     return url;
   };
+  const parseCapability = (value, dependency, assessmentSourceUrls) => {
+    try {
+      const feature = object(value, 'feature');
+      const kind = string(feature.kind, 'feature kind');
+      if (!functionalityKinds.has(kind)) return null;
+      const usefulnessValue = string(feature.usefulness, 'feature usefulness');
+      if (!usefulness.has(usefulnessValue)) return null;
+      const sourceUrl = string(feature.sourceUrl, 'feature source URL');
+      if (!sourceUrls.has(sourceUrl) || !assessmentSourceUrls.has(sourceUrl)) return null;
+      const action =
+        feature.action === undefined || feature.action === null
+          ? null
+          : string(feature.action, 'feature action');
+      const contextPath =
+        feature.contextPath === undefined || feature.contextPath === null
+          ? null
+          : string(feature.contextPath, 'feature context path');
+      const featureName = string(feature.feature, 'feature');
+      const rationale = string(feature.rationale, 'feature rationale');
+      if (
+        usefulnessValue !== 'not_relevant' &&
+        (!action ||
+          !contextPath ||
+          dependencyManifestPaths.has(contextPath) ||
+          !dependency.context.facts.some((fact) => fact.path === contextPath) ||
+          futureOnlyUseCase.test(`${featureName}\n${action}\n${rationale}`) ||
+          requiresConfigurationCreation.test(`${featureName}\n${action}\n${rationale}`) ||
+          unconfirmedCapability.test(`${featureName}\n${action}\n${rationale}`))
+      )
+        return null;
+      return {
+        kind,
+        feature: featureName,
+        sourceUrl,
+        usefulness: usefulnessValue,
+        action,
+        contextPath,
+        rationale,
+      };
+    } catch {
+      return null;
+    }
+  };
   const assessments = array(analysis.packageAssessments, 'package assessments').map((value) => {
     const item = object(value, 'package assessment');
     const name = string(item.name, 'assessment package name');
@@ -398,54 +459,16 @@ export function parseAnalysis(value, input) {
     const dependency = packages.get(packageIdentity({ name, from, to }));
     if (!dependency) throw new TypeError('analysis references an unknown package');
     const assessmentSourceUrls = new Set(dependency.sources.map((source) => source.url));
-    const newFunctionality = array(item.newFunctionality, 'new functionality');
-    if (newFunctionality.length > 1)
-      throw new TypeError('analysis may contain at most one feature per package assessment');
-    if (dependency.evidence?.status === 'group_backed' && newFunctionality.length)
-      throw new TypeError(
-        'group-backed evidence cannot support an individual adoption recommendation'
-      );
+    const candidates = Array.isArray(item.newFunctionality) ? item.newFunctionality : [];
+    const capability =
+      candidates.length === 1 && dependency.evidence?.status !== 'group_backed'
+        ? parseCapability(candidates[0], dependency, assessmentSourceUrls)
+        : null;
     return {
       name,
       from,
       to,
-      newFunctionality: newFunctionality.map((value) => {
-        const feature = object(value, 'feature');
-        const kind = string(feature.kind, 'feature kind');
-        if (!functionalityKinds.has(kind))
-          throw new TypeError('feature must be a newly introduced capability');
-        const usefulnessValue = string(feature.usefulness, 'feature usefulness');
-        if (!usefulness.has(usefulnessValue)) throw new TypeError('unsupported usefulness');
-        const sourceUrl = requireUrl(string(feature.sourceUrl, 'feature source URL'));
-        if (!assessmentSourceUrls.has(sourceUrl))
-          throw new TypeError('feature must cite evidence for its assessed package');
-        const action =
-          feature.action === undefined || feature.action === null
-            ? null
-            : string(feature.action, 'feature action');
-        const contextPath =
-          feature.contextPath === undefined || feature.contextPath === null
-            ? null
-            : string(feature.contextPath, 'feature context path');
-        if (
-          usefulnessValue !== 'not_relevant' &&
-          (!action ||
-            !contextPath ||
-            !dependency.context.facts.some((fact) => fact.path === contextPath))
-        )
-          throw new TypeError(
-            'visible adoption opportunities require an action and matching trusted repository context'
-          );
-        return {
-          kind,
-          feature: string(feature.feature, 'feature'),
-          sourceUrl,
-          usefulness: usefulnessValue,
-          action,
-          contextPath,
-          rationale: string(feature.rationale, 'feature rationale'),
-        };
-      }),
+      newFunctionality: capability ? [capability] : [],
     };
   });
   const expectedAssessments = new Set(
@@ -514,5 +537,140 @@ export function parseAnalysis(value, input) {
       analysis.remediationPrompt === null
         ? null
         : string(analysis.remediationPrompt, 'remediation prompt'),
+  };
+}
+
+function isDecisionAssessment(value) {
+  return value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function aggregateDecisionVerdict(assessments) {
+  return assessments.reduce(
+    (current, assessment) => stricterVerdict(current, assessment.verdict),
+    'merge'
+  );
+}
+
+function parseDecisionFollowups(verdict, value) {
+  const candidates = array(value, 'decision followups');
+  if (
+    candidates.length > 8 ||
+    (verdict === 'merge_with_followups' && !candidates.length) ||
+    (verdict !== 'merge_with_followups' && candidates.length)
+  )
+    throw new TypeError('decision followups do not match the advisory verdict');
+  return candidates.flatMap((value) => {
+    const followup = object(value, 'decision followup');
+    if (Object.keys(followup).some((field) => !['description', 'blocking'].includes(field)))
+      throw new TypeError('decision followup contains unsupported fields');
+    const description = string(followup.description, 'decision followup description');
+    if (description.length > 280 || followup.blocking !== false)
+      throw new TypeError('decision followup must be bounded and explicitly non-blocking');
+    return requiresConfigurationCreation.test(description)
+      ? []
+      : [{ description, blocking: false }];
+  });
+}
+
+function researchUnit(unit) {
+  return {
+    group: unit.group,
+    members: unit.members.map(({ name, from, to }) => ({ name, from, to })),
+    count: unit.members.length,
+  };
+}
+
+function normalizeDecisionAnalysis(value, input) {
+  const analysis = object(value, 'analysis');
+  if (Object.keys(analysis).some((field) => field !== 'decisionAssessments'))
+    throw new TypeError('decision analysis contains unsupported fields');
+  const units = decisionUnits(input);
+  const expected = new Map(units.map((unit) => [unit.id, unit]));
+  const assessments = array(analysis.decisionAssessments, 'decision assessments').map((value) => {
+    if (!isDecisionAssessment(value)) throw new TypeError('decision assessment must be an object');
+    const fields = [
+      'decisionUnit',
+      'verdict',
+      'summary',
+      'newFunctionality',
+      'blockers',
+      'followups',
+      'remediationPrompt',
+    ];
+    if (Object.keys(value).some((field) => !fields.includes(field)))
+      throw new TypeError('decision assessment contains unsupported fields');
+    const decisionUnit = string(value.decisionUnit, 'decision unit');
+    const unit = expected.get(decisionUnit);
+    if (!unit) throw new TypeError('analysis references an unknown decision unit');
+    const requestedVerdict = string(value.verdict, 'decision verdict');
+    if (!policyVerdicts.has(requestedVerdict)) throw new TypeError('unsupported decision verdict');
+    const followups = parseDecisionFollowups(requestedVerdict, value.followups);
+    const verdict =
+      requestedVerdict === 'merge_with_followups' && !followups.length ? 'merge' : requestedVerdict;
+    const assessment = {
+      decisionUnit,
+      unit,
+      verdict,
+      summary: string(value.summary, 'decision summary'),
+      newFunctionality: array(value.newFunctionality, 'decision new functionality'),
+      blockers: array(value.blockers, 'decision blockers'),
+      followups,
+      remediationPrompt: value.remediationPrompt,
+    };
+    return assessment;
+  });
+  if (
+    assessments.length !== units.length ||
+    new Set(assessments.map(({ decisionUnit }) => decisionUnit)).size !== units.length
+  )
+    throw new TypeError('analysis must contain exactly one decision assessment per input unit');
+  const verdict = aggregateDecisionVerdict(assessments);
+  const followups =
+    verdict === 'merge_with_followups'
+      ? assessments.flatMap((assessment) => assessment.followups)
+      : [];
+  const followupUnits =
+    verdict === 'merge_with_followups'
+      ? assessments.flatMap((assessment) =>
+          assessment.followups.map(() => researchUnit(assessment.unit))
+        )
+      : [];
+  const packageAssessments = assessments.flatMap((assessment) =>
+    assessment.unit.members.map((dependency) => ({
+      name: dependency.name,
+      from: dependency.from,
+      to: dependency.to,
+      newFunctionality:
+        packageIdentity(dependency) === packageIdentity(assessment.unit.anchor)
+          ? assessment.newFunctionality
+          : [],
+    }))
+  );
+  return {
+    analysis: {
+      verdict,
+      summary: assessments.map((assessment) => assessment.summary).join(' '),
+      packageAssessments,
+      blockers: assessments.flatMap((assessment) => assessment.blockers),
+      followups,
+      remediationPrompt:
+        assessments.find((assessment) => assessment.remediationPrompt !== null)
+          ?.remediationPrompt ?? null,
+    },
+    followupUnits,
+  };
+}
+
+export function parseAnalysis(value, input) {
+  if (!value || typeof value !== 'object' || !('decisionAssessments' in value))
+    return parsePackageAnalysis(value, input);
+  const normalized = normalizeDecisionAnalysis(value, input);
+  const analysis = parsePackageAnalysis(normalized.analysis, input);
+  return {
+    ...analysis,
+    followups: analysis.followups.map((followup, index) => ({
+      ...followup,
+      researchUnit: normalized.followupUnits.at(index),
+    })),
   };
 }

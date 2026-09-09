@@ -109,8 +109,8 @@ export async function buildReviewFromInput(
   const analysis = await analyzeBatches(
     { ...input, policy },
     {
-      analyzeBatch: (batch, { timeoutMs }) =>
-        analyze(batch, mistralApiKey, fetchLike, { timeoutMs }),
+      analyzeBatch: (batch, { timeoutMs, retry }) =>
+        analyze(batch, mistralApiKey, fetchLike, { timeoutMs, retry }),
     }
   );
   const body = renderComment(analysis, {

@@ -10,6 +10,12 @@ must account for every changed dependency, reduce mechanically related updates
 to meaningful decision units, and put the maintainer's next action before
 supporting detail.
 
+Coverage answers whether the workflow has accounted for an update and selected
+the right decision unit. It is distinct from the upstream evidence needed to
+recommend an upgrade. A failed lockfile grouping therefore becomes a bounded
+standalone review unit when its lifecycle facts are complete; it is not, by
+itself, an external-research task.
+
 This is advisory decision support. GitHub CI and dependency-policy gates remain
 separate and are not restated in the managed comment.
 
@@ -108,9 +114,10 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
 ### Analysis and verdicts
 
 1. Analyze a direct-update coverage group as one decision unit: the model sees
-   the direct update's vetted upstream evidence plus a bounded summary of its
-   lockfile-related changed members. It must return one assessment for the
-   group, not fabricate individual research for each member.
+   the direct anchor's vetted upstream evidence and the group's member count.
+   It returns one assessment for the group, not repetitive member assessments
+   or fabricated individual research. The workflow maps that validated result
+   to the group's immutable member list deterministically.
 2. Analyze standalone updates as individual decision units. All analysis output
    remains validated against the unit's vetted sources, trusted context, and
    constituent package identities.
@@ -130,7 +137,14 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
    advisory verdict; it does not duplicate CI failure or vulnerability-gate
    reporting in the decision comment. A `merge_with_followups` conclusion is
    valid only when coverage is complete and every follow-up is explicitly marked
-   non-blocking; otherwise use `decision_incomplete`.
+   non-blocking; otherwise use `decision_incomplete`. The comment renders at
+   most eight follow-up decision units in deterministic analysis order,
+   consolidating related actions for each unit, and provides one bounded,
+   immutable-head-pinned research prompt per retained unit when the repository
+   and review digest are available. Optional capability cards are omitted when
+   their stated benefit requires an unconfirmed product surface. Follow-up
+   items that require creating new configuration are omitted and cannot alone
+   justify a `merge_with_followups` verdict.
 7. Canonicalize the validated decision packet and render a bounded
    `reviewDigest` with the immutable head SHA. A rerun for a new head SHA always
    creates a new digest and invalidates prior decision coverage. At most one
@@ -140,6 +154,40 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
    emit bounded diagnostics—head SHA, review digest, model/prompt version,
    coverage counts, and failure category—without raw prompts, model output,
    source excerpts, tokens, credentials, or personal data.
+
+### Classification recovery and schema-invalid analysis
+
+1. A manifest-declared direct update is its own direct decision anchor even
+   when the root lockfile path cannot be resolved to the reported target
+   version. The manifest declaration establishes ownership; the missing path
+   must not manufacture a false standalone relationship.
+2. A transitive update whose lockfile paths reach zero or multiple changed
+   direct anchors is a standalone decision unit, not automatically unresolved.
+   It remains subject to its own upstream-evidence and policy checks. The
+   workflow must never claim that a direct anchor caused or individually
+   researched that standalone update.
+3. When base/head package paths cannot be paired, first inspect the immutable
+   `hasInstallScript` flags at every known path. If none has a lifecycle-script
+   signal, lifecycle coverage is complete without a registry request. If any
+   does, retrieve the existing exact-version registry metadata pair and compare
+   lifecycle scripts. A successful comparison resolves the fact, including a
+   no-change result; an unavailable or budget-exhausted comparison remains an
+   explicit incomplete unit.
+4. Do not render a research handoff for a relationship-classification note. A
+   handoff is reserved for a real decision-evidence gap: unavailable upstream
+   evidence, an unresolved lifecycle fact, a packet limit, or an exhausted
+   model analysis.
+5. Send a per-request native Mistral JSON Schema in strict mode. It constrains
+   the decision-unit IDs, enum values, required fields, and vetted source and
+   finding identifiers. Local validation remains authoritative for cross-field
+   policy, evidence, and coverage invariants.
+6. Classify model failures without retaining model content: invalid JSON,
+   schema cardinality, unknown evidence, unknown identity, packet limit,
+   request budget, deadline, transport, HTTP, API-envelope, truncation, or
+   incomplete coverage. Retry only invalid JSON or schema failures once while
+   the existing request and deadline budgets allow it. A repeated structured
+   failure gives that decision unit a head-pinned research brief; successful
+   units and deterministic blockers remain intact.
 
 ### Comment wayfinding
 
@@ -209,6 +257,16 @@ The test suite must prove:
    PR 271's concise decision queue.
 10. Existing evidence/policy validation, bounded model packets, credential-free
     preflight, and managed-comment upsert behavior remain intact.
+11. A direct manifest update stays a direct decision unit when its lockfile
+    path is missing; ambiguous or orphaned transitive paths become standalone
+    units when lifecycle facts are complete.
+12. Unmatched path sets with no `hasInstallScript` signal require no registry
+    call; a signaled unmatched set is resolved only by an exact bounded registry
+    comparison.
+13. A strict native schema constrains every model reply to its decision-unit
+    contract. Local validation retries an invalid JSON or schema response once,
+    then emits a named, content-free failure category and actionable research
+    brief without raw model output in comments or diagnostics.
 
 Run the full lint, checks, tests, build, and a local PR 271 dry run after the
 implementation slices are complete.
@@ -226,6 +284,8 @@ implementation slices are complete.
 - Make incomplete coverage visible and more restrictive than a normal merge
   recommendation.
 - Preserve every successful assessment and the existing comment lifecycle.
+- Separate a mechanical lockfile classification note from an actual missing
+  decision-evidence fact.
 
 ### Ask first
 
@@ -245,6 +305,8 @@ implementation slices are complete.
 - Label a group safe, individually researched, or non-decision-affecting solely
   because it is transitive.
 - Hide unresolved updates behind a generic overflow message or a merge verdict.
+- Send a maintainer to external research merely to resolve a local lockfile
+  relationship classification.
 - Treat provenance as behavior evidence, or lifecycle-script absence as a safety
   proof.
 - Accept externally generated research text as policy, coverage, or verdict
@@ -266,6 +328,9 @@ implementation slices are complete.
 6. A maintainer can use an unresolved item's handoff brief for external research
    without granting that service workflow credentials, write access, or a path
    back into the automated verdict.
+7. PR 271-style lockfile path churn does not create research briefs when the
+   immutable lifecycle evidence is complete; a repeated structured-model
+   failure has one bounded recovery attempt and then a named human fallback.
 
 ## Open questions
 

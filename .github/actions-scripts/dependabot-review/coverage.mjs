@@ -121,14 +121,26 @@ function lifecycleDelta(update, basePackages, headPackages) {
     !basePaths.length ||
     basePaths.length !== headPaths.length ||
     !basePaths.every((path) => headPaths.includes(path))
-  )
-    return {
-      status: 'unavailable',
-      metadata: 'unavailable',
-      changes: [],
-      paths: headPaths,
-      reason: 'unmatched_lockfile_paths',
-    };
+  ) {
+    const hasInstallScript = [...basePaths, ...headPaths].some((path) =>
+      Boolean(basePackages.get(path)?.hasInstallScript || headPackages.get(path)?.hasInstallScript)
+    );
+    return hasInstallScript
+      ? {
+          status: 'changed',
+          metadata: 'pending',
+          changes: [],
+          paths: headPaths,
+          reason: 'unmatched_lockfile_paths',
+        }
+      : {
+          status: 'unchanged',
+          metadata: 'not_needed',
+          changes: [],
+          paths: headPaths,
+          reason: null,
+        };
+  }
   const changedPaths = headPaths.filter(
     (path) =>
       Boolean(basePackages.get(path)?.hasInstallScript) !==
@@ -158,6 +170,27 @@ function unavailableItem(update, reason) {
     },
     status: 'unresolved',
     reason,
+  };
+}
+
+function coverageItem(update, group, lifecycle) {
+  const status =
+    lifecycle.status === 'unavailable'
+      ? 'unresolved'
+      : lifecycle.metadata === 'pending'
+        ? 'pending'
+        : 'complete';
+  return {
+    update,
+    group,
+    lifecycle,
+    status,
+    reason:
+      lifecycle.status === 'unavailable'
+        ? lifecycle.reason
+        : lifecycle.metadata === 'pending'
+          ? 'lifecycle_metadata_pending'
+          : null,
   };
 }
 
@@ -209,42 +242,27 @@ export function collectNpmCoverage(input = {}) {
       const possibleAnchors = new Set(
         matchingAnchors.flat().map((anchor) => identity(anchor.update))
       );
-      const directAnchor = anchors.find((anchor) => identity(anchor.update) === identity(update));
+      const directAnchor = update.dependencyType.startsWith('direct:') ? { update } : undefined;
       const anchor =
         directAnchor ?? (possibleAnchors.size === 1 ? matchingAnchors.flat()[0] : undefined);
       const hasUnambiguousAnchor =
-        Boolean(paths.length) &&
         Boolean(anchor) &&
-        matchingAnchors.every(
-          (candidates) =>
-            candidates.length === 1 && identity(candidates[0].update) === identity(anchor.update)
-        );
-      if (!hasUnambiguousAnchor) {
-        const reason = paths.length ? 'ambiguous_relationship' : 'missing_lockfile_path';
-        return {
-          ...unavailableItem(update, reason),
-          lifecycle: lifecycleDelta(update, basePackages, headPackages),
-        };
-      }
+        (Boolean(directAnchor) ||
+          (Boolean(paths.length) &&
+            matchingAnchors.every(
+              (candidates) =>
+                candidates.length === 1 &&
+                identity(candidates[0].update) === identity(anchor.update)
+            )));
       const lifecycle = lifecycleDelta(update, basePackages, headPackages);
-      const status =
-        lifecycle.status === 'unavailable'
-          ? 'unresolved'
-          : lifecycle.metadata === 'pending'
-            ? 'pending'
-            : 'complete';
-      return {
+      if (!hasUnambiguousAnchor) {
+        return coverageItem(update, { kind: 'standalone', anchor: null }, lifecycle);
+      }
+      return coverageItem(
         update,
-        group: { kind: 'direct', anchor: anchorIdentity(anchor.update) },
-        lifecycle,
-        status,
-        reason:
-          lifecycle.status === 'unavailable'
-            ? lifecycle.reason
-            : lifecycle.metadata === 'pending'
-              ? 'lifecycle_metadata_pending'
-              : null,
-      };
+        { kind: 'direct', anchor: anchorIdentity(anchor.update) },
+        lifecycle
+      );
     }),
   };
 }

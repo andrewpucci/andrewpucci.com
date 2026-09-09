@@ -29,6 +29,21 @@ function pendingCoverage(name = 'direct') {
   };
 }
 
+function unmatchedPendingCoverage(name = 'direct') {
+  const coverage = pendingCoverage(name);
+  return {
+    items: [
+      {
+        ...coverage.items[0],
+        lifecycle: {
+          ...coverage.items[0].lifecycle,
+          reason: 'unmatched_lockfile_paths',
+        },
+      },
+    ],
+  };
+}
+
 describe('collectLifecycleScripts', () => {
   it('retrieves exact package metadata only when a lifecycle-script signal changes', async () => {
     const fetchMock = vi
@@ -83,6 +98,27 @@ describe('collectLifecycleScripts', () => {
       lifecycle: { status: 'changed', metadata: 'unavailable', changes: [] },
       status: 'unresolved',
       reason: 'lifecycle_metadata_unavailable',
+    });
+  });
+
+  it('resolves unmatched paths when exact metadata proves lifecycle scripts are unchanged', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ name: 'direct', version: '1.0.0', scripts: {} }))
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ name: 'direct', version: '2.0.0', scripts: {} }))
+      );
+
+    const result = await collectLifecycleScripts(unmatchedPendingCoverage(), {
+      fetchLike: fetchMock,
+    });
+
+    expect(result.items[0]).toMatchObject({
+      lifecycle: { status: 'unchanged', metadata: 'available', changes: [], reason: null },
+      status: 'complete',
+      reason: null,
     });
   });
 

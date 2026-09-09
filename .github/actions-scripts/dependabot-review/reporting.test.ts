@@ -19,7 +19,12 @@ describe('renderComment', () => {
         blockers: [],
         followups:
           verdict === 'merge_with_followups'
-            ? [{ description: 'Record the optional configuration choice.', blocking: false }]
+            ? [
+                {
+                  description: 'Record the optional configuration choice.',
+                  blocking: false,
+                },
+              ]
             : [],
         remediationPrompt: null,
       },
@@ -27,6 +32,93 @@ describe('renderComment', () => {
     );
 
     expect(body).toContain(`**Next action:** ${action}`);
+    if (verdict === 'merge_with_followups') {
+      expect(body).toContain('### Non-blocking follow-ups');
+      expect(body).toContain('Record the optional configuration choice.');
+    }
+  });
+
+  it('labels a repeated schema-invalid response with its safe failure category', () => {
+    const body = renderComment(
+      {
+        verdict: 'decision_incomplete',
+        summary: 'One decision unit awaits evidence.',
+        decisionQueue: [
+          {
+            group: { kind: 'standalone', anchor: null },
+            members: [{ name: 'example', from: '1.0.0', to: '2.0.0' }],
+            count: 1,
+            reason: 'analysis_schema_assessment_cardinality',
+            failureCategory: 'analysis_schema_assessment_cardinality',
+            action: 'Use the copyable research brief for this immutable decision unit.',
+            lifecycle: [],
+          },
+        ],
+        packageAssessments: [],
+        blockers: [],
+        remediationPrompt: null,
+      },
+      'immutable-head'
+    );
+
+    expect(body).toContain(
+      'Mistral returned an incomplete set of decision assessments after one retry.'
+    );
+  });
+
+  it('labels a repeated followup-contract failure without exposing model output', () => {
+    const body = renderComment(
+      {
+        verdict: 'decision_incomplete',
+        summary: 'One decision unit awaits evidence.',
+        decisionQueue: [
+          {
+            group: { kind: 'standalone', anchor: null },
+            members: [{ name: 'example', from: '1.0.0', to: '2.0.0' }],
+            count: 1,
+            reason: 'analysis_schema_followup_contract',
+            failureCategory: 'analysis_schema_followup_contract',
+            action: 'Use the copyable research brief for this immutable decision unit.',
+            lifecycle: [],
+          },
+        ],
+        packageAssessments: [],
+        blockers: [],
+        remediationPrompt: null,
+      },
+      'immutable-head'
+    );
+
+    expect(body).toContain(
+      'Mistral follow-ups did not match its advisory verdict after one retry.'
+    );
+    expect(body).not.toContain('This followup is not valid');
+  });
+
+  it('labels an exhausted model budget without disclosing the model response', () => {
+    const body = renderComment(
+      {
+        verdict: 'decision_incomplete',
+        summary: 'One decision unit awaits evidence.',
+        decisionQueue: [
+          {
+            group: { kind: 'standalone', anchor: null },
+            members: [{ name: 'example', from: '1.0.0', to: '2.0.0' }],
+            count: 1,
+            reason: 'analysis_request_budget_exhausted',
+            failureCategory: 'analysis_request_budget_exhausted',
+            action: 'Rerun after increasing the model request budget.',
+            lifecycle: [],
+          },
+        ],
+        packageAssessments: [],
+        blockers: [],
+        remediationPrompt: null,
+      },
+      'immutable-head'
+    );
+
+    expect(body).toContain('The bounded Mistral request budget was exhausted before analysis.');
   });
 
   it('renders a blocking remediation report as advisory Markdown', () => {
@@ -39,7 +131,12 @@ describe('renderComment', () => {
           {
             reason: 'Run codemod',
             impact: 'Upgrade incomplete.',
-            evidence: [{ claim: 'Official migration.', sourceUrl: 'https://example.com' }],
+            evidence: [
+              {
+                claim: 'Official migration.',
+                sourceUrl: 'https://example.com',
+              },
+            ],
             remediation: ['Run it.'],
             validation: ['npm test'],
           },
@@ -60,7 +157,10 @@ describe('renderComment', () => {
         summary: 'Two decision units await evidence.',
         decisionQueue: [
           {
-            group: { kind: 'direct', anchor: { name: 'direct', from: '1.0.0', to: '2.0.0' } },
+            group: {
+              kind: 'direct',
+              anchor: { name: 'direct', from: '1.0.0', to: '2.0.0' },
+            },
             members: [
               { name: 'direct', from: '1.0.0', to: '2.0.0' },
               { name: 'nested', from: '1.0.0', to: '2.0.0' },
@@ -110,7 +210,12 @@ describe('renderComment', () => {
             sources: [{ url: 'https://example.com/standalone' }],
           },
         ],
-        provenance: { status: 'verified', invalid: 0, missing: 0, reason: null },
+        provenance: {
+          status: 'verified',
+          invalid: 0,
+          missing: 0,
+          reason: null,
+        },
       }
     );
 
@@ -125,6 +230,109 @@ describe('renderComment', () => {
     expect(body).toContain('Copyable research brief: direct update');
     expect(body).toContain('Immutable head: head');
     expect(body).toContain('### Advisory provenance');
+  });
+
+  it('renders a pinned research prompt for a follow-up decision unit', () => {
+    const body = renderComment(
+      {
+        verdict: 'merge_with_followups',
+        summary: 'One follow-up needs an external investigation.',
+        packageAssessments: [],
+        blockers: [],
+        followups: [
+          {
+            description:
+              'Investigate whether the new opt-in integration fits the existing workflow.',
+            blocking: false,
+            researchUnit: {
+              group: { kind: 'standalone', anchor: null },
+              members: [{ name: 'example', from: '1.0.0', to: '2.0.0' }],
+              count: 1,
+            },
+          },
+        ],
+        remediationPrompt: null,
+      },
+      {
+        headSha: 'head',
+        reviewDigest: 'd'.repeat(64),
+        repository: 'owner/site',
+        pullRequest: { number: 271, headSha: 'head' },
+        packages: [
+          {
+            name: 'example',
+            from: '1.0.0',
+            to: '2.0.0',
+            sources: [{ url: 'https://example.com/example/releases/tag/v2.0.0' }],
+          },
+        ],
+        provenance: { status: 'verified', invalid: 0, missing: 0, reason: null },
+      }
+    );
+
+    expect(body).toContain('### Research prompts');
+    expect(body).toContain('Copyable research prompt: standalone update example 1.0.0 to 2.0.0');
+    expect(body).toContain(
+      'Follow-up to investigate: Investigate whether the new opt-in integration fits the existing workflow.'
+    );
+    expect(body).toContain('Immutable head: head');
+  });
+
+  it('bounds research follow-ups globally and combines related actions per decision unit', () => {
+    const names = [
+      'first',
+      'second',
+      'third',
+      'fourth',
+      'fifth',
+      'sixth',
+      'seventh',
+      'eighth',
+      'ninth',
+    ];
+    const researchUnit = (name: string) => ({
+      group: { kind: 'standalone', anchor: null },
+      members: [{ name, from: '1.0.0', to: '2.0.0' }],
+      count: 1,
+    });
+    const followups = names.map((name) => ({
+      description: `${name} action.`,
+      blocking: false,
+      researchUnit: researchUnit(name),
+    }));
+    followups.splice(1, 0, {
+      description: 'first related action.',
+      blocking: false,
+      researchUnit: researchUnit('first'),
+    });
+
+    const body = renderComment(
+      {
+        verdict: 'merge_with_followups',
+        summary: 'Several focused investigations remain.',
+        packageAssessments: [],
+        blockers: [],
+        followups,
+        remediationPrompt: null,
+      },
+      {
+        headSha: 'head',
+        reviewDigest: 'd'.repeat(64),
+        repository: 'owner/site',
+        pullRequest: { number: 271, headSha: 'head' },
+        packages: names.map((name) => ({
+          name,
+          from: '1.0.0',
+          to: '2.0.0',
+          sources: [{ url: `https://example.com/${name}` }],
+        })),
+      }
+    );
+
+    expect(body).toContain('**Standalone update first 1.0.0 to 2.0.0:** first action.');
+    expect(body).toContain('first related action.');
+    expect(body).not.toContain('ninth action.');
+    expect(body.match(/<summary>Copyable research prompt:/g)).toHaveLength(8);
   });
 
   it('escapes fence delimiters inside a remediation prompt', () => {
@@ -227,7 +435,12 @@ describe('renderComment', () => {
           {
             reason: 'Run codemod',
             impact: 'Upgrade incomplete.',
-            evidence: [{ claim: 'Official migration.', sourceUrl: 'https://example.com' }],
+            evidence: [
+              {
+                claim: 'Official migration.',
+                sourceUrl: 'https://example.com',
+              },
+            ],
             remediation: ['Run it.'],
             validation: ['npm test'],
           },
@@ -306,5 +519,22 @@ describe('renderComment', () => {
     expect(body.indexOf('### Reasons not to merge')).toBeLessThan(
       body.indexOf('### New capabilities to consider later')
     );
+  });
+
+  it('does not render follow-ups when the final verdict is not merge_with_followups', () => {
+    const body = renderComment(
+      {
+        verdict: 'decision_incomplete',
+        summary: 'One decision unit still needs evidence.',
+        packageAssessments: [],
+        blockers: [],
+        followups: [{ description: 'Do not show this partial-result follow-up.', blocking: false }],
+        remediationPrompt: null,
+      },
+      'head'
+    );
+
+    expect(body).not.toContain('### Non-blocking follow-ups');
+    expect(body).not.toContain('Do not show this partial-result follow-up.');
   });
 });

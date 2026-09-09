@@ -50,7 +50,12 @@ describe('review contracts', () => {
       ...reviewInput.packages[0],
       name: 'nested',
       dependencyType: 'transitive',
-      sources: [{ ...source, url: 'https://github.com/example/nested/releases/tag/v2.0.0' }],
+      sources: [
+        {
+          ...source,
+          url: 'https://github.com/example/nested/releases/tag/v2.0.0',
+        },
+      ],
     };
     const input = {
       ...reviewInput,
@@ -79,7 +84,12 @@ describe('review contracts', () => {
             reason: null,
           },
           {
-            update: { name: 'nested', from: '1.0.0', to: '2.0.0', dependencyType: 'transitive' },
+            update: {
+              name: 'nested',
+              from: '1.0.0',
+              to: '2.0.0',
+              dependencyType: 'transitive',
+            },
             group: {
               kind: 'direct',
               anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
@@ -102,7 +112,11 @@ describe('review contracts', () => {
       ...input,
       packages: [
         input.packages[0],
-        { ...nested, evidence: { status: 'group_backed', reason: null }, sources: [] },
+        {
+          ...nested,
+          evidence: { status: 'group_backed', reason: null },
+          sources: [],
+        },
       ],
     };
 
@@ -111,7 +125,10 @@ describe('review contracts', () => {
       parseReviewInput({
         ...groupBacked,
         packages: [
-          { ...groupBacked.packages[0], evidence: { status: 'group_backed', reason: null } },
+          {
+            ...groupBacked.packages[0],
+            evidence: { status: 'group_backed', reason: null },
+          },
           groupBacked.packages[1],
         ],
       })
@@ -203,13 +220,35 @@ describe('review contracts', () => {
     ).toThrow(/source URL/i);
   });
 
-  it('rejects analysis citations not present in the input packet', () => {
-    expect(() =>
+  it('omits a capability citation not present in the input packet', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'package.json',
+                excerpt: 'The repository installs the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
       parseAnalysis(
         {
           verdict: 'merge_with_followups',
           followups: [
-            { description: 'Confirm the optional configuration later.', blocking: false },
+            {
+              description: 'Confirm the optional configuration later.',
+              blocking: false,
+            },
           ],
           summary: 'Consider the new feature.',
           packageAssessments: [
@@ -223,7 +262,9 @@ describe('review contracts', () => {
                   feature: 'Documented feature',
                   sourceUrl: 'https://untrusted.example/feature',
                   usefulness: 'consider_later',
-                  rationale: 'Potentially useful.',
+                  action: 'Evaluate the feature in the existing package setup.',
+                  contextPath: 'package.json',
+                  rationale: 'The existing setup can use this capability.',
                 },
               ],
             },
@@ -231,12 +272,12 @@ describe('review contracts', () => {
           blockers: [],
           remediationPrompt: null,
         },
-        reviewInput
+        input
       )
-    ).toThrow(/unknown evidence URL/i);
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
   });
 
-  it('rejects a bug fix masquerading as an adoption opportunity', () => {
+  it('omits a bug fix masquerading as an adoption opportunity', () => {
     const input = {
       ...reviewInput,
       packages: [
@@ -256,7 +297,7 @@ describe('review contracts', () => {
       ],
     };
 
-    expect(() =>
+    expect(
       parseAnalysis(
         {
           verdict: 'merge',
@@ -285,11 +326,11 @@ describe('review contracts', () => {
         },
         input
       )
-    ).toThrow(/newly introduced capability/i);
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
   });
 
-  it('requires a visible use case before deferring adoption of a new capability', () => {
-    expect(() =>
+  it('omits a capability without a visible use case', () => {
+    expect(
       parseAnalysis(
         {
           verdict: 'merge',
@@ -318,7 +359,279 @@ describe('review contracts', () => {
         },
         reviewInput
       )
-    ).toThrow(/visible adoption opportunities/i);
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a deferred capability that describes only future use', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: '.github/workflows/frontend.yml',
+                excerpt: 'The existing workflow uses the package for deployment.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Support a new optional product surface.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Evaluate this feature for future use in the workflow.',
+                  contextPath: '.github/workflows/frontend.yml',
+                  rationale: 'The new product surface is not currently used.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a capability whose configuration needs creation', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'src/routes/+page.svelte',
+                excerpt: 'The existing page uses the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Add a type-safe configuration helper.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action:
+                    'Check whether the configuration needs creation before adopting the helper.',
+                  contextPath: 'src/routes/+page.svelte',
+                  rationale: 'The helper provides type-safe configuration.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('retains a capability with an evidenced current use case', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'src/routes/+page.svelte',
+                excerpt: 'The page renders using the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Add a rendering option.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Evaluate the option in the existing page.',
+                  contextPath: 'src/routes/+page.svelte',
+                  rationale: 'The page already renders using the package.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({
+      packageAssessments: [
+        {
+          newFunctionality: [
+            {
+              feature: 'Add a rendering option.',
+              contextPath: 'src/routes/+page.svelte',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('omits a capability supported only by a dependency manifest', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'package.json',
+                excerpt: '"example": "^2.0.0"',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Record screenshot capture order.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Evaluate ordering in current test workflows.',
+                  contextPath: 'package.json',
+                  rationale: 'The package is installed for test workflows.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a product surface that is not yet confirmed as used', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: '.github/workflows/frontend.yml',
+                excerpt: 'The workflow deploys the site with the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Compress JSON Pipelines sinks with gzip.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Review Pipelines for potential adoption in deployment workflows.',
+                  contextPath: '.github/workflows/frontend.yml',
+                  rationale: 'Pipelines is not yet confirmed as a used surface.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
   });
 
   it('requires explicit, non-blocking followups for a followup verdict', () => {
@@ -336,12 +649,45 @@ describe('review contracts', () => {
         {
           ...analysis,
           followups: [
-            { description: 'Confirm the optional setting after merge.', blocking: false },
+            {
+              description: 'Confirm the optional setting after merge.',
+              blocking: false,
+            },
           ],
         },
         reviewInput
       )
-    ).toMatchObject({ verdict: 'merge_with_followups', followups: [{ blocking: false }] });
+    ).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [{ blocking: false }],
+    });
+  });
+
+  it('omits a decision followup that requires creating configuration', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade itself is ready.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Verify whether lint-staged.config.ts needs creation before adopting defineConfig.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({ verdict: 'merge', followups: [] });
   });
 
   it('rejects a model verdict that exceeds the policy ceiling', () => {
@@ -350,7 +696,10 @@ describe('review contracts', () => {
       packages: [
         {
           ...reviewInput.packages[0],
-          evidence: { status: 'partial', reason: 'Only partial release notes were available.' },
+          evidence: {
+            status: 'partial',
+            reason: 'Only partial release notes were available.',
+          },
         },
       ],
       policy: {
@@ -378,7 +727,12 @@ describe('review contracts', () => {
           ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [],
           remediationPrompt: null,
@@ -388,7 +742,7 @@ describe('review contracts', () => {
     ).toThrow(/policy/i);
   });
 
-  it('rejects use_now without a matching trusted-context fact', () => {
+  it('omits use_now without a matching trusted-context fact', () => {
     const contextInput = {
       ...reviewInput,
       packages: [
@@ -408,7 +762,7 @@ describe('review contracts', () => {
       ],
     };
 
-    expect(() =>
+    expect(
       parseAnalysis(
         {
           verdict: 'merge',
@@ -437,7 +791,7 @@ describe('review contracts', () => {
         },
         contextInput
       )
-    ).toThrow(/context/i);
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
   });
 
   it('rejects duplicate package assessments', () => {
@@ -471,7 +825,12 @@ describe('review contracts', () => {
           ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [
             {
@@ -517,7 +876,12 @@ describe('review contracts', () => {
           ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [
             {
@@ -563,7 +927,12 @@ describe('review contracts', () => {
           ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [
             {

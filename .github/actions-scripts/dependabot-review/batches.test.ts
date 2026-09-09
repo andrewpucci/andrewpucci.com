@@ -144,6 +144,44 @@ describe('Dependabot review batches', () => {
     expect(result).toMatchObject({ verdict: 'decision_incomplete', packageAssessments: [] });
   });
 
+  it('retains explicit follow-ups and distinguishes model units from expanded assessments', async () => {
+    const coverage = {
+      items: input.packages.map((pkg) => ({
+        ...coverageItem(pkg),
+        group: {
+          kind: 'direct',
+          anchor: { name: 'first', from: '1.0.0', to: '2.0.0' },
+        },
+      })),
+    };
+
+    const result = await analyzeBatches(
+      { ...input, coverage },
+      {
+        analyzeBatch: async (batch: { packages: ReturnType<typeof dependency>[] }) => ({
+          verdict: 'merge_with_followups',
+          summary: 'Record the non-blocking configuration choice.',
+          packageAssessments: batch.packages.map(
+            (pkg) => completedAnalysis(pkg).packageAssessments[0]
+          ),
+          blockers: [],
+          followups: [
+            { description: 'Record the optional configuration choice.', blocking: false },
+          ],
+          remediationPrompt: null,
+        }),
+      }
+    );
+
+    expect(result).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [{ description: 'Record the optional configuration choice.', blocking: false }],
+    });
+    expect(result.summary).toBe(
+      'Reviewed 2 dependency updates across 1 model decision unit: 2 package assessments deterministically expanded from 1 validated decision-unit analysis.'
+    );
+  });
+
   it('keeps a direct coverage group intact when a package limit would split its members', async () => {
     const coverage = {
       items: input.packages.map((pkg: ReturnType<typeof dependency>) => ({
@@ -198,6 +236,19 @@ describe('Dependabot review batches', () => {
 
     expect(projected.provenance).toBeUndefined();
     expect(input).not.toHaveProperty('provenance');
+  });
+
+  it('treats incomplete nested review data as absent from a model batch', async () => {
+    const analyzeBatch = vi.fn(async (batch) => completedAnalysis(batch.packages[0]));
+
+    await expect(
+      analyzeBatches(
+        { ...input, coverage: {}, policy: {} },
+        { analyzeBatch, maxPackagesPerBatch: 1 }
+      )
+    ).resolves.toMatchObject({ verdict: 'merge' });
+
+    expect(analyzeBatch).toHaveBeenCalledTimes(2);
   });
 
   it('bounds trusted context and scopes policy findings to the batch', () => {
@@ -269,14 +320,49 @@ describe('Dependabot review batches', () => {
     expect(analyzeBatch).not.toHaveBeenCalled();
     expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
     expect(result.summary).toBe(
-      'Reviewed 1 dependency update across 1 decision unit: 0 validated assessments; 1 unit await decision evidence.'
+      'Reviewed 1 dependency update across 1 model decision unit: 0 package assessments deterministically expanded from 0 validated decision-unit analyses; 1 unit await decision evidence.'
     );
+  });
+
+  it('sends a large direct decision unit as one anchor assessment instead of dropping its members', async () => {
+    const direct = dependency('direct');
+    const groupedPackages = [
+      direct,
+      ...Array.from({ length: 54 }, (_, index) => dependency(`transitive-${index}`)),
+    ];
+    const coverage = {
+      items: groupedPackages.map((pkg) => ({
+        ...coverageItem(pkg),
+        group: {
+          kind: 'direct',
+          anchor: { name: direct.name, from: direct.from, to: direct.to },
+        },
+      })),
+    };
+    const analyzeBatch = vi.fn(async (batch) => ({
+      verdict: 'merge',
+      summary: 'The direct decision is ready.',
+      packageAssessments: batch.packages.map(
+        (pkg: ReturnType<typeof dependency>) => completedAnalysis(pkg).packageAssessments[0]
+      ),
+      blockers: [],
+      followups: [],
+      remediationPrompt: null,
+    }));
+
+    const result = await analyzeBatches(
+      { ...input, packages: groupedPackages, coverage },
+      { analyzeBatch, maxBatchChars: 1_500 }
+    );
+
+    expect(analyzeBatch).toHaveBeenCalledTimes(1);
+    expect(result).toMatchObject({ verdict: 'merge', decisionQueue: [] });
   });
 
   it('splits a truncated batch and preserves the completed package results', async () => {
     const analyzeBatch = vi.fn(async (batch) =>
       batch.packages.length > 1
-        ? { verdict: 'analysis_unavailable', reason: 'truncated' }
+        ? { verdict: 'analysis_unavailable', reason: 'analysis_truncated' }
         : completedAnalysis(batch.packages[0])
     );
 
@@ -287,6 +373,90 @@ describe('Dependabot review batches', () => {
     expect(
       result.packageAssessments.map((assessment: { name: string }) => assessment.name)
     ).toEqual(['first', 'second']);
+  });
+
+  it('retries one schema-invalid batch without changing its decision unit', async () => {
+    const analyzeBatch = vi
+      .fn()
+      .mockResolvedValueOnce({
+        verdict: 'analysis_unavailable',
+        reason: 'analysis_schema_contract',
+      })
+      .mockImplementation(async (batch) => ({
+        verdict: 'merge',
+        summary: 'Both updates are ready.',
+        packageAssessments: batch.packages.map(
+          (pkg: ReturnType<typeof dependency>) => completedAnalysis(pkg).packageAssessments[0]
+        ),
+        blockers: [],
+        followups: [],
+        remediationPrompt: null,
+      }));
+
+    const result = await analyzeBatches(input, { analyzeBatch, maxPackagesPerBatch: 2 });
+
+    expect(analyzeBatch).toHaveBeenCalledTimes(2);
+    expect(analyzeBatch.mock.calls.map(([, options]) => options.retry)).toEqual([false, true]);
+    expect(result).toMatchObject({ verdict: 'merge', decisionQueue: [] });
+  });
+
+  it('queues a repeatedly schema-invalid unit for the research brief', async () => {
+    const analyzeBatch = vi
+      .fn()
+      .mockResolvedValue({ verdict: 'analysis_unavailable', reason: 'analysis_schema_contract' });
+
+    const result = await analyzeBatches(input, { analyzeBatch, maxPackagesPerBatch: 2 });
+
+    expect(analyzeBatch).toHaveBeenCalledTimes(2);
+    expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
+    expect(result.decisionQueue).toHaveLength(2);
+    expect(result.decisionQueue).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reason: 'analysis_schema_contract',
+          action: expect.stringContaining('copyable research brief'),
+        }),
+      ])
+    );
+  });
+
+  it('does not spend beyond the model request budget on a schema retry', async () => {
+    const analyzeBatch = vi
+      .fn()
+      .mockResolvedValue({ verdict: 'analysis_unavailable', reason: 'analysis_schema_contract' });
+
+    const result = await analyzeBatches(input, {
+      analyzeBatch,
+      maxPackagesPerBatch: 2,
+      maxRequests: 1,
+    });
+
+    expect(analyzeBatch).toHaveBeenCalledTimes(1);
+    expect(result.decisionQueue).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ reason: 'analysis_request_budget_exhausted' }),
+      ])
+    );
+  });
+
+  it('reports an exhausted model request budget without calling it unavailable', async () => {
+    const analyzeBatch = vi.fn();
+
+    const result = await analyzeBatches(input, {
+      analyzeBatch,
+      maxPackagesPerBatch: 1,
+      maxRequests: 0,
+    });
+
+    expect(analyzeBatch).not.toHaveBeenCalled();
+    expect(result.decisionQueue).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          reason: 'analysis_request_budget_exhausted',
+          failureCategory: 'analysis_request_budget_exhausted',
+        }),
+      ])
+    );
   });
 
   it('scopes policy findings when retrying a truncated batch', async () => {
@@ -308,7 +478,7 @@ describe('Dependabot review batches', () => {
     };
     const analyzeBatch = vi.fn(async (batch) =>
       batch.packages.length > 1
-        ? { verdict: 'analysis_unavailable', reason: 'truncated' }
+        ? { verdict: 'analysis_unavailable', reason: 'analysis_truncated' }
         : completedAnalysis(batch.packages[0])
     );
 
@@ -373,7 +543,7 @@ describe('Dependabot review batches', () => {
 
     expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
     expect(result.summary).toBe(
-      'Reviewed 2 dependency updates across 2 decision units: 0 validated assessments; 2 units await decision evidence.'
+      'Reviewed 2 dependency updates across 2 model decision units: 0 package assessments deterministically expanded from 0 validated decision-unit analyses; 2 units await decision evidence.'
     );
   });
 
@@ -401,7 +571,7 @@ describe('Dependabot review batches', () => {
 
     expect(result).toMatchObject({ verdict: 'analysis_unavailable' });
     expect(result.summary).toBe(
-      'Reviewed 2 dependency updates across 2 decision units: 0 validated assessments; 2 units await decision evidence.'
+      'Reviewed 2 dependency updates across 2 model decision units: 0 package assessments deterministically expanded from 0 validated decision-unit analyses; 2 units await decision evidence.'
     );
   });
 
@@ -423,7 +593,7 @@ describe('Dependabot review batches', () => {
     );
 
     expect(result.summary).toBe(
-      'Reviewed 4 dependency updates across 4 decision units: 0 validated assessments; 4 units await decision evidence.'
+      'Reviewed 4 dependency updates across 4 model decision units: 0 package assessments deterministically expanded from 0 validated decision-unit analyses; 4 units await decision evidence.'
     );
     expect(result.decisionQueue.map((item) => item.members[0].name)).toEqual([
       'first',
@@ -445,7 +615,7 @@ describe('Dependabot review batches', () => {
     expect(analyzeBatch).toHaveBeenCalledTimes(1);
     expect(result).toMatchObject({ verdict: 'merge_with_followups' });
     expect(result.summary).toBe(
-      'Reviewed 2 dependency updates across 2 decision units: 1 validated assessment; 1 unit await decision evidence.'
+      'Reviewed 2 dependency updates across 2 model decision units: 1 package assessment deterministically expanded from 1 validated decision-unit analysis; 1 unit await decision evidence.'
     );
   });
 

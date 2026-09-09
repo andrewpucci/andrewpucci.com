@@ -26,16 +26,21 @@ function provenanceFact(provenance) {
   return `${provenance.status}: ${provenance.invalid} invalid, ${provenance.missing} missing${provenance.reason ? `; ${provenance.reason}` : ''}.`;
 }
 
+function questionFact(item, questionLabel) {
+  const reason = `Reason: ${item.reason}.`;
+  return item.action.includes('\n')
+    ? `${questionLabel}:\n${item.action}\n${reason}`
+    : `${questionLabel}: ${item.action} ${reason}`;
+}
+
 function vettedSources(packages, item) {
-  const memberIds = new Set(item.members.map(identity));
+  const anchor = item.group.kind === 'direct' ? item.group.anchor : item.members[0];
+  const dependency = packages.find((candidate) => identity(candidate) === identity(anchor));
   const urls = [];
-  for (const dependency of packages) {
-    if (!memberIds.has(identity(dependency))) continue;
-    for (const source of dependency.sources) {
-      if (source.url.length <= maximumSourceUrlChars && !urls.includes(source.url))
-        urls.push(source.url);
-      if (urls.length === maximumSources) return urls;
-    }
+  for (const source of dependency?.sources ?? []) {
+    if (source.url.length <= maximumSourceUrlChars && !urls.includes(source.url))
+      urls.push(source.url);
+    if (urls.length === maximumSources) return urls;
   }
   return urls;
 }
@@ -47,6 +52,8 @@ export function renderResearchHandoff({
   item,
   packages,
   provenance,
+  heading = 'Copyable research brief',
+  questionLabel = 'Unresolved question',
 }) {
   if (!repository || !reviewDigest) return null;
   const sources = vettedSources(packages, item);
@@ -60,7 +67,7 @@ export function renderResearchHandoff({
     `Immutable head: ${pullRequest.headSha}`,
     `Review digest: ${reviewDigest}`,
     `Decision unit: ${unitLabel(item)}`,
-    `Unresolved question: ${item.action} Reason: ${item.reason}.`,
+    questionFact(item, questionLabel),
     `Lifecycle facts: ${lifecycleFact(item)}`,
     `Provenance signal: ${provenanceFact(provenance)}`,
     'Vetted sources:',
@@ -82,7 +89,7 @@ export function renderResearchHandoff({
   ].join('\n');
   return [
     '<details>',
-    `<summary>Copyable research brief: ${unitLabel(item)}</summary>`,
+    `<summary>${heading}: ${unitLabel(item)}</summary>`,
     '',
     '```text',
     escapeFence(brief),

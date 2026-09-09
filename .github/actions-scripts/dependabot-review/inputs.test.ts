@@ -707,6 +707,19 @@ describe('collectReviewInput', () => {
       .mockResolvedValueOnce(
         response([
           {
+            tag_name: 'v0.6.0',
+            html_url: 'https://github.com/actions/create-github-app-token/releases/tag/v0.6.0',
+            name: 'v0.6.0',
+            body: 'An unrelated old release.',
+          },
+          {
+            tag_name: 'other-package@3.0.0',
+            html_url:
+              'https://github.com/actions/create-github-app-token/releases/tag/other-package%403.0.0',
+            name: 'other-package@3.0.0',
+            body: 'An unrelated package release in the same version range.',
+          },
+          {
             tag_name: 'v3.0.0',
             html_url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
             name: 'v3.0.0',
@@ -736,6 +749,9 @@ describe('collectReviewInput', () => {
         },
       ],
     });
+    expect(input?.packages[0].sources.map((source) => source.url)).toEqual([
+      'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+    ]);
     expect(fetchMock.mock.calls[7][0]).toContain('/releases?per_page=100');
   });
 

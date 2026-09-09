@@ -220,6 +220,42 @@ digest-pinned, read-only research brief when it fits the GitHub comment limit.
 - [ ] Review confirms no CI repetition, external-research ingestion, PR-code
       execution, new write permission, or secret exposure.
 
+### Phase 7: Decision-complete recovery
+
+The approved decision-coverage specification now distinguishes a mechanical
+lockfile classification note from a missing decision-evidence fact. This keeps
+external research focused on questions that could change the upgrade decision.
+
+- [x] **Task 1: Recover deterministic coverage classification**
+  - Acceptance: Manifest-declared direct updates retain direct anchors;
+    ambiguous transitive paths become standalone units; unmatched path sets with
+    no lifecycle-script signal are complete without registry metadata.
+  - Verify: Focused coverage and lifecycle tests prove direct, standalone,
+    unmatched-path, lifecycle-signal, and unavailable-metadata cases.
+  - Files: `coverage.mjs`, `lifecycle.mjs`, `coverage.test.ts`,
+    `lifecycle.test.ts`.
+
+- [x] **Task 2: Constrain decision-unit model analysis and classify failures**
+  - Acceptance: Each request carries a strict native Mistral JSON Schema for
+    the exact decision-unit IDs, vetted URLs, finding IDs, and required fields.
+    One model assessment expands deterministically to all members of its direct
+    group. Invalid JSON/schema replies receive at most one fresh retry; packet,
+    budget, deadline, transport, HTTP, API-envelope, truncation, and coverage
+    failures produce a named, content-free queue category.
+  - Verify: Focused analysis, schema, batch, and renderer tests prove native
+    request shape, direct-group expansion, packet sizing, retry bounds, and
+    maintainer-facing categories without model output.
+  - Files: `decision-units.mjs`, `analysis.mjs`, `schema.mjs`, `batches.mjs`,
+    `reporting.mjs`, and focused tests.
+
+- [ ] **Task 3: Replay the maintainer decision document**
+  - Acceptance: The PR 271 dry run queues only genuine evidence gaps and never
+    emits a research handoff for lockfile relationship classification alone.
+  - Verify: Focused tests, `npm run lint`, `npm run check`, `npm test`,
+    `npm run build`, and `npm run dependabot:review:dry-run -- 271` when local
+    credential access is available.
+  - Files: focused fixtures/tests and this plan/spec status.
+
 ## Risks and Mitigations
 
 | Risk                                                                    | Impact | Mitigation                                                                                               |

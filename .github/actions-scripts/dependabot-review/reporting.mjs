@@ -2,6 +2,7 @@ import { renderResearchHandoff } from './handoff.mjs';
 
 const marker = '<!-- dependabot-intelligent-review -->';
 const maximumCommentChars = 50_000;
+const maximumFollowupUnits = 8;
 const omittedFindings =
   '_Additional lower-priority findings were omitted to fit GitHub’s comment limit._';
 
@@ -75,6 +76,42 @@ function reasonLabel(reason) {
     return 'GitHub API rate limiting stopped source collection.';
   if (reason === 'github_request_budget_exhausted')
     return 'The bounded GitHub request budget stopped source collection.';
+  if (reason === 'analysis_invalid_response')
+    return 'Mistral did not produce a schema-valid analysis after one retry.';
+  if (reason === 'analysis_schema_assessment_cardinality')
+    return 'Mistral returned an incomplete set of decision assessments after one retry.';
+  if (reason === 'analysis_schema_unknown_evidence_url')
+    return 'Mistral cited evidence outside the immutable review packet after one retry.';
+  if (reason === 'analysis_schema_unknown_package')
+    return 'Mistral referenced an unknown package or decision unit after one retry.';
+  if (reason === 'analysis_schema_followup_contract')
+    return 'Mistral follow-ups did not match its advisory verdict after one retry.';
+  if (reason === 'analysis_schema_blocker_contract')
+    return 'Mistral blockers did not match verified immutable findings after one retry.';
+  if (reason === 'analysis_schema_policy_ceiling')
+    return 'Mistral returned a verdict less restrictive than immutable policy after one retry.';
+  if (reason === 'analysis_schema_verdict_contract')
+    return 'Mistral returned an unsupported advisory verdict after one retry.';
+  if (reason === 'analysis_schema_decision_shape')
+    return 'Mistral omitted or malformed required decision fields after one retry.';
+  if (reason === 'analysis_schema_contract')
+    return 'Mistral did not satisfy the bounded decision-analysis contract after one retry.';
+  if (reason === 'analysis_invalid_json')
+    return 'Mistral did not return valid JSON after one retry.';
+  if (reason === 'analysis_packet_too_large')
+    return 'The bounded Mistral input packet was too large for this decision unit.';
+  if (reason === 'analysis_request_budget_exhausted')
+    return 'The bounded Mistral request budget was exhausted before analysis.';
+  if (reason === 'analysis_deadline_exceeded')
+    return 'The bounded Mistral analysis deadline elapsed before this unit could run.';
+  if (reason === 'analysis_transport_failure')
+    return 'Mistral could not be reached for this bounded analysis.';
+  if (reason === 'analysis_http_failure') return 'Mistral returned an unavailable API response.';
+  if (reason === 'analysis_api_response_invalid')
+    return 'Mistral returned an invalid API response envelope.';
+  if (reason === 'analysis_truncated') return 'Mistral truncated this bounded analysis.';
+  if (reason === 'analysis_incomplete_response')
+    return 'Mistral omitted required decision coverage from its analysis.';
   if (reason === 'analysis_unavailable') return 'Bounded model analysis was unavailable.';
   return reason;
 }
@@ -114,11 +151,43 @@ function provenanceLines(provenance) {
   ];
 }
 
+function followupUnitKey(researchUnit, description) {
+  if (!researchUnit) return `description:${description}`;
+  const anchor =
+    researchUnit.group.kind === 'direct' ? researchUnit.group.anchor : researchUnit.members[0];
+  return `${researchUnit.group.kind}:${updateLabel(anchor)}`;
+}
+
+function followupUnitLabel(researchUnit) {
+  if (!researchUnit) return null;
+  if (researchUnit.group.kind === 'direct')
+    return `Direct update ${updateLabel(researchUnit.group.anchor)}`;
+  return `Standalone update ${updateLabel(researchUnit.members[0])}`;
+}
+
+function followupUnits(analysis) {
+  const units = new Map();
+  for (const { description, researchUnit } of analysis.followups ?? []) {
+    const key = followupUnitKey(researchUnit, description);
+    const unit = units.get(key);
+    if (unit) {
+      if (!unit.followups.includes(description)) unit.followups.push(description);
+      continue;
+    }
+    units.set(key, { researchUnit, followups: [description] });
+  }
+  return [...units.values()].slice(0, maximumFollowupUnits);
+}
+
 function followupLines(analysis) {
-  if (!analysis.followups?.length) return [];
+  if (analysis.verdict !== 'merge_with_followups' || !analysis.followups?.length) return [];
   return [
     '### Non-blocking follow-ups',
-    ...analysis.followups.map((followup) => `- ${escape(abbreviate(followup.description, 280))}`),
+    ...followupUnits(analysis).map(({ researchUnit, followups }) => {
+      const label = followupUnitLabel(researchUnit);
+      const prefix = label ? `**${escape(label)}:** ` : '';
+      return `- ${prefix}${escape(abbreviate(followups.join(' '), 280))}`;
+    }),
   ];
 }
 
@@ -136,6 +205,35 @@ function handoffSections(analysis, metadata) {
       })
     )
     .filter(Boolean);
+}
+
+function followupHandoffSections(analysis, metadata) {
+  if (analysis.verdict !== 'merge_with_followups' || !metadata.repository || !metadata.reviewDigest)
+    return [];
+  const prompts = followupUnits(analysis)
+    .filter(({ researchUnit }) => researchUnit)
+    .map(({ researchUnit, followups }) =>
+      renderResearchHandoff({
+        repository: metadata.repository,
+        pullRequest: metadata.pullRequest,
+        reviewDigest: metadata.reviewDigest,
+        item: {
+          ...researchUnit,
+          reason: 'non_blocking_followup',
+          action:
+            followups.length === 1
+              ? followups[0]
+              : followups.map((description) => `- ${description}`).join('\n'),
+          lifecycle: [],
+        },
+        packages: metadata.packages,
+        provenance: metadata.provenance,
+        heading: 'Copyable research prompt',
+        questionLabel: 'Follow-up to investigate',
+      })
+    )
+    .filter(Boolean);
+  return prompts.length ? [['### Research prompts'], ...prompts] : [];
 }
 
 function featureSections(assessments) {
@@ -218,6 +316,7 @@ export function renderComment(analysis, value) {
     coverageLines(analysis),
     provenanceLines(metadata.provenance),
     followupLines(analysis),
+    ...followupHandoffSections(analysis, metadata),
     remediationLines(analysis),
     ...handoffSections(analysis, metadata),
     ...featureSections(analysis.packageAssessments),

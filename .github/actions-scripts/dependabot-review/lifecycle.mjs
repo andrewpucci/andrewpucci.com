@@ -144,6 +144,19 @@ export async function collectLifecycleScripts(coverage, { fetchLike = fetch } = 
       const before = beforeMetadata && scriptValues(beforeMetadata);
       const after = afterMetadata && scriptValues(afterMetadata);
       const changes = before && after ? scriptChanges(before, after) : [];
+      if (item.lifecycle.reason === 'unmatched_lockfile_paths' && before && after)
+        return {
+          ...item,
+          lifecycle: {
+            ...item.lifecycle,
+            status: changes.length ? 'changed' : 'unchanged',
+            metadata: 'available',
+            changes,
+            reason: null,
+          },
+          status: 'complete',
+          reason: null,
+        };
       if (!before || !after || !changes.length) return lifecycleUnavailable(item);
       return {
         ...item,

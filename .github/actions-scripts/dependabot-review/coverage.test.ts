@@ -110,7 +110,47 @@ describe('collectNpmCoverage', () => {
     });
   });
 
-  it('leaves duplicate package paths unresolved when they do not share one direct anchor', () => {
+  it('keeps a manifest-declared direct update anchored when its lockfile path is absent', () => {
+    const result = collectNpmCoverage({
+      updates: [update('direct', '1.0.0', '2.0.0', 'direct:unknown')],
+      baseManifest: { dependencies: { direct: '^1.0.0' } },
+      headManifest: { dependencies: { direct: '^2.0.0' } },
+      baseLockfile: lockfile({ '': { dependencies: { direct: '^1.0.0' } } }),
+      headLockfile: lockfile({ '': { dependencies: { direct: '^2.0.0' } } }),
+    });
+
+    expect(result.items[0]).toMatchObject({
+      group: { kind: 'direct', anchor: { name: 'direct', from: '1.0.0', to: '2.0.0' } },
+      lifecycle: { status: 'unchanged', metadata: 'not_needed' },
+      status: 'complete',
+      reason: null,
+    });
+  });
+
+  it('keeps unmatched lockfile paths complete when none has an install script', () => {
+    const result = collectNpmCoverage({
+      updates: [update('direct', '1.0.0', '2.0.0', 'direct:unknown')],
+      baseManifest: { dependencies: { direct: '^1.0.0' } },
+      headManifest: { dependencies: { direct: '^2.0.0' } },
+      baseLockfile: lockfile({
+        '': { dependencies: { direct: '^1.0.0' } },
+        'node_modules/direct': { version: '1.0.0', hasInstallScript: false },
+      }),
+      headLockfile: lockfile({
+        '': { dependencies: { direct: '^2.0.0' } },
+        'node_modules/direct': { version: '2.0.0', hasInstallScript: false },
+        'node_modules/other/node_modules/direct': { version: '2.0.0', hasInstallScript: false },
+      }),
+    });
+
+    expect(result.items[0]).toMatchObject({
+      lifecycle: { status: 'unchanged', metadata: 'not_needed' },
+      status: 'complete',
+      reason: null,
+    });
+  });
+
+  it('keeps ambiguous package paths as a standalone decision unit', () => {
     const result = collectNpmCoverage({
       updates: [
         update('direct', '1.0.0', '2.0.0', 'direct:unknown'),
@@ -137,8 +177,36 @@ describe('collectNpmCoverage', () => {
     expect(result.items[1]).toMatchObject({
       update: { name: 'nested' },
       group: { kind: 'standalone', anchor: null },
-      status: 'unresolved',
-      reason: 'ambiguous_relationship',
+      lifecycle: { status: 'unchanged', metadata: 'not_needed' },
+      status: 'complete',
+      reason: null,
+    });
+  });
+
+  it('requires exact lifecycle metadata when unmatched paths carry an install-script signal', () => {
+    const result = collectNpmCoverage({
+      updates: [update('direct', '1.0.0', '2.0.0', 'direct:unknown')],
+      baseManifest: { dependencies: { direct: '^1.0.0' } },
+      headManifest: { dependencies: { direct: '^2.0.0' } },
+      baseLockfile: lockfile({
+        '': { dependencies: { direct: '^1.0.0' } },
+        'node_modules/direct': { version: '1.0.0', hasInstallScript: true },
+      }),
+      headLockfile: lockfile({
+        '': { dependencies: { direct: '^2.0.0' } },
+        'node_modules/direct': { version: '2.0.0', hasInstallScript: true },
+        'node_modules/other/node_modules/direct': { version: '2.0.0', hasInstallScript: false },
+      }),
+    });
+
+    expect(result.items[0]).toMatchObject({
+      lifecycle: {
+        status: 'changed',
+        metadata: 'pending',
+        reason: 'unmatched_lockfile_paths',
+      },
+      status: 'pending',
+      reason: 'lifecycle_metadata_pending',
     });
   });
 });

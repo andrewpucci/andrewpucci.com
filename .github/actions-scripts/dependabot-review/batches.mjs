@@ -1,3 +1,5 @@
+import { decisionUnits as collectDecisionUnits, modelPacket } from './decision-units.mjs';
+
 const defaults = {
   deadlineMs: 240_000,
   maxBatchChars: 18_000,
@@ -63,15 +65,14 @@ function projectedPackage(dependency, limits) {
 export function projectForModel(input, options = {}) {
   const limits = { ...defaults, ...options };
   const packageIds = new Set(input.packages.map(identity));
-  const coverageItems = input.coverage?.items.filter((item) =>
+  const coverageItems = input.coverage?.items?.filter((item) =>
     packageIds.has(identity(item.update))
   );
-  const modelInput = {
-    ...input,
-    ...(coverageItems ? { coverage: { items: coverageItems } } : {}),
-  };
+  const modelInput = { ...input };
+  if (coverageItems) modelInput.coverage = { items: coverageItems };
+  else delete modelInput.coverage;
   delete modelInput.provenance;
-  const policyFindings = input.policy?.findings.filter((finding) =>
+  const policyFindings = input.policy?.findings?.filter((finding) =>
     packageIds.has(identity(finding.package))
   );
   const policy = policyFindings
@@ -84,6 +85,7 @@ export function projectForModel(input, options = {}) {
         findings: policyFindings,
       }
     : undefined;
+  delete modelInput.policy;
   return {
     ...modelInput,
     ...(policy ? { policy } : {}),
@@ -91,24 +93,8 @@ export function projectForModel(input, options = {}) {
   };
 }
 
-function coverageGroupKey(input, dependency) {
-  const item = input.coverage?.items.find(
-    (candidate) => identity(candidate.update) === identity(dependency)
-  );
-  return item?.group.kind === 'direct'
-    ? `direct:${identity(item.group.anchor)}`
-    : `standalone:${identity(dependency)}`;
-}
-
 function decisionUnits(input) {
-  const units = new Map();
-  for (const dependency of input.packages) {
-    const key = coverageGroupKey(input, dependency);
-    const unit = units.get(key) ?? [];
-    unit.push(dependency);
-    units.set(key, unit);
-  }
-  return [...units.values()];
+  return collectDecisionUnits(input).map((unit) => unit.members);
 }
 
 function batches(input, limits) {
@@ -117,21 +103,26 @@ function batches(input, limits) {
   let current = [];
   for (const unit of decisionUnits(input)) {
     const projectedDependency = projectForModel({ ...input, packages: unit }, limits);
+    const packet = modelPacket(projectedDependency);
     if (
-      projectedDependency.packages.some(
+      packet.packages.some(
         (dependency) => JSON.stringify(dependency).length > limits.maxPackageChars
       ) ||
-      JSON.stringify(projectedDependency).length > limits.maxBatchChars
+      JSON.stringify(packet).length > limits.maxBatchChars
     ) {
-      unavailable.push(...unit);
+      unavailable.push({
+        packages: unit,
+        category: 'analysis_packet_too_large',
+      });
       continue;
     }
     const candidate = [...current, ...unit];
     const projected = projectForModel({ ...input, packages: candidate }, limits);
+    const candidatePacket = modelPacket(projected);
     if (
       current.length &&
       ((candidate.length > limits.maxPackagesPerBatch && unit.length === 1) ||
-        JSON.stringify(projected).length > limits.maxBatchChars)
+        JSON.stringify(candidatePacket).length > limits.maxBatchChars)
     ) {
       result.push(projectForModel({ ...input, packages: current }, limits));
       current = unit;
@@ -151,7 +142,17 @@ function formatUpdate({ name, from, to }) {
   return `${name} ${from} to ${to}`;
 }
 
-function queueAction(group, members, coverageIssues) {
+function isStructuredOutputFailure(category) {
+  return category === 'analysis_invalid_json' || category?.startsWith('analysis_schema_');
+}
+
+function queueAction(group, members, coverageIssues, failureCategory) {
+  if (isStructuredOutputFailure(failureCategory))
+    return 'Use the copyable research brief for this immutable decision unit; Mistral did not return a schema-valid analysis after its bounded retry.';
+  if (failureCategory === 'analysis_packet_too_large')
+    return 'Use the copyable research brief for this immutable decision unit; its bounded model packet was too large to analyze.';
+  if (failureCategory === 'analysis_request_budget_exhausted')
+    return 'Rerun the advisory review after reducing this pull request or raising the bounded Mistral request budget.';
   if (!coverageIssues.length)
     return 'Rerun the advisory review after correcting the transient analysis failure for this immutable decision unit.';
   if (coverageIssues[0].reason === 'github_rate_limited')
@@ -163,7 +164,7 @@ function queueAction(group, members, coverageIssues) {
   return `Obtain immutable manifest, lockfile, and official package evidence for ${formatUpdate(members[0])}.`;
 }
 
-function decisionQueue(input, unavailableIds) {
+function decisionQueue(input, unavailableIds, failureCategories) {
   const coverageById = new Map(
     (input.coverage?.items ?? []).map((item) => [identity(item.update), item])
   );
@@ -180,10 +181,14 @@ function decisionQueue(input, unavailableIds) {
       members: [],
       coverageIssues: [],
       analysisUnavailable: false,
+      failureCategory: null,
     };
     unit.members.push(dependency);
     if (coverage && coverage.status !== 'complete') unit.coverageIssues.push(coverage);
-    if (unavailableIds.has(identity(dependency))) unit.analysisUnavailable = true;
+    if (unavailableIds.has(identity(dependency))) {
+      unit.analysisUnavailable = true;
+      unit.failureCategory ??= failureCategories.get(identity(dependency)) ?? null;
+    }
     grouped.set(key, unit);
   }
   return [...grouped.values()]
@@ -192,13 +197,15 @@ function decisionQueue(input, unavailableIds) {
       group: unit.group,
       members: unit.members.map(({ name, from, to }) => ({ name, from, to })),
       count: unit.members.length,
-      reason: unit.coverageIssues[0]?.reason ?? 'analysis_unavailable',
-      action: queueAction(unit.group, unit.members, unit.coverageIssues),
+      reason: unit.coverageIssues[0]?.reason ?? unit.failureCategory ?? 'analysis_unavailable',
+      action: queueAction(unit.group, unit.members, unit.coverageIssues, unit.failureCategory),
       lifecycle: unit.coverageIssues.map(({ update, lifecycle }) => ({
         update: { name: update.name, from: update.from, to: update.to },
         ...lifecycle,
       })),
       analysisUnavailable: unit.analysisUnavailable,
+      failureCategory: unit.failureCategory,
+      analysisInvalidResponse: isStructuredOutputFailure(unit.failureCategory),
     }));
 }
 
@@ -208,15 +215,19 @@ function reviewSummary(input, unavailableIds, queue) {
     unavailableIds.has(identity(dependency))
   ).length;
   const analyzed = total - unavailable;
-  const units = decisionUnits(input).length;
+  const units = decisionUnits(input);
+  const analyzedUnits = units.filter((unit) =>
+    unit.every((dependency) => !unavailableIds.has(identity(dependency)))
+  ).length;
   const queued = queue.length;
-  return `Reviewed ${total} dependency update${total === 1 ? '' : 's'} across ${units} decision unit${units === 1 ? '' : 's'}: ${analyzed} validated assessment${analyzed === 1 ? '' : 's'}${queued ? `; ${queued} unit${queued === 1 ? '' : 's'} await decision evidence` : ''}.`;
+  return `Reviewed ${total} dependency update${total === 1 ? '' : 's'} across ${units.length} model decision unit${units.length === 1 ? '' : 's'}: ${analyzed} package assessment${analyzed === 1 ? '' : 's'} deterministically expanded from ${analyzedUnits} validated decision-unit ${analyzedUnits === 1 ? 'analysis' : 'analyses'}${queued ? `; ${queued} unit${queued === 1 ? '' : 's'} await decision evidence` : ''}.`;
 }
 
 function coverageSummary(input) {
-  if (!input.coverage) return undefined;
+  const items = input.coverage?.items;
+  if (!items) return undefined;
   const summary = { complete: 0, pending: 0, unresolved: 0 };
-  for (const item of input.coverage.items) {
+  for (const item of items) {
     if (item.status === 'complete') summary.complete += 1;
     if (item.status === 'pending') summary.pending += 1;
     if (item.status === 'unresolved') summary.unresolved += 1;
@@ -259,23 +270,60 @@ function hasExplicitNonBlockingFollowups(analysis) {
   );
 }
 
-async function analyzeBatch(batch, analyze, state) {
+async function requestAnalysis(batch, analyze, state, retry) {
   const timeoutMs = Math.min(state.requestTimeoutMs, state.deadline - Date.now());
-  if (state.requests >= state.maxRequests || timeoutMs <= 0)
-    return { analyses: [], unavailable: batch.packages };
+  if (state.requests >= state.maxRequests)
+    return {
+      verdict: 'analysis_unavailable',
+      reason: 'analysis_request_budget_exhausted',
+    };
+  if (timeoutMs <= 0)
+    return {
+      verdict: 'analysis_unavailable',
+      reason: 'analysis_deadline_exceeded',
+    };
   state.requests += 1;
-  const result = await analyze(batch, { timeoutMs });
+  return analyze(batch, { timeoutMs, retry });
+}
+
+function unavailableBatch(batch, failureCategory = 'analysis_unavailable') {
+  return {
+    analyses: [],
+    unavailable: batch.packages,
+    failures: batch.packages.map((dependency) => ({
+      dependency,
+      category: failureCategory,
+    })),
+  };
+}
+
+function completeBatch(batch, result) {
   if (result.verdict !== 'analysis_unavailable')
     return hasEveryAssessment(batch, result) && hasExplicitNonBlockingFollowups(result)
-      ? { analyses: [result], unavailable: [] }
+      ? { analyses: [result], unavailable: [], failures: [] }
       : {
           analyses: result.verdict === 'do_not_merge' ? [result] : [],
           unavailable: batch.packages,
+          failures: batch.packages.map((dependency) => ({
+            dependency,
+            category: 'analysis_incomplete_response',
+          })),
         };
-  if (result.reason !== 'truncated' || batch.packages.length === 1)
-    return { analyses: [], unavailable: batch.packages };
+  return undefined;
+}
+
+async function analyzeBatch(batch, analyze, state) {
+  let result = await requestAnalysis(batch, analyze, state, false);
+  if (isStructuredOutputFailure(result.reason)) {
+    result = await requestAnalysis(batch, analyze, state, true);
+    if (isStructuredOutputFailure(result.reason)) return unavailableBatch(batch, result.reason);
+  }
+  const complete = completeBatch(batch, result);
+  if (complete) return complete;
+  if (result.reason !== 'analysis_truncated' || batch.packages.length === 1)
+    return unavailableBatch(batch, result.reason);
   const units = decisionUnits(batch);
-  if (units.length === 1) return { analyses: [], unavailable: batch.packages };
+  if (units.length === 1) return unavailableBatch(batch);
   const midpoint = Math.ceil(units.length / 2);
   const leftPackages = units.slice(0, midpoint).flat();
   const rightPackages = units.slice(midpoint).flat();
@@ -294,6 +342,7 @@ async function analyzeBatch(batch, analyze, state) {
   return {
     analyses: [...left.analyses, ...right.analyses],
     unavailable: [...left.unavailable, ...right.unavailable],
+    failures: [...left.failures, ...right.failures],
   };
 }
 
@@ -327,11 +376,20 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   const completed = await analyzeAll(scheduled.batches, analyze, state, limits.maxConcurrency);
   const analyses = completed.flatMap((result) => result.analyses);
   const unavailable = [
-    ...scheduled.unavailable,
+    ...scheduled.unavailable.flatMap((result) => result.packages),
     ...completed.flatMap((result) => result.unavailable),
   ];
   const unavailableIds = new Set(unavailable.map(identity));
+  const failureCategories = new Map(
+    [
+      ...scheduled.unavailable.flatMap(({ packages, category }) =>
+        packages.map((dependency) => ({ dependency, category }))
+      ),
+      ...completed.flatMap((result) => result.failures),
+    ].map(({ dependency, category }) => [identity(dependency), category])
+  );
   const packageAssessments = analyses.flatMap((analysis) => analysis.packageAssessments);
+  const followups = analyses.flatMap((analysis) => analysis.followups ?? []);
   const incompleteCoverage = (input.coverage?.items ?? []).some(
     (item) => item.status !== 'complete'
   );
@@ -348,7 +406,7 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     : input.coverage && (incompleteCoverage || unavailable.length)
       ? stricter(modelVerdict, 'decision_incomplete')
       : modelVerdict;
-  const queue = decisionQueue(input, unavailableIds);
+  const queue = decisionQueue(input, unavailableIds, failureCategories);
   const summary = reviewSummary(input, unavailableIds, queue);
   const coverage = coverageSummary(input);
   if (!analyses.length)
@@ -362,6 +420,7 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
       ...(coverage ? { coverage } : {}),
       packageAssessments: [],
       blockers: [],
+      followups: [],
       remediationPrompt: null,
     };
   return {
@@ -371,6 +430,7 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     ...(coverage ? { coverage } : {}),
     packageAssessments,
     blockers,
+    followups,
     remediationPrompt: null,
   };
 }

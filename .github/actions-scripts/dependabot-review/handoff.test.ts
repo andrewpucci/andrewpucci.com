@@ -4,6 +4,12 @@ import { renderResearchHandoff } from './handoff.mjs';
 const pullRequest = { number: 271, headSha: 'immutable-head' };
 const packages = [
   {
+    name: 'nested-package',
+    from: '1.0.0',
+    to: '2.0.0',
+    sources: [{ url: 'https://github.com/example/nested-package/releases/tag/v2.0.0' }],
+  },
+  {
     name: 'direct-package',
     from: '1.0.0',
     to: '2.0.0',
@@ -12,12 +18,6 @@ const packages = [
       { url: 'https://example.com/ignored-after-the-bound' },
       { url: 'https://example.com/also-ignored' },
     ],
-  },
-  {
-    name: 'nested-package',
-    from: '1.0.0',
-    to: '2.0.0',
-    sources: [{ url: 'https://github.com/example/nested-package/releases/tag/v2.0.0' }],
   },
 ];
 const item = {
@@ -66,6 +66,7 @@ describe('external research handoffs', () => {
     expect(brief).toContain('https://github.com/example/direct-package/releases/tag/v2.0.0');
     expect(brief).toContain('https://example.com/ignored-after-the-bound');
     expect(brief).not.toContain('https://example.com/also-ignored');
+    expect(brief).not.toContain('https://github.com/example/nested-package/releases/tag/v2.0.0');
   });
 
   it('does not render an unpinned handoff', () => {
