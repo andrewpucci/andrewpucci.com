@@ -1,6 +1,125 @@
 import { isVulnerabilitySeverity, parseReviewInput } from './schema.mjs';
+import { collectNpmCoverage } from './coverage.mjs';
+import { collectLifecycleScripts } from './lifecycle.mjs';
 import { collectRepositoryContext } from './context.mjs';
-import { fetchAllPages } from './github.mjs';
+import { collectProvenance } from './provenance.mjs';
+import { collectUpstreamEvidence } from './upstream-evidence.mjs';
+
+const provenanceUnavailable = (reason) => ({
+  status: 'unavailable',
+  invalid: 0,
+  missing: 0,
+  reason,
+});
+
+async function fetchImmutableContent({ repository, refSha, path, fetchLike, githubHeaders }) {
+  const response = await fetchLike(
+    `https://api.github.com/repos/${repository}/contents/${path}?ref=${encodeURIComponent(refSha)}`,
+    { headers: githubHeaders }
+  );
+  if (!response.ok) throw new Error('GitHub contents request failed');
+  const body = await response.json();
+  if (body?.encoding !== 'base64' || typeof body.content !== 'string')
+    throw new TypeError('GitHub contents response was invalid');
+  return Buffer.from(body.content, 'base64').toString('utf8');
+}
+
+export async function collectPullRequestProvenance(
+  { repository, headSha },
+  { fetchLike = fetch, githubHeaders = {}, collectProvenance: collect = collectProvenance } = {}
+) {
+  let lockfile;
+  let manifestText;
+  try {
+    [lockfile, manifestText] = await Promise.all([
+      fetchImmutableContent({
+        repository,
+        refSha: headSha,
+        path: 'package-lock.json',
+        fetchLike,
+        githubHeaders,
+      }),
+      fetchImmutableContent({
+        repository,
+        refSha: headSha,
+        path: 'package.json',
+        fetchLike,
+        githubHeaders,
+      }),
+    ]);
+  } catch {
+    return provenanceUnavailable('The pull request provenance inputs could not be retrieved.');
+  }
+  let overrides;
+  try {
+    const manifest = JSON.parse(manifestText);
+    if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest))
+      throw new TypeError('package manifest was invalid');
+    const { overrides: manifestOverrides } = manifest;
+    overrides = manifestOverrides;
+  } catch {
+    return provenanceUnavailable('The pull request provenance inputs could not be safely parsed.');
+  }
+  try {
+    return await collect({ lockfile, overrides });
+  } catch {
+    return provenanceUnavailable('The pull request provenance could not be collected.');
+  }
+}
+
+export async function collectNpmCoverageInput(
+  { repository, baseSha, headSha },
+  updates,
+  { fetchLike = fetch, githubHeaders = {} } = {}
+) {
+  const npmUpdates = updates.filter((update) => update.ecosystem === 'npm');
+  if (!npmUpdates.length) return undefined;
+  try {
+    const [baseLockfileText, headLockfileText, baseManifestText, headManifestText] =
+      await Promise.all([
+        fetchImmutableContent({
+          repository,
+          refSha: baseSha,
+          path: 'package-lock.json',
+          fetchLike,
+          githubHeaders,
+        }),
+        fetchImmutableContent({
+          repository,
+          refSha: headSha,
+          path: 'package-lock.json',
+          fetchLike,
+          githubHeaders,
+        }),
+        fetchImmutableContent({
+          repository,
+          refSha: baseSha,
+          path: 'package.json',
+          fetchLike,
+          githubHeaders,
+        }),
+        fetchImmutableContent({
+          repository,
+          refSha: headSha,
+          path: 'package.json',
+          fetchLike,
+          githubHeaders,
+        }),
+      ]);
+    return collectLifecycleScripts(
+      collectNpmCoverage({
+        updates: npmUpdates,
+        baseManifest: JSON.parse(baseManifestText),
+        headManifest: JSON.parse(headManifestText),
+        baseLockfile: JSON.parse(baseLockfileText),
+        headLockfile: JSON.parse(headLockfileText),
+      }),
+      { fetchLike }
+    );
+  } catch {
+    return collectNpmCoverage({ updates: npmUpdates });
+  }
+}
 
 const githubRepository = (value) => {
   try {
@@ -86,7 +205,7 @@ function workflowActionUpdates(files, dependabotUpdates) {
   return updates;
 }
 
-function dependencyUpdates(changes, dependabotUpdates, workflowActions) {
+function dependencyUpdates(changes, dependabotUpdates, workflowActions, directDependencies) {
   const updates = new Map();
   for (const change of changes) {
     if (!['npm', 'actions'].includes(change?.ecosystem) || typeof change.name !== 'string')
@@ -101,20 +220,23 @@ function dependencyUpdates(changes, dependabotUpdates, workflowActions) {
     };
     if (change.change_type === 'removed') update.from = actionVersion?.from ?? change.version;
     if (change.change_type === 'added')
-      Object.assign(update, { to: actionVersion?.to ?? change.version, change });
+      Object.assign(update, {
+        to: actionVersion?.to ?? change.version,
+        change,
+      });
     updates.set(key, update);
   }
   for (const [name, action] of workflowActions) if (!updates.has(name)) updates.set(name, action);
   return [...updates.values()]
     .filter(({ from, to }) => typeof from === 'string' && typeof to === 'string')
-    .map(({ name, manifest, ecosystem, from, to, change }) => ({
+    .map(({ name, ecosystem, from, to, change }) => ({
       name,
       from,
       to,
       dependencyType:
         ecosystem === 'actions'
           ? 'direct:workflow'
-          : manifest === 'package.json'
+          : directDependencies.has(name)
             ? 'direct:unknown'
             : 'transitive',
       ecosystem,
@@ -153,177 +275,149 @@ async function fetchJson(fetchLike, url, options) {
   }
 }
 
-async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
-  for (const tag of [`v${dependency.to}`, dependency.to]) {
-    const release = await fetchJson(
-      fetchLike,
-      `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(tag)}`,
-      { headers: githubHeaders }
-    );
-    if (release?.html_url && typeof release.body === 'string')
-      return {
-        kind: 'release-notes',
-        url: release.html_url,
-        title: release.name || `${dependency.name} ${dependency.to}`,
-        excerpt: release.body.slice(0, 12_000),
-        range: { from: dependency.from, to: dependency.to },
-      };
-  }
-  return null;
-}
+const updateIdentity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
 
-async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
-  for (const fromTag of [`v${dependency.from}`, dependency.from])
-    for (const toTag of [`v${dependency.to}`, dependency.to]) {
-      const comparison = await fetchJson(
-        fetchLike,
-        `https://api.github.com/repos/${repository}/compare/${encodeURIComponent(fromTag)}...${encodeURIComponent(toTag)}`,
-        { headers: githubHeaders }
-      );
-      if (typeof comparison?.html_url !== 'string') continue;
-      const commits = Array.isArray(comparison.commits) ? comparison.commits : [];
-      const excerpt = commits
-        .map((commit) => commit?.commit?.message)
-        .filter((message) => typeof message === 'string')
-        .join('\n')
-        .slice(0, 12_000);
-      return {
-        kind: 'repository-compare',
-        url: comparison.html_url,
-        title: `${dependency.name} ${dependency.from} to ${dependency.to}`,
-        excerpt: excerpt || `GitHub compared ${dependency.from} to ${dependency.to}.`,
-        range: { from: dependency.from, to: dependency.to },
-      };
-    }
-  return null;
-}
-
-function versionParts(value) {
-  const version = concreteVersion(value);
-  return version?.split('-')[0].split('.').map(Number);
-}
-
-function compareVersions(left, right) {
-  return left.find((part, index) => part !== right[index]) ?? 0;
-}
-
-function withinRange(version, from, to) {
-  const candidate = versionParts(version);
-  const lower = versionParts(from);
-  const upper = versionParts(to);
+function groupBacked(coverage, dependency) {
   return (
-    candidate &&
-    lower &&
-    upper &&
-    compareVersions(candidate, lower) >= 0 &&
-    compareVersions(candidate, upper) <= 0
+    coverage?.group.kind === 'direct' &&
+    updateIdentity(coverage.group.anchor) !== updateIdentity(dependency)
   );
 }
 
-async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
-  const releases = await fetchAllPages({
-    api: `https://api.github.com/repos/${repository}/releases?per_page=100`,
-    headers: githubHeaders,
-    fetchLike,
-    action: 'retrieve upstream releases',
-  }).catch(() => []);
-  return releases
-    .filter(
-      (release) =>
-        typeof release?.tag_name === 'string' &&
-        typeof release.html_url === 'string' &&
-        typeof release.body === 'string' &&
-        withinRange(release.tag_name, dependency.from, dependency.to)
-    )
-    .slice(0, 5)
-    .map((release) => {
-      const version = concreteVersion(release.tag_name);
-      return {
-        kind: 'release-notes',
-        url: release.html_url,
-        title: release.name || `${dependency.name} ${version}`,
-        excerpt: release.body.slice(0, 12_000),
-        range: { from: version, to: version },
-      };
-    });
+function githubLimitReason(limit) {
+  return limit?.status === 'request_budget_exhausted'
+    ? 'github_request_budget_exhausted'
+    : 'github_rate_limited';
 }
 
-function packageMetadataSource(dependency, metadata) {
-  const description = metadata?.versions?.[dependency.to]?.description ?? metadata?.description;
-  if (typeof description !== 'string' || !description) return null;
+function limitedCoverage(coverage, rateLimitedTargets) {
+  if (!coverage || !rateLimitedTargets.size) return coverage;
   return {
-    kind: 'package-metadata',
-    url: `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`,
-    title: `${dependency.name} ${dependency.to} package metadata`,
-    excerpt: description.slice(0, 12_000),
-    range: { from: dependency.to, to: dependency.to },
-  };
-}
-
-async function upstreamEvidence(repository, dependency, metadata, fetchLike, githubHeaders) {
-  if (repository) {
-    const source = await targetRelease(repository, dependency, fetchLike, githubHeaders);
-    if (source) return { status: 'available', reason: null, sources: [source] };
-    const comparison = await rangeCompare(repository, dependency, fetchLike, githubHeaders);
-    if (comparison) return { status: 'available', reason: null, sources: [comparison] };
-    const releases = await rangeReleases(repository, dependency, fetchLike, githubHeaders);
-    if (releases.length)
-      return {
-        status: 'partial',
-        reason: 'Only releases within the version range were available.',
-        sources: releases,
-      };
-  }
-  const metadataSource = packageMetadataSource(dependency, metadata);
-  if (metadataSource)
-    return {
-      status: 'partial',
-      reason: 'Only npm package metadata was available for this dependency.',
-      sources: [metadataSource],
-    };
-  return {
-    status: 'unavailable',
-    reason: repository
-      ? 'No upstream release or comparison was available for this version range.'
-      : 'No attributable upstream repository was available for this dependency.',
-    sources: [],
+    items: coverage.items.map((item) => {
+      const target =
+        item.group.kind === 'direct'
+          ? updateIdentity(item.group.anchor)
+          : updateIdentity(item.update);
+      const limit = rateLimitedTargets.get(target);
+      return limit ? { ...item, status: 'unresolved', reason: githubLimitReason(limit) } : item;
+    }),
   };
 }
 
 /**
  * @param {{ pull_request?: unknown, repository?: unknown, files?: unknown[] }} event
- * @param {{ fetchLike?: typeof fetch, githubHeaders?: HeadersInit, repositoryContext?: { paths: string[], readFile: (path: string) => Promise<string> } }} options
+ * @param {{ fetchLike?: typeof fetch, githubHeaders?: HeadersInit, repositoryContext?: { paths: string[], readFile: (path: string) => Promise<string> }, collectCoverage?: boolean, collectNpmCoverage?: typeof collectNpmCoverageInput, githubRequestDiagnostic?: () => { limit?: unknown } }} options
  */
 export async function collectReviewInput(
   event,
-  { fetchLike = fetch, githubHeaders = {}, repositoryContext } = {}
+  {
+    fetchLike = fetch,
+    githubHeaders = {},
+    repositoryContext,
+    collectCoverage = false,
+    collectNpmCoverage = collectNpmCoverageInput,
+    githubRequestDiagnostic = () => ({}),
+  } = {}
 ) {
   const pullRequest = event.pull_request;
   if (pullRequest?.user?.login !== 'dependabot[bot]') return null;
   const changes = await dependencyChanges(event, fetchLike, githubHeaders);
   const dependabotUpdates = dependabotVersions(pullRequest.body);
+  const directDependencies = new Set(
+    changedPackageRanges(event.files ?? []).map(({ name }) => name)
+  );
   const updates = dependencyUpdates(
     changes,
     dependabotUpdates,
-    workflowActionUpdates(event.files ?? [], dependabotUpdates)
+    workflowActionUpdates(event.files ?? [], dependabotUpdates),
+    directDependencies
   );
+  const reviewUpdates = updates.length
+    ? updates
+    : changedPackageRanges(event.files ?? []).map((dependency) => ({
+        ...dependency,
+        ecosystem: 'npm',
+      }));
+  const npmCoverage = collectCoverage
+    ? await collectNpmCoverage(
+        {
+          repository: event.repository,
+          baseSha: pullRequest.base.sha,
+          headSha: pullRequest.head.sha,
+        },
+        reviewUpdates,
+        { fetchLike, githubHeaders }
+      )
+    : undefined;
+  const coverageByUpdate = new Map(
+    (npmCoverage?.items ?? []).map((item) => [
+      `${item.update.name}\u0000${item.update.from}\u0000${item.update.to}`,
+      item,
+    ])
+  );
+  const normalizedUpdates = reviewUpdates.map((dependency) => {
+    const coverage = coverageByUpdate.get(
+      `${dependency.name}\u0000${dependency.from}\u0000${dependency.to}`
+    );
+    return coverage
+      ? { ...dependency, dependencyType: coverage.update.dependencyType }
+      : dependency;
+  });
+  const rateLimitedTargets = new Map();
   const packages = await Promise.all(
-    (updates.length ? updates : changedPackageRanges(event.files ?? [])).map(async (dependency) => {
-      const metadata =
-        dependency.ecosystem === 'actions'
-          ? null
-          : await fetchJson(
-              fetchLike,
-              `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
-            );
-      const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
-      const evidence = await upstreamEvidence(
-        repository,
-        dependency,
-        metadata,
-        fetchLike,
-        githubHeaders
-      );
+    normalizedUpdates.map(async (dependency) => {
+      const update = updateIdentity(dependency);
+      const coverage = coverageByUpdate.get(update);
+      const isGroupBacked = groupBacked(coverage, dependency);
+      const target =
+        coverage?.group.kind === 'direct' ? updateIdentity(coverage.group.anchor) : update;
+      let evidence;
+      if (isGroupBacked) {
+        evidence = {
+          status: 'group_backed',
+          availability: 'group_backed',
+          reason:
+            'Upstream evidence is collected for the direct update that supplies this group scope.',
+          sources: [],
+        };
+      } else {
+        const limit = githubRequestDiagnostic()?.limit;
+        if (limit) {
+          rateLimitedTargets.set(target, limit);
+          evidence = {
+            status: 'unavailable',
+            availability: 'collection_failed',
+            reason: githubLimitReason(limit),
+            sources: [],
+          };
+        } else {
+          const metadata =
+            dependency.ecosystem === 'actions'
+              ? null
+              : await fetchJson(
+                  fetchLike,
+                  `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
+                );
+          const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
+          evidence = await collectUpstreamEvidence({
+            repository,
+            dependency,
+            metadata,
+            fetchLike,
+            githubHeaders,
+          });
+          const observedLimit = githubRequestDiagnostic()?.limit;
+          if (observedLimit) {
+            rateLimitedTargets.set(target, observedLimit);
+            evidence = {
+              status: 'unavailable',
+              availability: 'collection_failed',
+              reason: githubLimitReason(observedLimit),
+              sources: [],
+            };
+          }
+        }
+      }
       const [source] = evidence.sources;
       const command = source?.excerpt.match(
         /(?:npx|pnpm dlx|yarn dlx)\s+[^\n`]+(?:codemod|migrate)[^\n`]*/i
@@ -370,7 +464,11 @@ export async function collectReviewInput(
         to: dependency.to,
         dependencyType: dependency.dependencyType,
         license: dependency.license ?? null,
-        evidence: { status: evidence.status, reason: evidence.reason },
+        evidence: {
+          status: evidence.status,
+          reason: evidence.reason,
+          ...(evidence.availability === undefined ? {} : { availability: evidence.availability }),
+        },
         sources: [...vulnerabilitySources, ...evidence.sources],
         findings,
       };
@@ -382,15 +480,53 @@ export async function collectReviewInput(
     repositoryContext ?? { paths: [], readFile: async () => '' }
   );
   const contextByName = new Map(contexts.map((context) => [context.name, context]));
+  const packagesWithContext = packages.map((dependency) => {
+    const context = contextByName.get(dependency.name) ?? {
+      status: 'unavailable',
+      facts: [],
+    };
+    return {
+      ...dependency,
+      context: { status: context.status, facts: context.facts },
+    };
+  });
+  const coverage = limitedCoverage(
+    collectCoverage
+      ? {
+          items: packagesWithContext.map(
+            (dependency) =>
+              coverageByUpdate.get(
+                `${dependency.name}\u0000${dependency.from}\u0000${dependency.to}`
+              ) ?? {
+                update: {
+                  name: dependency.name,
+                  from: dependency.from,
+                  to: dependency.to,
+                  dependencyType: dependency.dependencyType,
+                },
+                group: { kind: 'standalone', anchor: null },
+                lifecycle: {
+                  status: 'unchanged',
+                  metadata: 'not_needed',
+                  paths: [],
+                  changes: [],
+                  reason: null,
+                },
+                status: 'complete',
+                reason: null,
+              }
+          ),
+        }
+      : undefined,
+    rateLimitedTargets
+  );
   return parseReviewInput({
     pullRequest: {
       number: pullRequest.number,
       baseSha: pullRequest.base.sha,
       headSha: pullRequest.head.sha,
     },
-    packages: packages.map((dependency) => {
-      const context = contextByName.get(dependency.name) ?? { status: 'unavailable', facts: [] };
-      return { ...dependency, context: { status: context.status, facts: context.facts } };
-    }),
+    packages: packagesWithContext,
+    ...(coverage ? { coverage } : {}),
   });
 }

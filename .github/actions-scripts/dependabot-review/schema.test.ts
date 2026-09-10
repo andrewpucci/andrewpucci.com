@@ -26,9 +26,162 @@ const reviewInput = {
   ],
 };
 
+const unavailableProvenance = {
+  status: 'unavailable',
+  invalid: 0,
+  missing: 0,
+  reason: 'The npm verifier did not return usable evidence.',
+};
+
 describe('review contracts', () => {
+  const emptyFollowups = { followups: [] };
   it('accepts a bounded, provenance-tagged input packet', () => {
     expect(parseReviewInput(reviewInput)).toEqual(reviewInput);
+  });
+
+  it('preserves a publisher evidence absence without accepting an incompatible status', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: {
+            status: 'unavailable',
+            availability: 'not_published',
+            reason: 'The publisher has no upgrade record for this range.',
+          },
+          sources: [],
+        },
+      ],
+    };
+
+    expect(parseReviewInput(input)).toEqual(input);
+    expect(() =>
+      parseReviewInput({
+        ...input,
+        packages: [
+          {
+            ...input.packages[0],
+            evidence: { ...input.packages[0].evidence, status: 'partial' },
+          },
+        ],
+      })
+    ).toThrow(/availability/i);
+  });
+
+  it('accepts only bounded advisory provenance evidence', () => {
+    const input = { ...reviewInput, provenance: unavailableProvenance };
+
+    expect(parseReviewInput(input)).toEqual(input);
+  });
+
+  it('validates complete coverage once for every package while preserving its direct group', () => {
+    const nested = {
+      ...reviewInput.packages[0],
+      name: 'nested',
+      dependencyType: 'transitive',
+      sources: [
+        {
+          ...source,
+          url: 'https://github.com/example/nested/releases/tag/v2.0.0',
+        },
+      ],
+    };
+    const input = {
+      ...reviewInput,
+      packages: [reviewInput.packages[0], nested],
+      coverage: {
+        items: [
+          {
+            update: {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              dependencyType: 'direct:production',
+            },
+            group: {
+              kind: 'direct',
+              anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+            },
+            lifecycle: {
+              status: 'unchanged',
+              metadata: 'not_needed',
+              changes: [],
+              paths: ['node_modules/example'],
+              reason: null,
+            },
+            status: 'complete',
+            reason: null,
+          },
+          {
+            update: {
+              name: 'nested',
+              from: '1.0.0',
+              to: '2.0.0',
+              dependencyType: 'transitive',
+            },
+            group: {
+              kind: 'direct',
+              anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+            },
+            lifecycle: {
+              status: 'unchanged',
+              metadata: 'not_needed',
+              changes: [],
+              paths: ['node_modules/example/node_modules/nested'],
+              reason: null,
+            },
+            status: 'complete',
+            reason: null,
+          },
+        ],
+      },
+    };
+
+    const groupBacked = {
+      ...input,
+      packages: [
+        input.packages[0],
+        {
+          ...nested,
+          evidence: { status: 'group_backed', reason: null },
+          sources: [],
+        },
+      ],
+    };
+
+    expect(parseReviewInput(groupBacked)).toEqual(groupBacked);
+    expect(() =>
+      parseReviewInput({
+        ...groupBacked,
+        packages: [
+          {
+            ...groupBacked.packages[0],
+            evidence: { status: 'group_backed', reason: null },
+          },
+          groupBacked.packages[1],
+        ],
+      })
+    ).toThrow(/group-backed/i);
+  });
+
+  it('rejects coverage that omits an input package', () => {
+    expect(() =>
+      parseReviewInput({
+        ...reviewInput,
+        coverage: { items: [] },
+      })
+    ).toThrow(/coverage/i);
+  });
+
+  it.each([
+    [{ ...unavailableProvenance, status: 'unknown' }],
+    [{ ...unavailableProvenance, invalid: 1 }],
+    [{ ...unavailableProvenance, reason: null }],
+    [{ ...unavailableProvenance, reason: 'x'.repeat(241) }],
+    [{ ...unavailableProvenance, rawOutput: 'must not cross this boundary' }],
+  ])('rejects malformed or unbounded provenance evidence', (provenance) => {
+    expect(() => parseReviewInput({ ...reviewInput, provenance })).toThrow(/provenance/i);
   });
 
   it('rejects a vulnerability with an unsupported severity', () => {
@@ -97,11 +250,36 @@ describe('review contracts', () => {
     ).toThrow(/source URL/i);
   });
 
-  it('rejects analysis citations not present in the input packet', () => {
-    expect(() =>
+  it('omits a capability citation not present in the input packet', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'package.json',
+                excerpt: 'The repository installs the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
       parseAnalysis(
         {
           verdict: 'merge_with_followups',
+          followups: [
+            {
+              description: 'Confirm the optional configuration later.',
+              blocking: false,
+            },
+          ],
           summary: 'Consider the new feature.',
           packageAssessments: [
             {
@@ -110,10 +288,13 @@ describe('review contracts', () => {
               to: '2.0.0',
               newFunctionality: [
                 {
+                  kind: 'new_capability',
                   feature: 'Documented feature',
                   sourceUrl: 'https://untrusted.example/feature',
                   usefulness: 'consider_later',
-                  rationale: 'Potentially useful.',
+                  action: 'Evaluate the feature in the existing package setup.',
+                  contextPath: 'package.json',
+                  rationale: 'The existing setup can use this capability.',
                 },
               ],
             },
@@ -121,9 +302,589 @@ describe('review contracts', () => {
           blockers: [],
           remediationPrompt: null,
         },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a bug fix masquerading as an adoption opportunity', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'src/routes/+page.svelte',
+                excerpt: 'The site uses the package in its public page.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'bug_fix',
+                  feature: 'Fixes command resolution.',
+                  sourceUrl: source.url,
+                  usefulness: 'use_now',
+                  action: 'Use the fixed command resolution.',
+                  contextPath: 'src/routes/+page.svelte',
+                  rationale: 'The fix benefits an existing page.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a capability without a visible use case', () => {
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'A documented new option.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: null,
+                  contextPath: null,
+                  rationale: 'It might be useful someday.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
         reviewInput
       )
-    ).toThrow(/unknown evidence URL/i);
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a deferred capability that describes only future use', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: '.github/workflows/frontend.yml',
+                excerpt: 'The existing workflow uses the package for deployment.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Support a new optional product surface.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Evaluate this feature for future use in the workflow.',
+                  contextPath: '.github/workflows/frontend.yml',
+                  rationale: 'The new product surface is not currently used.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a capability whose configuration needs creation', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'src/routes/+page.svelte',
+                excerpt: 'The existing page uses the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Add a type-safe configuration helper.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action:
+                    'Check whether the configuration needs creation before adopting the helper.',
+                  contextPath: 'src/routes/+page.svelte',
+                  rationale: 'The helper provides type-safe configuration.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('retains a capability with an evidenced current use case', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'src/routes/+page.svelte',
+                excerpt: 'The page renders using the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Add a rendering option.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Evaluate the option in the existing page.',
+                  contextPath: 'src/routes/+page.svelte',
+                  rationale: 'The page already renders using the package.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({
+      packageAssessments: [
+        {
+          newFunctionality: [
+            {
+              feature: 'Add a rendering option.',
+              contextPath: 'src/routes/+page.svelte',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('omits a capability supported only by a dependency manifest', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'package.json',
+                excerpt: '"example": "^2.0.0"',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Record screenshot capture order.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Evaluate ordering in current test workflows.',
+                  contextPath: 'package.json',
+                  rationale: 'The package is installed for test workflows.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a product surface that is not yet confirmed as used', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: '.github/workflows/frontend.yml',
+                excerpt: 'The workflow deploys the site with the package.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Compress JSON Pipelines sinks with gzip.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Review Pipelines for potential adoption in deployment workflows.',
+                  contextPath: '.github/workflows/frontend.yml',
+                  rationale: 'Pipelines is not yet confirmed as a used surface.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('omits a capability whose relevance is only hypothetical future work', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          context: {
+            status: 'available',
+            facts: [
+              {
+                kind: 'package-usage',
+                path: 'vite.config.ts',
+                excerpt: 'The Vite configuration enables SvelteKit support.',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    expect(
+      parseAnalysis(
+        {
+          verdict: 'merge',
+          summary: 'The update is ready.',
+          packageAssessments: [
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [
+                {
+                  kind: 'new_capability',
+                  feature: 'Export server-side rendering types.',
+                  sourceUrl: source.url,
+                  usefulness: 'consider_later',
+                  action: 'Review if these types are needed for server-side rendering.',
+                  contextPath: 'vite.config.ts',
+                  rationale:
+                    'The project uses SvelteKit, which may benefit from these exports in future server-side logic.',
+                },
+              ],
+            },
+          ],
+          blockers: [],
+          followups: [],
+          remediationPrompt: null,
+        },
+        input
+      )
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
+  });
+
+  it('requires explicit, non-blocking followups for a followup verdict', () => {
+    const analysis = {
+      verdict: 'merge_with_followups',
+      summary: 'Confirm an optional setting after merge.',
+      packageAssessments: [{ name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] }],
+      blockers: [],
+      remediationPrompt: null,
+    };
+
+    expect(() => parseAnalysis(analysis, reviewInput)).toThrow(/followups/i);
+    expect(
+      parseAnalysis(
+        {
+          ...analysis,
+          followups: [
+            {
+              description: 'Confirm the optional setting after merge.',
+              blocking: false,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [{ blocking: false }],
+    });
+  });
+
+  it('omits a decision followup that requires creating configuration', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade itself is ready.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Verify whether lint-staged.config.ts needs creation before adopting defineConfig.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({ verdict: 'merge', followups: [] });
+  });
+
+  it('omits generic evidence review while retaining a concrete upgrade followup', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade has one decision-relevant followup.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Review the upstream release notes for @sveltejs/kit@2.70.3 to confirm no breaking changes.',
+                  blocking: false,
+                },
+                {
+                  description:
+                    'Verify that wrangler pages dev remains compatible with the repository local-development workflow.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [
+        {
+          description:
+            'Verify that wrangler pages dev remains compatible with the repository local-development workflow.',
+          blocking: false,
+        },
+      ],
+    });
+  });
+
+  it('omits a generic release-note followup and downgrades the verdict', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade itself is ready.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Review the upstream release notes for @sveltejs/kit@2.70.3 to confirm no breaking changes.',
+                  blocking: false,
+                },
+                {
+                  description:
+                    'Evaluate the utility of the new --all flag for running tasks on all Git-tracked files.',
+                  blocking: false,
+                },
+                {
+                  description:
+                    'Validate that the new server-side exports are compatible with current SvelteKit usage.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({ verdict: 'merge', followups: [] });
+  });
+
+  it('retains a compatibility followup that names a current repository surface', () => {
+    expect(
+      parseAnalysis(
+        {
+          decisionAssessments: [
+            {
+              decisionUnit: 'unit-1',
+              verdict: 'merge_with_followups',
+              summary: 'The upgrade needs one targeted compatibility check.',
+              newFunctionality: [],
+              blockers: [],
+              followups: [
+                {
+                  description:
+                    'Validate that the new server-side exports are compatible with src/hooks.server.ts.',
+                  blocking: false,
+                },
+              ],
+              remediationPrompt: null,
+            },
+          ],
+        },
+        reviewInput
+      )
+    ).toMatchObject({
+      verdict: 'merge_with_followups',
+      followups: [
+        {
+          description:
+            'Validate that the new server-side exports are compatible with src/hooks.server.ts.',
+          blocking: false,
+        },
+      ],
+    });
   });
 
   it('rejects a model verdict that exceeds the policy ceiling', () => {
@@ -132,7 +893,10 @@ describe('review contracts', () => {
       packages: [
         {
           ...reviewInput.packages[0],
-          evidence: { status: 'partial', reason: 'Only partial release notes were available.' },
+          evidence: {
+            status: 'unavailable',
+            reason: 'No upstream evidence was available.',
+          },
         },
       ],
       policy: {
@@ -157,9 +921,15 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'merge',
+          ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [],
           remediationPrompt: null,
@@ -169,7 +939,82 @@ describe('review contracts', () => {
     ).toThrow(/policy/i);
   });
 
-  it('rejects use_now without a matching trusted-context fact', () => {
+  it('rejects an evidence-only policy finding when range evidence is available', () => {
+    const partialInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: {
+            status: 'partial',
+            reason: 'Only releases within the version range were available.',
+          },
+        },
+      ],
+    };
+
+    expect(() =>
+      parsePolicy(
+        {
+          verdictCeiling: 'merge_with_followups',
+          findings: [
+            {
+              package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+              findingId: null,
+              kind: 'evidence-incomplete',
+              sourceUrl: null,
+              severity: null,
+              verdict: 'merge_with_followups',
+              reason: 'Upstream evidence is incomplete.',
+              remediation: ['Review the upstream upgrade evidence before merging.'],
+              validation: ['Confirm the upgrade range against upstream release notes.'],
+            },
+          ],
+        },
+        partialInput
+      )
+    ).toThrow(/insufficient/i);
+  });
+
+  it('accepts an evidence-only policy finding when only package metadata is available', () => {
+    const metadataInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: {
+            status: 'partial',
+            reason: 'Only npm package metadata was available for this dependency.',
+          },
+          sources: [{ ...source, kind: 'package-metadata' }],
+        },
+      ],
+    };
+
+    expect(
+      parsePolicy(
+        {
+          verdictCeiling: 'merge_with_followups',
+          findings: [
+            {
+              package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+              findingId: null,
+              kind: 'evidence-incomplete',
+              sourceUrl: null,
+              severity: null,
+              verdict: 'merge_with_followups',
+              reason: 'Upstream evidence is incomplete.',
+              remediation: ['Review the upstream upgrade evidence before merging.'],
+              validation: ['Confirm the upgrade range against upstream release notes.'],
+            },
+          ],
+        },
+        metadataInput
+      )
+    ).toMatchObject({ verdictCeiling: 'merge_with_followups' });
+  });
+
+  it('omits use_now without a matching trusted-context fact', () => {
     const contextInput = {
       ...reviewInput,
       packages: [
@@ -189,10 +1034,11 @@ describe('review contracts', () => {
       ],
     };
 
-    expect(() =>
+    expect(
       parseAnalysis(
         {
           verdict: 'merge',
+          ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [
             {
@@ -201,6 +1047,7 @@ describe('review contracts', () => {
               to: '2.0.0',
               newFunctionality: [
                 {
+                  kind: 'new_capability',
                   feature: 'Enable the documented feature.',
                   sourceUrl: source.url,
                   usefulness: 'use_now',
@@ -216,7 +1063,7 @@ describe('review contracts', () => {
         },
         contextInput
       )
-    ).toThrow(/context/i);
+    ).toMatchObject({ packageAssessments: [{ newFunctionality: [] }] });
   });
 
   it('rejects duplicate package assessments', () => {
@@ -231,6 +1078,7 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'merge',
+          ...emptyFollowups,
           summary: 'The update is ready.',
           packageAssessments: [assessment, assessment],
           blockers: [],
@@ -246,9 +1094,15 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'do_not_merge',
+          ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [
             {
@@ -291,9 +1145,15 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'do_not_merge',
+          ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [
             {
@@ -336,9 +1196,15 @@ describe('review contracts', () => {
       parseAnalysis(
         {
           verdict: 'do_not_merge',
+          ...emptyFollowups,
           summary: 'A migration is required.',
           packageAssessments: [
-            { name: 'example', from: '1.0.0', to: '2.0.0', newFunctionality: [] },
+            {
+              name: 'example',
+              from: '1.0.0',
+              to: '2.0.0',
+              newFunctionality: [],
+            },
           ],
           blockers: [
             {

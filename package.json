@@ -110,7 +110,7 @@
     "!(package-lock).json": [
       "vp fmt"
     ],
-    "*.md": [
+    "!(pr-271-render).md": [
       "markdownlint-cli2 --fix"
     ]
   },

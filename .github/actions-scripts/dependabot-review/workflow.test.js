@@ -31,4 +31,15 @@ describe('Dependabot intelligent review workflow', () => {
     expect(checkout).not.toContain('ref:');
     expect(workflow).toContain('run: node .github/actions-scripts/dependabot-review/run.mjs');
   });
+
+  it('pins the verifier runtime without enabling an action cache in the privileged job', () => {
+    expect(workflow).toContain(
+      'uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0'
+    );
+    expect(workflow).toContain("node-version: '24'");
+    expect(workflow).toContain('package-manager-cache: false');
+    expect(workflow).toMatch(
+      /- name: Install pinned npm verifier\n {8}run: npm install --global npm@12\.0\.2 --ignore-scripts/
+    );
+  });
 });

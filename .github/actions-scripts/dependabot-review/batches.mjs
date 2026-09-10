@@ -1,3 +1,5 @@
+import { decisionUnits as collectDecisionUnits, modelPacket } from './decision-units.mjs';
+
 const defaults = {
   deadlineMs: 240_000,
   maxBatchChars: 18_000,
@@ -12,7 +14,8 @@ const defaults = {
 const verdictPriority = new Map([
   ['merge', 0],
   ['merge_with_followups', 1],
-  ['do_not_merge', 2],
+  ['decision_incomplete', 2],
+  ['do_not_merge', 3],
 ]);
 
 const identity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
@@ -62,7 +65,14 @@ function projectedPackage(dependency, limits) {
 export function projectForModel(input, options = {}) {
   const limits = { ...defaults, ...options };
   const packageIds = new Set(input.packages.map(identity));
-  const policyFindings = input.policy?.findings.filter((finding) =>
+  const coverageItems = input.coverage?.items?.filter((item) =>
+    packageIds.has(identity(item.update))
+  );
+  const modelInput = { ...input };
+  if (coverageItems) modelInput.coverage = { items: coverageItems };
+  else delete modelInput.coverage;
+  delete modelInput.provenance;
+  const policyFindings = input.policy?.findings?.filter((finding) =>
     packageIds.has(identity(finding.package))
   );
   const policy = policyFindings
@@ -75,35 +85,56 @@ export function projectForModel(input, options = {}) {
         findings: policyFindings,
       }
     : undefined;
+  delete modelInput.policy;
   return {
-    ...input,
+    ...modelInput,
     ...(policy ? { policy } : {}),
     packages: input.packages.map((dependency) => projectedPackage(dependency, limits)),
   };
 }
 
+function decisionUnits(input) {
+  return collectDecisionUnits(input).map((unit) => unit.members);
+}
+
 function batches(input, limits) {
   const result = [];
   const unavailable = [];
+  const evidenceGaps = new Set(
+    (input.policy?.findings ?? [])
+      .filter((finding) => finding.kind === 'evidence-incomplete')
+      .map((finding) => identity(finding.package))
+  );
   let current = [];
-  for (const dependency of input.packages) {
-    const projectedDependency = projectForModel({ ...input, packages: [dependency] }, limits);
-    if (
-      JSON.stringify(projectedDependency.packages[0]).length > limits.maxPackageChars ||
-      JSON.stringify(projectedDependency).length > limits.maxBatchChars
-    ) {
-      unavailable.push(dependency);
+  for (const unit of decisionUnits(input)) {
+    if (unit.some((dependency) => evidenceGaps.has(identity(dependency)))) {
+      unavailable.push({ packages: unit, category: 'policy_evidence_unavailable' });
       continue;
     }
-    const candidate = [...current, dependency];
+    const projectedDependency = projectForModel({ ...input, packages: unit }, limits);
+    const packet = modelPacket(projectedDependency);
+    if (
+      packet.packages.some(
+        (dependency) => JSON.stringify(dependency).length > limits.maxPackageChars
+      ) ||
+      JSON.stringify(packet).length > limits.maxBatchChars
+    ) {
+      unavailable.push({
+        packages: unit,
+        category: 'analysis_packet_too_large',
+      });
+      continue;
+    }
+    const candidate = [...current, ...unit];
     const projected = projectForModel({ ...input, packages: candidate }, limits);
+    const candidatePacket = modelPacket(projected);
     if (
       current.length &&
-      (candidate.length > limits.maxPackagesPerBatch ||
-        JSON.stringify(projected).length > limits.maxBatchChars)
+      ((candidate.length > limits.maxPackagesPerBatch && unit.length === 1) ||
+        JSON.stringify(candidatePacket).length > limits.maxBatchChars)
     ) {
       result.push(projectForModel({ ...input, packages: current }, limits));
-      current = [dependency];
+      current = unit;
     } else {
       current = candidate;
     }
@@ -116,25 +147,105 @@ function stricter(left, right) {
   return verdictPriority.get(left) >= verdictPriority.get(right) ? left : right;
 }
 
-function reviewSummary(packages, unavailableIds) {
-  const total = packages.length;
-  const manualReviewPackages = packages.filter((dependency) =>
-    unavailableIds.has(identity(dependency))
+function formatUpdate({ name, from, to }) {
+  return `${name} ${from} to ${to}`;
+}
+
+function isStructuredOutputFailure(category) {
+  return category === 'analysis_invalid_json' || category?.startsWith('analysis_schema_');
+}
+
+function queueAction(group, members, coverageIssues, failureCategory) {
+  if (failureCategory === 'policy_evidence_unavailable') {
+    const update = group.kind === 'direct' ? group.anchor : members[0];
+    return `Obtain official upstream evidence for ${formatUpdate(update)} before deciding this immutable decision unit.`;
+  }
+  if (isStructuredOutputFailure(failureCategory))
+    return 'Use the copyable research brief for this immutable decision unit; Mistral did not return a schema-valid analysis after its bounded retry.';
+  if (failureCategory === 'analysis_packet_too_large')
+    return 'Use the copyable research brief for this immutable decision unit; its bounded model packet was too large to analyze.';
+  if (failureCategory === 'analysis_request_budget_exhausted')
+    return 'Rerun the advisory review after reducing this pull request or raising the bounded Mistral request budget.';
+  if (!coverageIssues.length)
+    return 'Rerun the advisory review after correcting the transient analysis failure for this immutable decision unit.';
+  if (coverageIssues[0].reason === 'github_rate_limited')
+    return 'Rerun the advisory review after the GitHub API rate limit resets; this immutable decision unit was not fully collected.';
+  if (coverageIssues[0].reason === 'github_request_budget_exhausted')
+    return 'Rerun the advisory review after reducing this pull request or raising the bounded GitHub request budget.';
+  if (group.kind === 'direct')
+    return `Inspect the cited direct-update evidence for ${formatUpdate(group.anchor)} and verify it accounts for all ${members.length} changed update${members.length === 1 ? '' : 's'}.`;
+  return `Obtain immutable manifest, lockfile, and official package evidence for ${formatUpdate(members[0])}.`;
+}
+
+function decisionQueue(input, unavailableIds, failureCategories) {
+  const coverageById = new Map(
+    (input.coverage?.items ?? []).map((item) => [identity(item.update), item])
   );
-  const unavailable = manualReviewPackages.length;
+  const grouped = new Map();
+  for (const dependency of input.packages) {
+    const coverage = coverageById.get(identity(dependency));
+    const group = coverage?.group ?? { kind: 'standalone', anchor: null };
+    const key =
+      group.kind === 'direct'
+        ? `direct:${identity(group.anchor)}`
+        : `standalone:${identity(dependency)}`;
+    const unit = grouped.get(key) ?? {
+      group,
+      members: [],
+      coverageIssues: [],
+      analysisUnavailable: false,
+      failureCategory: null,
+    };
+    unit.members.push(dependency);
+    if (coverage && coverage.status !== 'complete') unit.coverageIssues.push(coverage);
+    if (unavailableIds.has(identity(dependency))) {
+      unit.analysisUnavailable = true;
+      unit.failureCategory ??= failureCategories.get(identity(dependency)) ?? null;
+    }
+    grouped.set(key, unit);
+  }
+  return [...grouped.values()]
+    .filter((unit) => unit.coverageIssues.length || unit.analysisUnavailable)
+    .map((unit) => ({
+      group: unit.group,
+      members: unit.members.map(({ name, from, to }) => ({ name, from, to })),
+      count: unit.members.length,
+      reason: unit.coverageIssues[0]?.reason ?? unit.failureCategory ?? 'analysis_unavailable',
+      action: queueAction(unit.group, unit.members, unit.coverageIssues, unit.failureCategory),
+      lifecycle: unit.coverageIssues.map(({ update, lifecycle }) => ({
+        update: { name: update.name, from: update.from, to: update.to },
+        ...lifecycle,
+      })),
+      analysisUnavailable: unit.analysisUnavailable,
+      failureCategory: unit.failureCategory,
+      analysisInvalidResponse: isStructuredOutputFailure(unit.failureCategory),
+    }));
+}
+
+function reviewSummary(input, unavailableIds, queue) {
+  const total = input.packages.length;
+  const unavailable = input.packages.filter((dependency) =>
+    unavailableIds.has(identity(dependency))
+  ).length;
   const analyzed = total - unavailable;
-  const updateLabel = `dependency update${total === 1 ? '' : 's'}`;
-  const namedPackages = manualReviewPackages
-    .slice(0, 3)
-    .map((dependency) => `${dependency.name} ${dependency.from} to ${dependency.to}`);
-  const remainingPackages = unavailable - namedPackages.length;
-  const remaining = remainingPackages
-    ? `, and ${remainingPackages} ${remainingPackages === 1 ? 'other' : 'others'}`
-    : '';
-  const manualReview = unavailable
-    ? `; manual review required for ${namedPackages.join(', ')}${remaining}`
-    : '';
-  return `Reviewed ${total} ${updateLabel}: ${analyzed} analyzed${manualReview}.`;
+  const units = decisionUnits(input);
+  const analyzedUnits = units.filter((unit) =>
+    unit.every((dependency) => !unavailableIds.has(identity(dependency)))
+  ).length;
+  const queued = queue.length;
+  return `Reviewed ${total} dependency update${total === 1 ? '' : 's'} across ${units.length} model decision unit${units.length === 1 ? '' : 's'}: ${analyzed} package assessment${analyzed === 1 ? '' : 's'} deterministically expanded from ${analyzedUnits} validated decision-unit ${analyzedUnits === 1 ? 'analysis' : 'analyses'}${queued ? `; ${queued} unit${queued === 1 ? '' : 's'} await decision evidence` : ''}.`;
+}
+
+function coverageSummary(input) {
+  const items = input.coverage?.items;
+  if (!items) return undefined;
+  const summary = { complete: 0, pending: 0, unresolved: 0 };
+  for (const item of items) {
+    if (item.status === 'complete') summary.complete += 1;
+    if (item.status === 'pending') summary.pending += 1;
+    if (item.status === 'unresolved') summary.unresolved += 1;
+  }
+  return summary;
 }
 
 function policyBlockers(input, unavailableIds) {
@@ -163,30 +274,80 @@ function hasEveryAssessment(batch, analysis) {
   );
 }
 
-async function analyzeBatch(batch, analyze, state) {
+function hasExplicitNonBlockingFollowups(analysis) {
+  return (
+    analysis.verdict !== 'merge_with_followups' ||
+    (Array.isArray(analysis.followups) &&
+      analysis.followups.length > 0 &&
+      analysis.followups.every((followup) => followup?.blocking === false))
+  );
+}
+
+async function requestAnalysis(batch, analyze, state, retry) {
   const timeoutMs = Math.min(state.requestTimeoutMs, state.deadline - Date.now());
-  if (state.requests >= state.maxRequests || timeoutMs <= 0)
-    return { analyses: [], unavailable: batch.packages };
+  if (state.requests >= state.maxRequests)
+    return {
+      verdict: 'analysis_unavailable',
+      reason: 'analysis_request_budget_exhausted',
+    };
+  if (timeoutMs <= 0)
+    return {
+      verdict: 'analysis_unavailable',
+      reason: 'analysis_deadline_exceeded',
+    };
   state.requests += 1;
-  const result = await analyze(batch, { timeoutMs });
+  return analyze(batch, { timeoutMs, retry });
+}
+
+function unavailableBatch(batch, failureCategory = 'analysis_unavailable') {
+  return {
+    analyses: [],
+    unavailable: batch.packages,
+    failures: batch.packages.map((dependency) => ({
+      dependency,
+      category: failureCategory,
+    })),
+  };
+}
+
+function completeBatch(batch, result) {
   if (result.verdict !== 'analysis_unavailable')
-    return hasEveryAssessment(batch, result)
-      ? { analyses: [result], unavailable: [] }
+    return hasEveryAssessment(batch, result) && hasExplicitNonBlockingFollowups(result)
+      ? { analyses: [result], unavailable: [], failures: [] }
       : {
           analyses: result.verdict === 'do_not_merge' ? [result] : [],
           unavailable: batch.packages,
+          failures: batch.packages.map((dependency) => ({
+            dependency,
+            category: 'analysis_incomplete_response',
+          })),
         };
-  if (result.reason !== 'truncated' || batch.packages.length === 1)
-    return { analyses: [], unavailable: batch.packages };
-  const midpoint = Math.ceil(batch.packages.length / 2);
+  return undefined;
+}
+
+async function analyzeBatch(batch, analyze, state) {
+  let result = await requestAnalysis(batch, analyze, state, false);
+  if (isStructuredOutputFailure(result.reason)) {
+    result = await requestAnalysis(batch, analyze, state, true);
+    if (isStructuredOutputFailure(result.reason)) return unavailableBatch(batch, result.reason);
+  }
+  const complete = completeBatch(batch, result);
+  if (complete) return complete;
+  if (result.reason !== 'analysis_truncated' || batch.packages.length === 1)
+    return unavailableBatch(batch, result.reason);
+  const units = decisionUnits(batch);
+  if (units.length === 1) return unavailableBatch(batch);
+  const midpoint = Math.ceil(units.length / 2);
+  const leftPackages = units.slice(0, midpoint).flat();
+  const rightPackages = units.slice(midpoint).flat();
   const [left, right] = await Promise.all([
     analyzeBatch(
-      projectForModel({ ...batch, packages: batch.packages.slice(0, midpoint) }, state.limits),
+      projectForModel({ ...batch, packages: leftPackages }, state.limits),
       analyze,
       state
     ),
     analyzeBatch(
-      projectForModel({ ...batch, packages: batch.packages.slice(midpoint) }, state.limits),
+      projectForModel({ ...batch, packages: rightPackages }, state.limits),
       analyze,
       state
     ),
@@ -194,6 +355,7 @@ async function analyzeBatch(batch, analyze, state) {
   return {
     analyses: [...left.analyses, ...right.analyses],
     unavailable: [...left.unavailable, ...right.unavailable],
+    failures: [...left.failures, ...right.failures],
   };
 }
 
@@ -227,11 +389,23 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   const completed = await analyzeAll(scheduled.batches, analyze, state, limits.maxConcurrency);
   const analyses = completed.flatMap((result) => result.analyses);
   const unavailable = [
-    ...scheduled.unavailable,
+    ...scheduled.unavailable.flatMap((result) => result.packages),
     ...completed.flatMap((result) => result.unavailable),
   ];
   const unavailableIds = new Set(unavailable.map(identity));
+  const failureCategories = new Map(
+    [
+      ...scheduled.unavailable.flatMap(({ packages, category }) =>
+        packages.map((dependency) => ({ dependency, category }))
+      ),
+      ...completed.flatMap((result) => result.failures),
+    ].map(({ dependency, category }) => [identity(dependency), category])
+  );
   const packageAssessments = analyses.flatMap((analysis) => analysis.packageAssessments);
+  const followups = analyses.flatMap((analysis) => analysis.followups ?? []);
+  const incompleteCoverage = (input.coverage?.items ?? []).some(
+    (item) => item.status !== 'complete'
+  );
   const deterministicBlockers = policyBlockers(input, unavailableIds);
   const blockers = [...analyses.flatMap((analysis) => analysis.blockers), ...deterministicBlockers];
   const modelVerdict = unavailable.length
@@ -242,21 +416,34 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
     : analyses.reduce((current, analysis) => stricter(current, analysis.verdict), 'merge');
   const verdict = deterministicBlockers.length
     ? stricter(modelVerdict, 'do_not_merge')
-    : modelVerdict;
-  const summary = reviewSummary(input.packages, unavailableIds);
+    : input.coverage && (incompleteCoverage || unavailable.length)
+      ? stricter(modelVerdict, 'decision_incomplete')
+      : modelVerdict;
+  const queue = decisionQueue(input, unavailableIds, failureCategories);
+  const summary = reviewSummary(input, unavailableIds, queue);
+  const coverage = coverageSummary(input);
   if (!analyses.length)
     return {
-      verdict: 'analysis_unavailable',
+      verdict:
+        input.coverage && !deterministicBlockers.length
+          ? 'decision_incomplete'
+          : 'analysis_unavailable',
       summary,
+      decisionQueue: queue,
+      ...(coverage ? { coverage } : {}),
       packageAssessments: [],
       blockers: [],
+      followups: [],
       remediationPrompt: null,
     };
   return {
     verdict,
     summary,
+    decisionQueue: queue,
+    ...(coverage ? { coverage } : {}),
     packageAssessments,
     blockers,
+    followups,
     remediationPrompt: null,
   };
 }
