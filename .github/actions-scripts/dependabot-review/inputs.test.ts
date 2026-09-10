@@ -97,7 +97,10 @@ describe('collectPullRequestProvenance', () => {
       .fn()
       .mockResolvedValueOnce(contentResponse({ lockfileVersion: 3, packages: { '': {} } }))
       .mockResolvedValueOnce(
-        contentResponse({ scripts: { postinstall: 'ignored' }, overrides: { example: '1.0.0' } })
+        contentResponse({
+          scripts: { postinstall: 'ignored' },
+          overrides: { example: '1.0.0' },
+        })
       );
     const collectProvenance = vi.fn().mockResolvedValue({
       status: 'verified',
@@ -115,7 +118,12 @@ describe('collectPullRequestProvenance', () => {
           collectProvenance,
         }
       )
-    ).resolves.toEqual({ status: 'verified', invalid: 0, missing: 0, reason: null });
+    ).resolves.toEqual({
+      status: 'verified',
+      invalid: 0,
+      missing: 0,
+      reason: null,
+    });
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       'https://api.github.com/repos/owner/repo/contents/package-lock.json?ref=immutable-head',
@@ -165,7 +173,10 @@ describe('collectNpmCoverageInput', () => {
           lockfileVersion: 3,
           packages: {
             '': { dependencies: { example: '^1.0.0' } },
-            'node_modules/example': { version: '1.0.0', hasInstallScript: false },
+            'node_modules/example': {
+              version: '1.0.0',
+              hasInstallScript: false,
+            },
           },
         })
       )
@@ -174,7 +185,10 @@ describe('collectNpmCoverageInput', () => {
           lockfileVersion: 3,
           packages: {
             '': { dependencies: { example: '^2.0.0' } },
-            'node_modules/example': { version: '2.0.0', hasInstallScript: true },
+            'node_modules/example': {
+              version: '2.0.0',
+              hasInstallScript: true,
+            },
           },
         })
       )
@@ -359,7 +373,10 @@ describe('collectReviewInput', () => {
       items: [
         {
           update: anchor,
-          group: { kind: 'direct', anchor: { name: 'example', from: '1.0.0', to: '2.0.0' } },
+          group: {
+            kind: 'direct',
+            anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+          },
           lifecycle: {
             status: 'unchanged',
             metadata: 'not_needed',
@@ -371,8 +388,16 @@ describe('collectReviewInput', () => {
           reason: null,
         },
         {
-          update: { name: 'nested', from: '1.0.0', to: '2.0.0', dependencyType: 'transitive' },
-          group: { kind: 'direct', anchor: { name: 'example', from: '1.0.0', to: '2.0.0' } },
+          update: {
+            name: 'nested',
+            from: '1.0.0',
+            to: '2.0.0',
+            dependencyType: 'transitive',
+          },
+          group: {
+            kind: 'direct',
+            anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+          },
           lifecycle: {
             status: 'unchanged',
             metadata: 'not_needed',
@@ -399,7 +424,11 @@ describe('collectReviewInput', () => {
       );
 
     const input = await collectReviewInput(
-      { pull_request: pullRequest, repository: 'owner/repo', files: [packageFile] },
+      {
+        pull_request: pullRequest,
+        repository: 'owner/repo',
+        files: [packageFile],
+      },
       { fetchLike: fetchMock, collectCoverage: true, collectNpmCoverage }
     );
 
@@ -437,7 +466,10 @@ describe('collectReviewInput', () => {
         vulnerabilities: [],
       },
     ];
-    const directGroup = { kind: 'direct', anchor: { name: 'example', from: '1.0.0', to: '2.0.0' } };
+    const directGroup = {
+      kind: 'direct',
+      anchor: { name: 'example', from: '1.0.0', to: '2.0.0' },
+    };
     const collectNpmCoverage = vi.fn().mockResolvedValue({
       items: [
         {
@@ -459,7 +491,12 @@ describe('collectReviewInput', () => {
           reason: null,
         },
         {
-          update: { name: 'nested', from: '1.0.0', to: '2.0.0', dependencyType: 'transitive' },
+          update: {
+            name: 'nested',
+            from: '1.0.0',
+            to: '2.0.0',
+            dependencyType: 'transitive',
+          },
           group: directGroup,
           lifecycle: {
             status: 'unchanged',
@@ -476,7 +513,11 @@ describe('collectReviewInput', () => {
     const fetchMock = vi.fn().mockResolvedValue(response(nestedChanges));
 
     const input = await collectReviewInput(
-      { pull_request: pullRequest, repository: 'owner/repo', files: [packageFile] },
+      {
+        pull_request: pullRequest,
+        repository: 'owner/repo',
+        files: [packageFile],
+      },
       {
         fetchLike: fetchMock,
         collectCoverage: true,
@@ -486,11 +527,22 @@ describe('collectReviewInput', () => {
     );
 
     expect(input?.coverage?.items).toMatchObject([
-      { update: { name: 'example' }, status: 'unresolved', reason: 'github_rate_limited' },
-      { update: { name: 'nested' }, status: 'unresolved', reason: 'github_rate_limited' },
+      {
+        update: { name: 'example' },
+        status: 'unresolved',
+        reason: 'github_rate_limited',
+      },
+      {
+        update: { name: 'nested' },
+        status: 'unresolved',
+        reason: 'github_rate_limited',
+      },
     ]);
     expect(input?.packages).toMatchObject([
-      { name: 'example', evidence: { status: 'unavailable', reason: 'github_rate_limited' } },
+      {
+        name: 'example',
+        evidence: { status: 'unavailable', reason: 'github_rate_limited' },
+      },
       { name: 'nested', evidence: { status: 'group_backed' } },
     ]);
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -511,7 +563,9 @@ describe('collectReviewInput', () => {
       {
         fetchLike: fetchMock,
         collectCoverage: true,
-        githubRequestDiagnostic: () => ({ limit: { status: 'request_budget_exhausted' } }),
+        githubRequestDiagnostic: () => ({
+          limit: { status: 'request_budget_exhausted' },
+        }),
       }
     );
 
@@ -519,7 +573,10 @@ describe('collectReviewInput', () => {
       packages: [
         {
           name: 'actions/create-github-app-token',
-          evidence: { status: 'unavailable', reason: 'github_request_budget_exhausted' },
+          evidence: {
+            status: 'unavailable',
+            reason: 'github_request_budget_exhausted',
+          },
         },
       ],
       coverage: {
@@ -561,7 +618,9 @@ describe('collectReviewInput', () => {
     );
 
     expect(input?.packages[0].sources).toMatchObject([
-      { url: 'https://github.com/actions/create-github-app-token/releases/tag/3.2.0' },
+      {
+        url: 'https://github.com/actions/create-github-app-token/releases/tag/3.2.0',
+      },
     ]);
     expect(fetchMock.mock.calls[2][0]).toContain('/releases/tags/3.2.0');
   });
@@ -664,7 +723,8 @@ describe('collectReviewInput', () => {
         name: 'actions/create-github-app-token',
         evidence: {
           status: 'unavailable',
-          reason: 'No upstream release or comparison was available for this version range.',
+          reason:
+            'No upstream release, comparison, or changelog was available for this version range.',
         },
         sources: [],
       },
@@ -796,11 +856,15 @@ describe('collectReviewInput', () => {
 
     expect(input?.packages[0]).toMatchObject({
       evidence: { status: 'partial' },
-      sources: [{ url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0' }],
+      sources: [
+        {
+          url: 'https://github.com/actions/create-github-app-token/releases/tag/v3.0.0',
+        },
+      ],
     });
   });
 
-  it('uses npm metadata as partial evidence when upstream releases are unavailable', async () => {
+  it('records a publisher evidence absence instead of treating package metadata as upgrade evidence', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(response(dependencyDiff))
@@ -816,7 +880,9 @@ describe('collectReviewInput', () => {
       .mockResolvedValueOnce(new Response(null, { status: 404 }))
       .mockResolvedValueOnce(new Response(null, { status: 404 }))
       .mockResolvedValueOnce(new Response(null, { status: 404 }))
-      .mockResolvedValueOnce(response([]));
+      .mockResolvedValueOnce(response([]))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }));
 
     const input = await collectReviewInput(
       {
@@ -828,12 +894,47 @@ describe('collectReviewInput', () => {
     );
 
     expect(input?.packages[0]).toMatchObject({
-      evidence: { status: 'partial' },
-      sources: [
+      evidence: { status: 'unavailable', availability: 'not_published' },
+      sources: [],
+    });
+  });
+
+  it('uses an upstream changelog as partial evidence before package metadata', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response(dependencyDiff))
+      .mockResolvedValueOnce(
+        response({ repository: { url: 'https://github.com/example/package' } })
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(new Response(null, { status: 404 }))
+      .mockResolvedValueOnce(response([]))
+      .mockResolvedValueOnce(
+        response({
+          encoding: 'base64',
+          content: Buffer.from('## 2.0.0\n\n- A relevant change.').toString('base64'),
+          html_url: 'https://github.com/example/package/blob/v2.0.0/CHANGELOG.md',
+        })
+      );
+
+    await expect(
+      collectReviewInput(
         {
-          kind: 'package-metadata',
-          url: 'https://registry.npmjs.org/example',
-          range: { from: '2.0.0', to: '2.0.0' },
+          pull_request: pullRequest,
+          repository: 'owner/repo',
+          files: [packageFile],
+        },
+        { fetchLike: fetchMock }
+      )
+    ).resolves.toMatchObject({
+      packages: [
+        {
+          evidence: { status: 'partial' },
+          sources: [{ kind: 'changelog' }],
         },
       ],
     });

@@ -3,7 +3,21 @@ import { emitGithubRequestDiagnostic, emitReviewDiagnostic } from './diagnostics
 import { pullRequestNumber } from './event.mjs';
 import { managedReviewMetadata, shouldSkipAnalysis, shouldSkipCurrentHead } from './freshness.mjs';
 import { deleteReviewComment, findReviewComment, upsertComment } from './github.mjs';
+import { renderComment } from './reporting.mjs';
 import { buildReviewFromInput, loadReviewInput, prepareReview } from './review.mjs';
+
+function ciRun(repository, workflowRun) {
+  if (workflowRun?.conclusion === 'success') return null;
+  const runId = workflowRun?.id;
+  const [owner, name, ...rest] = typeof repository === 'string' ? repository.split('/') : [];
+  const validRun = Number.isSafeInteger(runId) && runId >= 1;
+  return {
+    url:
+      validRun && owner && name && !rest.length
+        ? `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/actions/runs/${runId}`
+        : null,
+  };
+}
 
 const eventPath = process.env.GITHUB_EVENT_PATH;
 if (!eventPath) throw new Error('GITHUB_EVENT_PATH is required.');
@@ -33,7 +47,36 @@ const existing = await findReviewComment({
 });
 const refresh = process.env.DEPENDABOT_REVIEW_REFRESH === 'true';
 const eventHeadSha = event?.workflow_run?.head_sha;
-if (shouldSkipCurrentHead(existing, eventHeadSha, { refresh })) {
+const triggeringCiRun = ciRun(process.env.GITHUB_REPOSITORY, event?.workflow_run);
+if (triggeringCiRun) {
+  // The comment must not imply an advisory merge while the triggering CI run is unresolved.
+  const metadata = {
+    headSha: eventHeadSha,
+    reviewDigest: null,
+    modelVersion: null,
+    promptVersion: null,
+    coverage: null,
+  };
+  const body = renderComment(
+    {
+      verdict: 'decision_incomplete',
+      summary: 'The advisory review is withheld until the triggering CI run succeeds.',
+      decisionQueue: [],
+      packageAssessments: [],
+      blockers: [],
+      followups: [],
+      remediationPrompt: null,
+    },
+    { ...metadata, ciRun: triggeringCiRun }
+  );
+  emitReviewDiagnostic(metadata, 'ci_conclusion_not_successful');
+  await upsertComment({
+    api: commentApi,
+    body,
+    headers: commentHeaders,
+    author: commentAuthor,
+  });
+} else if (shouldSkipCurrentHead(existing, eventHeadSha, { refresh })) {
   const { reviewDigest } = managedReviewMetadata(existing.body);
   emitReviewDiagnostic(
     {

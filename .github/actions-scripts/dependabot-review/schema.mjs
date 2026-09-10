@@ -34,12 +34,19 @@ const concreteRepositorySurface =
 const unconfirmedCapability =
   /\b(?:(?:immediate )?(?:utility|benefit|usefulness) (?:is )?not (?:confirmed|established)|not (?:yet )?(?:confirmed|established)|new (?:feature|workflow|surface) requiring separate (?:evaluation|adoption)|separate (?:product )?(?:surface|workflow) (?:requires|needs) (?:separate )?(?:evaluation|adoption))\b/i;
 const evidenceStatuses = new Set(['available', 'partial', 'unavailable', 'group_backed']);
+const evidenceAvailability = new Set([
+  'available',
+  'not_published',
+  'collection_failed',
+  'group_backed',
+]);
 const contextStatuses = new Set(['available', 'partial', 'unavailable']);
 const provenanceStatuses = new Set(['verified', 'attention_required', 'unavailable']);
 const vulnerabilitySeverities = new Set(['low', 'moderate', 'high', 'critical']);
 const contextKinds = new Set(['workflow-action', 'package-usage']);
 const sourceKinds = new Set([
   'release-notes',
+  'changelog',
   'repository-compare',
   'package-metadata',
   'migration-guide',
@@ -232,6 +239,19 @@ export function parseReviewInput(value) {
     const evidence = object(dependency.evidence, 'package evidence');
     const status = string(evidence.status, 'evidence status');
     if (!evidenceStatuses.has(status)) throw new TypeError('unsupported evidence status');
+    const availability =
+      evidence.availability === undefined
+        ? undefined
+        : string(evidence.availability, 'evidence availability');
+    if (
+      (availability !== undefined && !evidenceAvailability.has(availability)) ||
+      (availability === 'group_backed' && status !== 'group_backed') ||
+      (availability !== undefined &&
+        availability !== 'group_backed' &&
+        status === 'group_backed') ||
+      (['not_published', 'collection_failed'].includes(availability) && status !== 'unavailable')
+    )
+      throw new TypeError('evidence availability does not match its status');
     const context = object(dependency.context, 'package context');
     const contextStatus = string(context.status, 'context status');
     if (!contextStatuses.has(contextStatus)) throw new TypeError('unsupported context status');
@@ -302,6 +322,7 @@ export function parseReviewInput(value) {
       evidence: {
         status,
         reason: evidence.reason === null ? null : string(evidence.reason, 'evidence reason'),
+        ...(availability === undefined ? {} : { availability }),
       },
       context: { status: contextStatus, facts },
       sources,
@@ -348,12 +369,15 @@ export function parsePolicy(value, input) {
       finding.sourceUrl === null ? null : string(finding.sourceUrl, 'policy source URL');
     const severity = finding.severity ?? null;
     if (findingId === null) {
-      if (
-        kind !== 'evidence-incomplete' ||
-        sourceUrl !== null ||
-        ['available', 'group_backed'].includes(dependency.evidence.status)
-      )
-        throw new TypeError('evidence policy finding must match incomplete input evidence');
+      const hasUpgradeEvidence = dependency.sources.some((source) =>
+        ['release-notes', 'repository-compare', 'changelog'].includes(source.kind)
+      );
+      const hasInsufficientEvidence =
+        dependency.evidence.availability !== 'not_published' &&
+        (dependency.evidence.status === 'unavailable' ||
+          (dependency.evidence.status === 'partial' && !hasUpgradeEvidence));
+      if (kind !== 'evidence-incomplete' || sourceUrl !== null || !hasInsufficientEvidence)
+        throw new TypeError('evidence policy finding must match insufficient input evidence');
       if (severity !== null)
         throw new TypeError('evidence policy finding cannot include a severity');
     } else {

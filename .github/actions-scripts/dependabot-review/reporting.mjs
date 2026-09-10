@@ -57,7 +57,11 @@ function updateLabel({ name, from, to }) {
   return `${name} ${from} to ${to}`;
 }
 
-function nextAction(analysis) {
+function nextAction(analysis, ciRun) {
+  if (ciRun) {
+    const run = ciRun.url ? `[CI run](${ciRun.url})` : 'CI run';
+    return `No merge recommendation is available until the triggering ${run} succeeds.`;
+  }
   if (analysis.verdict === 'decision_incomplete')
     return 'No merge recommendation is available. Complete every item in the Decision queue.';
   if (analysis.verdict === 'do_not_merge')
@@ -69,67 +73,89 @@ function nextAction(analysis) {
   return 'The evidence supports an advisory merge recommendation.';
 }
 
+const reasonLabels = new Map([
+  ['coverage_inputs_unavailable', 'Immutable coverage inputs were unavailable.'],
+  ['github_rate_limited', 'GitHub API rate limiting stopped source collection.'],
+  [
+    'github_request_budget_exhausted',
+    'The bounded GitHub request budget stopped source collection.',
+  ],
+  ['policy_evidence_unavailable', 'Upstream upgrade evidence could not be collected.'],
+  ['analysis_invalid_response', 'Mistral did not produce a schema-valid analysis after one retry.'],
+  [
+    'analysis_schema_assessment_cardinality',
+    'Mistral returned an incomplete set of decision assessments after one retry.',
+  ],
+  [
+    'analysis_schema_unknown_evidence_url',
+    'Mistral cited evidence outside the immutable review packet after one retry.',
+  ],
+  [
+    'analysis_schema_unknown_package',
+    'Mistral referenced an unknown package or decision unit after one retry.',
+  ],
+  [
+    'analysis_schema_followup_contract',
+    'Mistral follow-ups did not match its advisory verdict after one retry.',
+  ],
+  [
+    'analysis_schema_blocker_contract',
+    'Mistral blockers did not match verified immutable findings after one retry.',
+  ],
+  [
+    'analysis_schema_policy_ceiling',
+    'Mistral returned a verdict less restrictive than immutable policy after one retry.',
+  ],
+  [
+    'analysis_schema_verdict_contract',
+    'Mistral returned an unsupported advisory verdict after one retry.',
+  ],
+  [
+    'analysis_schema_decision_shape',
+    'Mistral omitted or malformed required decision fields after one retry.',
+  ],
+  [
+    'analysis_schema_contract',
+    'Mistral did not satisfy the bounded decision-analysis contract after one retry.',
+  ],
+  ['analysis_invalid_json', 'Mistral did not return valid JSON after one retry.'],
+  [
+    'analysis_packet_too_large',
+    'The bounded Mistral input packet was too large for this decision unit.',
+  ],
+  [
+    'analysis_request_budget_exhausted',
+    'The bounded Mistral request budget was exhausted before analysis.',
+  ],
+  [
+    'analysis_deadline_exceeded',
+    'The bounded Mistral analysis deadline elapsed before this unit could run.',
+  ],
+  ['analysis_transport_failure', 'Mistral could not be reached for this bounded analysis.'],
+  ['analysis_http_failure', 'Mistral returned an unavailable API response.'],
+  ['analysis_api_response_invalid', 'Mistral returned an invalid API response envelope.'],
+  ['analysis_truncated', 'Mistral truncated this bounded analysis.'],
+  ['analysis_incomplete_response', 'Mistral omitted required decision coverage from its analysis.'],
+  ['analysis_unavailable', 'Bounded model analysis was unavailable.'],
+]);
+
 function reasonLabel(reason) {
-  if (reason === 'coverage_inputs_unavailable')
-    return 'Immutable coverage inputs were unavailable.';
-  if (reason === 'github_rate_limited')
-    return 'GitHub API rate limiting stopped source collection.';
-  if (reason === 'github_request_budget_exhausted')
-    return 'The bounded GitHub request budget stopped source collection.';
-  if (reason === 'analysis_invalid_response')
-    return 'Mistral did not produce a schema-valid analysis after one retry.';
-  if (reason === 'analysis_schema_assessment_cardinality')
-    return 'Mistral returned an incomplete set of decision assessments after one retry.';
-  if (reason === 'analysis_schema_unknown_evidence_url')
-    return 'Mistral cited evidence outside the immutable review packet after one retry.';
-  if (reason === 'analysis_schema_unknown_package')
-    return 'Mistral referenced an unknown package or decision unit after one retry.';
-  if (reason === 'analysis_schema_followup_contract')
-    return 'Mistral follow-ups did not match its advisory verdict after one retry.';
-  if (reason === 'analysis_schema_blocker_contract')
-    return 'Mistral blockers did not match verified immutable findings after one retry.';
-  if (reason === 'analysis_schema_policy_ceiling')
-    return 'Mistral returned a verdict less restrictive than immutable policy after one retry.';
-  if (reason === 'analysis_schema_verdict_contract')
-    return 'Mistral returned an unsupported advisory verdict after one retry.';
-  if (reason === 'analysis_schema_decision_shape')
-    return 'Mistral omitted or malformed required decision fields after one retry.';
-  if (reason === 'analysis_schema_contract')
-    return 'Mistral did not satisfy the bounded decision-analysis contract after one retry.';
-  if (reason === 'analysis_invalid_json')
-    return 'Mistral did not return valid JSON after one retry.';
-  if (reason === 'analysis_packet_too_large')
-    return 'The bounded Mistral input packet was too large for this decision unit.';
-  if (reason === 'analysis_request_budget_exhausted')
-    return 'The bounded Mistral request budget was exhausted before analysis.';
-  if (reason === 'analysis_deadline_exceeded')
-    return 'The bounded Mistral analysis deadline elapsed before this unit could run.';
-  if (reason === 'analysis_transport_failure')
-    return 'Mistral could not be reached for this bounded analysis.';
-  if (reason === 'analysis_http_failure') return 'Mistral returned an unavailable API response.';
-  if (reason === 'analysis_api_response_invalid')
-    return 'Mistral returned an invalid API response envelope.';
-  if (reason === 'analysis_truncated') return 'Mistral truncated this bounded analysis.';
-  if (reason === 'analysis_incomplete_response')
-    return 'Mistral omitted required decision coverage from its analysis.';
-  if (reason === 'analysis_unavailable') return 'Bounded model analysis was unavailable.';
-  return reason;
+  return (
+    reasonLabels.get(reason) ?? 'The advisory system reported an unrecognized review condition.'
+  );
 }
 
-function decisionQueueLines(analysis) {
-  if (!analysis.decisionQueue?.length) return [];
-  const lines = ['### Decision queue'];
-  for (const item of analysis.decisionQueue) {
+function decisionQueueItems(analysis) {
+  return (analysis.decisionQueue ?? []).map((item) => {
     const relationship =
       item.group.kind === 'direct'
         ? `Direct update ${updateLabel(item.group.anchor)}`
         : `Standalone update ${updateLabel(item.members[0])}`;
-    lines.push(
+    return [
       `- **${escape(relationship)}** (${item.count} changed update${item.count === 1 ? '' : 's'}): ${escape(abbreviate(item.action, 600))}`,
-      `  - Evidence gap: ${escape(abbreviate(reasonLabel(item.reason), 280))}`
-    );
-  }
-  return lines;
+      `  - Evidence gap: ${escape(abbreviate(reasonLabel(item.reason), 280))}`,
+    ];
+  });
 }
 
 function coverageLines(analysis) {
@@ -176,18 +202,28 @@ function followupUnits(analysis) {
     }
     units.set(key, { researchUnit, followups: [description] });
   }
-  return [...units.values()].slice(0, maximumFollowupUnits);
+  const values = [...units.values()];
+  return {
+    units: values.slice(0, maximumFollowupUnits),
+    omitted: values.length - Math.min(values.length, maximumFollowupUnits),
+  };
 }
 
 function followupLines(analysis) {
   if (analysis.verdict !== 'merge_with_followups' || !analysis.followups?.length) return [];
+  const { units, omitted } = followupUnits(analysis);
   return [
     '### Non-blocking follow-ups',
-    ...followupUnits(analysis).map(({ researchUnit, followups }) => {
+    ...units.map(({ researchUnit, followups }) => {
       const label = followupUnitLabel(researchUnit);
       const prefix = label ? `**${escape(label)}:** ` : '';
       return `- ${prefix}${escape(abbreviate(followups.join(' '), 280))}`;
     }),
+    ...(omitted
+      ? [
+          `- ${omitted} additional decision unit${omitted === 1 ? '' : 's'} with non-blocking follow-ups ${omitted === 1 ? 'is' : 'are'} not shown.`,
+        ]
+      : []),
   ];
 }
 
@@ -210,7 +246,8 @@ function handoffSections(analysis, metadata) {
 function followupHandoffSections(analysis, metadata) {
   if (analysis.verdict !== 'merge_with_followups' || !metadata.repository || !metadata.reviewDigest)
     return [];
-  const prompts = followupUnits(analysis)
+  const { units } = followupUnits(analysis);
+  const prompts = units
     .filter(({ researchUnit }) => researchUnit)
     .map(({ researchUnit, followups }) =>
       renderResearchHandoff({
@@ -264,9 +301,12 @@ function featureSections(assessments) {
   return sections;
 }
 
+function sectionFits(lines, section, footer) {
+  return [...lines, '', ...section, '', footer].join('\n').length <= maximumCommentChars;
+}
+
 function appendSection(lines, section, footer) {
-  const candidate = [...lines, '', ...section, '', footer].join('\n');
-  if (candidate.length > maximumCommentChars) return false;
+  if (!sectionFits(lines, section, footer)) return false;
   lines.push('', ...section);
   return true;
 }
@@ -288,15 +328,34 @@ function appendCriticalSection(lines, section, footer) {
   if (kept.length) lines.push('', ...kept);
 }
 
-function appendRequiredSection(lines, section, footer) {
-  if (!section.length) return;
-  if (!appendSection(lines, section, footer))
-    throw new RangeError('The complete Dependabot decision queue exceeds GitHub’s comment limit.');
+function decisionQueueOverflow(count) {
+  return `- **${count} additional decision unit${count === 1 ? '' : 's'} ${count === 1 ? 'is' : 'are'} not shown.** No merge recommendation is available until every decision unit is resolved.`;
+}
+
+function appendRequiredDecisionQueue(lines, items, footer) {
+  if (!items.length) return;
+  const heading = '### Decision queue';
+  if (appendSection(lines, [heading, ...items.flat()], footer)) return;
+  const kept = [];
+  for (const item of items) {
+    const omitted = items.length - kept.length - 1;
+    const section = [
+      heading,
+      ...kept.flat(),
+      ...item,
+      ...(omitted ? [decisionQueueOverflow(omitted)] : []),
+    ];
+    if (!sectionFits(lines, section, footer)) break;
+    kept.push(item);
+  }
+  const omitted = items.length - kept.length;
+  if (omitted)
+    appendSection(lines, [heading, ...kept.flat(), decisionQueueOverflow(omitted)], footer);
 }
 
 export function renderComment(analysis, value) {
   const metadata = typeof value === 'string' ? { headSha: value } : value;
-  const { headSha, reviewDigest } = metadata;
+  const { headSha, reviewDigest, ciRun } = metadata;
   const footer = `Reviewed head: \`${headSha}\`. This workflow did not execute code or codemods.`;
   const verdict = analysis.verdict.replaceAll('_', ' ');
   const lines = [
@@ -306,11 +365,11 @@ export function renderComment(analysis, value) {
     '## Dependabot intelligent review',
     '',
     `**Advisory verdict:** ${verdict}`,
-    `**Next action:** ${nextAction(analysis)}`,
+    `**Next action:** ${nextAction(analysis, ciRun)}`,
     '',
     escape(abbreviate(analysis.summary)),
   ];
-  appendRequiredSection(lines, decisionQueueLines(analysis), footer);
+  appendRequiredDecisionQueue(lines, decisionQueueItems(analysis), footer);
   appendCriticalSection(lines, blockerLines(analysis), footer);
   const deferredSections = [
     coverageLines(analysis),

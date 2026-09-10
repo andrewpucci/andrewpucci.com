@@ -2,8 +2,8 @@ import { isVulnerabilitySeverity, parseReviewInput } from './schema.mjs';
 import { collectNpmCoverage } from './coverage.mjs';
 import { collectLifecycleScripts } from './lifecycle.mjs';
 import { collectRepositoryContext } from './context.mjs';
-import { fetchAllPages } from './github.mjs';
 import { collectProvenance } from './provenance.mjs';
+import { collectUpstreamEvidence } from './upstream-evidence.mjs';
 
 const provenanceUnavailable = (reason) => ({
   status: 'unavailable',
@@ -275,133 +275,6 @@ async function fetchJson(fetchLike, url, options) {
   }
 }
 
-async function targetRelease(repository, dependency, fetchLike, githubHeaders) {
-  for (const tag of [`v${dependency.to}`, dependency.to]) {
-    const release = await fetchJson(
-      fetchLike,
-      `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(tag)}`,
-      { headers: githubHeaders }
-    );
-    if (release?.html_url && typeof release.body === 'string')
-      return {
-        kind: 'release-notes',
-        url: release.html_url,
-        title: release.name || `${dependency.name} ${dependency.to}`,
-        excerpt: release.body.slice(0, 12_000),
-        range: { from: dependency.from, to: dependency.to },
-      };
-  }
-  return null;
-}
-
-async function rangeCompare(repository, dependency, fetchLike, githubHeaders) {
-  for (const fromTag of [`v${dependency.from}`, dependency.from])
-    for (const toTag of [`v${dependency.to}`, dependency.to]) {
-      const comparison = await fetchJson(
-        fetchLike,
-        `https://api.github.com/repos/${repository}/compare/${encodeURIComponent(fromTag)}...${encodeURIComponent(toTag)}`,
-        { headers: githubHeaders }
-      );
-      if (typeof comparison?.html_url !== 'string') continue;
-      const commits = Array.isArray(comparison.commits) ? comparison.commits : [];
-      const excerpt = commits
-        .map((commit) => commit?.commit?.message)
-        .filter((message) => typeof message === 'string')
-        .join('\n')
-        .slice(0, 12_000);
-      return {
-        kind: 'repository-compare',
-        url: comparison.html_url,
-        title: `${dependency.name} ${dependency.from} to ${dependency.to}`,
-        excerpt: excerpt || `GitHub compared ${dependency.from} to ${dependency.to}.`,
-        range: { from: dependency.from, to: dependency.to },
-      };
-    }
-  return null;
-}
-
-function versionParts(value) {
-  const version = concreteVersion(value);
-  return version?.split('-')[0].split('.').map(Number);
-}
-
-function compareVersions(left, right) {
-  for (let index = 0; index < left.length; index += 1) {
-    const leftPart = left.at(index);
-    const rightPart = right.at(index);
-    if (leftPart < rightPart) return -1;
-    if (leftPart > rightPart) return 1;
-  }
-  return 0;
-}
-
-function withinRange(version, from, to) {
-  const candidate = versionParts(version);
-  const lower = versionParts(from);
-  const upper = versionParts(to);
-  return (
-    candidate &&
-    lower &&
-    upper &&
-    compareVersions(candidate, lower) >= 0 &&
-    compareVersions(candidate, upper) <= 0
-  );
-}
-
-function isDependencyReleaseTag(tag, dependency) {
-  const version = concreteVersion(tag);
-  return (
-    version &&
-    [
-      version,
-      `v${version}`,
-      `${dependency.name}@${version}`,
-      `${dependency.name}@v${version}`,
-    ].includes(tag)
-  );
-}
-
-async function rangeReleases(repository, dependency, fetchLike, githubHeaders) {
-  const releases = await fetchAllPages({
-    api: `https://api.github.com/repos/${repository}/releases?per_page=100`,
-    headers: githubHeaders,
-    fetchLike,
-    action: 'retrieve upstream releases',
-  }).catch(() => []);
-  return releases
-    .filter(
-      (release) =>
-        typeof release?.tag_name === 'string' &&
-        typeof release.html_url === 'string' &&
-        typeof release.body === 'string' &&
-        isDependencyReleaseTag(release.tag_name, dependency) &&
-        withinRange(release.tag_name, dependency.from, dependency.to)
-    )
-    .slice(0, 5)
-    .map((release) => {
-      const version = concreteVersion(release.tag_name);
-      return {
-        kind: 'release-notes',
-        url: release.html_url,
-        title: release.name || `${dependency.name} ${version}`,
-        excerpt: release.body.slice(0, 12_000),
-        range: { from: version, to: version },
-      };
-    });
-}
-
-function packageMetadataSource(dependency, metadata) {
-  const description = metadata?.versions?.[dependency.to]?.description ?? metadata?.description;
-  if (typeof description !== 'string' || !description) return null;
-  return {
-    kind: 'package-metadata',
-    url: `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`,
-    title: `${dependency.name} ${dependency.to} package metadata`,
-    excerpt: description.slice(0, 12_000),
-    range: { from: dependency.to, to: dependency.to },
-  };
-}
-
 const updateIdentity = ({ name, from, to }) => `${name}\u0000${from}\u0000${to}`;
 
 function groupBacked(coverage, dependency) {
@@ -428,36 +301,6 @@ function limitedCoverage(coverage, rateLimitedTargets) {
       const limit = rateLimitedTargets.get(target);
       return limit ? { ...item, status: 'unresolved', reason: githubLimitReason(limit) } : item;
     }),
-  };
-}
-
-async function upstreamEvidence(repository, dependency, metadata, fetchLike, githubHeaders) {
-  if (repository) {
-    const source = await targetRelease(repository, dependency, fetchLike, githubHeaders);
-    if (source) return { status: 'available', reason: null, sources: [source] };
-    const comparison = await rangeCompare(repository, dependency, fetchLike, githubHeaders);
-    if (comparison) return { status: 'available', reason: null, sources: [comparison] };
-    const releases = await rangeReleases(repository, dependency, fetchLike, githubHeaders);
-    if (releases.length)
-      return {
-        status: 'partial',
-        reason: 'Only releases within the version range were available.',
-        sources: releases,
-      };
-  }
-  const metadataSource = packageMetadataSource(dependency, metadata);
-  if (metadataSource)
-    return {
-      status: 'partial',
-      reason: 'Only npm package metadata was available for this dependency.',
-      sources: [metadataSource],
-    };
-  return {
-    status: 'unavailable',
-    reason: repository
-      ? 'No upstream release or comparison was available for this version range.'
-      : 'No attributable upstream repository was available for this dependency.',
-    sources: [],
   };
 }
 
@@ -532,6 +375,7 @@ export async function collectReviewInput(
       if (isGroupBacked) {
         evidence = {
           status: 'group_backed',
+          availability: 'group_backed',
           reason:
             'Upstream evidence is collected for the direct update that supplies this group scope.',
           sources: [],
@@ -542,6 +386,7 @@ export async function collectReviewInput(
           rateLimitedTargets.set(target, limit);
           evidence = {
             status: 'unavailable',
+            availability: 'collection_failed',
             reason: githubLimitReason(limit),
             sources: [],
           };
@@ -554,18 +399,19 @@ export async function collectReviewInput(
                   `https://registry.npmjs.org/${encodeURIComponent(dependency.name)}`
                 );
           const repository = dependency.repository ?? githubRepository(metadata?.repository?.url);
-          evidence = await upstreamEvidence(
+          evidence = await collectUpstreamEvidence({
             repository,
             dependency,
             metadata,
             fetchLike,
-            githubHeaders
-          );
+            githubHeaders,
+          });
           const observedLimit = githubRequestDiagnostic()?.limit;
           if (observedLimit) {
             rateLimitedTargets.set(target, observedLimit);
             evidence = {
               status: 'unavailable',
+              availability: 'collection_failed',
               reason: githubLimitReason(observedLimit),
               sources: [],
             };
@@ -618,7 +464,11 @@ export async function collectReviewInput(
         to: dependency.to,
         dependencyType: dependency.dependencyType,
         license: dependency.license ?? null,
-        evidence: { status: evidence.status, reason: evidence.reason },
+        evidence: {
+          status: evidence.status,
+          reason: evidence.reason,
+          ...(evidence.availability === undefined ? {} : { availability: evidence.availability }),
+        },
         sources: [...vulnerabilitySources, ...evidence.sources],
         findings,
       };

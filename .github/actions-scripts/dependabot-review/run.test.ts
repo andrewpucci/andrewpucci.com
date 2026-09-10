@@ -33,7 +33,7 @@ vi.mock('./review.mjs', () => ({
   prepareReview: mocks.prepareReview,
 }));
 
-const event = { workflow_run: { id: 1, head_sha: 'head' } };
+const event = { workflow_run: { id: 1, head_sha: 'head', conclusion: 'success' } };
 const input = { pullRequest: { headSha: 'head' }, packages: [] };
 const metadata = {
   headSha: 'head',
@@ -110,6 +110,30 @@ describe('Dependabot review runner', () => {
       author: 'reviewer[bot]',
     });
     expect(mocks.emitReviewDiagnostic).toHaveBeenCalledWith(metadata, 'none');
+  });
+
+  it('withholds the advisory recommendation when the triggering CI run did not succeed', async () => {
+    mocks.readFile.mockResolvedValue(
+      JSON.stringify({
+        workflow_run: { id: 1, head_sha: 'head', conclusion: 'failure' },
+      })
+    );
+
+    await run();
+
+    expect(mocks.loadReviewInput).not.toHaveBeenCalled();
+    expect(mocks.prepareReview).not.toHaveBeenCalled();
+    expect(mocks.buildReviewFromInput).not.toHaveBeenCalled();
+    expect(mocks.upsertComment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.stringContaining('**Advisory verdict:** decision incomplete'),
+      })
+    );
+    expect(mocks.upsertComment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.stringContaining('https://github.com/example/site/actions/runs/1'),
+      })
+    );
   });
 
   it('skips packet loading for a current immutable event head and digest', async () => {

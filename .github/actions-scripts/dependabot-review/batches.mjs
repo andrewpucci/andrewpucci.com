@@ -100,8 +100,17 @@ function decisionUnits(input) {
 function batches(input, limits) {
   const result = [];
   const unavailable = [];
+  const evidenceGaps = new Set(
+    (input.policy?.findings ?? [])
+      .filter((finding) => finding.kind === 'evidence-incomplete')
+      .map((finding) => identity(finding.package))
+  );
   let current = [];
   for (const unit of decisionUnits(input)) {
+    if (unit.some((dependency) => evidenceGaps.has(identity(dependency)))) {
+      unavailable.push({ packages: unit, category: 'policy_evidence_unavailable' });
+      continue;
+    }
     const projectedDependency = projectForModel({ ...input, packages: unit }, limits);
     const packet = modelPacket(projectedDependency);
     if (
@@ -147,6 +156,10 @@ function isStructuredOutputFailure(category) {
 }
 
 function queueAction(group, members, coverageIssues, failureCategory) {
+  if (failureCategory === 'policy_evidence_unavailable') {
+    const update = group.kind === 'direct' ? group.anchor : members[0];
+    return `Obtain official upstream evidence for ${formatUpdate(update)} before deciding this immutable decision unit.`;
+  }
   if (isStructuredOutputFailure(failureCategory))
     return 'Use the copyable research brief for this immutable decision unit; Mistral did not return a schema-valid analysis after its bounded retry.';
   if (failureCategory === 'analysis_packet_too_large')

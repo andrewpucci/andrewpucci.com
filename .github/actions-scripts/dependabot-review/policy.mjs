@@ -14,7 +14,14 @@ function packageIdentity(dependency) {
 }
 
 function evidenceFinding(dependency) {
-  if (['available', 'group_backed'].includes(dependency.evidence.status)) return null;
+  const hasReleaseNotes = dependency.sources.some((source) => source.kind === 'release-notes');
+  const hasChangelog = dependency.sources.some((source) => source.kind === 'changelog');
+  if (dependency.evidence.availability === 'not_published') return null;
+  if (
+    ['available', 'group_backed'].includes(dependency.evidence.status) ||
+    (dependency.evidence.status === 'partial' && (hasReleaseNotes || hasChangelog))
+  )
+    return null;
   return {
     package: packageIdentity(dependency),
     findingId: null,

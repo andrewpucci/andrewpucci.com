@@ -39,6 +39,36 @@ describe('review contracts', () => {
     expect(parseReviewInput(reviewInput)).toEqual(reviewInput);
   });
 
+  it('preserves a publisher evidence absence without accepting an incompatible status', () => {
+    const input = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: {
+            status: 'unavailable',
+            availability: 'not_published',
+            reason: 'The publisher has no upgrade record for this range.',
+          },
+          sources: [],
+        },
+      ],
+    };
+
+    expect(parseReviewInput(input)).toEqual(input);
+    expect(() =>
+      parseReviewInput({
+        ...input,
+        packages: [
+          {
+            ...input.packages[0],
+            evidence: { ...input.packages[0].evidence, status: 'partial' },
+          },
+        ],
+      })
+    ).toThrow(/availability/i);
+  });
+
   it('accepts only bounded advisory provenance evidence', () => {
     const input = { ...reviewInput, provenance: unavailableProvenance };
 
@@ -864,8 +894,8 @@ describe('review contracts', () => {
         {
           ...reviewInput.packages[0],
           evidence: {
-            status: 'partial',
-            reason: 'Only partial release notes were available.',
+            status: 'unavailable',
+            reason: 'No upstream evidence was available.',
           },
         },
       ],
@@ -907,6 +937,81 @@ describe('review contracts', () => {
         policyInput
       )
     ).toThrow(/policy/i);
+  });
+
+  it('rejects an evidence-only policy finding when range evidence is available', () => {
+    const partialInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: {
+            status: 'partial',
+            reason: 'Only releases within the version range were available.',
+          },
+        },
+      ],
+    };
+
+    expect(() =>
+      parsePolicy(
+        {
+          verdictCeiling: 'merge_with_followups',
+          findings: [
+            {
+              package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+              findingId: null,
+              kind: 'evidence-incomplete',
+              sourceUrl: null,
+              severity: null,
+              verdict: 'merge_with_followups',
+              reason: 'Upstream evidence is incomplete.',
+              remediation: ['Review the upstream upgrade evidence before merging.'],
+              validation: ['Confirm the upgrade range against upstream release notes.'],
+            },
+          ],
+        },
+        partialInput
+      )
+    ).toThrow(/insufficient/i);
+  });
+
+  it('accepts an evidence-only policy finding when only package metadata is available', () => {
+    const metadataInput = {
+      ...reviewInput,
+      packages: [
+        {
+          ...reviewInput.packages[0],
+          evidence: {
+            status: 'partial',
+            reason: 'Only npm package metadata was available for this dependency.',
+          },
+          sources: [{ ...source, kind: 'package-metadata' }],
+        },
+      ],
+    };
+
+    expect(
+      parsePolicy(
+        {
+          verdictCeiling: 'merge_with_followups',
+          findings: [
+            {
+              package: { name: 'example', from: '1.0.0', to: '2.0.0' },
+              findingId: null,
+              kind: 'evidence-incomplete',
+              sourceUrl: null,
+              severity: null,
+              verdict: 'merge_with_followups',
+              reason: 'Upstream evidence is incomplete.',
+              remediation: ['Review the upstream upgrade evidence before merging.'],
+              validation: ['Confirm the upgrade range against upstream release notes.'],
+            },
+          ],
+        },
+        metadataInput
+      )
+    ).toMatchObject({ verdictCeiling: 'merge_with_followups' });
   });
 
   it('omits use_now without a matching trusted-context fact', () => {

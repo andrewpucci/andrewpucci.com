@@ -1,9 +1,9 @@
 # Spec: Provenance Evidence for Dependabot Decisions — 2026-09-07
 
-**Status:** Approved for planning — 2026-09-07
+**Status:** Approved for implementation — 2026-09-07
 
-The advisory-only provenance contract and its privacy boundary are approved. No
-implementation follows until the implementation plan is approved.
+The advisory-only provenance contract and its privacy boundary are approved for
+the bounded implementation described below.
 
 ## Objective
 
@@ -120,9 +120,8 @@ Only bounded package identifiers and counts may cross this module boundary.
 Raw npm output, registry response bodies, cache paths, and error stacks must not
 be included in review input, logs, the model prompt, or the GitHub comment.
 
-`decision-reporting` will later decide how this value appears to maintainers.
-Until that module is specified, provenance collection does not alter the
-existing comment body, policy evaluation, model request, or verdict.
+`decision-reporting` renders this value as a bounded advisory signal. Provenance
+does not alter policy evaluation, the model request, or the advisory verdict.
 
 ## Tech stack
 
@@ -157,9 +156,9 @@ SPEC-provenance-evidence.md                            this module specification
 .github/actions-scripts/dependabot-review/
   review.mjs                                           trusted orchestration boundary
   inputs.mjs                                           GitHub PR and upstream evidence collection
-  provenance.mjs                                      proposed provenance collector
-  schema.mjs                                          proposed validated input contract
-  provenance.test.ts                                  proposed focused unit/subprocess tests
+  provenance.mjs                                      bounded provenance collector
+  schema.mjs                                          validated input contract
+  provenance.test.ts                                  focused unit/subprocess tests
 .github/workflows/dependabot-intelligent-review.yml   trusted workflow; runtime changes ask first
 ```
 

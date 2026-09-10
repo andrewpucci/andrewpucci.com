@@ -87,6 +87,50 @@ describe('Dependabot review batches', () => {
     });
   });
 
+  it('queues an evidence-incomplete policy unit without requesting model analysis', async () => {
+    const packageWithGap = input.packages[0];
+    const analyzeBatch = vi.fn(async (batch: { packages: ReturnType<typeof dependency>[] }) =>
+      completedAnalysis(batch.packages[0])
+    );
+
+    const result = await analyzeBatches(
+      {
+        ...input,
+        packages: [packageWithGap],
+        coverage: { items: [coverageItem(packageWithGap)] },
+        policy: {
+          verdictCeiling: 'merge_with_followups',
+          findings: [
+            {
+              package: { name: 'first', from: '1.0.0', to: '2.0.0' },
+              findingId: null,
+              kind: 'evidence-incomplete',
+              sourceUrl: null,
+              severity: null,
+              verdict: 'merge_with_followups',
+              reason: 'Only package metadata was available.',
+              remediation: ['Obtain official upstream evidence.'],
+              validation: ['Confirm the upgrade range against upstream release notes.'],
+            },
+          ],
+        },
+      },
+      { analyzeBatch }
+    );
+
+    expect(analyzeBatch).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      verdict: 'decision_incomplete',
+      decisionQueue: [
+        {
+          reason: 'policy_evidence_unavailable',
+          action: expect.stringContaining('Obtain official upstream evidence'),
+          analysisInvalidResponse: false,
+        },
+      ],
+    });
+  });
+
   it('queues a rate-limited direct unit for a rerun after the reset', async () => {
     const coverage = {
       items: input.packages.map((pkg: ReturnType<typeof dependency>) => ({

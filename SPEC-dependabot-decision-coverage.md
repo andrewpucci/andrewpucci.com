@@ -80,8 +80,9 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
 
 1. Retrieve the base and immutable-head `package-lock.json` and `package.json`
    through the existing read-only GitHub contents API only when the review packet
-   contains npm updates. Do not check out, install, or execute pull-request
-   code.
+   contains npm updates. Do not check out or execute pull-request code. The
+   separately specified provenance verifier may install only its generated,
+   script-free public npm package tree in an action-owned temporary directory.
 2. Classify a direct npm update from the immutable-head manifest as production,
    development, peer, optional, or unknown. Preserve `unknown` when manifests
    are unavailable or ambiguous; never infer runtime relevance from a package
@@ -132,8 +133,15 @@ establish a relationship. Use ESM, single quotes, and source-adjacent
    malformed response makes only its coverage item unresolved and yields
    `decision_incomplete` unless an independent `do_not_merge` finding exists.
    It must not discard successful assessments for other items.
-6. Keep the existing deterministic policy rules, including their evidence
-   limits. This capability changes only how completeness constrains the
+6. Keep deterministic policy rules for unavailable upstream evidence and
+   verified findings. Official release notes collected within the requested
+   version range are partial machine coverage but sufficient model evidence;
+   they do not alone constrain the advisory verdict or create a human
+   follow-up. Registry metadata may identify an attributable upstream
+   repository, but never counts as upgrade evidence. A publisher's absence of
+   public upgrade evidence is not a human research task; a collection failure
+   is placed directly in the decision queue without a model request. This
+   capability changes only how completeness constrains the
    advisory verdict; it does not duplicate CI failure or vulnerability-gate
    reporting in the decision comment. A `merge_with_followups` conclusion is
    valid only when coverage is complete and every follow-up is explicitly marked
@@ -303,8 +311,10 @@ implementation slices are complete.
 
 ### Never
 
-- Check out, install, build, test, or execute pull-request code in the trusted
-  review workflow.
+- Check out, build, test, or execute pull-request code in the trusted review
+  workflow. The sole installation exception is the separately specified
+  provenance verifier's generated, validated public npm package tree with
+  lifecycle scripts disabled; it never uses a pull-request checkout or scripts.
 - Infer dependency relationships from names, scopes, SemVer, or platform names.
 - Label a group safe, individually researched, or non-decision-affecting solely
   because it is transitive.
