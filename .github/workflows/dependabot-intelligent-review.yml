@@ -50,4 +50,5 @@ jobs:
           GITHUB_COMMENT_TOKEN: ${{ steps.app-token.outputs.token }}
           GITHUB_COMMENT_AUTHOR: ${{ steps.app-token.outputs.app-slug }}[bot]
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          DEPENDABOT_REVIEW_REFRESH: ${{ vars.DEPENDABOT_REVIEW_REFRESH }}
         run: node .github/actions-scripts/dependabot-review/run.mjs

@@ -68,7 +68,7 @@ function lifecycleScriptValue(scripts, name) {
 }
 
 function scriptValues(metadata) {
-  if (!isObject(metadata.scripts)) return {};
+  if (!isObject(metadata.scripts)) return new Map();
   const result = new Map();
   for (const name of lifecycleScripts) {
     const value = lifecycleScriptValue(metadata.scripts, name);

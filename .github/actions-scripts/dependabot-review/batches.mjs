@@ -248,12 +248,9 @@ function coverageSummary(input) {
   return summary;
 }
 
-function policyBlockers(input, unavailableIds) {
+function policyBlockers(input) {
   return (input.policy?.findings ?? [])
-    .filter(
-      (finding) =>
-        finding.verdict === 'do_not_merge' && unavailableIds.has(identity(finding.package))
-    )
+    .filter((finding) => finding.verdict === 'do_not_merge')
     .map((finding) => ({
       findingId: finding.findingId,
       reason: finding.reason,
@@ -262,6 +259,10 @@ function policyBlockers(input, unavailableIds) {
       remediation: finding.remediation,
       validation: finding.validation,
     }));
+}
+
+function uniqueBlockers(blockers) {
+  return [...new Map(blockers.map((blocker) => [blocker.findingId, blocker])).values()];
 }
 
 function hasEveryAssessment(batch, analysis) {
@@ -406,8 +407,11 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   const incompleteCoverage = (input.coverage?.items ?? []).some(
     (item) => item.status !== 'complete'
   );
-  const deterministicBlockers = policyBlockers(input, unavailableIds);
-  const blockers = [...analyses.flatMap((analysis) => analysis.blockers), ...deterministicBlockers];
+  const deterministicBlockers = policyBlockers(input);
+  const blockers = uniqueBlockers([
+    ...analyses.flatMap((analysis) => analysis.blockers),
+    ...deterministicBlockers,
+  ]);
   const modelVerdict = unavailable.length
     ? analyses.reduce(
         (current, analysis) => stricter(current, analysis.verdict),
@@ -424,15 +428,16 @@ export async function analyzeBatches(input, { analyzeBatch: analyze, ...options 
   const coverage = coverageSummary(input);
   if (!analyses.length)
     return {
-      verdict:
-        input.coverage && !deterministicBlockers.length
+      verdict: deterministicBlockers.length
+        ? 'do_not_merge'
+        : input.coverage
           ? 'decision_incomplete'
           : 'analysis_unavailable',
       summary,
       decisionQueue: queue,
       ...(coverage ? { coverage } : {}),
       packageAssessments: [],
-      blockers: [],
+      blockers,
       followups: [],
       remediationPrompt: null,
     };

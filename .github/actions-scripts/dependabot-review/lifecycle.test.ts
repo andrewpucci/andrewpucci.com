@@ -78,6 +78,33 @@ describe('collectLifecycleScripts', () => {
     });
   });
 
+  it('treats omitted scripts metadata as an empty lifecycle-script map', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ name: 'direct', version: '1.0.0' })))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            name: 'direct',
+            version: '2.0.0',
+            scripts: { postinstall: 'node ./setup.js' },
+          })
+        )
+      );
+
+    const result = await collectLifecycleScripts(pendingCoverage(), { fetchLike: fetchMock });
+
+    expect(result.items[0]).toMatchObject({
+      lifecycle: {
+        status: 'changed',
+        metadata: 'available',
+        changes: [{ name: 'postinstall', kind: 'added', after: 'node ./setup.js' }],
+      },
+      status: 'complete',
+      reason: null,
+    });
+  });
+
   it('keeps a changed lifecycle signal unresolved when exact metadata is unavailable', async () => {
     const fetchMock = vi
       .fn()

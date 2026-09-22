@@ -42,4 +42,8 @@ describe('Dependabot intelligent review workflow', () => {
       /- name: Install pinned npm verifier\n {8}run: npm install --global npm@12\.0\.2 --ignore-scripts/
     );
   });
+
+  it('maps the maintainer refresh switch into the reviewer environment', () => {
+    expect(workflow).toContain('DEPENDABOT_REVIEW_REFRESH: ${{ vars.DEPENDABOT_REVIEW_REFRESH }}');
+  });
 });

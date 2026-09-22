@@ -173,6 +173,11 @@ as a substitute for GitHub's immutable CI-triggered workflow.
 - A repeat event for an already reviewed immutable head skips expensive
   collection and analysis. A new head always receives a fresh digest and
   review.
+- To deliberately refresh an unchanged head, temporarily set the Actions
+  repository variable `DEPENDABOT_REVIEW_REFRESH` to `true`, rerun that
+  Dependabot pull request's successful CI workflow, then remove or reset the
+  variable. Leaving it enabled bypasses the duplicate-head safeguard for every
+  Dependabot review run.
 - The GitHub evidence client permits at most two concurrent GitHub requests and
   160 requests in one review run. On a 403, 429, or local budget exhaustion, it
   stops rather than retrying and preserves unaffected decision units.

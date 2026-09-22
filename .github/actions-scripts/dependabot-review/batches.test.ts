@@ -573,6 +573,107 @@ describe('Dependabot review batches', () => {
     ]);
   });
 
+  it('reports a deterministic do_not_merge blocker when no batch validates', async () => {
+    const second = dependency('second');
+    const result = await analyzeBatches(
+      {
+        ...input,
+        packages: [second],
+        policy: {
+          verdictCeiling: 'do_not_merge',
+          findings: [
+            {
+              package: { name: second.name, from: second.from, to: second.to },
+              findingId: 'second:vulnerability',
+              verdict: 'do_not_merge',
+              reason: 'A critical vulnerability affects the target version.',
+              sourceUrl: second.sources[0].url,
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      },
+      { analyzeBatch: async () => ({ verdict: 'analysis_unavailable' }) }
+    );
+
+    expect(result).toMatchObject({
+      verdict: 'do_not_merge',
+      blockers: [
+        {
+          findingId: 'second:vulnerability',
+          evidence: [{ sourceUrl: second.sources[0].url }],
+        },
+      ],
+    });
+  });
+
+  it('retains every deterministic do_not_merge blocker after model analysis succeeds', async () => {
+    const first = dependency('first');
+    const second = dependency('second');
+    const result = await analyzeBatches(
+      {
+        ...input,
+        packages: [first, second],
+        policy: {
+          verdictCeiling: 'do_not_merge',
+          findings: [
+            {
+              package: { name: first.name, from: first.from, to: first.to },
+              findingId: 'first:vulnerability',
+              verdict: 'do_not_merge',
+              reason: 'A critical vulnerability affects the target version.',
+              sourceUrl: first.sources[0].url,
+              remediation: ['Update the package.'],
+              validation: ['npm test'],
+            },
+            {
+              package: { name: second.name, from: second.from, to: second.to },
+              findingId: 'second:incompatible',
+              verdict: 'do_not_merge',
+              reason: 'The upgrade has an incompatible migration.',
+              sourceUrl: second.sources[0].url,
+              remediation: ['Apply the migration.'],
+              validation: ['npm test'],
+            },
+          ],
+        },
+      },
+      {
+        analyzeBatch: async (batch: { packages: ReturnType<typeof dependency>[] }) => ({
+          verdict: 'do_not_merge',
+          summary: 'The second package needs a migration.',
+          packageAssessments: batch.packages.map(
+            (pkg) => completedAnalysis(pkg).packageAssessments[0]
+          ),
+          blockers: [
+            {
+              findingId: 'second:incompatible',
+              reason: 'The upgrade has an incompatible migration.',
+              impact: 'The application cannot use the new API until migrated.',
+              evidence: [
+                {
+                  claim: 'The upgrade has an incompatible migration.',
+                  sourceUrl: second.sources[0].url,
+                },
+              ],
+              remediation: ['Apply the migration.'],
+              validation: ['npm test'],
+            },
+          ],
+          followups: [],
+          remediationPrompt: null,
+        }),
+      }
+    );
+
+    expect(result).toMatchObject({ verdict: 'do_not_merge' });
+    expect(result.blockers.map((blocker) => blocker.findingId).sort()).toEqual([
+      'first:vulnerability',
+      'second:incompatible',
+    ]);
+  });
+
   it('marks a batch unavailable when the model omits an assessment', async () => {
     const result = await analyzeBatches(input, {
       analyzeBatch: vi.fn().mockResolvedValue({
