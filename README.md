@@ -157,6 +157,10 @@ vp run test:ci
 Contribution and security expectations are documented in
 [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
+Maintainers and pull-request reviewers can use the
+[Dependabot intelligent review guide](docs/dependabot-intelligent-review.md) to
+interpret advisory dependency-review comments and operate the workflow.
+
 ## License
 
 GPL-3.0. See [LICENSE](LICENSE).
