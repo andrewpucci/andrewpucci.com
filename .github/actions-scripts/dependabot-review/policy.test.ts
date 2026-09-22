@@ -12,7 +12,8 @@ type Finding = {
   validation: string[];
 };
 type ReviewOptions = {
-  evidenceStatus?: 'available' | 'partial' | 'unavailable';
+  evidenceAvailability?: 'available' | 'not_published' | 'collection_failed' | 'group_backed';
+  evidenceStatus?: 'available' | 'partial' | 'unavailable' | 'group_backed';
   findings?: Finding[];
   license?: string | null;
 };
@@ -26,6 +27,7 @@ const source = {
 };
 
 function reviewInput({
+  evidenceAvailability,
   evidenceStatus = 'available',
   findings = [],
   license = null,
@@ -39,7 +41,11 @@ function reviewInput({
         to: '2.0.0',
         dependencyType: 'direct:production',
         license,
-        evidence: { status: evidenceStatus, reason: null },
+        evidence: {
+          status: evidenceStatus,
+          reason: null,
+          ...(evidenceAvailability === undefined ? {} : { availability: evidenceAvailability }),
+        },
         context: { status: 'available', facts: [] },
         sources: [source],
         findings,
@@ -72,22 +78,69 @@ function migration(kind: 'applicable-codemod' | 'incompatible-migration'): Findi
 }
 
 describe('Dependabot review policy', () => {
-  it.each(['partial', 'unavailable'] as const)(
-    'caps %s evidence at merge_with_followups',
-    (status) => {
-      expect(evaluatePolicy(reviewInput({ evidenceStatus: status }))).toMatchObject({
-        verdictCeiling: 'merge_with_followups',
-        findings: [
-          {
-            kind: 'evidence-incomplete',
-            findingId: null,
-            sourceUrl: null,
-            verdict: 'merge_with_followups',
-          },
-        ],
-      });
-    }
-  );
+  it('does not treat bounded group-backed evidence as individually incomplete', () => {
+    expect(evaluatePolicy(reviewInput({ evidenceStatus: 'group_backed' }))).toEqual({
+      verdictCeiling: 'merge',
+      findings: [],
+    });
+  });
+
+  it('allows partial upstream evidence to be assessed', () => {
+    const input = reviewInput({ evidenceStatus: 'partial' });
+    input.packages[0].sources = [{ ...source, kind: 'release-notes' }];
+
+    expect(evaluatePolicy(input)).toEqual({
+      verdictCeiling: 'merge',
+      findings: [],
+    });
+  });
+
+  it('caps partial package metadata at merge_with_followups', () => {
+    const input = reviewInput({ evidenceStatus: 'partial' });
+    input.packages[0].sources = [{ ...source, kind: 'package-metadata' }];
+
+    expect(evaluatePolicy(input)).toMatchObject({
+      verdictCeiling: 'merge_with_followups',
+      findings: [{ kind: 'evidence-incomplete', verdict: 'merge_with_followups' }],
+    });
+  });
+
+  it('caps unavailable evidence at merge_with_followups', () => {
+    expect(evaluatePolicy(reviewInput({ evidenceStatus: 'unavailable' }))).toMatchObject({
+      verdictCeiling: 'merge_with_followups',
+      findings: [
+        {
+          kind: 'evidence-incomplete',
+          findingId: null,
+          sourceUrl: null,
+          verdict: 'merge_with_followups',
+        },
+      ],
+    });
+  });
+
+  it('does not turn a publisher evidence absence into a human research task', () => {
+    const input = reviewInput({
+      evidenceStatus: 'unavailable',
+      evidenceAvailability: 'not_published',
+    });
+    input.packages[0].sources = [];
+
+    expect(evaluatePolicy(input)).toEqual({ verdictCeiling: 'merge', findings: [] });
+  });
+
+  it('keeps a failed evidence collection as a decision-affecting concern', () => {
+    const input = reviewInput({
+      evidenceStatus: 'unavailable',
+      evidenceAvailability: 'collection_failed',
+    });
+    input.packages[0].sources = [];
+
+    expect(evaluatePolicy(input)).toMatchObject({
+      verdictCeiling: 'merge_with_followups',
+      findings: [{ kind: 'evidence-incomplete', verdict: 'merge_with_followups' }],
+    });
+  });
 
   it.each(['critical', 'high'] as const)('blocks a verified %s vulnerability', (severity) => {
     expect(evaluatePolicy(reviewInput({ findings: [vulnerability(severity)] }))).toMatchObject({
@@ -144,5 +197,21 @@ describe('Dependabot review policy', () => {
       verdictCeiling: 'merge',
       findings: [],
     });
+  });
+
+  it('does not let advisory provenance evidence change the deterministic policy', () => {
+    const input = reviewInput();
+
+    expect(
+      evaluatePolicy({
+        ...input,
+        provenance: {
+          status: 'attention_required',
+          invalid: 1,
+          missing: 0,
+          reason: 'npm reported missing or invalid package provenance.',
+        },
+      })
+    ).toEqual(evaluatePolicy(input));
   });
 });

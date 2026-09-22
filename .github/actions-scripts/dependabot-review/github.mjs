@@ -1,3 +1,125 @@
+const requestDefaults = { maxConcurrency: 2, maxRequests: 160 };
+
+function urlString(input) {
+  if (typeof input === 'string') return input;
+  if (input instanceof URL) return input.toString();
+  return typeof input?.url === 'string' ? input.url : '';
+}
+
+function githubApiRequest(input) {
+  try {
+    return new URL(urlString(input)).hostname === 'api.github.com';
+  } catch {
+    return false;
+  }
+}
+
+function requestMethod(input, options) {
+  return (options?.method ?? input?.method ?? 'GET').toUpperCase();
+}
+
+function authorizationScope(input, options) {
+  const headers = new Headers(input?.headers);
+  for (const [name, value] of new Headers(options?.headers)) headers.set(name, value);
+  return headers.get('authorization') ?? '';
+}
+
+function numberHeader(headers, name) {
+  const value = Number(headers.get(name));
+  return Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function rateLimit(response) {
+  if (![403, 429].includes(response.status)) return null;
+  return {
+    status: response.status,
+    resource: response.headers.get('x-ratelimit-resource') ?? null,
+    remaining: numberHeader(response.headers, 'x-ratelimit-remaining'),
+    reset: numberHeader(response.headers, 'x-ratelimit-reset'),
+    retryAfter: numberHeader(response.headers, 'retry-after'),
+  };
+}
+
+export class GithubRequestLimitError extends Error {
+  constructor(limit) {
+    super(`GitHub request collection stopped: ${limit.status}.`);
+    this.name = 'GithubRequestLimitError';
+    this.limit = limit;
+  }
+}
+
+/**
+ * Bounds and de-duplicates read requests to api.github.com without governing
+ * other fetch destinations, such as the public npm registry.
+ */
+export function createGithubRequestGovernor(fetchLike = fetch, options = {}) {
+  const { maxConcurrency, maxRequests } = { ...requestDefaults, ...options };
+  if (!Number.isSafeInteger(maxConcurrency) || maxConcurrency < 1)
+    throw new RangeError('GitHub request concurrency must be a positive integer.');
+  if (!Number.isSafeInteger(maxRequests) || maxRequests < 1)
+    throw new RangeError('GitHub request budget must be a positive integer.');
+  const state = { active: 0, requests: 0, limit: null, pending: [] };
+  const reads = new Map();
+
+  const stop = (limit) => {
+    if (!state.limit) {
+      state.limit = limit;
+      for (const task of state.pending.splice(0)) task();
+    }
+    return state.limit;
+  };
+  const diagnostics = () => ({ requests: state.requests, limit: state.limit });
+  const next = () => {
+    while (!state.limit && state.active < maxConcurrency && state.pending.length) {
+      const task = state.pending.shift();
+      if (task) task();
+    }
+  };
+  const dispatch = (input, options) =>
+    new Promise((resolve, reject) => {
+      const execute = async () => {
+        if (state.limit) {
+          reject(new GithubRequestLimitError(state.limit));
+          return;
+        }
+        if (state.requests >= maxRequests) {
+          reject(new GithubRequestLimitError(stop({ status: 'request_budget_exhausted' })));
+          return;
+        }
+        state.active += 1;
+        state.requests += 1;
+        try {
+          const response = await fetchLike(input, options);
+          const limit = rateLimit(response);
+          if (limit) stop(limit);
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        } finally {
+          state.active -= 1;
+          next();
+        }
+      };
+      if (state.limit) {
+        reject(new GithubRequestLimitError(state.limit));
+        return;
+      }
+      if (state.active < maxConcurrency) execute();
+      else state.pending.push(execute);
+    });
+  const governedFetch = (input, options) => {
+    if (!githubApiRequest(input)) return fetchLike(input, options);
+    if (state.limit) return Promise.reject(new GithubRequestLimitError(state.limit));
+    const method = requestMethod(input, options);
+    if (method !== 'GET') return dispatch(input, options);
+    const key = `${authorizationScope(input, options)}\u0000${urlString(input)}`;
+    const request = reads.get(key) ?? dispatch(input, options);
+    reads.set(key, request);
+    return request.then((response) => response.clone());
+  };
+  return { fetch: governedFetch, diagnostic: diagnostics };
+}
+
 const responseDetail = async (response) => {
   const detail = (await response.text()).replaceAll(/\s+/g, ' ').trim();
   const acceptedPermissions = response.headers.get('x-accepted-github-permissions');
@@ -39,6 +161,19 @@ const managedComment = (comments, author) =>
 
 const commentApi = (api, comment) =>
   api.replace(/\/issues\/\d+\/comments$/, `/issues/comments/${comment.id}`);
+
+export async function findReviewComment({
+  api,
+  headers,
+  author = 'github-actions[bot]',
+  fetchLike = fetch,
+}) {
+  const comments = await ensureSuccess(
+    await fetchLike(api, { headers }),
+    'list Dependabot review comments'
+  ).then((response) => response.json());
+  return managedComment(comments, author) ?? null;
+}
 
 export async function upsertComment({
   api,

@@ -1,7 +1,23 @@
 import { readFile } from 'node:fs/promises';
+import { emitGithubRequestDiagnostic, emitReviewDiagnostic } from './diagnostics.mjs';
 import { pullRequestNumber } from './event.mjs';
-import { deleteReviewComment, upsertComment } from './github.mjs';
-import { buildReviewComment } from './review.mjs';
+import { managedReviewMetadata, shouldSkipAnalysis, shouldSkipCurrentHead } from './freshness.mjs';
+import { deleteReviewComment, findReviewComment, upsertComment } from './github.mjs';
+import { renderComment } from './reporting.mjs';
+import { buildReviewFromInput, loadReviewInput, prepareReview } from './review.mjs';
+
+function ciRun(repository, workflowRun) {
+  if (workflowRun?.conclusion === 'success') return null;
+  const runId = workflowRun?.id;
+  const [owner, name, ...rest] = typeof repository === 'string' ? repository.split('/') : [];
+  const validRun = Number.isSafeInteger(runId) && runId >= 1;
+  return {
+    url:
+      validRun && owner && name && !rest.length
+        ? `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/actions/runs/${runId}`
+        : null,
+  };
+}
 
 const eventPath = process.env.GITHUB_EVENT_PATH;
 if (!eventPath) throw new Error('GITHUB_EVENT_PATH is required.');
@@ -24,19 +40,100 @@ const number = await pullRequestNumber(event, {
   githubHeaders,
 });
 const commentApi = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/${number}/comments`;
-const body = await buildReviewComment({
-  repository: process.env.GITHUB_REPOSITORY,
-  number,
-  githubToken: process.env.GITHUB_TOKEN,
-  mistralApiKey: process.env.MISTRAL_API_KEY,
+const existing = await findReviewComment({
+  api: commentApi,
+  headers: commentHeaders,
+  author: commentAuthor,
 });
-if (!body) {
-  await deleteReviewComment({ api: commentApi, headers: commentHeaders, author: commentAuthor });
-} else {
+const refresh = process.env.DEPENDABOT_REVIEW_REFRESH === 'true';
+const eventHeadSha = event?.workflow_run?.head_sha;
+const triggeringCiRun = ciRun(process.env.GITHUB_REPOSITORY, event?.workflow_run);
+if (triggeringCiRun) {
+  // The comment must not imply an advisory merge while the triggering CI run is unresolved.
+  const metadata = {
+    headSha: eventHeadSha,
+    reviewDigest: null,
+    modelVersion: null,
+    promptVersion: null,
+    coverage: null,
+  };
+  const body = renderComment(
+    {
+      verdict: 'decision_incomplete',
+      summary: 'The advisory review is withheld until the triggering CI run succeeds.',
+      decisionQueue: [],
+      packageAssessments: [],
+      blockers: [],
+      followups: [],
+      remediationPrompt: null,
+    },
+    { ...metadata, ciRun: triggeringCiRun }
+  );
+  emitReviewDiagnostic(metadata, 'ci_conclusion_not_successful');
   await upsertComment({
     api: commentApi,
     body,
     headers: commentHeaders,
     author: commentAuthor,
   });
+} else if (shouldSkipCurrentHead(existing, eventHeadSha, { refresh })) {
+  const { reviewDigest } = managedReviewMetadata(existing.body);
+  emitReviewDiagnostic(
+    {
+      headSha: eventHeadSha,
+      reviewDigest,
+      modelVersion: null,
+      promptVersion: null,
+      coverage: null,
+    },
+    'duplicate_review'
+  );
+} else {
+  let githubRequestLimit;
+  const input = await loadReviewInput(
+    {
+      repository: process.env.GITHUB_REPOSITORY,
+      number,
+      githubToken: process.env.GITHUB_TOKEN,
+    },
+    {
+      onGithubRequestLimit: (limit) => {
+        githubRequestLimit = limit;
+      },
+    }
+  );
+  if (input === undefined && githubRequestLimit) {
+    emitGithubRequestDiagnostic(githubRequestLimit, { headSha: eventHeadSha });
+  } else if (!input) {
+    await deleteReviewComment({
+      api: commentApi,
+      headers: commentHeaders,
+      author: commentAuthor,
+    });
+  } else {
+    const prepared = prepareReview(input, {
+      repository: process.env.GITHUB_REPOSITORY,
+    });
+    if (githubRequestLimit) emitGithubRequestDiagnostic(githubRequestLimit, prepared.metadata);
+    if (shouldSkipAnalysis(existing, prepared.metadata, { refresh })) {
+      emitReviewDiagnostic(prepared.metadata, 'duplicate_review');
+    } else {
+      const { analysis, body } = await buildReviewFromInput(input, process.env.MISTRAL_API_KEY, {
+        repository: process.env.GITHUB_REPOSITORY,
+        prepared,
+      });
+      emitReviewDiagnostic(
+        prepared.metadata,
+        ['analysis_unavailable', 'decision_incomplete'].includes(analysis.verdict)
+          ? analysis.verdict
+          : 'none'
+      );
+      await upsertComment({
+        api: commentApi,
+        body,
+        headers: commentHeaders,
+        author: commentAuthor,
+      });
+    }
+  }
 }
