@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Weekly and offset from the top of the hour to reduce dropped runs.
-    - cron: '17 17 * * 3'
+    - cron: '17 17 * * 3' # Weekly; off the hour to avoid GitHub's top-of-hour cron congestion
 
 permissions:
   contents: read
