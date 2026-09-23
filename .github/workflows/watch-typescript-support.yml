@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Weekly and offset from the top of the hour to reduce dropped runs.
-    - cron: '17 17 * * 3'
+    - cron: '17 17 * * 3' # Weekly; off the hour to avoid GitHub's top-of-hour cron congestion
 
 permissions:
   contents: read
@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Check whether the TypeScript major-version ignore is still active
         id: config
         run: |

@@ -36,6 +36,10 @@ updates:
       - dependency-name: typescript
         update-types:
           - version-update:semver-major
+      # Storybook's published peer range does not admit Vite+ 0.3 yet.
+      - dependency-name: vite-plus
+        versions:
+          - '>=0.3.0'
     commit-message:
       prefix: chore
       prefix-development: chore

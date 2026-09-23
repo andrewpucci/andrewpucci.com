@@ -1,0 +1,111 @@
+name: Watch Storybook Vite+ support
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 17 * * 3' # Weekly; off the hour to avoid GitHub's top-of-hour cron congestion
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    name: Watch Storybook Vite+ support
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check whether the Vite+ ignore is still active
+        id: config
+        run: |
+          if grep -Fq 'dependency-name: vite-plus' .github/dependabot.yml; then
+            echo "needs_watch=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_watch=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check Storybook's published peer range
+        id: range
+        if: steps.config.outputs.needs_watch == 'true'
+        env:
+          npm_config_cache: ${{ runner.temp }}/npm-cache
+        run: |
+          mkdir -p "$npm_config_cache"
+
+          storybook_version=$(npm view storybook version)
+          vite_plus_range=$(npm view storybook peerDependencies.vite-plus)
+
+          {
+            echo "storybook_version=$storybook_version"
+            echo "vite_plus_range=$vite_plus_range"
+          } >> "$GITHUB_OUTPUT"
+
+          # Any stable release the >=0.3.0 ignore blocks counts, not just 0.3.x.
+          blocked_versions=$(npm view vite-plus versions --json | jq -r '.[]')
+          if [[ -z "$vite_plus_range" ]] \
+            || npx --yes semver -r "$vite_plus_range" -r '>=0.3.0' $blocked_versions >/dev/null; then
+            echo "supported=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "supported=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summarize status
+        env:
+          NEEDS_WATCH: ${{ steps.config.outputs.needs_watch }}
+          STORYBOOK_VERSION: ${{ steps.range.outputs.storybook_version }}
+          VITE_PLUS_RANGE: ${{ steps.range.outputs.vite_plus_range }}
+          SUPPORTED: ${{ steps.range.outputs.supported }}
+        run: |
+          {
+            echo '## Storybook Vite+ support watch'
+            echo
+
+            if [[ "$NEEDS_WATCH" != 'true' ]]; then
+              echo 'The Vite+ ignore is no longer present in `.github/dependabot.yml`.'
+              exit 0
+            fi
+
+            echo "- Storybook version: \`$STORYBOOK_VERSION\`"
+            echo "- Vite+ peer range: \`$VITE_PLUS_RANGE\`"
+            echo "- Admits a Vite+ release >=0.3.0: \`$SUPPORTED\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open follow-up issue
+        if: steps.config.outputs.needs_watch == 'true' && steps.range.outputs.supported == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          STORYBOOK_VERSION: ${{ steps.range.outputs.storybook_version }}
+          VITE_PLUS_RANGE: ${{ steps.range.outputs.vite_plus_range }}
+        with:
+          script: |
+            const title = 'Revisit Vite+ upgrade now that Storybook supports 0.3';
+            const marker = '<!-- storybook-vite-plus-support-watch -->';
+            const { owner, repo } = context.repo;
+            const { data: search } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:issue is:open in:title "${title}"`,
+              per_page: 1,
+            });
+
+            if (search.total_count > 0) {
+              core.info(`Issue already open: #${search.items[0].number}`);
+              return;
+            }
+
+            const body = `${marker}
+
+            The published Storybook ${process.env.STORYBOOK_VERSION} peer range for Vite+ is ${process.env.VITE_PLUS_RANGE || '(none)'}, which admits at least one Vite+ release >=0.3.0.
+
+            Follow-up:
+            - Remove the vite-plus ignore from .github/dependabot.yml
+            - Update Vite+ and verify installation and the full CI path before merging
+            - Check compatibility with the newest Vite+ release, which may be newer than the release that triggered this issue`;
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body,
+              labels: ['ready-for-agent'],
+            });
