@@ -42,7 +42,10 @@ jobs:
             echo "vite_plus_range=$vite_plus_range"
           } >> "$GITHUB_OUTPUT"
 
-          if [[ -z "$vite_plus_range" ]] || npx --yes semver -r "$vite_plus_range" 0.3.3 >/dev/null; then
+          # Any stable release the >=0.3.0 ignore blocks counts, not just 0.3.x.
+          blocked_versions=$(npm view vite-plus versions --json | jq -r '.[]')
+          if [[ -z "$vite_plus_range" ]] \
+            || npx --yes semver -r "$vite_plus_range" -r '>=0.3.0' $blocked_versions >/dev/null; then
             echo "supported=true" >> "$GITHUB_OUTPUT"
           else
             echo "supported=false" >> "$GITHUB_OUTPUT"
@@ -66,7 +69,7 @@ jobs:
 
             echo "- Storybook version: \`$STORYBOOK_VERSION\`"
             echo "- Vite+ peer range: \`$VITE_PLUS_RANGE\`"
-            echo "- Admits Vite+ 0.3.3: \`$SUPPORTED\`"
+            echo "- Admits a Vite+ release >=0.3.0: \`$SUPPORTED\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open follow-up issue
@@ -92,12 +95,12 @@ jobs:
 
             const body = `${marker}
 
-            The published Storybook ${process.env.STORYBOOK_VERSION} peer range for Vite+ is ${process.env.VITE_PLUS_RANGE || '(none)'}, which no longer excludes Vite+ 0.3.3.
+            The published Storybook ${process.env.STORYBOOK_VERSION} peer range for Vite+ is ${process.env.VITE_PLUS_RANGE || '(none)'}, which admits at least one Vite+ release >=0.3.0.
 
             Follow-up:
             - Remove the vite-plus ignore from .github/dependabot.yml
             - Update Vite+ and verify installation and the full CI path before merging
-            - Check compatibility with the newest Vite+ release, which may be newer than 0.3.3`;
+            - Check compatibility with the newest Vite+ release, which may be newer than the release that triggered this issue`;
 
             await github.rest.issues.create({
               owner,
