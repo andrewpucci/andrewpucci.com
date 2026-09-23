@@ -45,7 +45,11 @@ const existing = await findReviewComment({
   headers: commentHeaders,
   author: commentAuthor,
 });
-const refresh = process.env.DEPENDABOT_REVIEW_REFRESH === 'true';
+const runAttempt = event?.workflow_run?.run_attempt;
+// Re-running CI is an explicit refresh path for the same immutable head.
+const refresh =
+  process.env.DEPENDABOT_REVIEW_REFRESH === 'true' ||
+  (Number.isInteger(runAttempt) && runAttempt > 1);
 const eventHeadSha = event?.workflow_run?.head_sha;
 const triggeringCiRun = ciRun(process.env.GITHUB_REPOSITORY, event?.workflow_run);
 if (triggeringCiRun) {
@@ -102,7 +106,7 @@ if (triggeringCiRun) {
       },
     }
   );
-  if (input === undefined && githubRequestLimit) {
+  if (!input && githubRequestLimit) {
     emitGithubRequestDiagnostic(githubRequestLimit, { headSha: eventHeadSha });
   } else if (!input) {
     await deleteReviewComment({

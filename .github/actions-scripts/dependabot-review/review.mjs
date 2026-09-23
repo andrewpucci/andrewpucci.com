@@ -77,6 +77,7 @@ export async function loadReviewInput(
     const [input, provenance] = await Promise.all([inputPromise, provenancePromise]);
     const { limit } = governor.diagnostic();
     if (limit) onGithubRequestLimit(limit);
+    if (limit && !input) return undefined;
     if (!input || !provenance) return input;
     return parseReviewInput({ ...input, provenance });
   } catch (error) {

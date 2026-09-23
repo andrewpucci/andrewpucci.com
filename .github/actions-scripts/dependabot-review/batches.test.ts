@@ -165,7 +165,9 @@ describe('Dependabot review batches', () => {
         {
           count: 2,
           reason: 'github_rate_limited',
-          action: expect.stringContaining('GitHub API rate limit resets'),
+          action: expect.stringContaining(
+            'Rerun the CI workflow to refresh this review after the GitHub API rate limit resets'
+          ),
         },
       ],
     });

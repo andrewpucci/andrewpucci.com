@@ -33,7 +33,7 @@ vi.mock('./review.mjs', () => ({
   prepareReview: mocks.prepareReview,
 }));
 
-const event = { workflow_run: { id: 1, head_sha: 'head', conclusion: 'success' } };
+const event = { workflow_run: { id: 1, head_sha: 'head', conclusion: 'success', run_attempt: 1 } };
 const input = { pullRequest: { headSha: 'head' }, packages: [] };
 const metadata = {
   headSha: 'head',
@@ -193,6 +193,21 @@ describe('Dependabot review runner', () => {
     expect(mocks.buildReviewFromInput).toHaveBeenCalledTimes(1);
   });
 
+  it('refreshes a current review after a maintainer reruns CI', async () => {
+    mocks.readFile.mockResolvedValue(
+      JSON.stringify({ workflow_run: { ...event.workflow_run, run_attempt: 2 } })
+    );
+    mocks.findReviewComment.mockResolvedValue({
+      body: `<!-- dependabot-intelligent-review -->\n<!-- reviewed-head: head -->\n<!-- review-digest: ${'d'.repeat(64)} -->`,
+    });
+
+    await run();
+
+    expect(mocks.loadReviewInput).toHaveBeenCalledTimes(1);
+    expect(mocks.buildReviewFromInput).toHaveBeenCalledTimes(1);
+    expect(mocks.upsertComment).toHaveBeenCalledTimes(1);
+  });
+
   it('removes the managed comment and stops when no review input is available', async () => {
     mocks.loadReviewInput.mockResolvedValue(null);
 
@@ -227,5 +242,21 @@ describe('Dependabot review runner', () => {
     expect(mocks.prepareReview).not.toHaveBeenCalled();
     expect(mocks.buildReviewFromInput).not.toHaveBeenCalled();
     expect(mocks.upsertComment).not.toHaveBeenCalled();
+  });
+
+  it('preserves the existing comment when a limit leaves no reviewable input', async () => {
+    mocks.findReviewComment.mockResolvedValue({ body: 'existing review' });
+    mocks.loadReviewInput.mockImplementation(async (_request, { onGithubRequestLimit }) => {
+      onGithubRequestLimit({ status: 429 });
+      return null;
+    });
+
+    await run();
+
+    expect(mocks.deleteReviewComment).not.toHaveBeenCalled();
+    expect(mocks.emitGithubRequestDiagnostic).toHaveBeenCalledWith(
+      { status: 429 },
+      { headSha: 'head' }
+    );
   });
 });
