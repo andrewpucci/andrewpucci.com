@@ -69,7 +69,7 @@ function nextAction(analysis, ciRun) {
   if (analysis.verdict === 'merge_with_followups')
     return 'Merge is advisory only after recording the explicit non-blocking follow-ups.';
   if (analysis.verdict === 'analysis_unavailable')
-    return 'No merge recommendation is available. Rerun the advisory review after correcting the failure.';
+    return 'No merge recommendation is available. Rerun the CI workflow to refresh this review after correcting the failure.';
   return 'The evidence supports an advisory merge recommendation.';
 }
 

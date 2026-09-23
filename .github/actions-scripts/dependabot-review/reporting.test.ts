@@ -9,7 +9,7 @@ describe('renderComment', () => {
       'Merge is advisory only after recording the explicit non-blocking follow-ups.',
     ],
     ['do_not_merge', 'Do not merge until the documented blockers are remediated and validated.'],
-    ['analysis_unavailable', 'No merge recommendation is available. Rerun the advisory review'],
+    ['analysis_unavailable', 'No merge recommendation is available. Rerun the CI workflow'],
   ])('renders a specific next action for %s', (verdict, action) => {
     const body = renderComment(
       {

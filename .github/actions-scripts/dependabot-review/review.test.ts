@@ -188,4 +188,23 @@ describe('trusted Dependabot review input', () => {
 
     expect(onGithubRequestLimit).toHaveBeenCalledWith({ status: 'request_budget_exhausted' });
   });
+
+  it('treats an empty packet after a GitHub limit as interrupted collection', async () => {
+    mocks.fetchAllPages.mockResolvedValue([{ filename: 'package-lock.json' }]);
+    mocks.collectReviewInput.mockResolvedValue(null);
+    mocks.collectPullRequestProvenance.mockResolvedValue(undefined);
+    mocks.createGithubRequestGovernor.mockImplementation((fetchLike) => ({
+      fetch: fetchLike,
+      diagnostic: () => ({ requests: 3, limit: { status: 429 } }),
+    }));
+    const onGithubRequestLimit = vi.fn();
+
+    await expect(
+      loadReviewInput(
+        { repository: 'owner/repo', number: 42, githubToken: 'read-token' },
+        { fetchLike: mocks.fetch, onGithubRequestLimit }
+      )
+    ).resolves.toBeUndefined();
+    expect(onGithubRequestLimit).toHaveBeenCalledWith({ status: 429 });
+  });
 });
