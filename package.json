@@ -40,7 +40,7 @@
     "lint:staged": "lint-staged"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26.0.0"
   },
   "packageManager": "npm@11.16.0",
   "repository": {

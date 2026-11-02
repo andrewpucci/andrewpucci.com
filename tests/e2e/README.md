@@ -18,7 +18,7 @@ tests/e2e/
 
 ### Prerequisites
 
-- Node.js 24.x or higher
+- Node.js 26.x or higher
 - Vite+ installed globally as `vp`
 - Playwright browsers installed (`npx playwright install`)
 
