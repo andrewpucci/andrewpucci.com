@@ -45,6 +45,7 @@ jobs:
         # locally-installed optional coverage provider.
         run: npm run test:coverage -- --project=server
 
-      # ADR-0003: fail on high/critical, review moderate/low manually.
+      # ADR-0003: gate the deployable dependency tree; the Storybook/Vite+
+      # compatibility exception documents the separately reviewed dev tooling.
       - name: npm audit
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high

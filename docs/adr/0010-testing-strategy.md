@@ -31,7 +31,7 @@ Three-layer testing stack:
 - Visual regression coverage comes from Chromatic on every push. No separate visual testing tool needed.
 - CI runs two test suites: Vitest (utility functions and Storybook interaction tests) and Playwright (E2E flows). Same shape as before, different coverage distribution.
 - The 80% coverage threshold from the previous Vitest config carries forward, now spanning utility functions and interaction tests.
-- `npm audit` runs in CI and fails on high or critical severity findings. See ADR-0003.
+- `npm audit --omit=dev` runs in CI and fails on high or critical severity findings in the deployable dependency tree. See ADR-0003 for the development-tooling exception.
 - Lighthouse runs on every deployment via the `lighthouse` CLI. ADR-0012 defines which absolute thresholds and relative regressions block CI.
 
 ## Amendments
