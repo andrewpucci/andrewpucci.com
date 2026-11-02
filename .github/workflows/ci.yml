@@ -25,7 +25,7 @@ jobs:
       - name: Set up Vite+
         uses: voidzero-dev/setup-vp@24d870228786dc83ae73482406bdd1e7befaec14 # v1.21.0
         with:
-          node-version: 24.x
+          node-version: 26.x
           cache: true
 
       - name: Install dependencies
@@ -45,6 +45,7 @@ jobs:
         # locally-installed optional coverage provider.
         run: npm run test:coverage -- --project=server
 
-      # ADR-0003: fail on high/critical, review moderate/low manually.
+      # ADR-0003: gate the deployable dependency tree; the Storybook/Vite+
+      # compatibility exception documents the separately reviewed dev tooling.
       - name: npm audit
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high

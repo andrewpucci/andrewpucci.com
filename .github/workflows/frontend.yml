@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/frontend.yml'
+      - '.node-version'
+      - '.tool-versions'
+      - 'package.json'
+      - 'package-lock.json'
       - 'src/**'
       - 'static/**'
       - 'tokens/**'
@@ -17,6 +22,11 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - '.github/workflows/frontend.yml'
+      - '.node-version'
+      - '.tool-versions'
+      - 'package.json'
+      - 'package-lock.json'
       - 'src/**'
       - 'static/**'
       - 'tokens/**'
@@ -53,7 +63,7 @@ jobs:
       - name: Set up Vite+
         uses: voidzero-dev/setup-vp@24d870228786dc83ae73482406bdd1e7befaec14 # v1.21.0
         with:
-          node-version: 24.x
+          node-version: 26.x
           cache: true
 
       - name: Install dependencies

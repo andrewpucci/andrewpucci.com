@@ -40,7 +40,7 @@
     "lint:staged": "lint-staged"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26.0.0"
   },
   "packageManager": "npm@11.16.0",
   "repository": {
@@ -115,14 +115,14 @@
     ]
   },
   "allowScripts": {
-    "simple-git-hooks@2.13.1": true,
-    "esbuild@0.28.1": true,
     "fsevents@2.3.3": true,
     "fsevents@2.3.2": true,
     "sharp@0.33.5": true,
     "sharp@0.34.5": true,
-    "workerd@1.20260630.1": true,
-    "@parcel/watcher@2.5.1": true
+    "@parcel/watcher@2.5.1": true,
+    "esbuild": true,
+    "simple-git-hooks": true,
+    "workerd@1.20260721.1": true
   },
   "overrides": {
     "@sveltejs/kit": {
@@ -130,6 +130,7 @@
     },
     "sharp": "0.35.4",
     "smol-toml": "1.7.1",
+    "source-map-js": "1.2.2",
     "undici": "7.29.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8",
     "vitest": "4.1.10"

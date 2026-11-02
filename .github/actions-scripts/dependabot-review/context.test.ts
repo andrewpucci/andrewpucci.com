@@ -5,7 +5,7 @@ describe('collectRepositoryContext', () => {
   it('associates an action with trusted workflow configuration', async () => {
     const readFile = vi.fn(async (path: string) => {
       if (path === '.github/workflows/ci.yml')
-        return `- uses: actions/setup-node@v4\n  with:\n    node-version: 24`;
+        return `- uses: actions/setup-node@v4\n  with:\n    node-version: 26`;
       throw new Error(`Unexpected path: ${path}`);
     });
 
@@ -22,7 +22,7 @@ describe('collectRepositoryContext', () => {
           {
             kind: 'workflow-action',
             path: '.github/workflows/ci.yml',
-            excerpt: 'uses: actions/setup-node@v4\n  with:\n    node-version: 24',
+            excerpt: 'uses: actions/setup-node@v4\n  with:\n    node-version: 26',
           },
         ],
       },

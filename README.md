@@ -45,7 +45,7 @@ tokens/                  # DTCG token source
 Prerequisites:
 
 - Vite+ installed globally as `vp`
-- Node.js 24.x
+- Node.js 26.x
 
 Install dependencies and start the dev server:
 
