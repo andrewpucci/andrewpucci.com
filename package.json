@@ -90,7 +90,7 @@
     "typescript": "^6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8",
     "vite-plus": "0.2.9",
-    "vitest": "4.1.10",
+    "vitest": "5.0.1",
     "wrangler": "4.113.0"
   },
   "simple-git-hooks": {
@@ -133,6 +133,6 @@
     "source-map-js": "1.2.2",
     "undici": "7.29.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.8",
-    "vitest": "4.1.10"
+    "vitest": "5.0.1"
   }
 }
